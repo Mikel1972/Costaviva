@@ -4629,6 +4629,7 @@ async function cargarSpotsPersonalizados() {
     try {
       const datos = await datosAmbientalesPunto(s.lat, s.lon);
       Object.assign(s, datos);
+      aplicarOrillaPrestada(s);
       s.indice = indiceMar(s);
       const marker = marcadoresPorSlug.get(s.slug);
       if (marker) map.removeLayer(marker);
@@ -5992,29 +5993,64 @@ cargarEspeciesDatos().catch((e) => console.warn("especies.json:", e.message));
 // no solo el resultado: el índice y la ventana la piden a la vez al abrir el
 // panel y así se hace una sola petición.
 // Spots sin cámara asignada (los del usuario, como Lemoiz, y los de la red
-// sin FUENTE_POR_SPOT) a ORILLA_PRESTADA_KM o menos de un spot con cámara
-// propia: lo aprendido por esa cámara, rebajado hacia 1 cuanto más lejos
-// (2026-11-19, Mikel: "la ola que marca en Lemoiz es demasiado alta"; su
-// regla: "en los spots en los que no hay [cámara], inferimos de los spots
-// cercanos"). Más lejos, nada: se queda el mar abierto, y se dice así.
-const ORILLA_PRESTADA_KM = 15;
+// sin FUENTE_POR_SPOT) a ORILLA_PRESTADA_KM o menos de spots con cámara
+// propia: lo aprendido por esas cámaras (2026-11-19, Mikel: "la ola que
+// marca en Lemoiz es demasiado alta"; su regla: "en los spots en los que no
+// hay [cámara], inferimos de los spots cercanos").
+// "No puede haber tanta diferencia entre spots contiguos" (Mikel, mismo
+// día): se mezclan las DOS cámaras más cercanas, pesadas por la inversa de
+// la distancia (en logaritmos), en vez de copiar solo una; así un spot entre
+// Bakio y Sopelana queda entre las dos. Y solo se rebaja un poco hacia el mar
+// abierto con la distancia (a 15 km, un 37 % del camino en logaritmos).
+// Más lejos, nada: se queda el mar abierto, y se dice así.
+const ORILLA_PRESTADA_KM = 15, ORILLA_PRESTADA_REBAJA_KM = 40;
 function orillaPrestada(s) {
+  if (s.zonaOleaje?.orilla?.prestada) return s.zonaOleaje.orilla;
   if (s.zonaOleaje?.orilla || s.zonaOleaje?.parametros || !Number.isFinite(s.lat)) return null;
-  let mejor = null;
+  const cerca = [];
   for (const o of SPOTS) {
     const t = o.zonaOleaje?.orilla;
     if (o === s || !t?.propia || !t.tabla || !Number.isFinite(o.lat)) continue;
+    // Una entrada por cámara (varios spots pueden compartirla).
+    if (cerca.some((c) => c.t.camara === t.camara)) continue;
     const km = window.CorreccionBoya.distanciaKm(s.lat, s.lon, o.lat, o.lon);
-    if (km <= ORILLA_PRESTADA_KM && (!mejor || km < mejor.km)) mejor = { o, t, km };
+    if (km <= ORILLA_PRESTADA_KM) cerca.push({ t, km });
   }
-  if (!mejor) return null;
-  const peso = Math.max(0, 1 - mejor.km / (ORILLA_PRESTADA_KM + 5));
+  if (!cerca.length) return null;
+  cerca.sort((a, b) => a.km - b.km);
+  const usadas = cerca.slice(0, 2);
+  const pesos = usadas.map((c) => 1 / Math.max(1, c.km));
+  const suma = pesos.reduce((a, b) => a + b, 0);
+  const peso = Math.max(0, 1 - usadas[0].km / ORILLA_PRESTADA_REBAJA_KM);
   const tabla = {};
-  for (const [tam, pers] of Object.entries(mejor.t.tabla)) {
+  for (const [tam, pers] of Object.entries(usadas[0].t.tabla)) {
     tabla[tam] = {};
-    for (const [per, c] of Object.entries(pers)) tabla[tam][per] = Number.isFinite(c) ? +Math.pow(c, peso).toFixed(3) : c;
+    for (const per of Object.keys(pers)) {
+      const logs = usadas.map((c) => Math.log(c.t.tabla[tam]?.[per]));
+      if (logs.some((l) => !Number.isFinite(l))) { tabla[tam][per] = pers[per]; continue; }
+      const mezcla = logs.reduce((a, l, k) => a + l * pesos[k], 0) / suma;
+      tabla[tam][per] = +Math.exp(mezcla * peso).toFixed(3);
+    }
   }
-  return { camara: mejor.t.camara, propia: false, prestada: true, km: Math.round(mejor.km), peso: +peso.toFixed(2), n: mejor.t.n, tabla };
+  return {
+    camara: usadas.map((c) => c.t.camara).join(" / "), propia: false, prestada: true,
+    km: Math.round(usadas[0].km), peso: +peso.toFixed(2), n: usadas.reduce((a, c) => a + (c.t.n || 0), 0), tabla,
+  };
+}
+// Spot del usuario: el número grande del panel también con la orilla
+// prestada (Mikel, 2026-11-19: "sí", cambiarlo también en el panel). El mar
+// abierto queda en s.alturaMarAbierto y el panel dice de qué cámaras sale.
+function aplicarOrillaPrestada(s) {
+  // Al refrescar, la prestada de antes no cuenta como cámara propia.
+  if (s.zonaOleaje?.orilla?.prestada) s.zonaOleaje = { ...s.zonaOleaje, orilla: null };
+  const t = orillaPrestada(s);
+  if (!t || !Array.isArray(s.altura)) return;
+  const hs = (Number(s.altura[0]) + Number(s.altura[1])) / 2;
+  const coef = coefOrillaDesdeTabla(t, hs, s.periodo);
+  if (!Number.isFinite(coef)) return;
+  s.alturaMarAbierto = s.altura;
+  s.altura = s.altura.map((x) => +(x * coef).toFixed(1));
+  s.zonaOleaje = { ...(s.zonaOleaje || {}), tipo: "abierta", orilla: t };
 }
 // ¿La ola de la serie es la de la orilla (cámara, vecina o abrigo) o la de
 // mar abierto?
