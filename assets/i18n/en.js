@@ -215,7 +215,7 @@
   "comun.tab.diario": "Log",
   "comun.tab.alarma": "Alarm",
   "comun.tab.grupos": "Groups",
-  "comun.inicio.alt_foto": "A wave breaking on a rocky coast while an angler casts his rod",
+  "comun.inicio.alt_foto": "An angler with his rod at the water's edge of a beach, with a calm sea",
   "mapa.seo.nav": "Public pages",
   "comun.admin": "Admin",
   "comun.administracion": "Administration",

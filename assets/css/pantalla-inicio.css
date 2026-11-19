@@ -3,36 +3,37 @@
    -------------------------------------------------------------------------
    Mientras la app comprueba la sesión (#comprobandoAcceso) salía una
    pantalla crema casi vacía con "Comprobando acceso…" y los enlaces azules
-   del navegador. Ahora: foto de una rompiente a pantalla completa, degradado
-   de --mar para el contraste, la marca en estilo Amanecer y un indicador
-   discreto. En index.html el texto y los enlaces para los buscadores siguen
-   en el DOM (abajo, en claro sobre la foto): no quitarlos.
-   Foto: fotograma de "A young man fishing on a rocky beach" de Coverr
-   (https://coverr.co/videos/a-young-man-fishing-on-a-rocky-beach-pcrpoqlvon),
-   licencia de Coverr (https://coverr.co/license: uso comercial, sin atribución
-   obligatoria; detalle en scripts/inicio/LICENCIA.json), generada con
-   scripts/inicio/generar-pantallas-inicio.mjs. Cada página carga
+   del navegador. Ahora: foto a pantalla completa, degradado de --mar para el
+   contraste, la marca en estilo Amanecer y un indicador discreto. En
+   index.html el texto y los enlaces para los buscadores siguen en el DOM
+   (abajo, en claro sobre la foto): no quitarlos.
+   Foto (2026-11-19, elegida por Mikel): pescador en la orilla con el mar en
+   calma, de Pixabay (licencia en scripts/inicio/LICENCIA.json: gratis, sin
+   atribución obligatoria), generada con
+   scripts/inicio/generar-pantallas-inicio.mjs. La marca va ARRIBA, sobre el
+   cielo, y el texto abajo, para no tapar al pescador. Cada página carga
    esta hoja después de costaviva.css (usa sus tokens).
    Los rgba(11, 30, 63, x) son --mar con transparencia, como en costaviva.css.
    ========================================================================= */
 .pantalla-inicio {
   position: fixed; inset: 0; z-index: 9999; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 28px;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 28px;
   padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
            calc(28px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
   background: var(--mar); color: var(--blanco); font-family: var(--f-texto); text-align: center;
 }
 .pantalla-inicio picture,
 .pantalla-inicio__foto { position: absolute; inset: 0; width: 100%; height: 100%; }
-.pantalla-inicio__foto { display: block; object-fit: cover; object-position: 50% 35%; }
-/* Arriba un velo suave (barra de estado legible), en medio la ola limpia y
-   abajo --mar casi opaco bajo la marca y el texto. */
+.pantalla-inicio__foto { display: block; object-fit: cover; object-position: 50% 50%; }
+/* Arriba, velo bajo la marca; en medio, el pescador limpio; abajo, --mar
+   casi opaco bajo el texto. */
 .pantalla-inicio::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg,
-    rgba(11, 30, 63, 0.55) 0%, rgba(11, 30, 63, 0) 18%, rgba(11, 30, 63, 0) 38%,
-    rgba(11, 30, 63, 0.7) 60%, rgba(11, 30, 63, 0.94) 82%, rgba(11, 30, 63, 0.97) 100%);
+    rgba(11, 30, 63, 0.7) 0%, rgba(11, 30, 63, 0.35) 22%, rgba(11, 30, 63, 0) 34%,
+    rgba(11, 30, 63, 0) 70%, rgba(11, 30, 63, 0.85) 84%, rgba(11, 30, 63, 0.96) 100%);
 }
+.pantalla-inicio__marca { margin-top: max(4vh, 16px); }
 .pantalla-inicio > :not(picture) { position: relative; z-index: 1; max-width: 460px; }
 
 .pantalla-inicio__marca { display: flex; flex-direction: column; align-items: center; gap: 10px; }
