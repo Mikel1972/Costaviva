@@ -6001,10 +6001,28 @@ async function datosHorariosSpot(s) {
   if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo && c.orilla === !!orilla && c.cam === claveCam) return c.horas;
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona)}`;
-    const [marino, tiempo] = await Promise.all([
-      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_peak_period,sea_surface_temperature,sea_level_height_msl`),
-      pedirMeteo("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
+    // Si un dato falla, lo demás sigue (Mikel, 2026-11-19: "si una falla no
+    // podemos bloquear todo"; bug real: el proxy rechazó las variables de
+    // mar de fondo y la ventana, el índice y la hoja se quedaron vacíos).
+    // Mar: primero con todo; si falla, solo lo básico (sin mar de fondo);
+    // si también falla, sin mar. Atmósfera: si falla, sin viento ni presión.
+    // Solo si fallan las dos, no hay horas.
+    const pedirOk = async (api, q) => {
+      const d = await pedirMeteo(api, q);
+      if (!d || d.error || !d.hourly?.time?.length) throw new Error(d?.reason || "sin datos");
+      return d;
+    };
+    const marinoBasico = `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height_msl`;
+    const [rMar, rTiempo] = await Promise.allSettled([
+      pedirOk("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_peak_period,sea_surface_temperature,sea_level_height_msl`)
+        .catch((e) => { console.warn("Mar con mar de fondo no disponible; sin él:", e.message); return pedirOk("marine", marinoBasico); }),
+      pedirOk("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
+    if (rMar.status === "rejected" && rTiempo.status === "rejected") throw new Error("sin datos horarios");
+    if (rMar.status === "rejected") console.warn("Datos de mar no disponibles:", rMar.reason?.message);
+    if (rTiempo.status === "rejected") console.warn("Datos de tiempo no disponibles:", rTiempo.reason?.message);
+    const marino = rMar.status === "fulfilled" ? rMar.value : { hourly: { time: [] } };
+    const tiempo = rTiempo.status === "fulfilled" ? rTiempo.value : { hourly: { time: [] } };
     // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
     // las dos APIs, ver datosAmbientalesPunto).
     const porHora = {};
@@ -6045,7 +6063,7 @@ async function datosHorariosSpot(s) {
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       };
     });
-    if (!Object.keys(mar).length) throw new Error("sin datos horarios");
+    if (!Object.keys(mar).length && !Object.keys(porHora).length) throw new Error("sin datos horarios");
     const tiempos = [...new Set([...Object.keys(porHora), ...Object.keys(mar)])].sort();
     const horas = tiempos.map((t) => ({
       hora: t,

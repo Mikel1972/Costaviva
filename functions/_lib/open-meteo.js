@@ -119,6 +119,10 @@ export const PROXY_PERMITIDO = {
     hourly: new Set([
       "wave_height", "wave_period", "wave_direction", "sea_surface_temperature",
       "sea_level_height_msl", "ocean_current_velocity", "ocean_current_direction",
+      // Mar de fondo (2026-11-19, assets/js/mar-de-fondo.js): sin ellas el
+      // proxy respondía 400 y la ventana, el índice y la hoja se quedaban sin
+      // horas en todos los spots.
+      "swell_wave_height", "swell_wave_period", "swell_wave_peak_period",
     ]),
     current: new Set(["wave_height", "sea_surface_temperature", "sea_level_height_msl"]),
     ttlMin: 60,
