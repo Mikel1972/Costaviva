@@ -1,24 +1,24 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-19T13:09:37.320Z",
- "n": 966,
+ "generado": "2026-11-19T13:39:42.664Z",
+ "n": 1185,
  "k": 8,
  "global": {
-  "coef": 0.344,
-  "n": 966
+  "coef": 0.313,
+  "n": 1185
  },
  "camaras": {
   "zarautz": {
-   "coef": 0.454,
-   "n": 198,
+   "coef": 0.414,
+   "n": 262,
    "tamanos": {
     "pequeno": {
-     "coef": 0.453,
-     "n": 158,
+     "coef": 0.448,
+     "n": 173,
      "periodos": {
       "corto": {
-       "coef": 0.411,
-       "n": 73
+       "coef": 0.412,
+       "n": 88
       },
       "largo": {
        "coef": 0.493,
@@ -27,46 +27,46 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.552,
-     "n": 30,
+     "coef": 0.404,
+     "n": 68,
      "periodos": {
       "corto": {
-       "coef": 0.585,
-       "n": 23
+       "coef": 0.432,
+       "n": 50
       },
       "largo": {
-       "coef": 0.542,
-       "n": 7
+       "coef": 0.347,
+       "n": 18
       }
      }
     },
     "grande": {
-     "coef": 0.343,
-     "n": 10,
+     "coef": 0.288,
+     "n": 21,
      "periodos": {
       "corto": {
-       "coef": 0.354,
+       "coef": 0.303,
        "n": 1
       },
       "largo": {
-       "coef": 0.296,
-       "n": 9
+       "coef": 0.255,
+       "n": 20
       }
      }
     }
    }
   },
   "deba": {
-   "coef": 0.323,
-   "n": 59,
+   "coef": 0.307,
+   "n": 74,
    "tamanos": {
     "pequeno": {
-     "coef": 0.366,
-     "n": 45,
+     "coef": 0.365,
+     "n": 47,
      "periodos": {
       "corto": {
-       "coef": 0.377,
-       "n": 19
+       "coef": 0.379,
+       "n": 21
       },
       "largo": {
        "coef": 0.367,
@@ -75,46 +75,46 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.265,
-     "n": 5,
+     "coef": 0.259,
+     "n": 15,
      "periodos": {
       "corto": {
-       "coef": 0.275,
-       "n": 2
+       "coef": 0.266,
+       "n": 7
       },
       "largo": {
-       "coef": 0.223,
-       "n": 3
+       "coef": 0.231,
+       "n": 8
       }
      }
     },
     "grande": {
-     "coef": 0.247,
-     "n": 9,
+     "coef": 0.231,
+     "n": 12,
      "periodos": {
       "corto": {
-       "coef": 0.222,
+       "coef": 0.21,
        "n": 1
       },
       "largo": {
-       "coef": 0.23,
-       "n": 8
+       "coef": 0.215,
+       "n": 11
       }
      }
     }
    }
   },
   "berria": {
-   "coef": 0.426,
-   "n": 104,
+   "coef": 0.397,
+   "n": 144,
    "tamanos": {
     "pequeno": {
-     "coef": 0.429,
-     "n": 85,
+     "coef": 0.426,
+     "n": 97,
      "periodos": {
       "corto": {
-       "coef": 0.415,
-       "n": 46
+       "coef": 0.416,
+       "n": 58
       },
       "largo": {
        "coef": 0.446,
@@ -123,113 +123,359 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.506,
-     "n": 11,
+     "coef": 0.398,
+     "n": 35,
      "periodos": {
       "corto": {
-       "coef": 0.577,
-       "n": 7
+       "coef": 0.438,
+       "n": 23
       },
       "largo": {
-       "coef": 0.482,
-       "n": 4
+       "coef": 0.343,
+       "n": 12
       }
      }
     },
     "grande": {
-     "coef": 0.372,
-     "n": 8,
+     "coef": 0.3,
+     "n": 12,
      "periodos": {
       "largo": {
-       "coef": 0.348,
-       "n": 8
-      }
-     }
-    }
-   }
-  },
-  "hondarribia": {
-   "coef": 0.211,
-   "n": 225,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.315,
-     "n": 115,
-     "periodos": {
-      "corto": {
-       "coef": 0.309,
-       "n": 61
-      },
-      "largo": {
-       "coef": 0.339,
-       "n": 54
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.156,
-     "n": 85,
-     "periodos": {
-      "corto": {
-       "coef": 0.145,
-       "n": 20
-      },
-      "largo": {
-       "coef": 0.156,
-       "n": 65
-      }
-     }
-    },
-    "grande": {
-     "coef": 0.098,
-     "n": 25,
-     "periodos": {
-      "corto": {
-       "coef": 0.093,
-       "n": 13
-      },
-      "largo": {
-       "coef": 0.076,
+       "coef": 0.268,
        "n": 12
       }
      }
     }
    }
   },
-  "castrourdiales": {
-   "coef": 0.47,
-   "n": 113,
+  "hondarribia": {
+   "coef": 0.177,
+   "n": 299,
    "tamanos": {
     "pequeno": {
-     "coef": 0.526,
-     "n": 104,
+     "coef": 0.309,
+     "n": 120,
      "periodos": {
       "corto": {
-       "coef": 0.51,
-       "n": 58
+       "coef": 0.305,
+       "n": 66
       },
       "largo": {
-       "coef": 0.556,
+       "coef": 0.338,
+       "n": 54
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.143,
+     "n": 124,
+     "periodos": {
+      "corto": {
+       "coef": 0.129,
+       "n": 59
+      },
+      "largo": {
+       "coef": 0.154,
+       "n": 65
+      }
+     }
+    },
+    "grande": {
+     "coef": 0.082,
+     "n": 55,
+     "periodos": {
+      "corto": {
+       "coef": 0.09,
+       "n": 21
+      },
+      "largo": {
+       "coef": 0.066,
+       "n": 34
+      }
+     }
+    }
+   }
+  },
+  "castrourdiales": {
+   "coef": 0.429,
+   "n": 122,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.52,
+     "n": 105,
+     "periodos": {
+      "corto": {
+       "coef": 0.505,
+       "n": 59
+      },
+      "largo": {
+       "coef": 0.555,
        "n": 46
       }
      }
     },
     "medio": {
-     "coef": 0.301,
-     "n": 5,
+     "coef": 0.224,
+     "n": 11,
      "periodos": {
       "corto": {
-       "coef": 0.28,
+       "coef": 0.216,
        "n": 1
       },
       "largo": {
-       "coef": 0.237,
-       "n": 4
+       "coef": 0.172,
+       "n": 10
       }
      }
     },
     "grande": {
-     "coef": 0.326,
+     "coef": 0.26,
+     "n": 6,
+     "periodos": {
+      "largo": {
+       "coef": 0.196,
+       "n": 6
+      }
+     }
+    }
+   }
+  },
+  "donostia": {
+   "coef": 0.287,
+   "n": 30,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.322,
+     "n": 14,
+     "periodos": {
+      "corto": {
+       "coef": 0.285,
+       "n": 6
+      },
+      "largo": {
+       "coef": 0.379,
+       "n": 8
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.262,
+     "n": 13,
+     "periodos": {
+      "corto": {
+       "coef": 0.253,
+       "n": 13
+      }
+     }
+    },
+    "grande": {
+     "coef": 0.254,
+     "n": 3,
+     "periodos": {
+      "largo": {
+       "coef": 0.232,
+       "n": 3
+      }
+     }
+    }
+   }
+  },
+  "getaria": {
+   "coef": 0.302,
+   "n": 26,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.383,
+     "n": 17,
+     "periodos": {
+      "corto": {
+       "coef": 0.383,
+       "n": 10
+      },
+      "largo": {
+       "coef": 0.434,
+       "n": 7
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.21,
+     "n": 9,
+     "periodos": {
+      "corto": {
+       "coef": 0.2,
+       "n": 6
+      },
+      "largo": {
+       "coef": 0.172,
+       "n": 3
+      }
+     }
+    }
+   }
+  },
+  "sopelana": {
+   "coef": 0.447,
+   "n": 36,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.588,
+     "n": 20,
+     "periodos": {
+      "corto": {
+       "coef": 0.782,
+       "n": 6
+      },
+      "largo": {
+       "coef": 0.542,
+       "n": 14
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.405,
+     "n": 10,
+     "periodos": {
+      "corto": {
+       "coef": 0.381,
+       "n": 7
+      },
+      "largo": {
+       "coef": 0.409,
+       "n": 3
+      }
+     }
+    },
+    "grande": {
+     "coef": 0.36,
+     "n": 6,
+     "periodos": {
+      "largo": {
+       "coef": 0.318,
+       "n": 6
+      }
+     }
+    }
+   }
+  },
+  "mundaka": {
+   "coef": 0.485,
+   "n": 20,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.561,
+     "n": 9,
+     "periodos": {
+      "corto": {
+       "coef": 0.579,
+       "n": 8
+      },
+      "largo": {
+       "coef": 0.603,
+       "n": 1
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.516,
+     "n": 10,
+     "periodos": {
+      "corto": {
+       "coef": 0.522,
+       "n": 8
+      },
+      "largo": {
+       "coef": 0.532,
+       "n": 2
+      }
+     }
+    },
+    "grande": {
+     "coef": 0.482,
+     "n": 1,
+     "periodos": {
+      "corto": {
+       "coef": 0.479,
+       "n": 1
+      }
+     }
+    }
+   }
+  },
+  "zumaia": {
+   "coef": 0.372,
+   "n": 18,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.435,
+     "n": 3,
+     "periodos": {
+      "corto": {
+       "coef": 0.441,
+       "n": 1
+      },
+      "largo": {
+       "coef": 0.487,
+       "n": 2
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.38,
+     "n": 10,
+     "periodos": {
+      "corto": {
+       "coef": 0.418,
+       "n": 7
+      },
+      "largo": {
+       "coef": 0.34,
+       "n": 3
+      }
+     }
+    },
+    "grande": {
+     "coef": 0.35,
+     "n": 5,
+     "periodos": {
+      "largo": {
+       "coef": 0.337,
+       "n": 5
+      }
+     }
+    }
+   }
+  },
+  "orio": {
+   "coef": 0.343,
+   "n": 26,
+   "tamanos": {
+    "pequeno": {
+     "coef": 0.387,
+     "n": 20,
+     "periodos": {
+      "corto": {
+       "coef": 0.447,
+       "n": 8
+      },
+      "largo": {
+       "coef": 0.363,
+       "n": 12
+      }
+     }
+    },
+    "medio": {
+     "coef": 0.323,
+     "n": 2,
+     "periodos": {
+      "corto": {
+       "coef": 0.309,
+       "n": 2
+      }
+     }
+    },
+    "grande": {
+     "coef": 0.287,
      "n": 4,
      "periodos": {
       "largo": {
@@ -240,276 +486,30 @@ export default {
     }
    }
   },
-  "donostia": {
-   "coef": 0.296,
-   "n": 22,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.323,
-     "n": 13,
-     "periodos": {
-      "corto": {
-       "coef": 0.28,
-       "n": 5
-      },
-      "largo": {
-       "coef": 0.38,
-       "n": 8
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.264,
-     "n": 6,
-     "periodos": {
-      "corto": {
-       "coef": 0.247,
-       "n": 6
-      }
-     }
-    },
-    "grande": {
-     "coef": 0.259,
-     "n": 3,
-     "periodos": {
-      "largo": {
-       "coef": 0.236,
-       "n": 3
-      }
-     }
-    }
-   }
-  },
-  "getaria": {
-   "coef": 0.309,
-   "n": 26,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.386,
-     "n": 17,
-     "periodos": {
-      "corto": {
-       "coef": 0.384,
-       "n": 10
-      },
-      "largo": {
-       "coef": 0.436,
-       "n": 7
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.212,
-     "n": 9,
-     "periodos": {
-      "corto": {
-       "coef": 0.201,
-       "n": 6
-      },
-      "largo": {
-       "coef": 0.174,
-       "n": 3
-      }
-     }
-    }
-   }
-  },
-  "sopelana": {
-   "coef": 0.47,
-   "n": 30,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.597,
-     "n": 20,
-     "periodos": {
-      "corto": {
-       "coef": 0.788,
-       "n": 6
-      },
-      "largo": {
-       "coef": 0.545,
-       "n": 14
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.439,
-     "n": 4,
-     "periodos": {
-      "corto": {
-       "coef": 0.402,
-       "n": 2
-      },
-      "largo": {
-       "coef": 0.453,
-       "n": 2
-      }
-     }
-    },
-    "grande": {
-     "coef": 0.37,
-     "n": 6,
-     "periodos": {
-      "largo": {
-       "coef": 0.323,
-       "n": 6
-      }
-     }
-    }
-   }
-  },
-  "mundaka": {
-   "coef": 0.498,
-   "n": 20,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.568,
-     "n": 9,
-     "periodos": {
-      "corto": {
-       "coef": 0.583,
-       "n": 8
-      },
-      "largo": {
-       "coef": 0.61,
-       "n": 1
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.522,
-     "n": 10,
-     "periodos": {
-      "corto": {
-       "coef": 0.525,
-       "n": 8
-      },
-      "largo": {
-       "coef": 0.537,
-       "n": 2
-      }
-     }
-    },
-    "grande": {
-     "coef": 0.493,
-     "n": 1,
-     "periodos": {
-      "corto": {
-       "coef": 0.489,
-       "n": 1
-      }
-     }
-    }
-   }
-  },
-  "zumaia": {
-   "coef": 0.378,
-   "n": 15,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.44,
-     "n": 3,
-     "periodos": {
-      "corto": {
-       "coef": 0.446,
-       "n": 1
-      },
-      "largo": {
-       "coef": 0.492,
-       "n": 2
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.376,
-     "n": 7,
-     "periodos": {
-      "corto": {
-       "coef": 0.414,
-       "n": 4
-      },
-      "largo": {
-       "coef": 0.338,
-       "n": 3
-      }
-     }
-    },
-    "grande": {
-     "coef": 0.354,
-     "n": 5,
-     "periodos": {
-      "largo": {
-       "coef": 0.34,
-       "n": 5
-      }
-     }
-    }
-   }
-  },
-  "orio": {
-   "coef": 0.35,
-   "n": 26,
-   "tamanos": {
-    "pequeno": {
-     "coef": 0.39,
-     "n": 20,
-     "periodos": {
-      "corto": {
-       "coef": 0.448,
-       "n": 8
-      },
-      "largo": {
-       "coef": 0.364,
-       "n": 12
-      }
-     }
-    },
-    "medio": {
-     "coef": 0.329,
-     "n": 2,
-     "periodos": {
-      "corto": {
-       "coef": 0.313,
-       "n": 2
-      }
-     }
-    },
-    "grande": {
-     "coef": 0.292,
-     "n": 4,
-     "periodos": {
-      "largo": {
-       "coef": 0.258,
-       "n": 4
-      }
-     }
-    }
-   }
-  },
   "bakio": {
-   "coef": 0.561,
+   "coef": 0.55,
    "n": 27,
    "tamanos": {
     "pequeno": {
-     "coef": 0.642,
+     "coef": 0.639,
      "n": 25,
      "periodos": {
       "corto": {
-       "coef": 0.688,
+       "coef": 0.687,
        "n": 14
       },
       "largo": {
-       "coef": 0.628,
+       "coef": 0.626,
        "n": 11
       }
      }
     },
     "medio": {
-     "coef": 0.533,
+     "coef": 0.524,
      "n": 2,
      "periodos": {
       "largo": {
-       "coef": 0.511,
+       "coef": 0.504,
        "n": 2
       }
      }
@@ -517,39 +517,39 @@ export default {
    }
   },
   "mutriku": {
-   "coef": 0.282,
+   "coef": 0.267,
    "n": 6,
    "tamanos": {
     "pequeno": {
-     "coef": 0.326,
+     "coef": 0.313,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.335,
+       "coef": 0.324,
        "n": 1
       },
       "largo": {
-       "coef": 0.357,
+       "coef": 0.346,
        "n": 2
       }
      }
     },
     "medio": {
-     "coef": 0.233,
+     "coef": 0.223,
      "n": 2,
      "periodos": {
       "largo": {
-       "coef": 0.201,
+       "coef": 0.194,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.243,
+     "coef": 0.232,
      "n": 1,
      "periodos": {
       "largo": {
-       "coef": 0.213,
+       "coef": 0.204,
        "n": 1
       }
      }
@@ -557,25 +557,25 @@ export default {
    }
   },
   "nz-aramoana": {
-   "coef": 0.308,
+   "coef": 0.297,
    "n": 12,
    "tamanos": {
     "pequeno": {
-     "coef": 0.306,
+     "coef": 0.301,
      "n": 11,
      "periodos": {
       "corto": {
-       "coef": 0.305,
+       "coef": 0.303,
        "n": 11
       }
      }
     },
     "medio": {
-     "coef": 0.283,
+     "coef": 0.274,
      "n": 1,
      "periodos": {
       "corto": {
-       "coef": 0.263,
+       "coef": 0.255,
        "n": 1
       }
      }
@@ -583,15 +583,15 @@ export default {
    }
   },
   "nz-napier": {
-   "coef": 0.696,
+   "coef": 0.674,
    "n": 16,
    "tamanos": {
     "pequeno": {
-     "coef": 0.88,
+     "coef": 0.871,
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.952,
+       "coef": 0.948,
        "n": 16
       }
      }
@@ -599,7 +599,7 @@ export default {
    }
   },
   "nz-riverton": {
-   "coef": 0.182,
+   "coef": 0.18,
    "n": 67,
    "tamanos": {
     "pequeno": {
@@ -611,7 +611,7 @@ export default {
        "n": 13
       },
       "largo": {
-       "coef": 0.254,
+       "coef": 0.253,
        "n": 3
       }
      }
@@ -625,17 +625,17 @@ export default {
        "n": 38
       },
       "largo": {
-       "coef": 0.16,
+       "coef": 0.159,
        "n": 7
       }
      }
     },
     "grande": {
-     "coef": 0.13,
+     "coef": 0.129,
      "n": 6,
      "periodos": {
       "corto": {
-       "coef": 0.115,
+       "coef": 0.114,
        "n": 3
       },
       "largo": {
