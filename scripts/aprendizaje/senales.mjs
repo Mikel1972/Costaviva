@@ -69,7 +69,11 @@ export function estacionalidad(datos, filasObs, { minEspecie = 30, minMes = 8, r
 // fotogramas: primero cámaras que aún no sustituyen al modelo y a las que
 // les faltan etiquetas; dentro, los de espuma fuera del rango ya calibrado
 // (lo que más amplía la escala) o donde cámara y modelo discrepan más.
-export function etiquetarCamaras(lineas, calibracion, { desde = 0, max = 12 } = {}) {
+// avisosVecinos: avisos-vecinos.json (regla de vecinos, 2026-11-19): las
+// cámaras cuyos spots no cuadran a menudo con los de al lado suben.
+export function etiquetarCamaras(lineas, calibracion, { desde = 0, max = 12, avisosVecinos = null } = {}) {
+  const porCamara = {};
+  for (const a of avisosVecinos?.avisos || []) if (a.camara && Date.parse(a.visto) >= desde) porCamara[a.camara] = (porCamara[a.camara] || 0) + 1;
   const cal = calibracion?.calibracion || {};
   const candidatas = [];
   for (const l of lineas) {
@@ -88,6 +92,8 @@ export function etiquetarCamaras(lineas, calibracion, { desde = 0, max = 12 } = 
       const disc = Math.abs(Math.log(l.estimacion / modelo));
       if (disc > Math.log(1.6)) { ganancia += disc; motivo = "cámara y modelo discrepan mucho"; }
     }
+    const nAvisos = porCamara[l.camara] || 0;
+    if (nAvisos >= 3) { ganancia += Math.min(2, Math.log(nAvisos)); motivo = "sus spots no cuadran con los de al lado (regla de vecinos)"; }
     candidatas.push({ camara: l.camara, encuadre: l.encuadre, fecha: l.fecha, espuma: l.espuma, estimacion: l.estimacion ?? null, modelo: modelo ?? null, ganancia: +ganancia.toFixed(3), motivo });
   }
   // Uno por cámara y franja de 2 h: mirar dos veces el mismo mar no enseña más.

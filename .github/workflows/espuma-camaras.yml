@@ -116,6 +116,14 @@ jobs:
           FORZAR_LUZ: ${{ inputs.forzar_luz }}
         run: node scripts/oleaje-camaras/medir-espuma.mjs --boyas /tmp/boyas.json $([ "$FORZAR_LUZ" = "true" ] && echo --forzar-luz)
 
+      # Regla de vecinos (2026-11-19): apunta los avisos de /prevision
+      # (spots que no cuadran con los de al lado) y avisa de las cámaras con
+      # avisos repetidos. Sin IA. Si falla, no tumba el robot.
+      - name: Regla de vecinos
+        if: steps.luz.outputs.hay == 'true'
+        continue-on-error: true
+        run: node scripts/oleaje-camaras/avisos-vecinos.mjs
+
       - name: Guardar en el repo
         if: steps.luz.outputs.hay == 'true'
         run: |
@@ -123,6 +131,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "noreply@anthropic.com"
           git add "$D/espuma.jsonl" "$D/calibracion.json"
+          if [ -f "$D/avisos-vecinos.json" ]; then git add "$D/avisos-vecinos.json"; fi
           # Previsión del día archivada (lo que dijimos; sesgo-plazo.mjs).
           if [ -d "$D/pronosticos" ]; then git add -A "$D/pronosticos"; fi
           HAY=0
@@ -130,7 +139,7 @@ jobs:
           # Coeficiente de costa reaprendido (solo cambia si algún valor se
           # mueve > 3 %): commit aparte SIN [skip ci], para que Cloudflare
           # Pages vuelva a desplegar y /prevision use el nuevo.
-          git add functions/_lib/coef-costa-datos.js functions/_lib/sesgo-plazo-datos.js
+          git add functions/_lib/coef-costa-datos.js functions/_lib/sesgo-plazo-datos.js functions/_lib/relaciones-vecinos-datos.js
           if ! git diff --cached --quiet; then git commit -qm "Oleaje: coeficiente de costa y sesgo por plazo reaprendidos"; HAY=1; fi
           if [ "$HAY" = 0 ]; then echo "Sin cambios."; exit 0; fi
           # Si otra rama tocó calibracion.json a la vez (la rutina de

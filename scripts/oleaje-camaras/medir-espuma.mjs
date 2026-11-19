@@ -46,6 +46,7 @@ import {
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
 import { aprenderCoefCosta, coefCostaDe, verificarCoefCosta } from "../../functions/_lib/coef-costa.js";
+import { aprenderRelaciones } from "../../functions/_lib/coherencia-vecinos.js";
 import { verdades, parear, aprenderSesgo } from "./sesgo-plazo.mjs";
 import { SPOTS, factorOleaje } from "../../functions/prevision.js";
 import { pedirDatosMeteo, fuenteDeVariable } from "../../functions/_lib/fuentes.js";
@@ -512,8 +513,29 @@ function escribirCoefCosta(historial, etiquetas) {
   console.log(`Coeficiente de costa reaprendido con ${modelo.n} etiquetas (global ${modelo.global.coef}).`);
 }
 
+// Relación histórica entre cámaras cercanas por tamaño de mar (regla de
+// vecinos, functions/_lib/coherencia-vecinos.js, 2026-11-19): de las
+// etiquetas de foto (las de Mikel y las de Claude) con su mar abierto.
+export const FICHERO_RELACIONES = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "functions", "_lib", "relaciones-vecinos-datos.js");
+const CABECERA_RELACIONES = "// functions/_lib/relaciones-vecinos-datos.js — lo escribe el robot de las\n// cámaras (scripts/oleaje-camaras/medir-espuma.mjs, escribirRelaciones):\n// cociente histórico orilla A / orilla B entre cámaras cercanas, por tamaño\n// de mar. Lo usa la regla de vecinos (coherencia-vecinos.js). No editar a mano.\nexport default ";
+export const textoRelaciones = (r) => CABECERA_RELACIONES + JSON.stringify(r, null, 1) + ";\n";
+export function verdadesRelaciones(etiquetas) {
+  return (etiquetas || [])
+    .map((e) => ({ camara: e.camara, fecha: e.fecha, altura: centroBanda(e.banda), hs: Number.isFinite(e.hs) ? e.hs : null }))
+    .filter((v) => v.camara && v.altura > 0 && Number.isFinite(v.hs));
+}
+function escribirRelaciones(etiquetas) {
+  const nuevo = aprenderRelaciones(verdadesRelaciones(etiquetas), CAMARAS_OLEAJE);
+  let viejo = null;
+  try { viejo = JSON.parse(readFileSync(FICHERO_RELACIONES, "utf8").replace(/^[\s\S]*?export default /, "").replace(/;\s*$/, "")); } catch { viejo = null; }
+  if (viejo && JSON.stringify(viejo.pares) === JSON.stringify(nuevo.pares)) return;
+  writeFileSync(FICHERO_RELACIONES, textoRelaciones(nuevo));
+  console.log(`Relación entre cámaras cercanas reaprendida: ${Object.keys(nuevo.pares).length} pares.`);
+}
+
 function escribirCalibracion(fecha, historial, etiquetas, calibracion) {
   escribirCoefCosta(historial, etiquetas);
+  escribirRelaciones(etiquetas);
   const sesgo = escribirSesgoPlazo(historial, etiquetas);
   writeFileSync(join(dirname(SALIDA), "calibracion.json"), JSON.stringify({
     fecha, lineasHistorial: historial.length, etiquetas: etiquetas.length,

@@ -57,10 +57,12 @@ test("coefCostaDe elige el nivel más concreto y acota", () => {
   assert.equal(coefCostaDe(raro, "w", 1).coef, COEF_MAX);
 });
 
-test("vecinas: el coeficiente de la cámara rebajado hacia 1 según el peso", () => {
-  const mod = { camaras: { deba: { coef: 0.36, n: 50, tamanos: {} } } };
+test("vecinas: el coeficiente de la cámara acercado a lo típico de las cámaras (no al mar abierto) según el peso", () => {
+  // 2026-11-19: antes se acercaba a 1 y Plentzia daba más ola que Bakio y Sopelana.
+  const mod = { camaras: { deba: { coef: 0.36, n: 50, tamanos: {} } }, globalTamanos: { medio: 0.25 } };
   const c = coefParaSpot(mod, { camara: "deba", propia: false, peso: 0.5 }, 2, 8);
-  assert.equal(c.coef, +Math.sqrt(0.36).toFixed(3));
+  assert.equal(c.coef, +Math.sqrt(0.36 * 0.25).toFixed(3));
+  assert.ok(c.coef < 0.36);
   assert.equal(coefParaSpot(mod, { camara: "deba", propia: true }, 2, 8).coef, 0.36);
   assert.equal(coefParaSpot(mod, null, 2, 8), null);
 });

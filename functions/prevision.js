@@ -17,6 +17,14 @@ import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes
 import { agruparPorZona, horaLocalISO, paramZona, zonaDeSpot, ZONA_POR_DEFECTO } from "../assets/js/regiones.js";
 // Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
 import { oleajeCostero, zonaOleaje, rangoAltura } from "./_lib/oleaje-costero.js";
+import { revisarVecinos } from "./_lib/coherencia-vecinos.js";
+import RELACIONES_VECINOS from "./_lib/relaciones-vecinos-datos.js";
+// Regla de vecinos: la relación histórica entre cámaras (la aprende el robot
+// de las cámaras) y la cámara PROPIA de cada spot.
+const OPCIONES_VECINOS = {
+  relaciones: RELACIONES_VECINOS,
+  camaraDe: (slug) => (FUENTE_POR_SPOT[slug]?.propia ? FUENTE_POR_SPOT[slug].camara : null),
+};
 import { coefOrillaSpot, tablaOrillaSpot, lecturasContraOrilla } from "./_lib/coef-costa.js";
 import COEF_COSTA from "./_lib/coef-costa-datos.js";
 import { marDeFondo, factoresPeriodo, periodoFondoPico } from "../assets/js/mar-de-fondo.js";
@@ -27,7 +35,7 @@ import { factorPlazo, PLAZOS_APP } from "./_lib/sesgo-plazo.js";
 import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
 // espuma que ven las webcams, y corrección de las próximas horas.
-import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA_LECTURA_HORAS } from "./_lib/oleaje-camaras.js";
+import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA_LECTURA_HORAS, FUENTE_POR_SPOT } from "./_lib/oleaje-camaras.js";
 // Interruptor de regiones: los spots de NZ existen pero no entran hasta activarla.
 import { spotsRegionesActivas, spotsDeRegion } from "./_lib/regiones-activas.js";
 // /prevision por región y vista previa de las regiones ocultas (fase 2 de NZ).
@@ -1391,7 +1399,10 @@ export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), 
   ]);
   const porSlug = new Map(spots.map((s) => [s.slug, s]));
   const conMareaSinCamara = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
-  const conMarea = aplicarReferenciasCamara(aplicarCamarasASpots(conMareaSinCamara, lecturasOleaje?.lecturas, ahora), lecturasOleaje?.medidas, ahora)
+  // Regla de vecinos (coherencia-vecinos.js): ningún spot muy por encima de
+  // los de al lado; si pasa, se recorta y queda en avisosVecinos.
+  const revisadosNZ = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(conMareaSinCamara, lecturasOleaje?.lecturas, ahora), lecturasOleaje?.medidas, ahora), OPCIONES_VECINOS);
+  const conMarea = revisadosNZ.spots
     .map((r) => {
       const spot = porSlug.get(r.slug);
       const medida = spot ? mareografoDeSpot(spot, waikato?.nivelesMarea) : null;
@@ -1400,6 +1411,7 @@ export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), 
   return {
     region: "nz",
     spots: conMarea,
+    avisosVecinos: revisadosNZ.avisos,
     fuentesDatos: [...new Set(conMarea.flatMap((r) => r.fuentesDatos || []))],
     atribuciones: {
       marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length), reservas: ATRIBUCION_DOC,
@@ -1491,12 +1503,18 @@ export async function onRequestGet(context) {
   // (y la de las próximas horas, corregida); si no, modelo × coeficiente.
   // Cámara que sustituye al modelo → manda; cámara propia que aún no
   // sustituye → solo `camaraReferencia` (dato secundario en el panel).
-  const resultados = aplicarReferenciasCamara(aplicarCamarasASpots(resultadosModelo, lecturasOleaje.lecturas), lecturasOleaje.medidas);
+  // Regla de vecinos (coherencia-vecinos.js, Mikel 2026-11-19: "si Sopela
+  // tiene 1,9 y Lekeitio 1,7, Bakio no puede tener 2,8"): ningún spot muy
+  // por encima de los de al lado; si pasa, se recorta y queda en
+  // avisosVecinos, que apunta el robot de las cámaras.
+  const revisados = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(resultadosModelo, lecturasOleaje.lecturas), lecturasOleaje.medidas), OPCIONES_VECINOS);
+  const resultados = revisados.spots;
+  const avisosVecinos = revisados.avisos;
 
   // Fuentes de los datos de los spots, para que la página muestre su
   // atribución (CC BY de Open-Meteo / MET Norway, Copernicus Marine).
   const fuentesDatos = [...new Set(resultados.flatMap((r) => r.fuentesDatos || []))];
-  const respuesta = new Response(JSON.stringify({ spots: resultados, fuentesDatos, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, avisosVecinos, fuentesDatos, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta

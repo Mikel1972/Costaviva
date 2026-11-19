@@ -1,6 +1,6 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-19T20:28:35.056Z",
+ "generado": "2026-11-19T20:56:02.457Z",
  "n": 1185,
  "k": 8,
  "global": {
@@ -676,5 +676,10 @@ export default {
   "pequeno": 1.344,
   "medio": 0.905,
   "grande": 0.764
+ },
+ "globalTamanos": {
+  "pequeno": 0.451,
+  "medio": 0.277,
+  "grande": 0.22
  }
 };

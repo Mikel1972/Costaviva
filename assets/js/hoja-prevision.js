@@ -212,6 +212,25 @@ export function resumenTendencia(serie, notas = []) {
 const esc = (x) => String(x ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const m1 = (x) => (fin(x) ? I18n.metros(x, 1) : "—");
 const vel = (x) => (fin(x) ? I18n.velocidad(x) : "—");
+// Tonos de los números (Mikel, 2026-11-19): 1 verde (bueno), 2 azul
+// (normal), 3 rojo (malo), 4 granate (muy malo), para salir a pescar desde
+// la orilla. Umbrales por variable (el último tramo, sin tope).
+export const TONOS = {
+  ola: [0.5, 1.2, 2],          // m en la orilla
+  marAbierto: [1, 2, 3.5],     // m en mar abierto
+  viento: [12, 25, 40],        // km/h
+  lluvia: [0.1, 1, 4],         // mm en la hora
+};
+export function tono(variable, valor) {
+  const u = TONOS[variable];
+  if (!u || !fin(valor)) return 0;
+  const v = Number(valor);
+  return v < u[0] ? 1 : v < u[1] ? 2 : v < u[2] ? 3 : 4;
+}
+const conTono = (variable, valor, html) => {
+  const n = tono(variable, valor);
+  return n ? `<span class="hp-n hp-n${n}">${html}</span>` : html;
+};
 const nivelNota = (n) => (n >= 65 ? "bueno" : n >= 40 ? "medio" : "malo");
 
 // enOrilla = false: el spot no tiene cámara ni abrigo con que estimar la
@@ -249,26 +268,26 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
   const fila = (titulo, celda, extra = false, cls = "", celdaMedida = () => "—") =>
     `<tr class="${extra ? "hp-extra" : ""} ${cls}"${extra && !todos ? " hidden" : ""}><th scope="row">${titulo}</th>${md ? `<td class="hp-medido">${celdaMedida()}</td>` : ""}${serie.map((h, i) => `<td class="${i === 0 ? "hp-ahora" : ""}${h.luz === "noche" ? " hp-noche" : ""}">${celda(h, i)}</td>`).join("")}</tr>`;
   const filas = [
-    fila(esc(t(enOrilla ? "hoja.f.ola" : "hoja.f.ola_abierto")), (h, i) => (fin(h.ola) ? `${m1(h.ola)} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—"), false, "",
-      () => (md?.ola ? `~${m1(md.ola.valor)}${fuente("📷", md.ola.nombre, md.ola.hora)}` : "—")),
+    fila(esc(t(enOrilla ? "hoja.f.ola" : "hoja.f.ola_abierto")), (h, i) => (fin(h.ola) ? `${conTono(enOrilla ? "ola" : "marAbierto", h.ola, m1(h.ola))} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—"), false, "",
+      () => (md?.ola ? `${conTono("ola", md.ola.valor, `~${m1(md.ola.valor)}`)}${fuente("📷", md.ola.nombre, md.ola.hora)}` : "—")),
     fila(esc(t("hoja.f.resaca")), (h) => {
       const r = resacaHora(h);
       return r ? `<span class="hp-res ${r.nivel}">${esc(t(`hoja.resaca.${r.nivel}`))}</span><small>${m1(r.altura)} · ${r.periodo} s</small>` : "—";
     }),
-    fila(esc(t("hoja.f.viento")), (h, i) => (fin(h.viento) ? `${vel(h.viento)} ${esc(I18n.rumbo(h.vientoDir) || "")} ${i ? flecha(serie[i - 1].viento, h.viento) : ""}` : "—"), false, "",
-      () => deEstacion(fin(md?.estacion?.viento) ? `${vel(md.estacion.viento)} ${esc(I18n.rumbo(md.estacion.vientoDir) || "")}` : null)),
+    fila(esc(t("hoja.f.viento")), (h, i) => (fin(h.viento) ? `${conTono("viento", h.viento, vel(h.viento))} ${esc(I18n.rumbo(h.vientoDir) || "")} ${i ? flecha(serie[i - 1].viento, h.viento) : ""}` : "—"), false, "",
+      () => deEstacion(fin(md?.estacion?.viento) ? `${conTono("viento", md.estacion.viento, vel(md.estacion.viento))} ${esc(I18n.rumbo(md.estacion.vientoDir) || "")}` : null)),
     fila(esc(t("hoja.f.marea")), (h, i) => {
       if (!fin(h.nivelMar)) return "—";
       if (hitos[i]) return `<b class="hp-hito">${esc(t(`hoja.${hitos[i]}`))}</b><small>${m1(h.nivelMar)}</small>`;
       const prev = serie[i - 1]?.nivelMar;
       return `${m1(h.nivelMar)} ${fin(prev) ? (h.nivelMar > prev ? "↑" : "↓") : ""}`;
     }),
-    fila(esc(t("hoja.f.mar_abierto")), (h) => m1(h.olaMarAbierto), true, "", () => deBoya(md?.boya ? m1(md.boya.hs) : null)),
+    fila(esc(t("hoja.f.mar_abierto")), (h) => (fin(h.olaMarAbierto) ? conTono("marAbierto", h.olaMarAbierto, m1(h.olaMarAbierto)) : "—"), true, "", () => deBoya(md?.boya ? conTono("marAbierto", md.boya.hs, m1(md.boya.hs)) : null)),
     fila(esc(t("hoja.f.periodo")), (h) => (fin(h.periodo) ? `${Math.round(h.periodo)} s ${esc(I18n.rumbo(h.dirOla) || "")}` : "—"), true, "",
       () => deBoya(fin(md?.boya?.periodo) ? `${Math.round(md.boya.periodo)} s ${esc(md.boya.dir || "")}` : null)),
     fila(esc(t("hoja.f.presion")), (h) => (fin(h.presion) ? `${Math.round(h.presion)} hPa` : "—"), true, "",
       () => deEstacion(fin(md?.estacion?.presion) ? `${Math.round(md.estacion.presion)} hPa` : null)),
-    fila(esc(t("hoja.f.lluvia")), (h) => (fin(h.lluvia) ? (h.lluvia > 0 ? `${I18n.num(h.lluvia, 1)} mm` : "0") : "—"), true, "",
+    fila(esc(t("hoja.f.lluvia")), (h) => (fin(h.lluvia) ? conTono("lluvia", h.lluvia, h.lluvia > 0 ? `${I18n.num(h.lluvia, 1)} mm` : "0") : "—"), true, "",
       () => deEstacion(fin(md?.estacion?.lluvia) ? (md.estacion.lluvia > 0 ? `${I18n.num(md.estacion.lluvia, 1)} mm` : "0") : null)),
     fila(esc(t("hoja.f.agua")), (h) => (fin(h.tempAgua) ? I18n.temp(h.tempAgua) : "—"), true, "",
       () => deBoya(fin(md?.boya?.agua) ? I18n.temp(md.boya.agua) : null)),

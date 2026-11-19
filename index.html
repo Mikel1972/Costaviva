@@ -1114,6 +1114,15 @@
   .hp-tabla th.hp-medido { background: var(--acento); color: var(--sobre-acento); }
   .hp-tabla td.hp-medido { background: var(--superficie-2); font-weight: 800; border-right: 2px solid var(--linea); white-space: normal; min-width: 76px; max-width: 96px; }
   .hp-tabla td.hp-medido small { font-weight: 600; line-height: 1.25; }
+  /* Tonos de los números (Mikel, 2026-11-19: "sin leerlos, ver si mejora o
+     empeora"): verde bueno, azul normal, rojo malo, granate muy malo. */
+  .hp-tabla .hp-n { font-weight: 800; }
+  .hp-tabla .hp-n1 { color: #15803D; } .hp-tabla .hp-n2 { color: #1D4ED8; }
+  .hp-tabla .hp-n3 { color: #DC2626; } .hp-tabla .hp-n4 { color: #7F1D1D; }
+  .hp-leyenda { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0 0; font-size: 12px; color: var(--tinta-2); }
+  .hp-leyenda span::before { content: "●"; margin-right: 4px; }
+  .hp-leyenda .hp-n1::before { color: #15803D; } .hp-leyenda .hp-n2::before { color: #1D4ED8; }
+  .hp-leyenda .hp-n3::before { color: #DC2626; } .hp-leyenda .hp-n4::before { color: #7F1D1D; }
   .hp-dia { display: block; font-size: 10.5px; font-weight: 700; opacity: .75; }
   .hp-tabla small { display: block; font-size: 10.5px; color: var(--tinta-2); }
   .hp-fl { font-size: 11px; color: var(--tinta-2); } .hp-fl.peor { color: var(--peligro); } .hp-fl.mejor { color: var(--ok); }
@@ -1507,7 +1516,7 @@
       <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer;" data-i18n="mapa.panel.borrar">🗑 Borrar</button>
     </div>
     <!-- Hoja de previsión del spot (2026-11-19): 24 h gratis. -->
-    <button type="button" class="boton-hoja" id="btnHojaPrevision" data-i18n="hoja.boton">📋 Previsión detallada · próximas 24 h</button>
+    <button type="button" class="boton-hoja" id="btnHojaPrevision" data-i18n="hoja.boton">📋 Previsión hora a hora</button>
     <div class="grid2">
       <div class="tarjeta">
         <div class="etq" data-i18n="mapa.panel.oleaje12">OLEAJE (12h)</div>
@@ -6000,10 +6009,11 @@ cargarEspeciesDatos().catch((e) => console.warn("especies.json:", e.message));
 // "No puede haber tanta diferencia entre spots contiguos" (Mikel, mismo
 // día): se mezclan las DOS cámaras más cercanas, pesadas por la inversa de
 // la distancia (en logaritmos), en vez de copiar solo una; así un spot entre
-// Bakio y Sopelana queda entre las dos. Y solo se rebaja un poco hacia el mar
-// abierto con la distancia (a 15 km, un 37 % del camino en logaritmos).
-// Más lejos, nada: se queda el mar abierto, y se dice así.
-const ORILLA_PRESTADA_KM = 15, ORILLA_PRESTADA_REBAJA_KM = 40;
+// Bakio y Sopelana queda entre las dos. No se acerca al mar abierto con la
+// distancia (eso hacía que un spot sin cámara diera más ola que sus dos
+// vecinos). Más lejos de ORILLA_PRESTADA_KM, nada: se queda el mar abierto,
+// y se dice así.
+const ORILLA_PRESTADA_KM = 15;
 function orillaPrestada(s) {
   if (s.zonaOleaje?.orilla?.prestada) return s.zonaOleaje.orilla;
   if (s.zonaOleaje?.orilla || s.zonaOleaje?.parametros || !Number.isFinite(s.lat)) return null;
@@ -6021,7 +6031,7 @@ function orillaPrestada(s) {
   const usadas = cerca.slice(0, 2);
   const pesos = usadas.map((c) => 1 / Math.max(1, c.km));
   const suma = pesos.reduce((a, b) => a + b, 0);
-  const peso = Math.max(0, 1 - usadas[0].km / ORILLA_PRESTADA_REBAJA_KM);
+  const peso = 1;
   const tabla = {};
   for (const [tam, pers] of Object.entries(usadas[0].t.tabla)) {
     tabla[tam] = {};
@@ -7504,6 +7514,7 @@ function comprobarAvisoRayos() {
       <button type="button" class="hp-todos" id="hpTodos" data-i18n="hoja.ver_todos">Ver todos los datos</button>
     </div>
     <div class="hp-tabla-env"><table class="hp-tabla" id="hpTabla"></table></div>
+    <p class="hp-leyenda"><span class="hp-n1" data-i18n="hoja.tono.1">Bueno</span><span class="hp-n2" data-i18n="hoja.tono.2">Normal</span><span class="hp-n3" data-i18n="hoja.tono.3">Malo</span><span class="hp-n4" data-i18n="hoja.tono.4">Muy malo</span></p>
     <p class="hp-pie" id="hpPie" data-i18n="hoja.pie">Desliza a la derecha para ver las 24 horas. La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía. «Medido»: lo que miden ahora la cámara del spot, la boya y la estación de AEMET más cercanas (de las últimas 3 h), para comparar con la previsión.</p>
   </div>
 </div>

@@ -74,6 +74,14 @@ export function aprenderCoefCosta(muestras, { k = K_ENCOGIMIENTO, ahora = new Da
     ordenarPorTamano(tamanos);
     modelo.camaras[cam] = { coef: c.coef, n: c.n, tamanos };
   }
+  // Lo típico de todas las cámaras por tamaño de mar (media geométrica, cada
+  // cámara cuenta una vez): hacia aquí se acercan los spots que toman la
+  // cámara de un vecino (coefParaSpot).
+  modelo.globalTamanos = {};
+  for (const t of TAMANOS) {
+    const logs = Object.values(modelo.camaras).map((c) => Math.log(c.tamanos[t]?.coef)).filter(Number.isFinite);
+    if (logs.length) modelo.globalTamanos[t] = +Math.exp(logs.reduce((a, b) => a + b, 0) / logs.length).toFixed(3);
+  }
   return modelo;
 }
 
@@ -180,13 +188,20 @@ export function coefCostaDe(modelo, camara, hs, periodo) {
 }
 
 // Spots sin cámara propia (vecinas, FUENTE_POR_SPOT): el coeficiente de la
-// cámara cercana, rebajado hacia 1 según `peso` (la cámara no ve ese spot).
+// cámara cercana, acercado según `peso` a lo típico de todas las cámaras
+// para ese tamaño de mar (modelo.globalTamanos), en logaritmos.
+// Hasta el 2026-11-19 se acercaba a 1 (al mar abierto): con eso Plentzia
+// (vecina de Bakio, peso 0,8) daba 2,6-3,2 m con 4-5 m fuera, más que
+// Sopelana y Bakio a su lado (Mikel: "no puede haber tanta diferencia entre
+// spots contiguos"). Sin globalTamanos (modelos antiguos), el global.
 export function coefParaSpot(modelo, fuente, hs, periodo) {
   if (!fuente) return null;
   const c = coefCostaDe(modelo, fuente.camara, hs, periodo);
   if (!c) return null;
   const peso = fuente.propia ? 1 : Math.min(1, Math.max(0, fuente.peso ?? 0.5));
-  return { ...c, coef: acotar(Math.pow(c.coef, peso)), camara: fuente.camara, propia: !!fuente.propia, peso };
+  const tipico = modelo?.globalTamanos?.[tamanoMar(hs)] ?? modelo?.global?.coef ?? c.coef;
+  const coef = Math.exp(peso * Math.log(c.coef) + (1 - peso) * Math.log(tipico));
+  return { ...c, coef: acotar(coef), camara: fuente.camara, propia: !!fuente.propia, peso };
 }
 
 // Coeficiente "orilla / mar abierto" de un SPOT (no de una cámara):
