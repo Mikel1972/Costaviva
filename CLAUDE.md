@@ -6093,3 +6093,18 @@ En cada **sesión interactiva** de Claude Code:
 2. **Aportar.** Cuando algo falle aquí en producción y pueda pasar en los
    otros proyectos, añádelo allí con fecha, el caso real y qué proyecto lo
    tiene resuelto. Rama + PR + merge en `comun` (autorizado por Mikel).
+
+## Lo de Fishbrain: comunidad de capturas en espera (2026-11-19)
+
+Ya existe: diario de capturas, «Compartir de forma anónima»
+(capturas_compartidas → capturas_comunidad, celda de ~5 km, k = 5 usuarios),
+aprendizaje semanal del índice con las salidas reales y momentos de
+actividad. Las funciones `comunidad_capturas_por_zona` y
+`comunidad_capturas_por_condiciones` existen, pero solo para service_role, y
+la app no las usa.
+
+Decisión de Mikel: **esperar** a tener unas 100 capturas compartidas antes de
+enseñar en la app el mapa por zonas y «qué técnica funciona aquí». Con k = 5,
+hoy saldrían vacíos (11 capturas de 2 personas). No construirlo antes sin
+preguntar (`aprendizaje/decisiones.json`, decision-comunidad-esperar).
+Comprobar con `select count(*) from capturas_comunidad`.
