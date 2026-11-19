@@ -48,7 +48,7 @@
   .indice .txt .etq { font-size: 22px; }
   .indice .esp { font-family: var(--f-titulo); font-weight: 800; font-size: 40px; line-height: 1.05; margin-top: 6px; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-  .final { top: 360px; display: flex; flex-direction: column; gap: 52px; opacity: 0; }
+  .final { top: 410px; display: flex; flex-direction: column; gap: 52px; opacity: 0; }
   .final .lema { font-family: var(--f-titulo); font-weight: 800; font-size: 66px; line-height: 1.08; letter-spacing: -1.5px; }
   .final .lema em { font-style: normal; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .final .modos { display: flex; gap: 14px; flex-wrap: wrap; }
@@ -60,7 +60,8 @@
   .final .guardar { font-size: 36px; opacity: .9; }
   .credito { bottom: 40px; font-weight: 700; font-size: 18px; color: rgba(255,255,255,.7); }
   .ap { opacity: 0; transform: translateY(40px); }
-  .cinta { position: absolute; left: 0; right: 0; top: 168px; padding: 16px 64px; background: #000; color: #FFC24B; font-family: var(--f-titulo); font-weight: 800; font-size: 34px; letter-spacing: 1px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,.45); border-top: 3px solid #FFC24B; border-bottom: 3px solid #FFC24B; }
+  /* top 290 (2026-11-19, captura de Mikel): en el feed, Instagram tapa con el nombre de la cuenta y el audio la franja ~110-240 px. */
+  .cinta { position: absolute; left: 0; right: 0; top: 290px; padding: 12px 64px; background: #000; color: #FFC24B; font-family: var(--f-titulo); font-weight: 800; font-size: 34px; letter-spacing: 1px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,.45); border-top: 3px solid #FFC24B; border-bottom: 3px solid #FFC24B; }
   .cinta[hidden] { display: none; }
 </style>
 </head>
