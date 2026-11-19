@@ -42,8 +42,10 @@ import { CAMARAS, camarasConLuz } from "./camaras.mjs";
 import {
   calibrarTodo, estimarAltura, claveCalibracion, emparejarEtiquetaSpot, elevacionSolar, ELEVACION_MINIMA, ERROR_MINIMO_POCOS_DATOS,
   ruidoCamara, camaraSustituyeModelo, etiquetasClaudeParaCalibrar,
+  muestrasCoefCosta,
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
+import { aprenderCoefCosta, coefCostaDe } from "../../functions/_lib/coef-costa.js";
 import { SPOTS, factorOleaje } from "../../functions/prevision.js";
 import { pedirDatosMeteo, fuenteDeVariable } from "../../functions/_lib/fuentes.js";
 import { coeficienteAbrigo } from "../../functions/_lib/oleaje-costero.js";
@@ -328,7 +330,10 @@ async function marAbiertoRegion(ids, region) {
     // Coeficiente PREVIO del sitio que ve la cámara: 1 si la zona medida es
     // expuesta (Berria aunque el spot sea la bahía de Santoña); si no, el
     // de oleaje-costero.js (1 si el spot no está en la tabla).
-    const coefPrior = CAMARAS_OLEAJE[id].expuesta ? 1 : coeficienteAbrigo(s.slug, dir);
+    // Desde el 2026-11-19, el aprendido de las etiquetas si lo hay (lo que
+    // llega a la orilla con ese mar y ese periodo); si no, el de antes.
+    const aprendido = coefCostaDe(COEF_COSTA, id, hsCorregida, h.wave_period?.[idx] ?? null);
+    const coefPrior = aprendido ? aprendido.coef : CAMARAS_OLEAJE[id].expuesta ? 1 : coeficienteAbrigo(s.slug, dir);
     res[id] = {
       fuente,
       celda: [lista[i].latitude ?? null, lista[i].longitude ?? null],
@@ -375,7 +380,45 @@ export function sustitucionPorCamara(historial, calibracion) {
   return out;
 }
 
+// Coeficiente de costa aprendido (2026-11-19). Va dentro de functions/_lib
+// como módulo JS (export default {...}; /prevision lo importa al desplegar y
+// Node no importa .json sin atributos). Solo se reescribe si algún
+// coeficiente cambia más de un 3 % (así no fuerza un despliegue cada 30 min).
+export const FICHERO_COEF_COSTA = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "functions", "_lib", "coef-costa-datos.js");
+const CABECERA_COEF = "// Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.\nexport default ";
+export const textoCoefCosta = (modelo) => CABECERA_COEF + JSON.stringify(modelo, null, 1) + ";\n";
+export function leerTextoCoefCosta(texto) {
+  const i = texto.indexOf("export default ");
+  if (i < 0) return null;
+  return JSON.parse(texto.slice(i + 15).trim().replace(/;$/, ""));
+}
+export function cambioMaterial(viejo, nuevo, umbral = 0.03) {
+  if (!viejo?.camaras) return true;
+  const claves = new Set([...Object.keys(viejo.camaras), ...Object.keys(nuevo.camaras || {})]);
+  for (const k of claves) {
+    const a = viejo.camaras[k], b = nuevo.camaras?.[k];
+    if (!a || !b) return true;
+    const pares = [[a.coef, b.coef], ...["pequeno", "medio", "grande"].map((t) => [a.tamanos?.[t]?.coef, b.tamanos?.[t]?.coef])];
+    for (const [x, y] of pares) {
+      if ((x == null) !== (y == null)) return true;
+      if (x != null && Math.abs(y / x - 1) > umbral) return true;
+    }
+  }
+  return false;
+}
+let COEF_COSTA = null;
+try { COEF_COSTA = leerTextoCoefCosta(readFileSync(FICHERO_COEF_COSTA, "utf8")); } catch { COEF_COSTA = null; }
+function escribirCoefCosta(historial, etiquetas) {
+  const modelo = aprenderCoefCosta(muestrasCoefCosta(historial, etiquetas, centroBanda));
+  if (!modelo.n) return;
+  if (!cambioMaterial(COEF_COSTA, modelo)) return;
+  writeFileSync(FICHERO_COEF_COSTA, textoCoefCosta(modelo));
+  COEF_COSTA = modelo;
+  console.log(`Coeficiente de costa reaprendido con ${modelo.n} etiquetas (global ${modelo.global.coef}).`);
+}
+
 function escribirCalibracion(fecha, historial, etiquetas, calibracion) {
+  escribirCoefCosta(historial, etiquetas);
   writeFileSync(join(dirname(SALIDA), "calibracion.json"), JSON.stringify({
     fecha, lineasHistorial: historial.length, etiquetas: etiquetas.length,
     etiquetasClaude: etiquetas.filter((e) => e.origen === "claude").length,

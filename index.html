@@ -4351,6 +4351,17 @@ function coeficienteAbrigoDesdeParametros(p, dirGrados) {
   return +(p.coefAbierto + (p.coefAbrigado - p.coefAbierto) * t).toFixed(3);
 }
 
+// Ola en la orilla aprendida de las cámaras — copia literal de
+// coefOrillaDesdeTabla() de functions/_lib/coef-costa.js (allí el criterio;
+// test/coef-costa.test.js comprueba que no se desvía). La tabla del spot
+// llega de /prevision en s.zonaOleaje.orilla.
+function coefOrillaDesdeTabla(t, hs, periodo) {
+  if (!t || !t.tabla || !Number.isFinite(hs)) return null;
+  const tam = hs < 1.5 ? "pequeno" : hs < 3 ? "medio" : "grande";
+  const per = Number.isFinite(periodo) ? (periodo < 10 ? "corto" : "largo") : "sin";
+  return t.tabla[tam]?.[per] ?? null;
+}
+
 // Corrección por cámara de las próximas horas — copia literal de
 // factorCamara() y horasEntreLocales() de functions/_lib/oleaje-camaras.js
 // (allí el criterio; test/oleaje-camaras.test.js comprueba que no se
@@ -5506,7 +5517,13 @@ function pintarOleajePanel(s) {
   const ajuste = cam && s.fuenteAltura && s.fuenteAltura.startsWith("modelo_")
     ? I18n.t("mapa.ola.ajustado", { nombre: cam.nombre, hora: cam.horaLocal })
     : "";
-  if (z?.tipo === "abrigada" && s.alturaMarAbierto) {
+  if (z?.orilla && s.alturaMarAbierto) {
+    // Ola en la orilla aprendida de lo que ven las cámaras (2026-11-19).
+    const nombreCam = cam?.nombre || z.orilla.camara;
+    val.textContent = `~${textoRangoOla(s.altura)}`;
+    nota.textContent = I18n.t(z.orilla.propia ? "mapa.ola.en_orilla" : "mapa.ola.en_orilla_vecina", { camara: nombreCam, abierto: textoRangoOla(s.alturaMarAbierto) }) + ajuste;
+    nota.title = I18n.t("mapa.ola.en_orilla_title", { n: z.orilla.n });
+  } else if (z?.tipo === "abrigada" && s.alturaMarAbierto) {
     val.textContent = `~${textoRangoOla(s.altura)}`;
     nota.textContent = I18n.t("mapa.ola.en_playa", { zona: textoZonaOleaje(z.nivel || "abrigada"), abierto: textoRangoOla(s.alturaMarAbierto) }) + ajuste;
     nota.title = z.criterio || "";
@@ -5889,17 +5906,18 @@ async function datosHorariosSpot(s) {
   // Spots abrigados: misma estimación "en la playa" que /prevision
   // (parámetros en s.zonaOleaje, que manda el backend).
   const abrigo = s.zonaOleaje?.parametros || null;
+  const orilla = s.zonaOleaje?.orilla || null;
   // Con lectura de cámara, el modelo de las próximas horas se corrige con
   // el cociente cámara/modelo, que se apaga en ~18 h (oleaje-camaras.js).
   const cam = s.oleajeCamara && Number.isFinite(s.oleajeCamara.cociente) ? s.oleajeCamara : null;
   const zona = zonaSpot(s);
   const horaCam = cam ? new Date(cam.fecha).toLocaleString("sv-SE", { timeZone: zona }).replace(" ", "T").slice(0, 16) : null;
   const claveCam = cam ? `${cam.camara}@${cam.fecha}` : "";
-  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo && c.cam === claveCam) return c.horas;
+  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo && c.orilla === !!orilla && c.cam === claveCam) return c.horas;
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona)}`;
     const [marino, tiempo] = await Promise.all([
-      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`),
+      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height_msl`),
       pedirMeteo("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
     // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
@@ -5915,7 +5933,11 @@ async function datosHorariosSpot(s) {
     const mar = {};
     (marino.hourly?.time || []).forEach((t, i) => {
       const ola = marino.hourly.wave_height?.[i];
-      const coef = coeficienteAbrigoDesdeParametros(abrigo, marino.hourly.wave_direction?.[i]);
+      // Igual que /prevision (coefOrillaSpot): con cámara propia, el
+      // aprendido; con vecina, el menor entre ese y el abrigo de la bahía.
+      const coefAbr = coeficienteAbrigoDesdeParametros(abrigo, marino.hourly.wave_direction?.[i]);
+      const coefOri = ola === null || ola === undefined ? null : coefOrillaDesdeTabla(orilla, ola * factor, marino.hourly.wave_period?.[i]);
+      const coef = coefOri === null ? coefAbr : orilla.propia || !abrigo ? coefOri : Math.min(coefOri, coefAbr);
       const fCam = cam ? factorCamara(cam.cociente, horasEntreLocales(horaCam, t), cam.peso, cam.decaimientoHoras) : 1;
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
@@ -5933,7 +5955,7 @@ async function datosHorariosSpot(s) {
     }));
     return horas;
   })();
-  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, cam: claveCam });
+  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, orilla: !!orilla, cam: claveCam });
   promesa.catch(() => { if (vaCacheHoras.get(s.slug)?.horas === promesa) vaCacheHoras.delete(s.slug); });
   return promesa;
 }
