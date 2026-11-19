@@ -24,6 +24,7 @@
 // Tax tenga los registros hechos) y STRIPE_TOS_EN_CHECKOUT (casilla de
 // términos de Stripe; exige la URL de términos en el Dashboard).
 
+import { motivoCodigoBf, MARCA_BF } from "./_lib/black-friday.js";
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
 import { zonaDePais, precioParaZona, leerPlan, cobroActivo } from "./_lib/precios.js";
 import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
@@ -228,6 +229,19 @@ export async function onRequestPost(context) {
         }), { status: 409, headers: { "content-type": "application/json" } });
       }
     }
+    // Black Friday 2x1 (2026-11-19): el código solo vale del 27 al 30/11 y
+    // con el plan anual; lo comprueba el servidor (functions/_lib/black-friday.js).
+    const conBf = body?.codigo_bf !== undefined && String(body.codigo_bf).trim() !== "";
+    if (conBf) {
+      const motivo = motivoCodigoBf(body.codigo_bf, pedido.plan);
+      if (motivo) {
+        const TXT = {
+          es: { no_existe: "Ese código no existe.", fuera_de_plazo: "El código BLACKFRIDAY solo vale del 27 al 30 de noviembre.", solo_anual: "El código BLACKFRIDAY solo vale con el plan anual." },
+          en: { no_existe: "That code doesn't exist.", fuera_de_plazo: "The BLACKFRIDAY code is only valid from 27 to 30 November.", solo_anual: "The BLACKFRIDAY code only works with the annual plan." },
+        };
+        return new Response(JSON.stringify({ error: TXT[idioma][motivo], codigo: `bf_${motivo}` }), { status: 400, headers: { "content-type": "application/json" } });
+      }
+    }
     const priceId = await idDePrecio(stripeKey, precio.lookup_key);
     if (!priceId) throw new Error(`no existe en Stripe el precio ${precio.lookup_key} (¿falta lanzar precios-stripe.yml?)`);
     const regionContenido = pedido.ambito === "mundial" ? "todas" : zona.region_contenido;
@@ -262,6 +276,7 @@ export async function onRequestPost(context) {
       version: VERSION_ACEPTACION, idioma: idiomaAcept, plan: pedido.plan, ambito: pedido.ambito,
       zona: zona.id, fecha: datosPlan.aceptacion_fecha,
     });
+    if (conBf) datosPlan.black_friday = MARCA_BF;
     for (const [k, v] of Object.entries(datosPlan)) {
       params.append(`metadata[${k}]`, v);
       params.append(`subscription_data[metadata][${k}]`, v);
@@ -293,7 +308,8 @@ export async function onRequestPost(context) {
       params.append("discounts[0][coupon]", invitacion.stripe_coupon_id);
       params.append("metadata[invitacion_id]", invitacion.id);
       params.append("subscription_data[metadata][invitacion_id]", invitacion.id);
-    } else {
+    } else if (!conBf) {
+      // Con BLACKFRIDAY no se suma otro código de Stripe: el 2x1 ya es la oferta.
       params.append("allow_promotion_codes", "true");
     }
     // "Managed Payments" (activado por defecto en cuentas nuevas de Stripe)

@@ -33,6 +33,7 @@
 // STRIPE_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY (la misma que usa
 // aviso-alta.js).
 
+import { CODIGO_BF, MARCA_BF } from "./_lib/black-friday.js";
 import { calcularFin, uuidValido } from "./_lib/invitaciones.js";
 import { premiarReferido, abonarMesesPendientes } from "./_lib/referidos.js";
 import { datosDePrecio, zonaDePais, zonaPorId, precioParaZona } from "./_lib/precios.js";
@@ -362,6 +363,9 @@ export async function onRequestPost(context) {
         stripe_subscription_id: obj.subscription,
         ...(paisFact ? { pais_facturacion: paisFact } : {}),
         ...(promo || {}),
+        // Black Friday 2x1: lo marca crear-checkout-stripe.js solo si el
+        // código era válido en ese momento; da derecho a regalar un año.
+        ...(!promo && obj.metadata?.black_friday === MARCA_BF ? { codigo_promocional: CODIGO_BF } : {}),
         actualizado_en: new Date().toISOString(),
       });
       if (obj.metadata?.invitacion_id) {
