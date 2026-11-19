@@ -1110,6 +1110,9 @@
   .hp-tabla th.hp-ahora { background: var(--mar); color: var(--blanco); }
   .hp-tabla td.hp-ahora { background: var(--superficie-2); }
   .hp-tabla td.hp-noche { background: rgba(11,30,63,.05); }
+  .hp-tabla th.hp-medido { background: var(--acento); color: var(--sobre-acento); }
+  .hp-tabla td.hp-medido { background: var(--superficie-2); font-weight: 800; border-right: 2px solid var(--linea); white-space: normal; min-width: 76px; max-width: 96px; }
+  .hp-tabla td.hp-medido small { font-weight: 600; line-height: 1.25; }
   .hp-dia { display: block; font-size: 10.5px; font-weight: 700; opacity: .75; }
   .hp-tabla small { display: block; font-size: 10.5px; color: var(--tinta-2); }
   .hp-fl { font-size: 11px; color: var(--tinta-2); } .hp-fl.peor { color: var(--peligro); } .hp-fl.mejor { color: var(--ok); }
@@ -6412,7 +6415,14 @@ function pintarHojaPrevision() {
   document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie, notas)
     .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre))}</li>`).join("")
     + (bloqueada ? `<li class="igual"><a href="/suscripcion">${escVA(I18n.t("hoja.mejor_premium"))}</a></li>` : "");
-  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre, bloqueada });
+  // «Medido, ahora»: cámara propia, boya y estación de AEMET más cercanas.
+  const s = hpEstado.s;
+  const zona = zonaSpot(s);
+  const medido = HP.medidoAhora({
+    lat: s.lat, lon: s.lon, camara: s.oleajeCamara, boyas: BOYAS, estaciones: ESTACIONES_METEO,
+    horaTexto: (iso) => new Date(iso).toLocaleTimeString(I18n.locale(), { timeZone: zona, hour: "2-digit", minute: "2-digit" }),
+  });
+  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre, bloqueada, medido });
   document.getElementById("hpTodos").textContent = I18n.t(hpEstado.todos ? "hoja.solo_esencial" : "hoja.ver_todos");
 }
 // La hoja está al final del <body> (después de este script): sus botones se
@@ -7398,7 +7408,7 @@ function comprobarAvisoRayos() {
       <button type="button" class="hp-todos" id="hpTodos" data-i18n="hoja.ver_todos">Ver todos los datos</button>
     </div>
     <div class="hp-tabla-env"><table class="hp-tabla" id="hpTabla"></table></div>
-    <p class="hp-pie" id="hpPie" data-i18n="hoja.pie">Desliza a la derecha para ver las 24 horas. La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía.</p>
+    <p class="hp-pie" id="hpPie" data-i18n="hoja.pie">Desliza a la derecha para ver las 24 horas. La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía. «Medido»: lo que miden ahora la cámara del spot, la boya y la estación de AEMET más cercanas (de las últimas 3 h), para comparar con la previsión.</p>
   </div>
 </div>
 </body>
