@@ -493,6 +493,7 @@
   "mapa.mod.nota_submarina": "Score 0-100 for spearfishing: clear water and calm sea add a lot; groundswell, rain in the last 24 h and a swollen river take away. No score at night: it is prohibited. A guide only: not a guarantee.",
   "mapa.ip.cargando_especies": "loading species…",
   "mapa.ip.error_especies": "could not load the species",
+  "mapa.ip.estimados": " · ≈ some data are missing right now: estimated from the average of the last hours",
   "mapa.ip.sin_horas": "no hourly data right now for this spot",
   "mapa.ip.sin_hora": "no data for this hour",
   "mapa.ip.ninguna_especie": "{modalidad}: no in-season species with data for this fishing type here",

@@ -493,6 +493,7 @@
   "mapa.mod.nota_submarina": "Puntuación 0-100 para pesca submarina: agua clara y mar en calma suman mucho; mar de fondo, lluvia de las últimas 24 h y río crecido restan. De noche no hay puntuación: está prohibida. Orientativa: no es una garantía.",
   "mapa.ip.cargando_especies": "cargando especies…",
   "mapa.ip.error_especies": "no se pudieron cargar las especies",
+  "mapa.ip.estimados": " · ≈ faltan algunos datos ahora mismo: van estimados con la media de las últimas horas",
   "mapa.ip.sin_horas": "sin datos por horas ahora mismo para este punto",
   "mapa.ip.sin_hora": "sin datos de esta hora",
   "mapa.ip.ninguna_especie": "{modalidad}: ninguna especie de temporada con dato para esta modalidad aquí",
