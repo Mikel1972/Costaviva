@@ -19,6 +19,7 @@ import { agruparPorZona, horaLocalISO, paramZona, zonaDeSpot, ZONA_POR_DEFECTO }
 import { oleajeCostero, zonaOleaje, rangoAltura } from "./_lib/oleaje-costero.js";
 import { coefOrillaSpot, tablaOrillaSpot, lecturasContraOrilla } from "./_lib/coef-costa.js";
 import COEF_COSTA from "./_lib/coef-costa-datos.js";
+import { marDeFondo } from "../assets/js/mar-de-fondo.js";
 // Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
 import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
@@ -702,7 +703,7 @@ export async function pedirPorZona(spots, api, resto, opciones) {
 
 // Variables de Open-Meteo Marine. En NZ sin sea_level_height_msl: la marea
 // sale de LINZ (functions/_lib/nz/prevision-nz.js).
-const VARIABLES_MARINE = "wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
+const VARIABLES_MARINE = "wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
 
 async function previsionTodosSpots(spots, env = {}, { mareaOpenMeteo = true } = {}) {
   const [marinos, vientos, historicoPresion, coeficientes] = await Promise.all([
@@ -812,6 +813,14 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     const ola = orilla
       ? { altura: rangoAltura(alturaOla * orilla.coef), alturaMarAbierto: olaEstatica.alturaMarAbierto, coefAbrigo: olaEstatica.coefAbrigo }
       : olaEstatica;
+    // Mar de fondo en la orilla (mar-de-fondo.js): misma corrección de zona
+    // y mismo coeficiente de orilla (o de abrigo) que la ola del spot.
+    const hsFondo = marino.hourly.swell_wave_height?.[i];
+    const fondo = marDeFondo(
+      Number.isFinite(hsFondo) ? hsFondo * factor : null,
+      marino.hourly.swell_wave_period?.[i] ?? null,
+      orilla ? orilla.coef : olaEstatica.coefAbrigo
+    );
 
     bloques.push({
       hora: HORAS_BLOQUE[h],
@@ -822,6 +831,7 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
       alturaMarAbierto: ola.alturaMarAbierto,
       coefAbrigo: ola.coefAbrigo,
       coefCosta: orilla ? orilla.coef : null,
+      marDeFondo: fondo,
       periodo: periodoOla === null ? null : Math.round(periodoOla),
       dirOla: dirOlaGrados === null ? null : `${rumboDesdeGrados(dirOlaGrados)} ${Math.round(dirOlaGrados)}°`,
       viento: v ? Math.round(v.viento) : null,

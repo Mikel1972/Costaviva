@@ -1453,6 +1453,8 @@
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
+        <!-- Mar de fondo y resaca en la orilla (2026-11-19, assets/js/mar-de-fondo.js). -->
+        <div class="etq" id="panelFondo" style="text-transform:none; letter-spacing:0; margin-top:3px;" hidden></div>
         <!-- Referencia de cámara (2026-10-08): la lectura de la cámara propia
              mientras aún no sustituye al modelo. Dato secundario. -->
         <div class="ola-camara-ref" id="panelOlaCamara" hidden></div>
@@ -2409,6 +2411,7 @@ function aplicarSpotBackend(s, sBackend) {
   // en la playa y `alturaMarAbierto` lo que da el modelo mar adentro.
   s.alturaMarAbierto = b.alturaMarAbierto || b.altura;
   s.coefAbrigo = b.coefAbrigo ?? null;
+  s.marDeFondo = b.marDeFondo || null;
   s.zonaOleaje = sBackend.zonaOleaje || null;
   // Oleaje por cámara (2026-10-08, functions/_lib/oleaje-camaras.js):
   // fuenteAltura "camara" = la altura del bloque es la de la cámara;
@@ -5497,6 +5500,18 @@ const CLAVE_ZONA_OLEAJE = { abrigada: "mapa.ola.zona_abrigada", "muy abrigada": 
 function textoZonaOleaje(nivel) {
   return CLAVE_ZONA_OLEAJE[nivel] ? I18n.t(CLAVE_ZONA_OLEAJE[nivel]) : nivel;
 }
+// Mar de fondo (2026-11-19): "Mar de fondo 1,5 m · 13 s — la mar tira
+// fuerte en la orilla". Lo calcula /prevision (marDeFondo en cada bloque).
+function pintarMarDeFondo(s) {
+  const el = document.getElementById("panelFondo");
+  if (!el) return;
+  const f = s.marDeFondo;
+  if (!f || !f.nivel) { el.hidden = true; el.textContent = ""; return; }
+  el.hidden = false;
+  el.textContent = I18n.t(`mapa.fondo.${f.nivel}`, { h: alturaOla(f.altura), t: f.periodo });
+  el.title = I18n.t("mapa.fondo.title", { e: I18n.num(f.energia), ho: alturaOla(f.alturaOrilla), r: alturaOla(f.subida) });
+  el.style.color = f.nivel === "muy_fuerte" || f.nivel === "fuerte" ? "var(--peligro)" : "";
+}
 function pintarOleajePanel(s) {
   pintarReferenciaCamara(s);
   const val = document.getElementById("panelOla");
@@ -5637,6 +5652,7 @@ function abrirPanel(s) {
   // periodo null salía literalmente "nulls · NW" -- ahora se esconde el
   // periodo si no hay dato, en vez de interpolarlo tal cual en el texto.
   document.getElementById("panelOlaDir").textContent = s.periodo != null ? `${s.periodo}s · ${s.dirOla}` : s.dirOla;
+  pintarMarDeFondo(s);
   document.getElementById("panelViento").textContent = I18n.velocidad(s.viento);
   document.getElementById("panelVientoDir").textContent = s.dirViento;
 
@@ -5917,7 +5933,7 @@ async function datosHorariosSpot(s) {
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona)}`;
     const [marino, tiempo] = await Promise.all([
-      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height_msl`),
+      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,sea_surface_temperature,sea_level_height_msl`),
       pedirMeteo("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
     // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
@@ -5942,6 +5958,11 @@ async function datosHorariosSpot(s) {
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
         ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam,
+        // Mar de fondo en mar abierto (con el factor de zona) y el mismo
+        // coeficiente de orilla: la ventana calcula la resaca con ellos.
+        fondoAltura: Number.isFinite(marino.hourly.swell_wave_height?.[i]) ? marino.hourly.swell_wave_height[i] * factor : null,
+        fondoPeriodo: marino.hourly.swell_wave_period?.[i] ?? null,
+        fondoCoef: coefOri ?? (abrigo ? coefAbr : null),
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       };
     });
@@ -5950,6 +5971,7 @@ async function datosHorariosSpot(s) {
     const horas = tiempos.map((t) => ({
       hora: t,
       nivelMar: mar[t]?.nivelMar ?? null, ola: mar[t]?.ola ?? null, tempAgua: mar[t]?.tempAgua ?? null,
+      fondoAltura: mar[t]?.fondoAltura ?? null, fondoPeriodo: mar[t]?.fondoPeriodo ?? null, fondoCoef: mar[t]?.fondoCoef ?? null,
       viento: porHora[t]?.viento ?? null, vientoDir: porHora[t]?.vientoDir ?? null,
       presion: porHora[t]?.presion ?? null, lluvia: porHora[t]?.lluvia ?? null,
     }));
