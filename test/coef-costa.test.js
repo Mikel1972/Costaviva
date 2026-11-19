@@ -113,6 +113,15 @@ test("muestrasCoefCosta: cada etiqueta con la lectura de su cámara a ±15 min",
     { camara: "a", banda: "rara", fecha: "2026-11-01T10:00:00Z", origen: "foto" },
   ], centro);
   assert.deepEqual(out, [{ camara: "a", orilla: 1.5, hs: 2.76, periodo: 12, origen: "foto" }]);
+  // Con el mar abierto de su propia lectura (Supabase), manda ese.
+  const conHs = muestrasCoefCosta(historial, [
+    { camara: "a", banda: "1-2", fecha: "2026-11-01T10:10:00Z", origen: "foto", hs: 3.1 },
+    { camara: "z", banda: "0.5-1", fecha: "2026-11-01T10:10:00Z", origen: "foto", hs: 2 },
+  ], centro);
+  assert.deepEqual(conHs, [
+    { camara: "a", orilla: 1.5, hs: 3.1, periodo: 12, origen: "foto" },
+    { camara: "z", orilla: 0.75, hs: 2, periodo: null, origen: "foto" },
+  ]);
 });
 
 test("el coeficiente publicado sale de etiquetas reales y está en rango", () => {

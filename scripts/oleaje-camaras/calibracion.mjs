@@ -389,10 +389,15 @@ export function muestrasCoefCosta(historial, etiquetas, centroBanda, toleranciaM
     const orilla = centroBanda(e.banda);
     const t = Date.parse(e.fecha);
     const lista = porCam[e.camara];
-    if (!Number.isFinite(orilla) || !Number.isFinite(t) || !lista) continue;
+    if (!Number.isFinite(orilla) || !Number.isFinite(t) || (!lista && !Number.isFinite(e.hs))) continue;
+    if (!lista) { out.push({ camara: e.camara, orilla, hs: e.hs, periodo: null, origen: e.origen }); continue; }
     let mejor = null, dMin = Infinity;
     for (const l of lista) { const d = Math.abs(l.t - t); if (d < dMin) { dMin = d; mejor = l; } }
-    if (mejor && dMin <= toleranciaMin * 60e3) out.push({ camara: e.camara, orilla, hs: mejor.hs, periodo: mejor.periodo, origen: e.origen });
+    const cerca = mejor && dMin <= toleranciaMin * 60e3;
+    // La etiqueta trae el mar abierto de su propia lectura (Supabase,
+    // mar_abierto_m): manda sobre el del historial; el periodo, del historial.
+    if (Number.isFinite(e.hs) && e.hs > 0) out.push({ camara: e.camara, orilla, hs: e.hs, periodo: cerca ? mejor.periodo : null, origen: e.origen });
+    else if (cerca) out.push({ camara: e.camara, orilla, hs: mejor.hs, periodo: mejor.periodo, origen: e.origen });
   }
   return out;
 }
