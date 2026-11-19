@@ -121,7 +121,22 @@ async function medirPost(postId) {
     console.warn(`"saved" no disponible para ${postId}: ${e.message}`);
   }
 
-  return { alcance, impresiones, likes, comentarios, guardados };
+  // Reproducciones, compartidos y seguidores ganados (2026-11-19): en los
+  // reels es lo que cuenta hoy ("impressions" ya no lo da Meta y sale null).
+  // Cada una aparte: si una no existe para ese tipo de pieza, null y se sigue.
+  const extra = {};
+  for (const [metrica, campo] of [["views", "reproducciones"], ["shares", "compartidos"], ["follows", "seguidores_ganados"], ["profile_visits", "visitas_perfil"]]) {
+    extra[campo] = null;
+    try {
+      const resp = await fetch(`https://graph.facebook.com/v21.0/${postId}/insights?metric=${metrica}&access_token=${PAGE_ACCESS_TOKEN}`);
+      const datos = await resp.json();
+      if (resp.ok) extra[campo] = datos.data?.find((m) => m.name === metrica)?.values?.[0]?.value ?? null;
+    } catch (e) {
+      console.warn(`"${metrica}" no disponible para ${postId}: ${e.message}`);
+    }
+  }
+
+  return { alcance, impresiones, likes, comentarios, guardados, ...extra };
 }
 
 // Seguidores de la cuenta, una foto al día (2026-10-11, robot de palabras
@@ -178,11 +193,12 @@ async function main() {
       postId: post.postId,
       publicadoEn: post.fecha,
       issueNumber: post.issueNumber ?? null,
+      campana: post.campana ?? null,
       ...metricas,
       nota: "medido 48h después de publicar, para que las métricas de Instagram ya estén asentadas",
     };
     appendFileSync(RUTA_CALIBRACION, JSON.stringify(entrada) + "\n");
-    console.log(`✓ ${post.postId}: alcance=${metricas.alcance} impresiones=${metricas.impresiones} likes=${metricas.likes} comentarios=${metricas.comentarios} guardados=${metricas.guardados}`);
+    console.log(`✓ ${post.postId}: alcance=${metricas.alcance} impresiones=${metricas.impresiones} likes=${metricas.likes} comentarios=${metricas.comentarios} guardados=${metricas.guardados} reproducciones=${metricas.reproducciones} compartidos=${metricas.compartidos} seguidores=${metricas.seguidores_ganados}`);
     post.medido = true;
     algunoMedido = true;
   }

@@ -47,8 +47,9 @@ export const CALENDARIO = [
   { mercado: "es", dia: 4, formato: "post", tipo: "funcion", hora: "13:00" },
   { mercado: "es", dia: 5, formato: "post", tipo: "condiciones", hora: "08:00" },
   { mercado: "es", dia: 6, formato: "reel", tipo: null, hora: "09:00" },
-  { mercado: "nz", dia: 2, formato: "post", tipo: "especie", hora: "07:00" },
-  { mercado: "nz", dia: 5, formato: "post", tipo: "condiciones", hora: "07:00" },
+  // Nueva Zelanda (2026-11-19, métricas reales): los posts fijos llegaban a
+  // 0-3 cuentas (solo a seguidores, y no hay); queda solo el reel del sábado,
+  // siempre de condiciones (el de Kaiteriteri llegó a 68, el de especie a 12).
   { mercado: "nz", dia: 6, formato: "reel", tipo: null, hora: "07:00" },
 ];
 // Tipos que valen en cada mercado (NZ: sin funciones de la app).
