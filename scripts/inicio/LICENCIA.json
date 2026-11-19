@@ -1,16 +1,13 @@
 {
-  "uso": "Foto de la pantalla de inicio de la app (assets/inicio/rompiente-*.webp|jpg) y de las imágenes de arranque de iOS (assets/inicio/arranque/*.jpg), 2026-10-09.",
-  "fotograma": "scripts/inicio/coverr-rocas-oleaje-6277-0.4s.jpg (segundo 0,4 del original, 1920x1080)",
-  "origen": "https://coverr.co/videos/a-young-man-fishing-on-a-rocky-beach-pcrpoqlvon",
-  "fichero_original": "https://cdn.coverr.co/videos/coverr-a-young-man-fishing-on-a-rocky-beach-6277/1080p.mp4",
-  "autor": "Coverr (contributor: ninguno en la página)",
-  "mismo_clip_que": "scripts/marketing/clips/stock/coverr-pescador-rocas-oleaje.mp4 (reels de Instagram)",
-  "licencia_url": "https://coverr.co/license",
-  "licencia_comprobada": "2026-10-09",
-  "cita_licencia": "Coverr.co grants you an irrevocable, non-exclusive, worldwide copyright license to download, copy, modify, perform, and use videos and music from Coverr.co for free, including for commercial purposes, without needing permission from the content creator or Coverr.co.",
-  "atribucion": "No obligatoria (\"You are not required to add an attribution credit to the original creator or to Coverr.co\").",
-  "fotogramas": "La licencia permite copiar y modificar el vídeo: sacar un fotograma, recortarlo y comprimirlo es una modificación permitida.",
-  "prohibido": "Montar un servicio que compita con Coverr; usarlo para entrenar IA; usar marcas que salgan en el vídeo (no sale ninguna).",
-  "personas": "Pescador de espaldas o de perfil lejano con gorra y gafas de sol; no se le reconoce. Coverr obtiene autorizaciones de las personas que aparecen pero no las entrega.",
-  "premium": "isPremium=false (comprobado el 2026-10-08 en la página del vídeo)."
+  "uso": "Foto de la pantalla de inicio de la app (assets/inicio/orilla-*.webp|jpg) y de las imágenes de arranque de iOS (assets/inicio/arranque/*.jpg), desde el 2026-11-19 (elegida por Mikel; sustituye al fotograma de Coverr en la rompiente).",
+  "fichero": "scripts/inicio/pixabay-pescador-orilla.jpg (2000x1334, la que descargó Mikel de Pixabay el 2026-11-19)",
+  "origen": "Pixabay (https://pixabay.com). La página exacta no está confirmada: Mikel no guardó el enlace. Candidata sin verificar a ojo: https://pixabay.com/photos/fisherman-fishing-beach-fish-sea-4549105/ (Pedro-Marquez-Salinas, 5184x3456, misma proporción 3:2).",
+  "autor": "Sin confirmar (ver origen). La licencia no obliga a citarlo.",
+  "licencia": "Pixabay Content License",
+  "licencia_url": "https://pixabay.com/service/license-summary/",
+  "licencia_comprobada": "2026-11-19",
+  "cita_licencia": "Use Content for free; Modify or adapt Content into new works; Use Content without having to attribute the author (Content License Summary de Pixabay, 2026-11-19).",
+  "atribucion": "No obligatoria (\"Use Content without having to attribute the author\").",
+  "prohibido": "Vender o distribuir la foto tal cual (\"on a Standalone basis\"); usarla de forma engañosa o inmoral, sobre todo si salen personas reconocibles; usar marcas que salgan (no sale ninguna); usarla como marca o nombre comercial. Aquí va recortada y con la marca de Costaviva encima: no es \"Standalone\".",
+  "personas": "Pescador de espaldas, con sombrero; no se le reconoce. No se le atribuye ninguna opinión ni recomendación de la app."
 }

@@ -11,11 +11,14 @@
 //   3. el bloque de <link> que las declara en index.html y login.html (entre
 //      <!-- arranque-ios --> y <!-- /arranque-ios -->).
 //
-// Origen de la foto: fotograma (0,4 s) del clip de Coverr "A young man fishing
-// on a rocky beach", guardado en scripts/inicio/coverr-rocas-oleaje-6277-0.4s.jpg.
-// Licencia en scripts/inicio/LICENCIA.json (uso comercial, sin atribución
-// obligatoria). Si cambias la foto, cambia también los nombres de los ficheros
-// (_headers les da una semana de caché).
+// Origen de la foto (desde el 2026-11-19, elegida por Mikel): pescador en la
+// orilla con el agua por los tobillos y el mar en calma, de Pixabay, guardada
+// en scripts/inicio/pixabay-pescador-orilla.jpg (2000x1334). Antes, un
+// fotograma de Coverr en la rompiente (lo cambió Mikel: el pescador metido en
+// las olas chocaba con los avisos de ola peligrosa). Licencia en
+// scripts/inicio/LICENCIA.json (Pixabay Content License: gratis, sin
+// atribución obligatoria). Si cambias la foto, cambia también los nombres de
+// los ficheros (_headers les da una semana de caché).
 //
 //   node scripts/inicio/generar-pantallas-inicio.mjs
 //
@@ -29,14 +32,17 @@ import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const FOTOGRAMA = "scripts/inicio/coverr-rocas-oleaje-6277-0.4s.jpg"; // 1920x1080
+export const FOTOGRAMA = "scripts/inicio/pixabay-pescador-orilla.jpg"; // 2000x1334
 export const MAX_BYTES = 80 * 1024;
 
-// Recortes del fotograma (1920x1080). El vertical, de 608x1080, deja la ola
-// rompiendo a la izquierda y al pescador en el centro.
+// Recortes de la foto (2000x1334). El vertical, de 600x1067 (9:16), quita la
+// parte alta del cielo para que el pescador quede en el centro de la pantalla
+// (la marca va arriba, sobre el cielo, y el texto abajo, sobre la orilla:
+// pantalla-inicio.css); el horizontal, de 2000x1125 (16:9), quita un poco de
+// cielo y deja la orilla abajo.
 export const FOTOS = [
-  { nombre: "rompiente-movil", ancho: 720, alto: 1280, filtro: "crop=608:1080:330:0" },
-  { nombre: "rompiente-ancha", ancho: 1280, alto: 720, filtro: "crop=1920:1080:0:0" },
+  { nombre: "orilla-movil", ancho: 720, alto: 1280, filtro: "crop=600:1067:380:267" },
+  { nombre: "orilla-ancha", ancho: 1280, alto: 720, filtro: "crop=2000:1125:0:200" },
 ];
 
 // iPhone en vertical (el manifest fija "orientation": "portrait"): ancho y
@@ -92,8 +98,8 @@ function ffmpeg(args) {
 // Baja la calidad hasta que la foto quepa en MAX_BYTES.
 function fotoOptimizada(foto) {
   const entrada = join(RAIZ, FOTOGRAMA);
-  // Un pelín más de contraste y color: los clips de stock vienen lavados.
-  const vf = `${foto.filtro},scale=${foto.ancho}:${foto.alto}:flags=lanczos,eq=contrast=1.05:saturation=1.1`;
+  // La foto de Pixabay ya viene con buen color: solo un pelín de contraste.
+  const vf = `${foto.filtro},scale=${foto.ancho}:${foto.alto}:flags=lanczos,eq=contrast=1.03`;
   const salidas = [
     { ext: ".webp", calidades: [78, 72, 66, 60, 55, 50, 45], args: (q) => ["-c:v", "libwebp", "-quality", String(q), "-compression_level", "6"] },
     { ext: ".jpg", calidades: [5, 6, 7, 8, 9, 10, 12], args: (q) => ["-q:v", String(q)] },

@@ -1107,16 +1107,18 @@ quitando con `.remove()`.
   enlaces a /spots, /especies y /mareas siguen en el DOM, abajo y en claro
   sobre la foto (enlaces en píldora, sin el azul). No quitarlos. Canonical y
   metas sin tocar.
-- **Foto:** fotograma (0,4 s) de "A young man fishing on a rocky beach",
-  Coverr, https://coverr.co/videos/a-young-man-fishing-on-a-rocky-beach-pcrpoqlvon
-  (el mismo clip que `coverr-pescador-rocas-oleaje.mp4` de los reels).
-  Licencia de Coverr (https://coverr.co/license, comprobada el 2026-10-09):
-  uso comercial, copiar y modificar, **sin atribución obligatoria**; prohíbe
-  competir con Coverr y entrenar IA. Detalle en `scripts/inicio/LICENCIA.json`.
-  Fotograma original en `scripts/inicio/` (no se sirve).
+- **Foto (desde el 2026-11-19, elegida por Mikel):** pescador en la orilla
+  con el agua por los tobillos y el mar en calma, de Pixabay
+  (`scripts/inicio/pixabay-pescador-orilla.jpg`, no se sirve). Licencia de
+  Pixabay (https://pixabay.com/service/license-summary/, comprobada el
+  2026-11-19): gratis, se puede modificar, **sin atribución obligatoria**;
+  prohíbe venderla tal cual y usarla de forma engañosa. Detalle (y la página
+  candidata, sin confirmar) en `scripts/inicio/LICENCIA.json`. Antes era un
+  fotograma de Coverr en la rompiente: Mikel la cambió porque el pescador
+  metido en las olas chocaba con los avisos de ola peligrosa.
 - **Ficheros** (`/assets/inicio/`, una semana de caché en `_headers`; si
-  cambia la foto, cambia el nombre): `rompiente-movil.{webp,jpg}` 720x1280
-  para vertical y `rompiente-ancha.{webp,jpg}` 1280x720 para horizontal
+  cambia la foto, cambia el nombre): `orilla-movil.{webp,jpg}` 720x1280
+  para vertical y `orilla-ancha.{webp,jpg}` 1280x720 para horizontal
   (`<picture>` por `orientation`), cada una ≤ 80 kB, precargadas en el
   `<head>` con `fetchpriority="high"`.
 - **iOS:** `apple-touch-startup-image` para 11 tamaños de iPhone en vertical

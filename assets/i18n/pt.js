@@ -217,7 +217,7 @@
   "comun.tab.diario": "Diário",
   "comun.tab.alarma": "Alarme",
   "comun.tab.grupos": "Grupos",
-  "comun.inicio.alt_foto": "Onda a rebentar contra uma costa rochosa enquanto um pescador lança a cana",
+  "comun.inicio.alt_foto": "Pescador com a cana à beira-mar numa praia, com o mar calmo",
   "mapa.seo.nav": "Páginas públicas",
   "comun.admin": "Admin",
   "comun.administracion": "Administração",

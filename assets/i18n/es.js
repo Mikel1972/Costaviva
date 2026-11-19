@@ -215,7 +215,7 @@
   "comun.tab.diario": "Diario",
   "comun.tab.alarma": "Alarma",
   "comun.tab.grupos": "Grupos",
-  "comun.inicio.alt_foto": "Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña",
+  "comun.inicio.alt_foto": "Pescador con su caña en la orilla de una playa, con el mar en calma",
   "mapa.seo.nav": "Páginas públicas",
   "comun.admin": "Admin",
   "comun.administracion": "Administración",

@@ -57,14 +57,14 @@ test("fotos: WebP y JPG con sus medidas, ≤ 80 kB y servibles", () => {
   assert.ok(!esRutaPermitida("/" + FOTOGRAMA), "el fotograma original no se sirve");
 });
 
-test("licencia de la foto anotada: Coverr, uso comercial, sin atribución obligatoria", () => {
+test("licencia de la foto anotada: Pixabay, gratis, sin atribución obligatoria", () => {
   const l = JSON.parse(leer("scripts/inicio/LICENCIA.json"));
-  assert.equal(l.licencia_url, "https://coverr.co/license");
-  assert.match(l.origen, /^https:\/\/coverr\.co\/videos\//);
-  assert.match(l.cita_licencia, /including for commercial purposes/);
+  assert.equal(l.licencia_url, "https://pixabay.com/service/license-summary/");
+  assert.match(l.origen, /pixabay\.com/);
+  assert.match(l.cita_licencia, /without having to attribute the author/);
   assert.match(l.atribucion, /No obligatoria/);
   assert.match(l.licencia_comprobada, /^\d{4}-\d{2}-\d{2}$/);
-  assert.match(leer("CLAUDE.md"), /coverr\.co\/license[\s\S]{0,400}pantalla de inicio|pantalla de inicio[\s\S]{0,1500}coverr\.co\/license/i);
+  assert.match(leer("CLAUDE.md"), /pixabay\.com\/service\/license-summary[\s\S]{0,400}pantalla de inicio|pantalla de inicio[\s\S]{0,1500}pixabay\.com\/service\/license-summary/i);
 });
 
 test("cada página: pantalla de inicio con foto, marca e indicador, tras costaviva.css", () => {
@@ -78,8 +78,8 @@ test("cada página: pantalla de inicio con foto, marca e indicador, tras costavi
       assert.ok(html.includes(`<link rel="preload" as="image" href="/assets/inicio/${f.nombre}.webp" type="image/webp"`), `${p}: no precarga ${f.nombre}.webp`);
       assert.ok(html.indexOf(`href="/assets/inicio/${f.nombre}.webp"`) < html.indexOf("</head>"), `${p}: precarga fuera del <head>`);
     }
-    assert.match(b, /<picture>[\s\S]*<source media="\(orientation: landscape\)" srcset="\/assets\/inicio\/rompiente-ancha\.webp" type="image\/webp">/, p);
-    assert.match(b, /<img class="pantalla-inicio__foto" src="\/assets\/inicio\/rompiente-movil\.jpg" width="720" height="1280" fetchpriority="high" alt="[^"]+">/, p);
+    assert.match(b, /<picture>[\s\S]*<source media="\(orientation: landscape\)" srcset="\/assets\/inicio\/orilla-ancha\.webp" type="image\/webp">/, p);
+    assert.match(b, /<img class="pantalla-inicio__foto" src="\/assets\/inicio\/orilla-movil\.jpg" width="720" height="1280" fetchpriority="high" alt="[^"]+">/, p);
     assert.doesNotMatch(b, /loading="lazy"/, `${p}: la foto no puede ser lazy`);
     assert.match(b, /class="marca-logo"/, `${p}: sin logo`);
     assert.match(b, /class="pantalla-inicio__nombre logotipo">Costaviva</, `${p}: sin nombre`);
