@@ -14,5 +14,13 @@
     "decision": "si",
     "motivo": "Sí de Mikel en la sesión: «si, hazlo. Instruir al robot para que vaya aprendiendo». Migración 20261109090000 aplicada.",
     "issue": null
+  },
+  {
+    "id": "decision-comunidad-esperar",
+    "fecha": "2026-11-19",
+    "propuesta_id": "costaviva-fishbrain-mapa-y-que-funciona",
+    "decision": "esperar",
+    "motivo": "Mikel: «la 2, esperamos». No enseñar en la app el mapa de capturas por zona ni «qué técnica funciona aquí» hasta tener unas 100 capturas compartidas (capturas_comunidad); con k=5 hoy saldría vacío (11 capturas de 2 personas, 1 compartida). Mientras, empujar a registrar y compartir.",
+    "issue": null
   }
 ]
