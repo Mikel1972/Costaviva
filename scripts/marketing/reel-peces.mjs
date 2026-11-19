@@ -256,7 +256,10 @@ async function main() {
     "El índice es una orientación con reglas públicas, no una garantía.",
     `${creditoVideo} · Datos: Open-Meteo (CC BY 4.0)`,
     "",
-    `#pesca #pescadesdecosta #lubina #spinning ${hashtagsDe(spot.lat, spot.lon)} #costaviva #mareas`.replace(/\s+/g, " ").trim(),
+    // Pocos y con público (2026-11-19): Instagram recomienda unos 5. #pesca
+    // (~3,7 M publicaciones) y #surfcasting (~280 mil); fuera #spinning, que
+    // es sobre todo la bici de gimnasio.
+    `#pesca #lubina #surfcasting ${hashtagsDe(spot.lat, spot.lon).split(" ")[0] || ""} #costaviva`.replace(/\s+/g, " ").trim(),
   ].join("\n");
   const campana = campanaDePieza(fecha, `reel-${nombre}`);
   writeFileSync(join(__dirname, "reel-pendiente.json"), JSON.stringify({
