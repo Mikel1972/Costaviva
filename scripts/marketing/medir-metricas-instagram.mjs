@@ -25,6 +25,7 @@ const RAIZ_REPO = join(__dirname, "..", "..");
 const RUTA_POSTS = join(__dirname, "posts-publicados.jsonl");
 const RUTA_CALIBRACION = join(RAIZ_REPO, "CALIBRACION.jsonl");
 
+import { hashtagsDeTexto } from "./hashtags.mjs";
 const PAGE_ACCESS_TOKEN = process.env.META_PAGE_ACCESS_TOKEN;
 if (!PAGE_ACCESS_TOKEN) {
   console.error("Falta META_PAGE_ACCESS_TOKEN");
@@ -98,15 +99,19 @@ async function medirPost(postId) {
     console.warn(`"impressions" no disponible para ${postId} (esperado en algunas versiones de la API): ${e.message}`);
   }
 
-  let likes = null, comentarios = null, guardados = null;
+  let likes = null, comentarios = null, guardados = null, hashtags = null, tipoMedia = null;
   try {
     const resp = await fetch(
-      `https://graph.facebook.com/v21.0/${postId}?fields=like_count,comments_count&access_token=${PAGE_ACCESS_TOKEN}`
+      `https://graph.facebook.com/v21.0/${postId}?fields=like_count,comments_count,caption,media_product_type&access_token=${PAGE_ACCESS_TOKEN}`
     );
     const datos = await resp.json();
     if (resp.ok) {
       likes = datos.like_count ?? null;
       comentarios = datos.comments_count ?? null;
+      // Hashtags de la pieza (2026-11-19, Mikel: "chequear qué pasa con esos
+      // hashtags"): para comparar alcance y seguidores según los que lleve.
+      hashtags = typeof datos.caption === "string" ? hashtagsDeTexto(datos.caption) : null;
+      tipoMedia = datos.media_product_type ?? null;
     }
   } catch (e) {
     console.warn(`No se pudo leer like_count/comments_count de ${postId}: ${e.message}`);
@@ -136,7 +141,7 @@ async function medirPost(postId) {
     }
   }
 
-  return { alcance, impresiones, likes, comentarios, guardados, ...extra };
+  return { alcance, impresiones, likes, comentarios, guardados, ...extra, hashtags, tipo_media: tipoMedia };
 }
 
 // Seguidores de la cuenta, una foto al día (2026-10-11, robot de palabras
