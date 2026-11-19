@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reel lista Costaviva</title>
+<!-- Reel de lista (2026-11-19): series "Normas que nadie te cuenta"
+     (reel-normas.mjs) y "Dónde pescar este finde" (reel-finde.mjs). Mismo
+     estilo que reel-peces.html: gancho, tarjetas una a una y cierre. Lo pinta
+     reel-comun.mjs con Playwright. Sin red. -->
+<style>
+  @font-face { font-family: "Unbounded"; src: url("../../../assets/fonts/Unbounded-latin.woff2") format("woff2"); font-weight: 200 900; }
+  @font-face { font-family: "Manrope"; src: url("../../../assets/fonts/Manrope-latin.woff2") format("woff2"); font-weight: 200 800; }
+  :root {
+    --mar: #0B1E3F; --blanco: #FFFFFF; --sol: #FFC24B; --gris-mar: #C9CFE3;
+    --nivel-bueno: #4ADE80; --nivel-medio: #FFC24B; --nivel-malo: #FF6B6B;
+    --degradado-fuerte: linear-gradient(100deg, #C2410C 0%, #BE185D 55%, #6D28D9 100%);
+    --degradado-texto: linear-gradient(100deg, #FFB067 0%, #FF7FA8 60%, #B79BFF 100%);
+    --f-titulo: "Unbounded", sans-serif; --f-texto: "Manrope", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--mar); }
+  body { font-family: var(--f-texto); color: var(--blanco); }
+  #fondo { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+  #velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,30,63,.55) 0%, rgba(11,30,63,.05) 30%, rgba(11,30,63,.15) 55%, rgba(11,30,63,.85) 100%); }
+  #velo-final { position: absolute; inset: 0; background: rgba(11,30,63,.82); opacity: 0; }
+  .capa { position: absolute; left: 64px; right: 64px; }
+
+  .marca { top: 70px; display: flex; align-items: center; gap: 16px; }
+  .marca svg { width: 60px; height: 60px; }
+  .marca .nombre { font-family: var(--f-titulo); font-weight: 800; font-size: 36px; text-transform: uppercase; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .marca .spot { margin-left: auto; text-align: right; font-weight: 800; font-size: 26px; line-height: 1.25; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+
+  .gancho { top: 640px; font-family: var(--f-titulo); font-weight: 800; font-size: 86px; line-height: 1.02; letter-spacing: -2px; text-transform: uppercase; text-shadow: 0 6px 30px rgba(0,0,0,.55); }
+
+  .tarjetas { top: 1010px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .tarjeta { border-radius: 28px; padding: 20px 24px; background: rgba(11,30,63,.72); border: 2px solid rgba(255,255,255,.18); backdrop-filter: blur(6px); }
+  .tarjeta.ancha { grid-column: 1 / -1; }
+  .tarjeta .etq { font-weight: 800; font-size: 22px; letter-spacing: .08em; text-transform: uppercase; color: var(--sol); }
+  .tarjeta .val { font-weight: 800; font-size: 46px; letter-spacing: -.5px; line-height: 1.1; margin-top: 4px; }
+  .tarjeta .sub { font-weight: 700; font-size: 23px; color: var(--gris-mar); margin-top: 2px; }
+  .tarjeta svg.curva { width: 100%; height: 120px; margin-top: 8px; overflow: visible; }
+
+  .indice { display: flex; align-items: center; gap: 28px; }
+  .nota { width: 170px; height: 170px; flex-shrink: 0; border-radius: 50%; border: 12px solid transparent;
+    background: linear-gradient(#0B1E3F, #0B1E3F) padding-box, conic-gradient(#FF8A3D, #E8467C, #7B3FE4, #FF8A3D) border-box;
+    display: flex; align-items: center; justify-content: center; }
+  .nota b { font-family: var(--f-titulo); font-weight: 800; font-size: 72px; letter-spacing: -3px; color: var(--nivel-bueno); }
+  .nota[data-nivel="medio"] b { color: var(--nivel-medio); } .nota[data-nivel="malo"] b { color: var(--nivel-malo); }
+  .indice .txt .etq { font-size: 22px; }
+  .indice .esp { font-family: var(--f-titulo); font-weight: 800; font-size: 40px; line-height: 1.05; margin-top: 6px; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .final { top: 360px; display: flex; flex-direction: column; gap: 52px; opacity: 0; }
+  .final .lema { font-family: var(--f-titulo); font-weight: 800; font-size: 66px; line-height: 1.08; letter-spacing: -1.5px; }
+  .final .lema em { font-style: normal; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .final .modos { display: flex; gap: 14px; flex-wrap: wrap; }
+  .final .modos span { border-radius: 999px; padding: 14px 28px; font-weight: 800; font-size: 34px; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.25); }
+  .final .para { font-weight: 700; font-size: 44px; line-height: 1.3; color: var(--gris-mar); }
+  .final .para b { color: var(--blanco); }
+  .final .cta { align-self: flex-start; border-radius: 999px; padding: 30px 52px; background: var(--degradado-fuerte); font-weight: 800; font-size: 44px; }
+  .final .web { font-family: var(--f-titulo); font-weight: 800; font-size: 52px; }
+  .final .guardar { font-size: 36px; opacity: .9; }
+  .credito { bottom: 40px; font-weight: 700; font-size: 18px; color: rgba(255,255,255,.7); }
+  .ap { opacity: 0; transform: translateY(40px); }
+  .lista { top: 900px; display: flex; flex-direction: column; gap: 20px; }
+  .lista .tarjeta .val { font-size: 42px; }
+  .lista .tarjeta .fila { display: flex; align-items: center; gap: 24px; }
+  .lista .tarjeta .num { width: 110px; height: 110px; flex-shrink: 0; border-radius: 50%; border: 9px solid transparent;
+    background: linear-gradient(#0B1E3F, #0B1E3F) padding-box, conic-gradient(#FF8A3D, #E8467C, #7B3FE4, #FF8A3D) border-box;
+    display: flex; align-items: center; justify-content: center; font-family: var(--f-titulo); font-weight: 800; font-size: 44px; color: var(--nivel-bueno); }
+  .lista .tarjeta .num[data-nivel="medio"] { color: var(--nivel-medio); } .lista .tarjeta .num[data-nivel="malo"] { color: var(--nivel-malo); }
+  .gancho { top: 560px; }
+</style>
+</head>
+<body>
+<img id="fondo" alt="">
+<div id="velo"></div>
+<div id="velo-final"></div>
+
+<div class="capa marca">
+  <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A3D"/><stop offset=".55" stop-color="#E8467C"/><stop offset="1" stop-color="#7B3FE4"/></linearGradient></defs><circle cx="32" cy="26" r="13" fill="url(#g)"/><path d="M4 42c7-5 14-5 21 0s14 5 21 0 11-4 14-2v12H4z" fill="#fff" opacity=".9"/></svg>
+  <span class="nombre">Costaviva</span>
+  <span class="spot" id="spot"></span>
+</div>
+
+<div class="capa gancho ap" id="gancho"></div>
+
+<div class="capa lista" id="lista"></div>
+
+<div class="capa final" id="final">
+  <div class="lema" id="lema"></div>
+  <div class="modos"><span>🪨 Desde costa</span><span>🚤 En barco</span><span>🤿 Pesca submarina</span></div>
+  <div class="para">Para que sepas <b>lo que te vas a encontrar</b> antes de ir, y <b>qué especies buscar</b> en ese momento.</div>
+  <div class="cta">Prueba 14 días gratis</div>
+  <div class="web">costaviva.org</div>
+  <div class="para guardar">💾 Guárdalo y síguenos para el parte de tu zona</div>
+</div>
+
+<div class="capa credito" id="credito"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const suave = (x) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3);
+  const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  let N = 0;
+  // d: { spot, gancho, tarjetas: [{ etq, val, sub, num?, nivel? }], lema, credito }
+  window.preparar = (d) => {
+    $("spot").innerHTML = d.spot;
+    $("gancho").textContent = d.gancho;
+    $("lema").innerHTML = d.lema;
+    $("credito").textContent = d.credito;
+    $("lista").innerHTML = d.tarjetas.map((t, i) => `<div class="tarjeta ap" id="t${i}"><div class="fila">${t.num != null ? `<div class="num" data-nivel="${esc(t.nivel || "")}">${esc(t.num)}</div>` : ""}<div><div class="etq">${esc(t.etq)}</div><div class="val">${esc(t.val)}</div>${t.sub ? `<div class="sub">${esc(t.sub)}</div>` : ""}</div></div></div>`).join("");
+    N = d.tarjetas.length;
+  };
+  const GANCHO = [0.3, 3.0], PRIMERA = 3.2, PASO = 0.9, FINAL = 9.4;
+  window.fotograma = ({ t, fondo }) => {
+    if (fondo) $("fondo").src = fondo;
+    const g = $("gancho"), [g0, g1] = GANCHO;
+    g.style.opacity = t < g1 ? suave((t - g0) / 0.5) : 1 - suave((t - g1) / 0.35);
+    g.style.transform = `translateY(${(1 - Math.min(1, suave((t - g0) / 0.5))) * 40}px)`;
+    const salida = suave((t - FINAL) / 0.45);
+    for (let i = 0; i < N; i++) {
+      const a = suave((t - PRIMERA - i * PASO) / 0.45);
+      $(`t${i}`).style.opacity = a * (1 - salida);
+      $(`t${i}`).style.transform = `translateY(${(1 - a) * 40 + salida * -30}px)`;
+    }
+    $("velo-final").style.opacity = suave((t - FINAL) / 0.6);
+    const f = $("final"); const fa = suave((t - FINAL - 0.2) / 0.6);
+    f.style.opacity = fa; f.style.transform = `translateY(${(1 - fa) * 40}px)`;
+  };
+</script>
+</body>
+</html>

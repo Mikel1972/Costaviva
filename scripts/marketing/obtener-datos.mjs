@@ -49,13 +49,15 @@ export async function previsionDeSpot(slug, region = "es") {
 
 // Mismo cálculo que la ficha de la app: serie horaria de /meteo + índice.
 // `zona`: la de la hora de publicación (NZ: Pacific/Auckland, la del spot).
-export async function resumenDeSpot(slug, especiesDatos, ahoraISO = ahoraMadridISO(), zona = null) {
+// `dias`: días de previsión (2 por defecto; el reel del finde pide 4 para
+// llegar al sábado desde el jueves).
+export async function resumenDeSpot(slug, especiesDatos, ahoraISO = ahoraMadridISO(), zona = null, dias = 2) {
   const s = SPOTS.find((x) => x.slug === slug);
   // Hora de Madrid a propósito (ZONA_NEGOCIO) si no se dice otra: casa con ahoraISO, que es la hora de publicación en España.
   const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona || "Europe/Madrid")}`;
   const [marino, tiempo] = await Promise.all([
-    json(`${BASE_URL}/meteo/marine?${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`),
-    json(`${BASE_URL}/meteo/forecast?${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
+    json(`${BASE_URL}/meteo/marine?${coord}&past_days=1&forecast_days=${dias}&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`),
+    json(`${BASE_URL}/meteo/forecast?${coord}&past_days=5&forecast_days=${dias}&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
   ]);
   const horas = serieHoraria(marino, tiempo);
   return { resumen: resumenDelDia(especiesDatos, horas, { lat: s.lat, lon: s.lon, ahoraISO }), horas };

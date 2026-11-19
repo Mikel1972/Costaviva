@@ -124,7 +124,11 @@ jobs:
             // forzado no mira el estado, así que se mira aquí.
             let estado = {};
             try { estado = JSON.parse(readFileSync("scripts/marketing/calendario-estado.json", "utf8")); } catch {}
-            if (huecoDe(f, "post", "es")) console.log(estado?.generadas?.[`${f}-reel`] ? "HECHO" : f);
+            // Serie de cada día (2026-11-19, Mikel): martes normas, jueves
+            // peces, viernes "dónde pescar este finde".
+            const SERIE = { especie: "normas", funcion: "peces", condiciones: "finde" };
+            const h = huecoDe(f, "post", "es");
+            if (h) console.log(estado?.generadas?.[`${f}-reel`] ? "HECHO" : `${f} ${SERIE[h.tipo] || "peces"}`);
           ')
           if [ -z "$FECHA" ]; then echo "Mañana no toca post en España."; exit 0; fi
           if [ "$FECHA" = "HECHO" ]; then
@@ -132,9 +136,10 @@ jobs:
             echo "lanzado=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          gh workflow run robot-reel-instagram.yml --ref "${GITHUB_REF_NAME}" -f fecha="$FECHA" -f tipo=peces -f mercado=es
+          TIPO="${FECHA#* }"; FECHA="${FECHA%% *}"
+          gh workflow run robot-reel-instagram.yml --ref "${GITHUB_REF_NAME}" -f fecha="$FECHA" -f tipo="$TIPO" -f mercado=es
           echo "lanzado=true" >> "$GITHUB_OUTPUT"
-          echo "Pieza del $FECHA en vídeo: lanzado el robot de reels (tipo peces)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Pieza del $FECHA en vídeo: lanzado el robot de reels (tipo $TIPO)." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Instalar dependencias del script
         if: steps.video.outputs.lanzado != 'true'

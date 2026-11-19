@@ -382,15 +382,17 @@ test("reel de peces: rota spots y clips, y solo usa vídeos de peces con licenci
   assert.match(texto, /Desde costa/); assert.match(texto, /En barco/); assert.match(texto, /Pesca submarina/);
 });
 
-test("España en vídeo: el robot de posts lanza el reel de peces si mañana toca post", () => {
+test("España en vídeo: el robot de posts lanza el reel de la serie del día si mañana toca post", () => {
   const post = leer(".github/workflows/robot-marketing-instagram.yml");
   assert.match(post, /actions: write/);
-  assert.match(post, /gh workflow run robot-reel-instagram\.yml --ref "\$\{GITHUB_REF_NAME\}" -f fecha="\$FECHA" -f tipo=peces -f mercado=es/);
+  assert.match(post, /gh workflow run robot-reel-instagram\.yml --ref "\$\{GITHUB_REF_NAME\}" -f fecha="\$FECHA" -f tipo="\$TIPO" -f mercado=es/);
+  // Serie de cada día (2026-11-19): martes normas, jueves peces, viernes finde.
+  assert.match(post, /const SERIE = \{ especie: "normas", funcion: "peces", condiciones: "finde" \}/);
   // Solo España y sin tipo forzado; NZ y los tipos a mano siguen con el post.
   assert.match(post, /if \[ "\$MERCADO" != "es" \] \|\| \[ -n "\$TIPO_PIEZA" \]; then exit 0; fi/);
   // El respaldo de una hora después no repite el reel (caso real: dos reels
   // para el 30/10). Con tipo forzado el robot de reels no mira el estado.
-  assert.match(post, /estado\?\.generadas\?\.\[`\$\{f\}-reel`\] \? "HECHO" : f/);
+  assert.match(post, /estado\?\.generadas\?\.\[`\$\{f\}-reel`\] \? "HECHO" : `\$\{f\} \$\{SERIE\[h\.tipo\] \|\| "peces"\}`/);
   assert.match(post, /if \[ "\$FECHA" = "HECHO" \]; then[\s\S]*?lanzado=true/);
   for (const paso of ["Instalar dependencias del script", "Instalar Chromium para Playwright", "Generar imagen y texto del post"]) {
     const i = post.indexOf(`- name: ${paso}`);
@@ -456,4 +458,40 @@ test("reel de peces (2026-11-19): 88 spots sin repetir en 3 semanas, gancho, dat
 test("métricas: reproducciones, compartidos y seguidores ganados por pieza", () => {
   const src = readFileSync("scripts/marketing/medir-metricas-instagram.mjs", "utf8");
   for (const m of ["views", "shares", "follows"]) assert.match(src, new RegExp(`\\["${m}",`));
+});
+
+test("series del 2026-11-19: normas y finde, solo con datos citados o calculados", async () => {
+  const N = await import("../scripts/marketing/reel-normas.mjs");
+  const F = await import("../scripts/marketing/reel-finde.mjs");
+  const especies = JSON.parse(readFileSync("assets/datos/especies.json", "utf8"));
+  // Cada especie de la rotación da al menos 2 tarjetas verificadas.
+  for (const n of N.ROTACION_NORMAS) assert.ok(N.piezaNorma(especies, n).tarjetas.length >= 2, n.id);
+  const lubina = N.piezaNorma(especies, N.ROTACION_NORMAS[0]);
+  assert.equal(lubina.gancho, "¿Sabías que si pescas una lubina tienes que declararla?");
+  // La talla recreativa del Cantábrico-Noroeste no se aplica al golfo de Cádiz.
+  assert.deepEqual(lubina.tallas.slice(0, 2).map((t) => [t.zona, t.cm]), [["Cantábrico y Galicia", 42], ["Golfo de Cádiz", 36]]);
+  assert.equal(N.siguienteNorma("lubina").id, "dorada");
+  // Finde: rotación de regiones, spots de cada una y los 3 mejores.
+  assert.equal(F.siguienteRegion("baleares"), "cantabrico");
+  for (const r of F.ROTACION_REGIONES) assert.ok(F.CON_ARTICULO[r], r);
+  assert.equal(N.piezaNorma(especies, N.ROTACION_NORMAS[2]).tarjetas[0].sub, "También si lo devuelves al agua · RD 214/2026");
+  for (const r of F.ROTACION_REGIONES) assert.ok(F.spotsDeRegion(r).length >= 3, r);
+  // Separados al menos 30 km: "d" está pegado a "b" y queda fuera.
+  const top = F.mejores([{ slug: "a", nota: 50, lat: 43.0, lon: -3 }, { slug: "b", nota: 80, lat: 43.4, lon: -3 }, { slug: "c", nota: null }, { slug: "d", nota: 80, lat: 43.41, lon: -3 }, { slug: "e", nota: 40, lat: 43.4, lon: -4 }]);
+  assert.deepEqual(top.map((x) => x.slug), ["b", "a", "e"]);
+  // Mejor tramo de día: la madrugada no cuenta.
+  const barras = Array.from({ length: 24 }, (_, h) => (h < 5 ? 95 : h >= 10 && h < 13 ? 70 : 40));
+  assert.deepEqual(F.mejorTramoDeDia(barras), { nota: 70, texto: "10–13 h" });
+  assert.equal(F.textoMarea([{ tipo: "bajamar", hora: "03:00" }, { tipo: "pleamar", hora: "09:12" }, { tipo: "bajamar", hora: "15:30" }]), "pleamar 09:12 · bajamar 15:30");
+  const src = readFileSync("scripts/marketing/reel-finde.mjs", "utf8");
+  assert.match(src, /Este finde en \$\{nombreRegion\}: dónde, a qué hora y qué pez/);
+  const reel = readFileSync(".github/workflows/robot-reel-instagram.yml", "utf8");
+  assert.match(reel, /"\$TIPO_REEL" = "normas" \]; then node reel-normas\.mjs/);
+  assert.match(reel, /"\$TIPO_REEL" = "finde" \]; then node reel-finde\.mjs/);
+});
+
+test("hashtags de cada pieza para compararlos", async () => {
+  const { hashtagsDeTexto } = await import("../scripts/marketing/hashtags.mjs");
+  assert.deepEqual(hashtagsDeTexto("Hola #Pesca y #pescacantabrico, otra vez #pesca"), ["#pesca", "#pescacantabrico"]);
+  assert.match(readFileSync("scripts/marketing/medir-metricas-instagram.mjs", "utf8"), /hashtags = typeof datos\.caption === "string" \? hashtagsDeTexto\(datos\.caption\)/);
 });
