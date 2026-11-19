@@ -1074,6 +1074,60 @@
   #panel.sin-premium #pescaModalidades .indice-box,
   #panel.sin-premium #ventanaActividadBox,
   #panel.sin-premium #panelWebcamBox { display: none; }
+  /* Hoja de previsión del spot (2026-11-19). */
+  .boton-hoja { display: block; width: 100%; margin: 4px 0 10px; padding: 11px 14px; border: 0; border-radius: 999px; background: var(--degradado-fuerte); color: var(--sobre-acento); font-family: var(--f-texto); font-weight: 800; font-size: 14.5px; cursor: pointer; box-shadow: 0 6px 18px rgba(190,24,93,.3); }
+  .hoja-prev { position: fixed; inset: 0; z-index: 1300; background: var(--fondo); color: var(--tinta); display: flex; flex-direction: column; overflow: hidden; }
+  .hoja-prev[hidden] { display: none; }
+  .hp-cab { background: var(--mar); color: var(--blanco); padding: calc(10px + env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 14px max(14px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 9px; position: relative; }
+  .hp-cab::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--degradado); }
+  .hp-fila { display: flex; align-items: center; gap: 10px; }
+  .hp-volver { background: var(--mar-2); border: 0; color: var(--blanco); width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+  .hp-titulo { font-family: var(--f-titulo); font-weight: 800; font-size: 18px; margin: 0; color: var(--blanco); }
+  .hp-titulo small { display: block; font-family: var(--f-texto); font-weight: 700; font-size: 12px; color: var(--gris-mar); }
+  .hp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hp-chip { border: 0; background: var(--mar-2); color: var(--blanco); font: 800 13px var(--f-texto); padding: 7px 11px; border-radius: 999px; cursor: pointer; }
+  .hp-chip[aria-pressed="true"] { background: var(--degradado-fuerte); }
+  .hp-pez { display: flex; align-items: center; gap: 8px; font: 800 13px var(--f-texto); }
+  .hp-pez select { flex: 1; min-width: 0; font: 700 14px var(--f-texto); color: var(--mar); background: var(--blanco); border: 0; border-radius: 999px; padding: 7px 12px; }
+  .hp-cuerpo { flex: 1; overflow-y: auto; padding: 14px max(14px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 12px; }
+  .hp-cuerpo > * { flex-shrink: 0; }
+  .hp-resumen { background: var(--superficie); border: 1px solid var(--linea); border-radius: 16px; padding: 12px 14px; }
+  .hp-resumen h3, .hp-cab-tabla h3 { font-family: var(--f-titulo); font-size: 14px; margin: 0 0 6px; }
+  .hp-resumen ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; font-size: 14px; }
+  .hp-resumen li.mejora::before { content: "▼ "; color: var(--ok); font-weight: 800; }
+  .hp-resumen li.empeora::before { content: "▲ "; color: var(--peligro); font-weight: 800; }
+  .hp-resumen li.igual::before { content: "• "; color: var(--tinta-2); font-weight: 800; }
+  .hp-cab-tabla { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .hp-cab-tabla h3 { margin: 0; }
+  .hp-todos { border: 1px solid var(--linea); background: var(--superficie); color: var(--tinta); font: 700 13px var(--f-texto); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .hp-tabla-env { overflow-x: auto; border: 1px solid var(--linea); border-radius: 14px; background: var(--superficie); }
+  .hp-tabla { border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; font-size: 13px; font-family: var(--f-texto); }
+  .hp-tabla th, .hp-tabla td { padding: 7px 8px; text-align: center; white-space: nowrap; border-bottom: 1px solid var(--linea); }
+  .hp-tabla tbody th { position: sticky; left: 0; z-index: 1; background: var(--superficie); text-align: left; font-size: 12px; font-weight: 800; color: var(--tinta-2); min-width: 96px; white-space: normal; border-right: 1px solid var(--linea); }
+  .hp-tabla thead th { background: var(--superficie-2); font-weight: 800; }
+  .hp-tabla thead th:first-child { position: sticky; left: 0; z-index: 2; text-align: left; }
+  .hp-tabla th.hp-ahora { background: var(--mar); color: var(--blanco); }
+  .hp-tabla td.hp-ahora { background: var(--superficie-2); }
+  .hp-tabla td.hp-noche { background: rgba(11,30,63,.05); }
+  .hp-dia { display: block; font-size: 10.5px; font-weight: 700; opacity: .75; }
+  .hp-tabla small { display: block; font-size: 10.5px; color: var(--tinta-2); }
+  .hp-fl { font-size: 11px; color: var(--tinta-2); } .hp-fl.peor { color: var(--peligro); } .hp-fl.mejor { color: var(--ok); }
+  .hp-res { display: inline-block; min-width: 58px; border-radius: 999px; padding: 2px 6px; font-weight: 800; font-size: 11.5px; }
+  .hp-res.suave { background: var(--ok-fondo); color: var(--ok-texto); }
+  .hp-res.moderada { background: var(--aviso-fondo); color: var(--aviso-texto); }
+  .hp-res.fuerte, .hp-res.muy_fuerte { background: var(--peligro-fondo); color: var(--peligro-texto); }
+  .hp-hito { color: var(--acento); }
+  .hp-nota { display: inline-flex; flex-direction: column; align-items: center; }
+  .hp-nota b { font-family: var(--f-titulo); font-size: 14px; min-width: 34px; padding: 2px 6px; border-radius: 999px; color: var(--mar); }
+  .hp-nota b.bueno { background: var(--nivel-bueno); } .hp-nota b.medio { background: var(--nivel-medio); } .hp-nota b.malo { background: var(--nivel-malo); }
+  .hp-tabla tr.hp-extra[hidden] { display: none; }
+  .hp-pez select[hidden], .hp-pez a[hidden] { display: none; }
+  .hp-pez-premium { flex: 1; min-width: 0; font: 800 14px var(--f-texto); color: var(--sobre-acento); background: var(--degradado-fuerte); border-radius: 999px; padding: 7px 12px; text-decoration: none; text-align: center; }
+  .hp-candado { display: inline-block; font-weight: 800; font-size: 12px; color: var(--sobre-acento); background: var(--degradado-fuerte); border-radius: 999px; padding: 4px 10px; text-decoration: none; }
+  .hp-candado-mini { opacity: .55; }
+  .hp-resumen li a { color: var(--acento); font-weight: 700; }
+  .hp-tabla tr.hp-fila-nota th { color: var(--tinta); }
+  .hp-pie { font-size: 12px; color: var(--tinta-2); margin: 0; }
   .premium-aviso { margin-top: 10px; font-family: var(--f-texto); font-size: 12px; line-height: 1.45; color: var(--tinta-2); border: 1px dashed var(--linea); }
   .premium-aviso[hidden] { display: none; }
   .premium-aviso a { color: var(--acento); font-weight: 600; }
@@ -1447,6 +1501,8 @@
       <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);" data-i18n="mapa.panel.ubic_usuario">📍 ubicación de un usuario, sin cámara</span>
       <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer;" data-i18n="mapa.panel.borrar">🗑 Borrar</button>
     </div>
+    <!-- Hoja de previsión del spot (2026-11-19): 24 h gratis. -->
+    <button type="button" class="boton-hoja" id="btnHojaPrevision" data-i18n="hoja.boton">📋 Previsión detallada · próximas 24 h</button>
     <div class="grid2">
       <div class="tarjeta">
         <div class="etq" data-i18n="mapa.panel.oleaje12">OLEAJE (12h)</div>
@@ -1654,6 +1710,9 @@
   // (test/ventana-actividad.test.js). El script clásico de abajo lo usa
   // vía window.VentanaActividad cuando se abre un spot.
   import * as VentanaActividad from "/assets/js/ventana-actividad.js";
+  // Hoja de previsión del spot (2026-11-19): tabla de 24 h y resumen.
+  import * as HojaPrevision from "/assets/js/hoja-prevision.js";
+  window.HojaPrevision = HojaPrevision;
   import * as Regiones from "/assets/js/regiones.js";
   import * as CapasMar from "/assets/js/capas-mar.js";
   import * as Frentes from "/assets/js/frentes.js";
@@ -5974,6 +6033,10 @@ async function datosHorariosSpot(s) {
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
         ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam * fPlazo,
+        // Para la hoja de previsión: mar abierto, periodo y dirección.
+        olaMarAbierto: ola === null || ola === undefined ? null : ola * factor,
+        periodo: marino.hourly.wave_period?.[i] ?? null,
+        dirOla: marino.hourly.wave_direction?.[i] ?? null,
         // Mar de fondo en mar abierto (con el factor de zona) y el mismo
         // coeficiente de orilla: la ventana calcula la resaca con ellos.
         fondoAltura: Number.isFinite(marino.hourly.swell_wave_height?.[i]) ? marino.hourly.swell_wave_height[i] * factor : null,
@@ -5987,6 +6050,7 @@ async function datosHorariosSpot(s) {
     const horas = tiempos.map((t) => ({
       hora: t,
       nivelMar: mar[t]?.nivelMar ?? null, ola: mar[t]?.ola ?? null, tempAgua: mar[t]?.tempAgua ?? null,
+      olaMarAbierto: mar[t]?.olaMarAbierto ?? null, periodo: mar[t]?.periodo ?? null, dirOla: mar[t]?.dirOla ?? null,
       fondoAltura: mar[t]?.fondoAltura ?? null, fondoPeriodo: mar[t]?.fondoPeriodo ?? null, fondoCoef: mar[t]?.fondoCoef ?? null,
       viento: porHora[t]?.viento ?? null, vientoDir: porHora[t]?.vientoDir ?? null,
       presion: porHora[t]?.presion ?? null, lluvia: porHora[t]?.lluvia ?? null,
@@ -6242,6 +6306,94 @@ async function pintarVentanaActividad(s) {
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// Hoja de previsión del spot (2026-11-19, assets/js/hoja-prevision.js):
+// próximas 24 h por horas, gratis. Mismos datos que la ventana de actividad.
+const hpEstado = { s: null, modalidad: "costa", especieId: "", todos: false, resultados: {}, serie: [] };
+async function abrirHojaPrevision(s) {
+  hpEstado.s = s;
+  hpEstado.modalidad = vaEstado.modalidad || "costa";
+  hpEstado.especieId = "";
+  document.getElementById("hpNombre").textContent = s.nombre;
+  document.getElementById("hojaPrevision").hidden = false;
+  document.body.style.overflow = "hidden";
+  await calcularHojaPrevision();
+}
+function cerrarHojaPrevision() {
+  document.getElementById("hojaPrevision").hidden = true;
+  document.body.style.overflow = "";
+}
+async function calcularHojaPrevision() {
+  const s = hpEstado.s, modalidad = hpEstado.modalidad;
+  document.querySelectorAll(".hp-chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.hpMod === modalidad)));
+  document.getElementById("hpResumen").innerHTML = `<li>${escVA(I18n.t("comun.cargando"))}</li>`;
+  document.getElementById("hpTabla").innerHTML = "";
+  if (!window.VentanaActividad || !window.HojaPrevision) {
+    window.addEventListener("ventana-actividad-lista", () => calcularHojaPrevision(), { once: true });
+    return;
+  }
+  const VA = window.VentanaActividad;
+  try {
+    const datos = await cargarEspeciesDatos();
+    const horas = await datosHorariosSpot(s);
+    await frentesIndice(modalidad);
+    if (hpEstado.s !== s || hpEstado.modalidad !== modalidad) return;
+    const region = VA.regionPorCoordenadas(s.lat, s.lon);
+    const ctx = contextoIndiceSpot(s, datos, modalidad, 0);
+    const mes = Number(horaActualISO(zonaSpot(s)).slice(5, 7));
+    const candidatas = VA.especiesParaModalidad(datos, region, modalidad)
+      .filter((e) => e.presencia[region].meses.includes(mes) && !VA.vedaActiva(e, region, mes));
+    hpEstado.resultados = {};
+    for (const e of candidatas) {
+      try { hpEstado.resultados[e.id] = VA.calcularVentana(e, datos.reglas_por_defecto, horas, ctx); } catch (err) { /* sin nota para esa especie */ }
+    }
+    hpEstado.serie = window.HojaPrevision.serieDesdeAhora(horas, horaActualISO(zonaSpot(s)));
+    // La luz de cada hora sale del cálculo de la ventana (alba, día, ocaso, noche).
+    const algun = Object.values(hpEstado.resultados)[0] || [];
+    hpEstado.serie = hpEstado.serie.map((h) => ({ ...h, luz: algun.find((r) => r.hora.slice(0, 13) === h.hora.slice(0, 13))?.luz || null }));
+    hpEstado.nombres = Object.fromEntries(candidatas.map((e) => [e.id, I18n.nombre(e)]));
+    if (!(hpEstado.especieId in hpEstado.nombres)) hpEstado.especieId = "";
+    document.getElementById("hpPez").innerHTML = `<option value="">${escVA(I18n.t("hoja.pez_mejor"))}</option>` +
+      candidatas.map((e) => `<option value="${escVA(e.id)}"${e.id === hpEstado.especieId ? " selected" : ""}>${escVA(I18n.nombre(e))}</option>`).join("");
+    pintarHojaPrevision();
+  } catch (e) {
+    console.warn("Hoja de previsión no disponible:", e.message);
+    document.getElementById("hpResumen").innerHTML = `<li>${escVA(I18n.t("mapa.va.sin_horas"))}</li>`;
+  }
+}
+function pintarHojaPrevision() {
+  const HP = window.HojaPrevision;
+  const nombre = (id) => hpEstado.nombres?.[id] || id;
+  // Sin Premium (Mikel, 2026-11-19: "Candado"): la nota y el mejor momento
+  // van con candado y no se elige pez; el resto de la hoja es gratis.
+  const bloqueada = document.getElementById("panel").classList.contains("sin-premium");
+  // El selector de pez se ve, con candado (Mikel, 2026-11-19).
+  document.getElementById("hpPez").hidden = bloqueada;
+  document.getElementById("hpPezPremium").hidden = !bloqueada;
+  const notas = bloqueada ? [] : HP.notasPorHora(hpEstado.serie, hpEstado.resultados, hpEstado.especieId || null);
+  document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie, notas)
+    .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre))}</li>`).join("")
+    + (bloqueada ? `<li class="igual"><a href="/suscripcion">${escVA(I18n.t("hoja.mejor_premium"))}</a></li>` : "");
+  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre, bloqueada });
+  document.getElementById("hpTodos").textContent = I18n.t(hpEstado.todos ? "hoja.solo_esencial" : "hoja.ver_todos");
+}
+// La hoja está al final del <body> (después de este script): sus botones se
+// enganchan cuando el documento ya está entero.
+function engancharHojaPrevision() {
+  document.getElementById("btnHojaPrevision").addEventListener("click", () => { if (spotAbiertoActual) abrirHojaPrevision(spotAbiertoActual); });
+  document.getElementById("hpCerrar").addEventListener("click", cerrarHojaPrevision);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !document.getElementById("hojaPrevision").hidden) cerrarHojaPrevision(); });
+  document.querySelectorAll(".hp-chip").forEach((c) => c.addEventListener("click", () => {
+    if (hpEstado.modalidad === c.dataset.hpMod) return;
+    hpEstado.modalidad = c.dataset.hpMod;
+    calcularHojaPrevision();
+  }));
+  document.getElementById("hpPez").addEventListener("change", (e) => { hpEstado.especieId = e.target.value; pintarHojaPrevision(); });
+  document.getElementById("hpTodos").addEventListener("click", () => { hpEstado.todos = !hpEstado.todos; pintarHojaPrevision(); });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", engancharHojaPrevision);
+else engancharHojaPrevision();
 
 function pintarTiraVA(especie, region, fecha, datos) {
   const VA = window.VentanaActividad;
@@ -7185,5 +7337,32 @@ function comprobarAvisoRayos() {
 
 <script type="module" src="/assets/js/guia.js"></script>
 <script type="module" src="/assets/js/guia-botones.js"></script>
+<!-- Hoja de previsión del spot (2026-11-19, assets/js/hoja-prevision.js). -->
+<div class="hoja-prev" id="hojaPrevision" role="dialog" aria-modal="true" aria-labelledby="hpTitulo" hidden>
+  <div class="hp-cab">
+    <div class="hp-fila">
+      <button type="button" class="hp-volver" id="hpCerrar" aria-label="Cerrar" data-i18n-aria-label="hoja.cerrar">←</button>
+      <h2 class="hp-titulo" id="hpTitulo"><span id="hpNombre"></span><small data-i18n="hoja.subtitulo">Previsión detallada · próximas 24 h</small></h2>
+    </div>
+    <div class="hp-chips" role="group" aria-label="Modalidad" data-i18n-aria-label="hoja.modalidad">
+      <button type="button" class="hp-chip" data-hp-mod="costa" data-i18n="hoja.mod.costa">🪨 Costa</button>
+      <button type="button" class="hp-chip" data-hp-mod="embarcacion" data-i18n="hoja.mod.embarcacion">🚤 Embarcación</button>
+      <button type="button" class="hp-chip" data-hp-mod="submarina" data-i18n="hoja.mod.submarina">🤿 Submarina</button>
+    </div>
+    <label class="hp-pez" for="hpPez"><span data-i18n="hoja.pez">🐟 Pez</span> <select id="hpPez"></select><a class="hp-pez-premium" id="hpPezPremium" href="/suscripcion" hidden data-i18n="hoja.pez_premium">🔒 Elegir el pez · Premium</a></label>
+  </div>
+  <div class="hp-cuerpo">
+    <section class="hp-resumen" aria-labelledby="hpResTit">
+      <h3 id="hpResTit" data-i18n="hoja.mejora_empeora">¿Mejora o empeora?</h3>
+      <ul id="hpResumen"></ul>
+    </section>
+    <div class="hp-cab-tabla">
+      <h3 data-i18n="hoja.hora_a_hora">Hora a hora</h3>
+      <button type="button" class="hp-todos" id="hpTodos" data-i18n="hoja.ver_todos">Ver todos los datos</button>
+    </div>
+    <div class="hp-tabla-env"><table class="hp-tabla" id="hpTabla"></table></div>
+    <p class="hp-pie" id="hpPie" data-i18n="hoja.pie">Desliza a la derecha para ver las 24 horas. La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía.</p>
+  </div>
+</div>
 </body>
 </html>
