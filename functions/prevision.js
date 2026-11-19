@@ -21,6 +21,8 @@ import { coefOrillaSpot, tablaOrillaSpot, lecturasContraOrilla } from "./_lib/co
 import COEF_COSTA from "./_lib/coef-costa-datos.js";
 import { marDeFondo, factoresPeriodo, periodoFondoPico } from "../assets/js/mar-de-fondo.js";
 import PERIODO_BOYAS from "./_lib/periodo-boyas-datos.js";
+import SESGO_PLAZO from "./_lib/sesgo-plazo-datos.js";
+import { factorPlazo, PLAZOS_APP } from "./_lib/sesgo-plazo.js";
 // Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
 import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
@@ -813,8 +815,12 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     // spots con cámara propia o vecina de la misma costa. El resto, como
     // antes (mar abierto, o abrigo estático en bahías y puertos).
     const orilla = coefOrillaSpot(COEF_COSTA, spot.slug, alturaOla, periodoOla, dirOlaGrados);
+    // Lo que preveíamos frente a lo que pasó (sesgo-plazo.js): corrección
+    // aprendida por cámara y plazo; 1 mientras no haya datos suficientes.
+    const plazoH = (Date.parse(`${horasOla[i].slice(0, 16)}:00Z`) - Date.parse(`${horaActualISO(zona).slice(0, 13)}:00:00Z`)) / 3600e3;
+    const fPlazo = orilla ? factorPlazo(SESGO_PLAZO, spot.slug, plazoH) : 1;
     const ola = orilla
-      ? { altura: rangoAltura(alturaOla * orilla.coef), alturaMarAbierto: olaEstatica.alturaMarAbierto, coefAbrigo: olaEstatica.coefAbrigo }
+      ? { altura: rangoAltura(alturaOla * orilla.coef * fPlazo), alturaMarAbierto: olaEstatica.alturaMarAbierto, coefAbrigo: olaEstatica.coefAbrigo }
       : olaEstatica;
     // Mar de fondo en la orilla (mar-de-fondo.js): misma corrección de zona
     // y mismo coeficiente de orilla (o de abrigo) que la ola del spot.
@@ -835,6 +841,7 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
       alturaMarAbierto: ola.alturaMarAbierto,
       coefAbrigo: ola.coefAbrigo,
       coefCosta: orilla ? orilla.coef : null,
+      factorPlazo: fPlazo,
       marDeFondo: fondo,
       periodo: periodoOla === null ? null : Math.round(periodoOla),
       dirOla: dirOlaGrados === null ? null : `${rumboDesdeGrados(dirOlaGrados)} ${Math.round(dirOlaGrados)}°`,
@@ -861,7 +868,7 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     marea,
     presion,
     // Mar abierto / zona abrigada y dónde cae la celda del modelo.
-    zonaOleaje: { ...zonaOleaje(spot, marino.latitude, marino.longitude), orilla: tablaOrillaSpot(COEF_COSTA, spot.slug), periodoFondo: factoresPeriodo(PERIODO_BOYAS, spot.lat, spot.lon) },
+    zonaOleaje: { ...zonaOleaje(spot, marino.latitude, marino.longitude), orilla: tablaOrillaSpot(COEF_COSTA, spot.slug), periodoFondo: factoresPeriodo(PERIODO_BOYAS, spot.lat, spot.lon), sesgoPlazo: PLAZOS_APP.map(([a]) => factorPlazo(SESGO_PLAZO, spot.slug, a)) },
     bloques,
   };
 }
