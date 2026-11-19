@@ -276,3 +276,32 @@ test("ninguna página ni JS del navegador llama a Open-Meteo directamente", () =
     assert.ok(!directo.test(readFileSync(f, "utf8")), `${f} llama a Open-Meteo sin pasar por /meteo/`);
   }
 });
+
+// 2026-11-19 (bug real): index.html pedía swell_wave_* y el proxy /meteo/
+// respondía 400; la ventana, el índice de pesca y la hoja de previsión se
+// quedaron sin horas en todos los spots. Toda variable que la app pida al
+// proxy (pedirMeteo("marine"|"forecast", "...&hourly=..."), en index.html y
+// en assets/js) tiene que estar en su lista blanca.
+test("toda variable horaria que pide la app al proxy /meteo/ está permitida", async () => {
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const ficheros = ["index.html", ...readdirSync(new URL("../assets/js/", import.meta.url)).filter((f) => f.endsWith(".js")).map((f) => `assets/js/${f}`)];
+  let vistas = 0;
+  for (const f of ficheros) {
+    const txt = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
+    for (const m of txt.matchAll(/(?:pedirMeteo|pedirOk)\(\s*["'](marine|forecast)["']\s*,\s*`([^`]*)`/g)) {
+      const hourly = /hourly=([a-z0-9_,]+)/.exec(m[2])?.[1];
+      if (!hourly) continue;
+      vistas++;
+      const q = new URLSearchParams(`latitude=43.4&longitude=-2.8&timezone=Europe/Madrid&forecast_days=2&hourly=${hourly}${m[1] === "forecast" ? "&windspeed_unit=kmh" : ""}`);
+      const r = validarConsultaProxy(m[1], q);
+      assert.ok(r.ok, `${f}: ${m[1]} ${hourly} → ${r.error}`);
+    }
+    // Listas de variables en constantes (p. ej. HOURLY_MARINO_EXTRAS).
+    for (const m of txt.matchAll(/HOURLY_MARINO[A-Z_]*\s*=\s*"([a-z0-9_,]+)"/g)) {
+      vistas++;
+      const r = validarConsultaProxy("marine", new URLSearchParams(`latitude=43.4&longitude=-2.8&timezone=Europe/Madrid&forecast_days=2&hourly=${m[1]}`));
+      assert.ok(r.ok, `${f}: ${m[1]} → ${r.error}`);
+    }
+  }
+  assert.ok(vistas >= 2, `solo ${vistas} consultas encontradas`);
+});
