@@ -13,6 +13,7 @@ import { esRutaPermitida } from "../functions/_lib/rutas-publicas.js";
 import {
   CLAVE_INDEXNOW, FICHERO_CLAVE, MAX_URLS_POR_PETICION, entradasSitemap, cambiosSitemap, urlsDeCambios,
   urlsCondicionesHoy, todasLasUrls, peticionesIndexNow, interpretarRespuesta,
+  rotacionDelDia, limitarAviso, DIAS_ROTACION, MAX_URLS_AVISO,
 } from "../functions/_lib/seo/indexnow.js";
 import { REGIONES_MAREAS } from "../functions/_lib/seo/datos.js";
 import { paginaRegionSpots, paginaIndiceSpots, paginaIndiceEspecies } from "../functions/_lib/seo/paginas.js";
@@ -98,6 +99,19 @@ test("IndexNow: a diario solo las páginas de cada spot (pesca y marea)", () => 
   assert.ok(!hoy.some((p) => p.includes("/region/") || p.startsWith("/especies") || p === "/spots" || p === "/mareas"));
 });
 
+test("IndexNow sin lotes grandes (aviso de Bing): cada spot una vez por semana y tope por push", () => {
+  const hoy = urlsCondicionesHoy(sitemap);
+  const vistas = new Set();
+  for (let d = 0; d < DIAS_ROTACION; d++) {
+    const r = rotacionDelDia(hoy, new Date(Date.UTC(2026, 10, 19 + d)));
+    assert.ok(r.length <= Math.ceil(hoy.length / DIAS_ROTACION), `día ${d}: ${r.length}`);
+    for (const u of r) { assert.ok(!vistas.has(u), u); vistas.add(u); }
+  }
+  assert.equal(vistas.size, hoy.length);
+  assert.equal(limitarAviso(hoy).length, MAX_URLS_AVISO);
+  assert.deepEqual(limitarAviso(["a"]), ["a"]);
+});
+
 test("IndexNow: peticiones de 10.000 URLs como mucho, solo del host propio", () => {
   const urls = Array.from({ length: 10_001 }, (_, i) => `https://costaviva.org/x${i}`);
   const lotes = peticionesIndexNow([...urls, "https://otro.com/a", "http://costaviva.org/b", "basura", urls[0]]);
@@ -118,10 +132,10 @@ test("IndexNow: 200 y 202 son éxito; 403, 422 y 429 dejan el run en rojo", () =
 
 test("IndexNow: el script en modo --probar no manda nada", () => {
   const salida = execFileSync(process.execPath, [join(RAIZ, "scripts/seo/indexnow.mjs"), "hoy", "--probar"], { encoding: "utf8", env: { ...process.env, GITHUB_STEP_SUMMARY: "" } });
-  assert.match(salida, new RegExp(`${(SPOTS.length + SPOTS_NZ.length) * 2} URL\\(s\\) para avisar`));
+  assert.match(salida, new RegExp(`${rotacionDelDia(urlsCondicionesHoy(sitemap)).length} URL\\(s\\) para avisar`));
   assert.match(salida, /no se ha mandado nada/);
   const todas = execFileSync(process.execPath, [join(RAIZ, "scripts/seo/indexnow.mjs"), "cambios", "--antes", "0000000000000000000000000000000000000000", "--probar"], { encoding: "utf8", env: { ...process.env, GITHUB_STEP_SUMMARY: "" } });
-  assert.match(todas, new RegExp(`${entradasSitemap(sitemap).length} URL\\(s\\)`));
+  assert.match(todas, new RegExp(`${Math.min(MAX_URLS_AVISO, entradasSitemap(sitemap).length)} URL\\(s\\)`));
 });
 
 // ---------------------------------------------------------------------------

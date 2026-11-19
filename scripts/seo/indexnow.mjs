@@ -7,8 +7,9 @@
 //   node scripts/seo/indexnow.mjs cambios --antes <sha> [--despues <sha>]
 //       URLs afectadas por los ficheros cambiados entre dos commits y las
 //       nuevas o con lastmod distinto en sitemap.xml. Si <sha> no existe
-//       (primer push, historial reescrito) avisa de TODAS.
-//   node scripts/seo/indexnow.mjs hoy      # /spots/<spot> y /mareas/<spot>
+//       (primer push, historial reescrito) avisa de todas. Con tope de
+//       MAX_URLS_AVISO (aviso de Bing contra los lotes grandes).
+//   node scripts/seo/indexnow.mjs hoy      # 1/7 de /spots/<spot> y /mareas/<spot>
 //   node scripts/seo/indexnow.mjs todas    # todo el sitemap.xml
 //
 //   --probar   enseña lo que mandaría, sin mandar nada
@@ -19,7 +20,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import {
-  API_INDEXNOW, CLAVE_INDEXNOW, FICHERO_CLAVE, ORIGEN, urlsDeCambios, urlsCondicionesHoy, todasLasUrls,
+  API_INDEXNOW, CLAVE_INDEXNOW, FICHERO_CLAVE, ORIGEN, urlsDeCambios, urlsCondicionesHoy, todasLasUrls, rotacionDelDia, limitarAviso,
   peticionesIndexNow, interpretarRespuesta,
 } from "../../functions/_lib/seo/indexnow.js";
 
@@ -39,7 +40,7 @@ const git = (...a) => execFileSync("git", a, { cwd: RAIZ, encoding: "utf8", stdi
 const xmlActual = readFileSync(join(RAIZ, "sitemap.xml"), "utf8");
 
 function urlsSegunModo() {
-  if (modo === "hoy") return urlsCondicionesHoy(xmlActual);
+  if (modo === "hoy") return rotacionDelDia(urlsCondicionesHoy(xmlActual));
   if (modo === "todas") return todasLasUrls(xmlActual);
   if (modo === "cambios") {
     const antes = opcion("--antes");
@@ -52,13 +53,13 @@ function urlsSegunModo() {
       } catch { /* no está en el clon */ }
     }
     if (!existe) {
-      resumen(`Sin commit anterior válido (${antes || "ninguno"}): se avisa de todas las URLs del sitemap.`);
-      return todasLasUrls(xmlActual);
+      resumen(`Sin commit anterior válido (${antes || "ninguno"}): se avisa de las primeras URLs del sitemap (con tope).`);
+      return limitarAviso(todasLasUrls(xmlActual));
     }
     const ficheros = git("diff", "--name-only", antes, despues).split("\n").filter(Boolean);
     let xmlAntes = "";
     try { xmlAntes = git("show", `${antes}:sitemap.xml`); } catch { /* no existía */ }
-    return urlsDeCambios({ ficheros, xmlAntes, xmlDespues: xmlActual });
+    return limitarAviso(urlsDeCambios({ ficheros, xmlAntes, xmlDespues: xmlActual }));
   }
   console.error("Uso: node scripts/seo/indexnow.mjs cambios|hoy|todas [--antes <sha>] [--probar] [--esperar]");
   process.exit(2);
