@@ -1182,6 +1182,8 @@
   "diario.sin_conexion.guardada": "Sem rede: a captura ficou guardada no telemóvel e será enviada sozinha quando voltar o sinal. Não termine a sessão até lá.",
   "diario.sin_conexion.no_guardada": "Sem rede, e este navegador não deixa guardar no telemóvel. Registe-a quando voltar o sinal.",
   "diario.sin_conexion.pendientes": {"one": "{n} registo feito sem rede, por enviar. Será enviado sozinho quando voltar o sinal.", "other": "{n} registos feitos sem rede, por enviar. Serão enviados sozinhos quando voltar o sinal."},
+  "diario.sin_conexion.copia": "Sem rede: está a ver o que ficou guardado neste telemóvel a {fecha}. Pode registar capturas e toques; serão enviados sozinhos quando voltar o sinal.",
+  "diario.sin_conexion.cerrar_sesion": {"one": "Tem {n} registo por enviar (feito sem rede). Se terminar a sessão agora, perde-se. Terminar a sessão mesmo assim?", "other": "Tem {n} registos por enviar (feitos sem rede). Se terminar a sessão agora, perdem-se. Terminar a sessão mesmo assim?"},
   "diario.editar": "✏️ Editar",
   "diario.tec.currican": "Corrico",
   "diario.tec.fondo": "Fundo",
