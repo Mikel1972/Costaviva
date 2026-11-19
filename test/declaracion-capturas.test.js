@@ -52,3 +52,31 @@ test("solo puntos de España y Portugal: Francia y el extranjero no", () => {
   assert.equal(puntoEnEspanaOPortugal(-36.8, 174.8), false); // Auckland
   assert.equal(puntoEnEspanaOPortugal(NaN, 1), false);
 });
+
+import { etiquetaFinActividad, icsRecordatorio, leerDeclaradas, marcarDeclarada } from "../assets/js/declaracion-capturas.js";
+
+test("fin de la actividad: hora de fin, cruce de medianoche o hora de la captura", () => {
+  assert.equal(etiquetaFinActividad({ fecha: "2026-11-18", hora_inicio: "06:00:00", hora_fin: "10:30:00" }, {}), "2026-11-18T10:30");
+  assert.equal(etiquetaFinActividad({ fecha: "2026-11-18", hora_inicio: "22:00:00", hora_fin: "02:00:00" }, {}), "2026-11-19T02:00");
+  assert.equal(etiquetaFinActividad({ fecha: "2026-11-30", hora_inicio: "07:00:00" }, { hora: "08:15:00" }), "2026-11-30T08:15");
+  assert.equal(etiquetaFinActividad({ fecha: "2026-11-18" }, {}), null);
+});
+
+test("el .ics avisa 4 h antes de que venza el plazo, con alarma", () => {
+  const fin = Date.UTC(2026, 10, 18, 10, 0);
+  const ics = icsRecordatorio({ uid: "declarar-1", finMs: fin, plazoHoras: 24, titulo: "Declarar Lubina en PescaREC", descripcion: "Antes de 2026-11-19 11:00, ya", ahoraMs: fin });
+  assert.match(ics, /DTSTART:20261119T060000Z/);
+  assert.match(ics, /BEGIN:VALARM[\s\S]*TRIGGER:PT0M/);
+  assert.match(ics, /DESCRIPTION:Antes de 2026-11-19 11:00\\, ya/);
+  assert.ok(ics.includes("\r\n"));
+  // Si ya quedan menos de 4 h, el aviso sale a los 5 minutos, no en el pasado.
+  const tarde = icsRecordatorio({ uid: "x", finMs: fin, plazoHoras: 24, titulo: "t", descripcion: "d", ahoraMs: fin + 22 * 3600e3 });
+  assert.match(tarde, /DTSTART:20261119T080500Z/);
+});
+
+test("'ya la he declarado' se recuerda en el dispositivo", () => {
+  const datos = {}; const almacen = { getItem: (k) => datos[k] ?? null, setItem: (k, v) => { datos[k] = v; } };
+  marcarDeclarada(42, almacen);
+  assert.ok(leerDeclaradas(almacen).has("42"));
+  assert.equal(leerDeclaradas({ getItem() { throw new Error("bloqueado"); } }).size, 0);
+});
