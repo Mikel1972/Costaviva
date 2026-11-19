@@ -696,6 +696,16 @@
    "fecha_consulta": "2026-10-09",
    "pais": "nz"
   },
+  "mpi_but_plenary_2025": {
+   "titulo": "Butterfish (BUT) Fisheries Assessment Plenary, May 2025, volume 1",
+   "url": "https://fs.fish.govt.nz/Doc/26025/butterfish-but-fisheries-assessment-plenary-may-2025-volume-1.pdf.ashx",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_documento": "2025-05",
+   "fecha_consulta": "2026-11-19",
+   "pais": "nz"
+  },
   "mpi_mok": {
    "titulo": "Blue moki (MOK): discussion document",
    "url": "https://www.mpi.govt.nz/dmsdocument/69711",
@@ -19303,7 +19313,18 @@
    "cebos": [],
    "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
    "cebos_nota_en": "NZ baits pending: none listed until there is a source.",
-   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte."
+   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte.",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Costa rocosa y bosques de algas, con mar algo movido (MPI: «inhabit rocky coastlines, and are commonly found among seaweed beds in moderately turbulent water»).",
+    "fuentes": [
+     "mpi_but_plenary_2025"
+    ],
+    "verificado": true,
+    "nota": "2026-11-19, jueves. Informe plenario de MPI (mayo 2025), sección de biología. Desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "nz-red-cod",

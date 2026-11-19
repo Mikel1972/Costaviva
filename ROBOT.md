@@ -10376,3 +10376,10 @@ Datos: `camaras-estado.json` de 2026-11-19T03:04Z (fresco). En rojo: pasaia (`fr
 - **pasaia**: foto diaria de detectia.net, de noche sale plana. **Cambrils (Windy)**: sigue pendiente buscar otra cámara desde fuera de la rutina.
 - No se cambió código. Quedan para la próxima pasada: zumaia y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-19 05:55 UTC — robot buscador de fuentes (rutina): jueves, fichas de especies (fondos)
+- Rama `robot/especies-2026-11-19` (solo `assets/datos/especies.json` y esta entrada; tests ventana-actividad, modalidades e indice-pesca-v2: 88/88 en verde).
+- `nz-butterfish` (marari): añadido `sustrato: roca`. Fuente nueva `mpi_but_plenary_2025` (informe plenario de MPI, mayo 2025, CC BY 4.0 de MPI): «inhabit rocky coastlines, and are commonly found among seaweed beds in moderately turbulent water». Leído el PDF descargado, no solo el buscador.
+- Salmonete: las fuentes (MAPAMA, IEO-CSIC) lo dan en roca y arena a la vez (de 10 m al límite de la plataforma) → no se añade `sustrato` (ambiguo). Sigue sin fondo: pulpo, sepia, calamar, dorada, lubina... (las pelágicas y generalistas no llevan).
+- Quedan pendientes de fuente regional: nz-blue-cod, nz-blue-moki, nz-john-dory, pulpo y faneca.
+Firmado: robot buscador de fuentes (rutina), 2026-11-19 05:55 UTC.
