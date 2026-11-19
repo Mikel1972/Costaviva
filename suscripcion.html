@@ -223,7 +223,24 @@
     <p class="nota-legal" id="notaPrueba" hidden></p>
     <p class="nota-legal" id="notaPrecio" data-i18n="prec.nota_precio">Precios con IVA incluido. El precio final se confirma en la pantalla de pago según tu país de facturación.</p>
     <p class="nota-legal" id="notaInvitacion" hidden></p>
+    <!-- Black Friday 2x1 (2026-11-19): el servidor solo lo acepta del 27 al
+         30/11 y con el plan anual (functions/_lib/black-friday.js). -->
+    <div id="bloqueCodigoBf" class="nota-legal" hidden>
+      <label for="codigoBf" data-i18n="susc.bf_codigo">Código Black Friday (plan anual)</label>
+      <input type="text" id="codigoBf" autocomplete="off" maxlength="20" placeholder="BLACKFRIDAY" data-i18n-placeholder="susc.bf_ph_codigo" style="text-transform:uppercase;" />
+    </div>
     <p class="nota-legal" id="notaCodigoStripe" data-i18n="susc.codigo_descuento">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
+  </div>
+
+  <!-- Black Friday 2x1: regalo de un año a un amigo (functions/regalo-black-friday.js). -->
+  <div id="bloqueRegaloBf" class="amigo" hidden>
+    <h2 data-i18n="susc.bf_regala_titulo">🎁 Regala un año a tu compañero de pesca</h2>
+    <p id="regaloBfTexto" data-i18n="susc.bf_regala_texto">Con tu plan anual del Black Friday regalas 1 año de Premium. Escribe su email: le llegará la invitación y su año empieza el día que se dé de alta (hasta el 31 de diciembre).</p>
+    <div id="regaloBfForm">
+      <input type="email" id="regaloBfEmail" autocomplete="off" placeholder="email@ejemplo.com" data-i18n-placeholder="susc.bf_ph_email" />
+      <button type="button" id="btnRegaloBf" data-i18n="susc.bf_regalar">Regalar</button>
+    </div>
+    <p class="nota-legal" id="regaloBfMensaje" hidden></p>
   </div>
 
   <!-- "Invita a un amigo" (2026-10-09, aprobado por Mikel). Se rellena con
@@ -302,6 +319,7 @@ async function iniciarCheckout(ambito, plan) {
       ambito, plan, idioma: I18n.idioma(),
       // Aceptación expresa de la casilla: el servidor la exige y la guarda.
       aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: checkLegal.checked },
+      ...(codigoBfVisible() && document.getElementById("codigoBf").value.trim() ? { codigo_bf: document.getElementById("codigoBf").value.trim() } : {}),
     }),
   });
   let resultado = {};
@@ -313,6 +331,47 @@ async function iniciarCheckout(ambito, plan) {
     btnPagar.disabled = !cobroAbierto || !checkLegal.checked;
   }
 }
+
+// --- Black Friday 2x1 (2026-11-19) ---
+// El campo solo se enseña esos días (el servidor manda de todas formas).
+const BF_DESDE = Date.parse("2026-11-26T23:00:00Z"), BF_HASTA = Date.parse("2026-11-30T23:00:00Z");
+function codigoBfVisible() { const t = Date.now(); return t >= BF_DESDE && t < BF_HASTA; }
+document.getElementById("bloqueCodigoBf").hidden = !codigoBfVisible();
+async function pintarRegaloBf() {
+  const caja = document.getElementById("bloqueRegaloBf");
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const r = await fetch("/regalo-black-friday", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.regalado) {
+      caja.hidden = false;
+      document.getElementById("regaloBfForm").hidden = true;
+      const m = document.getElementById("regaloBfMensaje");
+      m.hidden = false; m.textContent = I18n.t("susc.bf_regalado", { email: d.regalado.email });
+    } else if (d.puede) caja.hidden = false;
+  } catch (e) { /* sin regalo no pasa nada */ }
+}
+document.getElementById("btnRegaloBf").addEventListener("click", async () => {
+  const btn = document.getElementById("btnRegaloBf"), m = document.getElementById("regaloBfMensaje");
+  btn.disabled = true;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const r = await fetch("/regalo-black-friday", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ email: document.getElementById("regaloBfEmail").value }),
+    });
+    const d = await r.json().catch(() => ({}));
+    m.hidden = false;
+    if (d.ok) {
+      document.getElementById("regaloBfForm").hidden = true;
+      m.textContent = I18n.t(d.email_enviado ? "susc.bf_regalado" : "susc.bf_regalado_sin_email", { email: d.email });
+    } else {
+      m.textContent = I18n.t(`susc.bf_error_${["email_no_valido", "email_propio", "ya_regalado", "sin_derecho"].includes(d.codigo) ? d.codigo : "fallo"}`);
+    }
+  } finally { btn.disabled = false; }
+});
 
 async function abrirPortal() {
   const { data: { session } } = await supabase.auth.getSession();
@@ -550,8 +609,10 @@ async function iniciar() {
   const query = new URLSearchParams(window.location.search);
   if (query.get("exito") === "1") {
     await esperarConfirmacion();
+    pintarRegaloBf();
     return;
   }
+  pintarRegaloBf();
   if (query.get("cancelado") === "1") {
     mostrarMensaje(I18n.t("susc.pago_cancelado"), "info");
   }

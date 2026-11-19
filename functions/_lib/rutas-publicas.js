@@ -102,6 +102,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   // es_admin() en el servidor; canjear-invitacion, la sesión del invitado.
   "/admin-invitaciones",
   "/canjear-invitacion",
+  "/regalo-black-friday", // Black Friday 2x1 (2026-11-19)
   "/stripe-webhook",
   "/notificar-altas",
   "/avisar-fin-prueba",
