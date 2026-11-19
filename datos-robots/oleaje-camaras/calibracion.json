@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-19T15:07:47.982Z",
- "lineasHistorial": 11652,
+ "fecha": "2026-11-19T15:38:10.863Z",
+ "lineasHistorial": 11663,
  "etiquetas": 1238,
  "etiquetasClaude": 250,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.106
   },
   "zarautz/dinamico": {
-   "a": 2.9625,
+   "a": 2.963,
    "p": 0.5,
-   "n": 933,
+   "n": 934,
    "nEtiquetas": 196,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -129,9 +129,9 @@
    "correlacion": 0.223
   },
   "deba/rompiente": {
-   "a": 3.5976,
+   "a": 3.5949,
    "p": 0.5,
-   "n": 296,
+   "n": 297,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -206,9 +206,9 @@
    "correlacion": 0.065
   },
   "sopelana/principal": {
-   "a": 3.1427,
+   "a": 3.1336,
    "p": 0.5,
-   "n": 181,
+   "n": 182,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -228,7 +228,7 @@
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.378
+   "correlacion": 0.376
   },
   "berria/principal": {
    "a": 74.2857,
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7184,
+   "a": 2.721,
    "p": 0.5,
-   "n": 192,
+   "n": 193,
    "nEtiquetas": 50,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -514,7 +514,7 @@
    "motivo": "204 etiquetas",
    "ruido": {
     "ruido": 0.575,
-    "pares": 636
+    "pares": 637
    }
   },
   "getaria": {
@@ -537,8 +537,8 @@
    "sustituye": true,
    "motivo": "53 etiquetas",
    "ruido": {
-    "ruido": 0.985,
-    "pares": 114
+    "ruido": 1.009,
+    "pares": 115
    }
   },
   "mutriku": {
@@ -616,7 +616,7 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 1,
+   "n": 2,
    "suficiente": false,
    "lineas": null,
    "cerca": null
@@ -628,6 +628,24 @@
    "cerca": null
   },
   "castrourdiales": {
+   "n": 1,
+   "suficiente": false,
+   "lineas": null,
+   "cerca": null
+  },
+  "hondarribia": {
+   "n": 1,
+   "suficiente": false,
+   "lineas": null,
+   "cerca": null
+  },
+  "zarautz": {
+   "n": 1,
+   "suficiente": false,
+   "lineas": null,
+   "cerca": null
+  },
+  "zumaia": {
    "n": 1,
    "suficiente": false,
    "lineas": null,
