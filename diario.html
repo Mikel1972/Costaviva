@@ -238,6 +238,7 @@
     <button id="btnMesSiguiente" aria-label="Mes siguiente" data-i18n-aria-label="diario.mes_siguiente">›</button>
   </div>
 
+  <div class="aviso-pendientes" id="avisoSinRed" role="status" hidden></div>
   <div class="aviso-pendientes" id="avisoPendientes" role="status" hidden></div>
   <div class="calendario" id="calendario"></div>
 
@@ -334,13 +335,20 @@ async function comprobarNovedadesGrupos(cliente) {
 }
 
 const { data: sesionInicial } = await supabase.auth.getSession();
-if (!sesionInicial.session) {
+// Sin cobertura (2026-11-19): si la sesión caducó y no se puede renovar por
+// falta de red, se abre el diario con la copia local del último usuario que
+// lo usó en este dispositivo; al volver la red, Supabase renueva la sesión.
+const CLAVE_ULTIMO_USUARIO = "cv-diario-usuario";
+let usuarioSinRed = null;
+try { usuarioSinRed = localStorage.getItem(CLAVE_ULTIMO_USUARIO); } catch {}
+if (!sesionInicial.session && !(navigator.onLine === false && usuarioSinRed)) {
   window.location.href = "/login.html";
   throw new Error("sin sesión");
 }
 // Límite de 2 dispositivos por cuenta (2026-11-09): nunca bloquea si falla.
 import("/assets/js/dispositivos.js").then((m) => m.vigilarDispositivos(supabase)).catch(() => {});
-const usuario = sesionInicial.session.user;
+const usuario = sesionInicial.session ? sesionInicial.session.user : { id: usuarioSinRed };
+if (sesionInicial.session) { try { localStorage.setItem(CLAVE_ULTIMO_USUARIO, usuario.id); } catch {} }
 
 // Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
 // nunca bloquea la interacción si falla.
@@ -400,6 +408,12 @@ document.getElementById("btnMiSuscripcion").addEventListener("click", () => {
 
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
   e.preventDefault();
+  // Lo apuntado sin cobertura y aún sin subir se perdería: se avisa antes.
+  let pendientes = 0;
+  try { pendientes = (await ColaSinConexion.listar()).filter((i) => !i.usuario || i.usuario === usuario.id).length; } catch {}
+  if (pendientes && !confirm(I18n.t("diario.sin_conexion.cerrar_sesion", { n: pendientes }))) return;
+  try { await ColaSinConexion.borrarTodo(); } catch {}
+  try { localStorage.removeItem(CLAVE_ULTIMO_USUARIO); } catch {}
   await supabase.auth.signOut();
   window.location.href = "/login.html";
 });
@@ -558,6 +572,7 @@ const ESPECIES = [
 // vez ya aparezcan como opción real. "Otra" se queda siempre la última.
 let especiesComunidad = [];
 async function cargarEspeciesComunidad() {
+  if (navigator.onLine === false) return; // sin cobertura: no se espera a los reintentos
   const { data, error } = await supabase.from("especies_comunidad").select("nombre, nombre_cientifico").order("nombre");
   if (error) { console.warn("No se pudieron cargar las especies de la comunidad:", error.message); return; }
   especiesComunidad = (data || []).map((e) => ({ nombre: e.nombre, cientifico: e.nombre_cientifico }));
@@ -619,6 +634,7 @@ let spotsUsuario = [];
 let favoritosClaves = new Set(); // spot_slug (fijo) o id de spots_usuario
 
 async function cargarSpotsUsuario() {
+  if (navigator.onLine === false) return; // sin cobertura: no se espera a los reintentos
   const [{ data: filas, error: errSpots }, { data: favs, error: errFav }] = await Promise.all([
     supabase.from("spots_usuario").select("*"),
     supabase.from("spots_favoritos").select("*").eq("user_id", usuario.id),
@@ -636,6 +652,7 @@ async function cargarSpotsUsuario() {
 // functions/_lib/vista-previa.js).
 const REGIONES_DIARIO = ["nz"];
 async function cargarSpotsRegionPrevia() {
+  if (navigator.onLine === false) return; // sin cobertura: no se espera a los reintentos
   const p = new URLSearchParams(window.location.search);
   const extra = (p.get("region") || "").toLowerCase();
   const regiones = [...new Set([...REGIONES_DIARIO, ...(/^[a-z]{2,8}$/.test(extra) && extra !== "es" ? [extra] : [])])];
@@ -691,11 +708,24 @@ function fechaISO(d) {
 }
 
 async function cargarDatos() {
+  // Sin red, directo a la copia del móvil: supabase-js reintenta varias
+  // veces antes de dar el fallo y el diario tardaría en salir.
+  if (navigator.onLine === false) {
+    const copia = await ColaSinConexion.leerCopia(usuario.id).catch(() => null);
+    if (copia) { construirSalidasPorFecha(copia.datos); mostrarAvisoSinRed(copia.guardada); return; }
+  }
   const { data: salidas, error: errSalidas } = await supabase
     .from("salidas_pesca")
     .select("*")
     .order("fecha", { ascending: false });
-  if (errSalidas) { console.error(errSalidas); return; }
+  if (errSalidas) {
+    // Sin red: lo último que se cargó en este móvil (solo lectura del día).
+    if (ColaSinConexion.esFalloDeRed(errSalidas)) {
+      const copia = await ColaSinConexion.leerCopia(usuario.id).catch(() => null);
+      if (copia) { construirSalidasPorFecha(copia.datos); mostrarAvisoSinRed(copia.guardada); return; }
+    }
+    console.error(errSalidas); return;
+  }
 
   const idsSalidas = salidas.map((s) => s.id);
   let capturasPorSalida = {};
@@ -764,9 +794,22 @@ async function cargarDatos() {
     const hora = String(p.hora).slice(0, 5);
     if (s) completarPicada(p.id, s, fechaDePicada(s, hora), hora);
   });
+  construirSalidasPorFecha({ salidas, capturasPorSalida, marcasPorSalida, picadasPorSalida });
+  mostrarAvisoSinRed(null);
+  ColaSinConexion.guardarCopia(usuario.id, { salidas, capturasPorSalida, marcasPorSalida, picadasPorSalida }).catch(() => {});
+}
+function construirSalidasPorFecha({ salidas, capturasPorSalida, marcasPorSalida, picadasPorSalida }) {
+  salidasPorFecha = {};
   salidas.forEach((s) => {
     (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [], marcas: marcasPorSalida[s.id] || [], picadas: picadasPorSalida[s.id] || [] });
   });
+}
+// Aviso de que se está viendo la copia guardada (sin cobertura).
+function mostrarAvisoSinRed(guardada) {
+  const el = document.getElementById("avisoSinRed");
+  if (!el) return;
+  el.hidden = !guardada;
+  el.textContent = guardada ? "📴 " + I18n.t("diario.sin_conexion.copia", { fecha: new Date(guardada).toLocaleString() }) : "";
 }
 
 function renderCalendario() {
@@ -1665,7 +1708,8 @@ function avisoDeclaracionHTML(captura, salida, cientifico) {
 }
 
 async function tarjetaCapturaHTML(captura, salida) {
-  const { data: fotos } = await supabase.from("captura_fotos").select("*").eq("captura_id", captura.id).order("orden");
+  // Sin cobertura no se piden las fotos (supabase-js reintenta y el día tardaría en abrirse).
+  const { data: fotos } = navigator.onLine === false ? { data: [] } : await supabase.from("captura_fotos").select("*").eq("captura_id", captura.id).order("orden");
   const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
   const cientifico = await cientificoDe(captura.especie);
   return `
@@ -1847,7 +1891,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
       for (const f of archivos) { try { fotos.push(await redimensionarImagen(f)); } catch (e) { console.warn("Foto sin conexión:", e?.message); } }
       try {
         await ColaSinConexion.encolar({
-          tipo: "captura", datos, fotos, ordenFotoBase: ordenFotoBase || 0,
+          tipo: "captura", usuario: usuario.id, datos, fotos, ordenFotoBase: ordenFotoBase || 0,
           compartir: document.getElementById("capturaCompartir")?.checked === true,
           salida: salidaDelDia ? { id: salidaDelDia.id, lat: salidaDelDia.lat, lon: salidaDelDia.lon, fecha: salidaDelDia.fecha, hora_inicio: salidaDelDia.hora_inicio, tipo_salida: salidaDelDia.tipo_salida } : null,
           fecha,
@@ -2022,7 +2066,7 @@ async function registrarPicada(salida, horaDada = null) {
     catch (e) { error = e; }
   }
   if (navigator.onLine === false || ColaSinConexion.esFalloDeRed(error)) {
-    await ColaSinConexion.encolar({ tipo: "picada", hora, fecha, salida: { id: salida.id, lat: salida.lat, lon: salida.lon, fecha: salida.fecha, hora_inicio: salida.hora_inicio, tipo_salida: salida.tipo_salida } })
+    await ColaSinConexion.encolar({ tipo: "picada", usuario: usuario.id, hora, fecha, salida: { id: salida.id, lat: salida.lat, lon: salida.lon, fecha: salida.fecha, hora_inicio: salida.hora_inicio, tipo_salida: salida.tipo_salida } })
       .then(() => pintarAvisoPendientes()).catch((e) => console.warn("Picada sin conexión:", e?.message));
     return;
   }
@@ -2573,13 +2617,15 @@ async function pintarAvisoPendientes() {
   const el = document.getElementById("avisoPendientes");
   if (!el) return;
   let n = 0;
-  try { n = (await ColaSinConexion.listar()).length; } catch { n = 0; }
+  try { n = (await ColaSinConexion.listar()).filter((i) => !i.usuario || i.usuario === usuario.id).length; } catch { n = 0; }
   el.hidden = n === 0;
   el.textContent = n ? "⏳ " + I18n.t("diario.sin_conexion.pendientes", { n }) : "";
 }
 // Lanza si el fallo es de red (se reintenta luego); false si es un error
 // real (el apunte se queda en la cola y se avisa en la consola).
 async function subirApunte(item) {
+  // Solo lo apuntado por este usuario (otro que use el mismo móvil no lo sube).
+  if (item.usuario && item.usuario !== usuario.id) return false;
   const fallo = (error) => { if (ColaSinConexion.esFalloDeRed(error)) throw error; console.warn("Apunte pendiente:", error?.message); return false; };
   if (item.tipo === "picada") {
     const { data, error } = await supabase.from("picadas_pesca").insert({ salida_id: item.salida.id, user_id: usuario.id, hora: item.hora }).select("id").single();
@@ -2616,7 +2662,14 @@ async function sincronizarApuntes() {
     renderCalendario();
   }
 }
-window.addEventListener("online", () => { sincronizarApuntes(); });
+window.addEventListener("online", () => { sincronizarApuntes().then(() => cargarDatos()).then(() => renderCalendario()); });
+// Copia de la página y sus ficheros para abrirla sin cobertura (/sw.js).
+if ("serviceWorker" in navigator && navigator.onLine !== false) {
+  navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then((reg) => {
+    const urls = [location.origin + "/diario", ...performance.getEntriesByType("resource").map((r) => r.name)];
+    reg.active?.postMessage({ tipo: "guardar", urls });
+  }).catch((e) => console.warn("Sin copia para abrir sin cobertura:", e?.message));
+}
 
 await sincronizarApuntes();
 await cargarDatos();

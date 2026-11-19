@@ -65,6 +65,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   // Estáticos de la raíz.
   "/icon.svg",
   "/manifest.json",
+  "/sw.js", // service worker del diario sin cobertura (2026-11-19)
   "/robots.txt",
   "/sitemap.xml",
   // Clave de IndexNow (2026-10-08): el buscador la lee aquí para comprobar

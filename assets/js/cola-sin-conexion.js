@@ -7,21 +7,26 @@
 
 const BD = "costaviva-sin-conexion";
 const ALMACEN = "pendientes";
+const COPIA = "copia";
 
 function abrir(idb = globalThis.indexedDB) {
   return new Promise((ok, ko) => {
     if (!idb) { ko(new Error("sin IndexedDB")); return; }
-    const pet = idb.open(BD, 1);
-    pet.onupgradeneeded = () => pet.result.createObjectStore(ALMACEN, { keyPath: "clave" });
+    const pet = idb.open(BD, 2);
+    pet.onupgradeneeded = () => {
+      const bd = pet.result;
+      if (!bd.objectStoreNames.contains(ALMACEN)) bd.createObjectStore(ALMACEN, { keyPath: "clave" });
+      if (!bd.objectStoreNames.contains(COPIA)) bd.createObjectStore(COPIA, { keyPath: "usuario" });
+    };
     pet.onsuccess = () => ok(pet.result);
     pet.onerror = () => ko(pet.error);
   });
 }
 
-function operar(modo, fn, idb) {
+function operar(modo, fn, idb, almacen = ALMACEN) {
   return abrir(idb).then((bd) => new Promise((ok, ko) => {
-    const tx = bd.transaction(ALMACEN, modo);
-    const res = fn(tx.objectStore(ALMACEN));
+    const tx = bd.transaction(almacen, modo);
+    const res = fn(tx.objectStore(almacen));
     tx.oncomplete = () => { bd.close(); ok(res?.result); };
     tx.onerror = () => { bd.close(); ko(tx.error); };
   }));
@@ -68,4 +73,20 @@ export function subirPendientes(subir, idb) {
     return subidos;
   })().finally(() => { enCurso = null; });
   return enCurso;
+}
+
+// --- Copia del diario para abrirlo sin cobertura (2026-11-19) ---
+// Lo último que se cargó con red (salidas, capturas, marcas y picadas del
+// propio usuario), solo en este dispositivo. Se borra al cerrar sesión.
+export function guardarCopia(usuario, datos, idb) {
+  return operar("readwrite", (s) => s.put({ usuario, datos, guardada: new Date().toISOString() }), idb, COPIA);
+}
+export function leerCopia(usuario, idb) {
+  return operar("readonly", (s) => s.get(usuario), idb, COPIA).then((r) => r || null);
+}
+export function borrarTodo(idb) {
+  return Promise.all([
+    operar("readwrite", (s) => s.clear(), idb, COPIA),
+    operar("readwrite", (s) => s.clear(), idb, ALMACEN),
+  ]);
 }
