@@ -60,10 +60,22 @@ function clave(peticion) {
   return peticion.url;
 }
 
+// Solo la página del diario y lo que pide ella: el mapa y el resto de
+// páginas van directas a la red, sin pasar por la copia.
+function esDiario(url) {
+  try { return PAGINAS.has(new URL(url).pathname); } catch { return false; }
+}
 self.addEventListener("fetch", (e) => {
   const p = e.request;
   if (p.method !== "GET" || !seGuarda(p.url)) return;
-  e.respondWith(redPrimero(p));
+  if (p.mode === "navigate") {
+    if (esDiario(p.url)) e.respondWith(redPrimero(p));
+    return;
+  }
+  e.respondWith((async () => {
+    const cliente = e.clientId ? await self.clients.get(e.clientId) : null;
+    return cliente && esDiario(cliente.url) ? redPrimero(p) : fetch(p);
+  })());
 });
 
 // La página manda, tras cargar con red, la lista de ficheros que ha usado
