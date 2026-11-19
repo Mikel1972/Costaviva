@@ -4354,6 +4354,16 @@ function coeficienteAbrigoDesdeParametros(p, dirGrados) {
   return +(p.coefAbierto + (p.coefAbrigado - p.coefAbierto) * t).toFixed(3);
 }
 
+// Periodo de pico de la mar de fondo calibrado con las boyas — copia literal
+// de periodoFondoPico() de assets/js/mar-de-fondo.js (test/mar-de-fondo.test.js
+// comprueba que no se desvía). Los cocientes llegan en s.zonaOleaje.periodoFondo.
+function periodoFondoPico(pico, medio, f = null) {
+  const fp = Number.isFinite(f?.pico) ? f.pico : 1, fm = Number.isFinite(f?.medio) ? f.medio : 1;
+  if (Number.isFinite(pico) && pico > 0) return pico * fp;
+  if (Number.isFinite(medio) && medio > 0) return medio * fm;
+  return null;
+}
+
 // Ola en la orilla aprendida de las cámaras — copia literal de
 // coefOrillaDesdeTabla() de functions/_lib/coef-costa.js (allí el criterio;
 // test/coef-costa.test.js comprueba que no se desvía). La tabla del spot
@@ -5933,7 +5943,7 @@ async function datosHorariosSpot(s) {
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona)}`;
     const [marino, tiempo] = await Promise.all([
-      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,sea_surface_temperature,sea_level_height_msl`),
+      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_peak_period,sea_surface_temperature,sea_level_height_msl`),
       pedirMeteo("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
     // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
@@ -5961,7 +5971,7 @@ async function datosHorariosSpot(s) {
         // Mar de fondo en mar abierto (con el factor de zona) y el mismo
         // coeficiente de orilla: la ventana calcula la resaca con ellos.
         fondoAltura: Number.isFinite(marino.hourly.swell_wave_height?.[i]) ? marino.hourly.swell_wave_height[i] * factor : null,
-        fondoPeriodo: marino.hourly.swell_wave_period?.[i] ?? null,
+        fondoPeriodo: periodoFondoPico(marino.hourly.swell_wave_peak_period?.[i], marino.hourly.swell_wave_period?.[i], s.zonaOleaje?.periodoFondo),
         fondoCoef: coefOri ?? (abrigo ? coefAbr : null),
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       };
