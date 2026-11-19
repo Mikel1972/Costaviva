@@ -437,16 +437,26 @@ async function supabase(ruta, opciones = {}) {
 }
 
 // Etiquetas (fotos de Mikel y "ola real que veo"), ya listas para calibrar.
+const PAGINA_ETIQUETAS = 1000;
 async function leerEtiquetas(historial) {
   if (!CLAVE) return [];
-  const r = await supabase(
-    "/rest/v1/oleaje_etiquetas?select=origen,banda,spot_slug,observado_en,lectura:oleaje_camara_lecturas(camara,encuadre,espuma,fecha)&limit=10000"
-  );
-  const filas = await r.json();
+  // Supabase devuelve como mucho 1000 filas por petición (aunque se pida
+  // más): se pide por páginas (2026-11-19, ya había 997 etiquetas).
+  const filas = [];
+  for (let desde = 0; ; desde += PAGINA_ETIQUETAS) {
+    const r = await supabase(
+      "/rest/v1/oleaje_etiquetas?select=id,origen,banda,spot_slug,observado_en,lectura:oleaje_camara_lecturas(camara,encuadre,espuma,fecha,mar_abierto_m)" +
+        `&order=id.asc&limit=${PAGINA_ETIQUETAS}&offset=${desde}`
+    );
+    const pagina = await r.json();
+    filas.push(...pagina);
+    if (pagina.length < PAGINA_ETIQUETAS) break;
+  }
   const out = [];
   for (const f of filas) {
     if (f.origen === "foto" && f.lectura) {
-      out.push({ origen: "foto", banda: f.banda, camara: f.lectura.camara, encuadre: f.lectura.encuadre, espuma: Number(f.lectura.espuma), fecha: f.lectura.fecha });
+      const hs = f.lectura.mar_abierto_m === null || f.lectura.mar_abierto_m === undefined ? null : Number(f.lectura.mar_abierto_m);
+      out.push({ origen: "foto", banda: f.banda, camara: f.lectura.camara, encuadre: f.lectura.encuadre, espuma: Number(f.lectura.espuma), fecha: f.lectura.fecha, hs });
     } else if (f.origen === "spot") {
       const fuente = FUENTE_POR_SPOT[f.spot_slug];
       const e = fuente?.propia ? emparejarEtiquetaSpot(f, historial, fuente.camara) : null;
