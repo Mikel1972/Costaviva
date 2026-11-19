@@ -329,7 +329,9 @@ export function ejecutar(p) {
   const sinUso = reglasSinUso(datos, casos);
   const regional = Object.keys(ajuste).length ? especializacionRegional(train, ajuste) : [];
   const temporada = estacionalidad(datos, observaciones);
-  const etiquetar = etiquetarCamaras(espuma, calibracionCamaras, { desde: ahora - 7 * 86400e3 });
+  let avisosVecinos = null;
+  try { avisosVecinos = JSON.parse(readFileSync("datos-robots/oleaje-camaras/avisos-vecinos.json", "utf8")); } catch { avisosVecinos = null; }
+  const etiquetar = etiquetarCamaras(espuma, calibracionCamaras, { desde: ahora - 7 * 86400e3, avisosVecinos });
 
   // 6. Propuestas (contrato de comun, estandares/aprendizaje.md). Evidencia
   // mínima de comun (L4): 20 casos o más y nunca una sola persona como fuente.
