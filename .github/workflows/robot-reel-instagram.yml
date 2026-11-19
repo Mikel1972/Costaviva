@@ -106,7 +106,8 @@ jobs:
           # reales (Mikel: "a partir de ahora prepararemos vídeos de este tipo").
           # Los otros tipos siguen a mano (input tipo) y NZ va con su generador.
           # Series del 2026-11-19 (Mikel): martes normas, viernes el finde.
-          if [ "$TIPO_REEL" = "normas" ]; then node reel-normas.mjs
+          if [ "$TIPO_REEL" = "blackfriday" ]; then node reel-bf.mjs
+          elif [ "$TIPO_REEL" = "normas" ]; then node reel-normas.mjs
           elif [ "$TIPO_REEL" = "finde" ]; then node reel-finde.mjs
           elif [ "$TIPO_REEL" = "peces" ] || { [ "$MERCADO" = "es" ] && [ -z "$TIPO_REEL" ]; }; then node reel-peces.mjs
           else node generar-reel-instagram.mjs; fi

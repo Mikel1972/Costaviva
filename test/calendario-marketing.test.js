@@ -495,3 +495,28 @@ test("hashtags de cada pieza para compararlos", async () => {
   assert.deepEqual(hashtagsDeTexto("Hola #Pesca y #pescacantabrico, otra vez #pesca"), ["#pesca", "#pescacantabrico"]);
   assert.match(readFileSync("scripts/marketing/medir-metricas-instagram.mjs", "utf8"), /hashtags = typeof datos\.caption === "string" \? hashtagsDeTexto\(datos\.caption\)/);
 });
+
+test("cinta del Black Friday sobre los reels (19-30/11/2026)", async () => {
+  const { campanaDe } = await import("../scripts/marketing/campana-temporal.mjs");
+  assert.equal(campanaDe("2026-11-18"), null);
+  assert.equal(campanaDe("2026-11-20").cinta, "BLACK FRIDAY 2x1 · DEL 27 AL 30 NOV");
+  assert.equal(campanaDe("2026-11-27").cinta, "BLACK FRIDAY 2x1 · CÓDIGO BLACKFRIDAY");
+  assert.match(campanaDe("2026-11-30").texto, /último día/);
+  assert.equal(campanaDe("2026-12-01"), null);
+  for (const p of ["reel-peces", "reel-lista"]) {
+    assert.match(readFileSync(`scripts/marketing/plantillas/${p}.html`, "utf8"), /if \(d\.cinta\) \{ \$\("cinta"\)\.textContent = d\.cinta;/);
+  }
+  for (const s of ["reel-peces", "reel-normas", "reel-finde"]) {
+    assert.match(readFileSync(`scripts/marketing/${s}.mjs`, "utf8"), /cinta: campanaDe\(fecha\)\?\.cinta \|\| null/);
+  }
+});
+
+test("reel del Black Friday: solo la oferta real y su propia clave en el calendario", async () => {
+  const { piezaBf } = await import("../scripts/marketing/reel-bf.mjs");
+  const p = piezaBf("2026-11-19");
+  assert.equal(p.cinta, "BLACK FRIDAY 2x1 · DEL 27 AL 30 NOV");
+  assert.deepEqual(p.tarjetas.map((t) => t.val), ["1 año de Premium", "1 año gratis", "BLACKFRIDAY"]);
+  assert.match(p.tarjetas[0].sub, /34,99 €/);
+  assert.match(readFileSync("scripts/marketing/reel-bf.mjs", "utf8"), /const clave = `\$\{fecha\}-reel-bf`;/);
+  assert.match(readFileSync(".github/workflows/robot-reel-instagram.yml", "utf8"), /"\$TIPO_REEL" = "blackfriday" \]; then node reel-bf\.mjs/);
+});
