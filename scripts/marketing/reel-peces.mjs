@@ -17,6 +17,8 @@ import { tmpdir } from "node:os";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import { BASE_URL, resumenDeSpot, leerEspecies, fechaLegible, nombreSpot } from "./obtener-datos.mjs";
+import { SPOTS } from "../../functions/prevision.js";
+import { regionPorCoordenadas as regionDeCoordenadas, REGIONES as REGIONES_APP } from "../../assets/js/regiones.js";
 // render.mjs (Playwright) se importa solo al montar: los tests no lo tienen instalado.
 import { mejorTramo } from "./pieza-datos.mjs";
 import * as VA from "../../assets/js/ventana-actividad.js";
@@ -69,17 +71,18 @@ export function textoCaudal(c) {
 
 async function datosDeSpot(slug, fecha, hora, prevision, especiesDatos) {
   const horaISO = `${fecha}T${hora.slice(0, 2)}:00`;
-  const rio = RIO_SPOT[slug];
-  if (!rio) throw new Error(`${slug} no tiene río con caudal real; elige uno de: ${Object.keys(RIO_SPOT).join(", ")}`);
+  // Río opcional desde el 2026-11-19: sin él el reel lleva una tarjeta menos
+  // y se pueden usar muchos más spots (no repetir zona en 3 semanas).
+  const rio = RIO_SPOT[slug] || null;
 
   const spot = prevision.spots.find((s) => s.slug === slug);
   if (!spot) throw new Error(`No está ${slug} en /prevision`);
   const bloque = [...spot.bloques].sort((a, b) => Math.abs(new Date(a.horaISO) - new Date(horaISO)) - Math.abs(new Date(b.horaISO) - new Date(horaISO)))[0];
-  const caudal = textoCaudal(prevision.caudales?.[rio[0]]);
+  const caudal = rio ? textoCaudal(prevision.caudales?.[rio[0]]) : null;
   const { horas } = await resumenDeSpot(slug, especiesDatos, horaISO);
   const resumen = indiceDeEspecie(especiesDatos, horas, spot, horaISO, ESPECIE);
   const dia = horas.filter((h) => h.hora.startsWith(fecha) && typeof h.nivelMar === "number");
-  if (!resumen || dia.length < 20 || !caudal || bloque?.corriente == null) throw new Error("Faltan datos reales (índice, marea, caudal o corriente): no se monta el reel.");
+  if (!resumen || dia.length < 20 || (rio && !caudal) || bloque?.corriente == null) throw new Error("Faltan datos reales (índice, marea, caudal o corriente): no se monta el reel.");
   const iAhora = Math.max(0, dia.findIndex((h) => h.hora === horaISO));
   const sube = dia[Math.min(iAhora + 1, dia.length - 1)].nivelMar > dia[iAhora].nivelMar;
   // Próximo extremo desde la hora de publicación.
@@ -104,6 +107,45 @@ export function siguienteDe(lista, ultimo) {
   return [...lista.slice(i + 1), ...lista.slice(0, i + 1)];
 }
 
+// Spots de España para el reel (2026-11-19, métricas: repetir zona cansa:
+// Santoña 103 -> 24, Suances 111 -> 30). Ninguno se repite antes de
+// DIAS_SIN_REPETIR; primero los que nunca han salido o hace más que salieron.
+export const DIAS_SIN_REPETIR = 21;
+export function spotsEspana(spots = SPOTS) {
+  return spots.filter((s) => !/\(PT\)/.test(s.nombre) && REGIONES_APP[regionDeCoordenadas(s.lat, s.lon)]?.pais === "ES").map((s) => s.slug);
+}
+export function ordenRotacion(slugs, historial = [], hoyISO = new Date().toISOString().slice(0, 10), dias = DIAS_SIN_REPETIR) {
+  const ultimo = {};
+  for (const h of historial) if (!ultimo[h.slug] || h.fecha > ultimo[h.slug]) ultimo[h.slug] = h.fecha;
+  const limite = new Date(Date.parse(`${hoyISO}T00:00:00Z`) - dias * 864e5).toISOString().slice(0, 10);
+  return slugs
+    .filter((s) => !ultimo[s] || ultimo[s] < limite)
+    .sort((a, b) => (ultimo[a] || "").localeCompare(ultimo[b] || "") || a.localeCompare(b));
+}
+// Hashtags de zona (idea 8, 2026-11-19): los de la región del spot, además de los generales.
+const HASHTAGS_REGION = {
+  // Solo los genéricos de cada zona (sin inventar etiquetas que nadie usa);
+  // medir-metricas-instagram.mjs dirá con el tiempo si traen alcance.
+  cantabrico: "#pescacantabrico #pescaasturias #pescaeuskadi",
+  atlantico_norte: "#pescagalicia",
+  golfo_cadiz: "#pescacadiz #pescaandalucia",
+  mediterraneo: "#pescamediterraneo #pescavalencia",
+  baleares: "#pescabaleares #pescamallorca",
+  canarias: "#pescacanarias #pescatenerife",
+};
+export function hashtagsDe(lat, lon) {
+  return HASHTAGS_REGION[regionDeCoordenadas(lat, lon)] || "";
+}
+// Nombre sin el paréntesis ("Benidorm (Levante)" -> "Benidorm").
+const nombreCorto = (n) => String(n).replace(/\s*\(.*\)\s*$/, "");
+// Talla mínima de la lubina en la zona del spot: la tabla verificada de
+// especies.json con la misma elección por zona que la app.
+export function tallaMinimaLubina(especiesDatos, spot) {
+  const e = (especiesDatos.especies || []).find((x) => x.id === "lubina");
+  if (!e) return null;
+  const t = VA.tallasParaRegion(e, VA.regionPorCoordenadas(spot.lat, spot.lon), VA.enEuskadi(spot.lat, spot.lon)).find((x) => x.valor_cm != null);
+  return t ? { cm: t.valor_cm, norma: t.ambito_corto || t.ambito } : null;
+}
 const RUTA_ESTADO = join(__dirname, "calendario-estado.json");
 const RUTA_ROTACION = join(__dirname, "rotacion-reels-peces.json");
 const leerJson = (ruta) => { try { return JSON.parse(readFileSync(ruta, "utf8")); } catch { return {}; } };
@@ -135,23 +177,24 @@ async function main() {
   const prevision = await (await fetch(`${BASE_URL}/prevision`)).json();
   const especiesDatos = leerEspecies();
   const forzado = arg("spot", "");
-  const candidatos = forzado ? [forzado] : siguienteDe(Object.keys(RIO_SPOT), rotacion.ultimoSpot);
+  const candidatos = forzado ? [forzado] : ordenRotacion(spotsEspana(), rotacion.historial || (rotacion.ultimoSpot ? [{ slug: rotacion.ultimoSpot, fecha: (rotacion.fecha || "").slice(0, 10) }] : []), fecha);
   let slug = null, d = null;
   for (const s of candidatos) {
     try { d = await datosDeSpot(s, fecha, hora, prevision, especiesDatos); slug = s; break; } catch (e) { console.warn(`${s}: ${e.message}`); }
   }
-  if (!slug) throw new Error("Ningún spot con río tiene hoy todos los datos reales: no se monta el reel.");
+  if (!slug) throw new Error("Ningún spot tiene hoy todos los datos reales (o todos salieron hace menos de 3 semanas): no se monta el reel.");
   const { spot, bloque, caudal, resumen, dia, iAhora, sube, extremo, rio } = d;
   const datos = {
     spot: nombreSpot(slug),
     fecha: fechaLegible(instanteMadrid(fecha, hora)),
     marea: { serie: dia.map((h) => h.nivelMar), indiceAhora: iAhora, texto: `${sube ? "Subiendo" : "Bajando"}${extremo ? ` · ${extremo.tipo} a las ${extremo.hora}` : ""}` },
     corriente: { val: `${num(bloque.corriente)} km/h`, sub: `hacia el ${bloque.dirCorriente} · ${num(bloque.corriente / 1.852)} nudos` },
-    rio: { etq: `Río ${rio[1]}`, ...caudal },
+    rio: rio ? { etq: `Río ${rio[1]}`, ...caudal } : null,
+    gancho: `¿Pica hoy la ${resumen.especie.toLowerCase()} en ${nombreCorto(nombreSpot(slug))}?`,
     ola: { val: `${num(bloque.altura[0])}–${num(bloque.altura[1])} m`, sub: `periodo ${bloque.periodo} s · ${bloque.dirOla.split(" ")[0]}` },
     agua: { val: `${num(bloque.tempAgua)} °C`, sub: `viento ${bloque.viento} km/h ${bloque.dirViento}` },
     indice: { puntuacion: resumen.puntuacion, nivel: resumen.nivel, especie: resumen.especie, tramo: resumen.mejorTramo ? `Mejores horas: ${resumen.mejorTramo.texto}` : "" },
-    credito: `${creditoVideo} · Datos: Open-Meteo (CC BY 4.0) · Confederación Hidrográfica`,
+    credito: `${creditoVideo} · Datos: Open-Meteo (CC BY 4.0)${rio ? " · Confederación Hidrográfica" : ""}`,
   };
   console.log(JSON.stringify({ ...datos, marea: { ...datos.marea, serie: `${dia.length} horas` } }, null, 1));
 
@@ -195,19 +238,28 @@ async function main() {
   }
   console.log(`✓ ${rutaRelativa} (${(statSync(salida).size / 1e6).toFixed(1)} MB)`);
 
+  // Texto (2026-11-19, métricas: 0 guardados y 0 seguidores en 12 reels):
+  // gancho, un dato útil con su norma y una llamada a guardar y seguir.
+  const talla = tallaMinimaLubina(especiesDatos, spot);
   const caption = [
-    "¿Sabes lo que te espera hoy en el agua? 🌊",
+    `${datos.gancho} 🎣`,
     "",
-    "Mareas, corrientes, ríos, oleaje, clorofila, cámaras en directo y muchos más datos. En tiempo real, en una sola app.",
-    "Desde costa, en barco o en pesca submarina: para que sepas lo que te vas a encontrar antes de ir, y qué especies buscar en ese momento.",
+    `Índice de ${resumen.especie.toLowerCase()} a las ${hora}: ${resumen.puntuacion}/100.${resumen.mejorTramo ? ` Mejores horas: ${resumen.mejorTramo.texto}.` : ""}`,
+    `Marea: ${datos.marea.texto.toLowerCase()} · Ola ${datos.ola.val} · Agua ${datos.agua.val}`,
     "",
-    `Datos del vídeo: ${datos.spot}, ${fecha.split("-").reverse().join("/")} a las ${hora}.`,
+    ...(talla ? [`📏 Talla mínima de la lubina aquí: ${talla.cm} cm (${talla.norma}).`] : []),
+    "📋 Si te la quedas, se declara en PescaREC en las 24 h siguientes (RD 214/2026).",
+    "",
+    "💾 Guárdalo para tu próxima salida y síguenos para el parte de tu zona.",
+    `🔗 Mareas, olas, cámaras e índice de pesca en tiempo real, 14 días gratis: ${MARCA_ENLACE}`,
+    "",
     "El índice es una orientación con reglas públicas, no una garantía.",
-    `🔗 Pruébala 14 días gratis: ${MARCA_ENLACE}`,
-    "",
     `${creditoVideo} · Datos: Open-Meteo (CC BY 4.0)`,
     "",
-    "#pesca #fishing #pescadesdecosta #pescaembarcado #pescasubmarina #spearfishing #costaviva #mareas",
+    // Pocos y con público (2026-11-19): Instagram recomienda unos 5. #pesca
+    // (~3,7 M publicaciones) y #surfcasting (~280 mil); fuera #spinning, que
+    // es sobre todo la bici de gimnasio.
+    `#pesca #lubina #surfcasting ${hashtagsDe(spot.lat, spot.lon).split(" ")[0] || ""} #costaviva`.replace(/\s+/g, " ").trim(),
   ].join("\n");
   const campana = campanaDePieza(fecha, `reel-${nombre}`);
   writeFileSync(join(__dirname, "reel-pendiente.json"), JSON.stringify({
@@ -215,7 +267,8 @@ async function main() {
     fecha, hora, dia: new Intl.DateTimeFormat("es-ES", { weekday: "long", timeZone: "UTC" }).format(new Date(`${fecha}T12:00:00Z`)),
     campana, mercado: "es", idioma: "es", clip: { carpeta: "stock", fichero: ficheroClip, personaIdentificable: licencia.persona_identificable === false ? false : true },
   }, null, 2));
-  writeFileSync(RUTA_ROTACION, JSON.stringify({ ultimoSpot: slug, ultimoClip: ficheroClip, fecha: new Date().toISOString() }, null, 2) + "\n");
+  const historial = [...(rotacion.historial || []), { slug, fecha }].slice(-60);
+  writeFileSync(RUTA_ROTACION, JSON.stringify({ ultimoSpot: slug, ultimoClip: ficheroClip, fecha: new Date().toISOString(), historial }, null, 2) + "\n");
   writeFileSync(RUTA_ESTADO, JSON.stringify(apuntarGenerada(estado, objetivo.clave, { tipo: "reel-peces", campana }), null, 2) + "\n");
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, "generada=true\n");
 }

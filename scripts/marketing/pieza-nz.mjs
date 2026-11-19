@@ -180,7 +180,8 @@ export const CLAIMS_EN = [
   "Waves, wind, LINZ tides and a fishing index for your spot, hour by hour.",
   "Your fishing diary keeps the sea conditions of every trip.",
 ];
-export const ROTACION_REELS_NZ = ["condiciones", "especie"];
+// Solo condiciones desde el 2026-11-19 (alcance real: condiciones 68, especie 12).
+export const ROTACION_REELS_NZ = ["condiciones"];
 export function siguientePiezaNZ(ultimoIndice) {
   const i = (Number.isInteger(ultimoIndice) ? ultimoIndice + 1 : 0) % ROTACION_REELS_NZ.length;
   return { indice: i, tipo: ROTACION_REELS_NZ[i] };

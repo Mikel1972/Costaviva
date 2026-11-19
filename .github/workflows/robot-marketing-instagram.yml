@@ -102,6 +102,16 @@ jobs:
           TIPO_PIEZA: ${{ inputs.tipo }}
           MERCADO: ${{ inputs.mercado || (github.event.schedule == '40 6 * * 1,4' && 'nz') || 'es' }}
         run: |
+          # NZ sin tipo forzado (2026-11-19): ya no hay posts fijos en NZ, así
+          # que pg_cron y el respaldo no instalan nada si no toca pieza.
+          if [ "$MERCADO" = "nz" ] && [ -z "$TIPO_PIEZA" ]; then
+            TOCA=$(node --input-type=module -e '
+              import { piezaAPreparar } from "./scripts/marketing/calendario.mjs";
+              console.log(piezaAPreparar({ formato: "post", mercado: "nz", fechaForzada: process.env.FECHA_PIEZA || "" }) ? "si" : "");
+            ')
+            if [ -z "$TOCA" ]; then echo "NZ: no toca post fijo." >> "$GITHUB_STEP_SUMMARY"; echo "lanzado=true" >> "$GITHUB_OUTPUT"; fi
+            exit 0
+          fi
           if [ "$MERCADO" != "es" ] || [ -n "$TIPO_PIEZA" ]; then exit 0; fi
           FECHA=$(node --input-type=module -e '
             import { readFileSync } from "node:fs";

@@ -155,23 +155,24 @@ test("NZ: huecos a las 07:00 en Pacific/Auckland, sin funciones de la app", () =
   assert.equal(C.MERCADOS.nz.zona, "Pacific/Auckland");
   assert.equal(C.MERCADOS.nz.idioma, "en");
   const nz = C.CALENDARIO.filter((h) => h.mercado === "nz");
-  assert.ok(nz.length >= 2);
+  // Desde el 2026-11-19 solo el reel del sábado (los posts fijos no llegaban a nadie).
+  assert.deepEqual(nz.map((h) => [h.dia, h.formato]), [[6, "reel"]]);
   for (const h of nz) assert.equal(h.hora, "07:00");
-  assert.deepEqual(new Set(nz.filter((h) => h.formato === "post").map((h) => h.tipo)), new Set(["especie", "condiciones"]));
   assert.ok(nz.every((h) => h.tipo === null || C.TIPOS_NZ.includes(h.tipo)));
 });
 
 test("NZ: 'mañana' es la de NZ y la clave no choca con la de España", () => {
   // Lunes 12/10/2026 06:40 UTC = lunes 19:40 NZDT -> martes 13 (especie).
-  const p = C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T06:40:00Z"), mercado: "nz" });
+  // Sin posts fijos en NZ: la del martes solo sale forzada a mano.
+  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T06:40:00Z"), mercado: "nz" }), null);
+  const p = C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T06:40:00Z"), mercado: "nz", tipoForzado: "especie" });
   assert.deepEqual({ fecha: p.fecha, tipo: p.tipo, hora: p.hora, clave: p.clave, idioma: p.idioma, zona: p.zona },
     { fecha: "2026-10-13", tipo: "especie", hora: "07:00", clave: "2026-10-13-post-nz", idioma: "en", zona: "Pacific/Auckland" });
   // La de España del mismo martes es otra pieza: hacer una no salta la otra.
   const estado = C.apuntarGenerada({}, p.clave, {});
   assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T17:30:00Z"), estado }).clave, "2026-10-13-post");
-  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T06:40:00Z"), mercado: "nz", estado }), null);
-  // Jueves -> viernes condiciones; viernes -> reel del sábado.
-  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-15T06:40:00Z"), mercado: "nz" }).tipo, "condiciones");
+  // Jueves -> viernes ya no toca post en NZ; viernes -> reel del sábado.
+  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-15T06:40:00Z"), mercado: "nz" }), null);
   assert.equal(C.piezaAPreparar({ formato: "reel", ahora: new Date("2026-10-16T06:20:00Z"), mercado: "nz" }).fecha, "2026-10-17");
   // Miércoles en NZ no toca post; y en NZ no hay piezas de funciones.
   assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-13T06:40:00Z"), mercado: "nz" }), null);
@@ -322,7 +323,7 @@ test("NZ: los workflows preparan las de NZ la víspera de allí y nunca publican
   assert.match(reel, /rotacion-reels-nz\.json/);
   // Lunes/jueves 06:40 UTC es ya la tarde en NZ (víspera del martes/viernes)
   // y el contenedor de Instagram (24 h) sigue vivo a las 07:00 de NZ.
-  for (const [ahora, formato] of [["2026-10-12T05:40:00Z", "post"], ["2026-10-16T05:20:00Z", "reel"], ["2026-10-12T06:40:00Z", "post"], ["2026-10-15T06:40:00Z", "post"], ["2026-10-16T06:20:00Z", "reel"], ["2026-06-15T06:40:00Z", "post"]]) {
+  for (const [ahora, formato] of [["2026-10-16T05:20:00Z", "reel"], ["2026-10-16T06:20:00Z", "reel"], ["2026-06-12T05:20:00Z", "reel"]]) {
     const p = C.piezaAPreparar({ formato, ahora: new Date(ahora), mercado: "nz" });
     assert.ok(p, ahora);
     const margen = C.instanteEn(p.fecha, p.hora, "Pacific/Auckland") - new Date(ahora);
@@ -428,8 +429,31 @@ test("Respaldo retrasado hasta la madrugada: sin fecha no prepara la de pasado m
   // Con fecha forzada, a cualquier hora.
   assert.equal(C.piezaAPreparar({ formato: "post", fechaForzada: "2026-11-06", ahora: new Date("2026-11-04T23:54:00Z") }).fecha, "2026-11-06");
   // NZ: 05:40 UTC = tarde en Auckland, vale; 13:00 UTC = madrugada allí, no.
-  assert.ok(C.piezaAPreparar({ formato: "post", mercado: "nz", ahora: new Date("2026-11-09T05:40:00Z") }));
-  assert.equal(C.piezaAPreparar({ formato: "post", mercado: "nz", ahora: new Date("2026-11-09T13:00:00Z") }), null);
+  assert.ok(C.piezaAPreparar({ formato: "reel", mercado: "nz", ahora: new Date("2026-11-13T05:20:00Z") }));
+  assert.equal(C.piezaAPreparar({ formato: "reel", mercado: "nz", ahora: new Date("2026-11-13T13:00:00Z") }), null);
   const yml = readFileSync(".github/workflows/robot-marketing-instagram.yml", "utf8");
   assert.match(yml, /horaLocal\(MERCADOS\.es\.zona\) < HORA_MINIMA_VISPERA/);
+});
+
+test("reel de peces (2026-11-19): 88 spots sin repetir en 3 semanas, gancho, dato útil y llamada a guardar", async () => {
+  const R = await import("../scripts/marketing/reel-peces.mjs");
+  const spots = R.spotsEspana();
+  assert.ok(spots.length > 60, `${spots.length} spots`);
+  assert.ok(!spots.some((s) => s.startsWith("nz-")));
+  // Lo que salió hace menos de 21 días no entra; primero lo que nunca salió.
+  assert.deepEqual(R.ordenRotacion(["a", "b", "c"], [{ slug: "a", fecha: "2026-11-10" }, { slug: "b", fecha: "2026-10-01" }], "2026-11-19"), ["c", "b"]);
+  const especies = JSON.parse(readFileSync("assets/datos/especies.json", "utf8"));
+  assert.equal(R.tallaMinimaLubina(especies, { lat: 43.43, lon: -2.81 }).cm, 42); // Bakio
+  assert.match(R.hashtagsDe(39.47, -0.32), /#pescamediterraneo/);
+  const src = readFileSync("scripts/marketing/reel-peces.mjs", "utf8");
+  assert.match(src, /Guárdalo para tu próxima salida y síguenos/);
+  assert.match(src, /gancho: `¿Pica hoy la/);
+  const plantilla = readFileSync("scripts/marketing/plantillas/reel-peces.html", "utf8");
+  assert.match(plantilla, /if \(d\.gancho\) \$\("gancho"\)\.textContent = d\.gancho;/);
+  assert.match(plantilla, /else \$\("t-rio"\)\.style\.display = "none";/);
+});
+
+test("métricas: reproducciones, compartidos y seguidores ganados por pieza", () => {
+  const src = readFileSync("scripts/marketing/medir-metricas-instagram.mjs", "utf8");
+  for (const m of ["views", "shares", "follows"]) assert.match(src, new RegExp(`\\["${m}",`));
 });
