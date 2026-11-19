@@ -432,6 +432,7 @@
   "hoja.pie": "Swipe right to see all 24 hours. Waves are those reaching the shore (learned from the cameras); the score uses the same rules as the activity window. A guide, not a guarantee.",
   "hoja.nota_premium": "🔒 Premium",
   "hoja.mejor_premium": "🔒 Best time to fish and the score per fish, with Premium",
+  "hoja.pez_premium": "🔒 Choose the fish · Premium",
   "hoja.ahora": "Now",
   "hoja.modelo": "forecast",
   "hoja.pleamar": "High tide",

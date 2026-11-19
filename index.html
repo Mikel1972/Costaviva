@@ -1121,7 +1121,8 @@
   .hp-nota b { font-family: var(--f-titulo); font-size: 14px; min-width: 34px; padding: 2px 6px; border-radius: 999px; color: var(--mar); }
   .hp-nota b.bueno { background: var(--nivel-bueno); } .hp-nota b.medio { background: var(--nivel-medio); } .hp-nota b.malo { background: var(--nivel-malo); }
   .hp-tabla tr.hp-extra[hidden] { display: none; }
-  .hp-pez[hidden] { display: none; }
+  .hp-pez select[hidden], .hp-pez a[hidden] { display: none; }
+  .hp-pez-premium { flex: 1; min-width: 0; font: 800 14px var(--f-texto); color: var(--sobre-acento); background: var(--degradado-fuerte); border-radius: 999px; padding: 7px 12px; text-decoration: none; text-align: center; }
   .hp-candado { display: inline-block; font-weight: 800; font-size: 12px; color: var(--sobre-acento); background: var(--degradado-fuerte); border-radius: 999px; padding: 4px 10px; text-decoration: none; }
   .hp-candado-mini { opacity: .55; }
   .hp-resumen li a { color: var(--acento); font-weight: 700; }
@@ -6361,7 +6362,9 @@ function pintarHojaPrevision() {
   // Sin Premium (Mikel, 2026-11-19: "Candado"): la nota y el mejor momento
   // van con candado y no se elige pez; el resto de la hoja es gratis.
   const bloqueada = document.getElementById("panel").classList.contains("sin-premium");
-  document.querySelector(".hp-pez").hidden = bloqueada;
+  // El selector de pez se ve, con candado (Mikel, 2026-11-19).
+  document.getElementById("hpPez").hidden = bloqueada;
+  document.getElementById("hpPezPremium").hidden = !bloqueada;
   const notas = bloqueada ? [] : HP.notasPorHora(hpEstado.serie, hpEstado.resultados, hpEstado.especieId || null);
   document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie, notas)
     .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre))}</li>`).join("")
@@ -7340,7 +7343,7 @@ function comprobarAvisoRayos() {
       <button type="button" class="hp-chip" data-hp-mod="embarcacion" data-i18n="hoja.mod.embarcacion">🚤 Embarcación</button>
       <button type="button" class="hp-chip" data-hp-mod="submarina" data-i18n="hoja.mod.submarina">🤿 Submarina</button>
     </div>
-    <label class="hp-pez" for="hpPez"><span data-i18n="hoja.pez">🐟 Pez</span> <select id="hpPez"></select></label>
+    <label class="hp-pez" for="hpPez"><span data-i18n="hoja.pez">🐟 Pez</span> <select id="hpPez"></select><a class="hp-pez-premium" id="hpPezPremium" href="/suscripcion" hidden data-i18n="hoja.pez_premium">🔒 Elegir el pez · Premium</a></label>
   </div>
   <div class="hp-cuerpo">
     <section class="hp-resumen" aria-labelledby="hpResTit">
