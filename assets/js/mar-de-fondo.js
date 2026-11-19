@@ -75,3 +75,50 @@ export function marDeFondo(hsFondo, periodoFondo, coefOrilla = null) {
 // Valor del factor "resaca" del índice de pesca (∈ [-1, 0]): no suma nunca,
 // solo resta cuando la mar tira.
 export const VALOR_RESACA = { suave: 0, moderada: -0.3, fuerte: -0.7, muy_fuerte: -1 };
+
+// ---------------------------------------------------------------------------
+// Periodo de la mar de fondo calibrado con las boyas (2026-11-19, paso 2 del
+// plan acordado con Mikel). La fórmula de la subida del agua usa el periodo
+// de PICO (Tp, el que miden las boyas). Con 30 días de las 26 boyas de
+// Puertos del Estado (19/10-18/11/2026):
+//   swell_wave_period (periodo MEDIO de la mar de fondo de Open-Meteo) se
+//     queda corto: Tp de la boya / modelo = 1,29 de mediana en el Cantábrico
+//     y Galicia (2,3 s menos de media; 2,8 s con temporal);
+//   swell_wave_peak_period (periodo de PICO) casi clava la boya: 0,98
+//     (MAE 1,2 s).
+// Se usa el de pico; donde el modelo no lo da (Canarias), el medio por el
+// cociente aprendido. El cociente lo reaprende cada día
+// scripts/fuentes/periodo-boyas.mjs (functions/_lib/periodo-boyas-datos.js)
+// y vale el de la boya más cercana a menos de MAX_KM_BOYA_PERIODO; si no,
+// la mediana de todas.
+export const MAX_KM_BOYA_PERIODO = 300;
+
+function kmEntre(lat1, lon1, lat2, lon2) {
+  const x = (lon2 - lon1) * Math.cos(((lat1 + lat2) / 2) * (Math.PI / 180)) * 111.32;
+  const y = (lat2 - lat1) * 110.57;
+  return Math.hypot(x, y);
+}
+
+// tabla: { global: { pico, medio }, boyas: [{ codigo, nombre, lat, lon, n, pico, medio }] }
+export function factoresPeriodo(tabla, lat, lon, maxKm = MAX_KM_BOYA_PERIODO) {
+  const g = tabla?.global || {};
+  let mejor = null, dMin = Infinity;
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    for (const b of tabla?.boyas || []) {
+      const d = kmEntre(lat, lon, b.lat, b.lon);
+      if (d < dMin) { dMin = d; mejor = b; }
+    }
+  }
+  const cerca = mejor && dMin <= maxKm ? mejor : null;
+  const val = (k) => (cerca && Number.isFinite(cerca[k]) ? cerca[k] : Number.isFinite(g[k]) ? g[k] : 1);
+  return { pico: val("pico"), medio: val("medio"), boya: cerca ? cerca.codigo : null };
+}
+
+// Periodo de pico de la mar de fondo (s) para la fórmula: el de pico del
+// modelo por su cociente o, sin él, el medio por el suyo.
+export function periodoFondoPico(pico, medio, f = null) {
+  const fp = Number.isFinite(f?.pico) ? f.pico : 1, fm = Number.isFinite(f?.medio) ? f.medio : 1;
+  if (Number.isFinite(pico) && pico > 0) return pico * fp;
+  if (Number.isFinite(medio) && medio > 0) return medio * fm;
+  return null;
+}

@@ -292,12 +292,24 @@ jobs:
           METNO_CONTACTO: ${{ vars.METNO_CONTACTO }}
           OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
         run: node scripts/fuentes/comparar-boyas.mjs ambos --dias 14
+      # Periodo de la mar de fondo calibrado con las boyas (2026-11-19):
+      # functions/_lib/periodo-boyas-datos.js solo cambia si algún cociente
+      # se mueve más de un 3 %. Si falla, la comparativa se guarda igual.
+      - name: Aprender el periodo de la mar de fondo con las boyas
+        continue-on-error: true
+        env:
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+        run: node scripts/fuentes/periodo-boyas.mjs
       - name: Guardar la comparativa en el repo
         run: |
           git config user.name "Costaviva (comparativa de fuentes)"
           git config user.email "noreply@anthropic.com"
+          HAY=0
           git add datos-robots/fuentes
-          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
-          git commit -qm "Comparativa de fuentes contra boyas [skip ci]"
+          if ! git diff --cached --quiet; then git commit -qm "Comparativa de fuentes contra boyas [skip ci]"; HAY=1; fi
+          # El periodo va en un commit aparte SIN [skip ci]: tiene que desplegar.
+          git add functions/_lib/periodo-boyas-datos.js
+          if ! git diff --cached --quiet; then git commit -qm "Mar de fondo: periodo reaprendido de las boyas"; HAY=1; fi
+          if [ "$HAY" = 0 ]; then echo "Sin cambios."; exit 0; fi
           for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
           echo "::error::No se pudo subir la comparativa"; exit 1

@@ -19,7 +19,8 @@ import { agruparPorZona, horaLocalISO, paramZona, zonaDeSpot, ZONA_POR_DEFECTO }
 import { oleajeCostero, zonaOleaje, rangoAltura } from "./_lib/oleaje-costero.js";
 import { coefOrillaSpot, tablaOrillaSpot, lecturasContraOrilla } from "./_lib/coef-costa.js";
 import COEF_COSTA from "./_lib/coef-costa-datos.js";
-import { marDeFondo } from "../assets/js/mar-de-fondo.js";
+import { marDeFondo, factoresPeriodo, periodoFondoPico } from "../assets/js/mar-de-fondo.js";
+import PERIODO_BOYAS from "./_lib/periodo-boyas-datos.js";
 // Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
 import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
@@ -703,7 +704,7 @@ export async function pedirPorZona(spots, api, resto, opciones) {
 
 // Variables de Open-Meteo Marine. En NZ sin sea_level_height_msl: la marea
 // sale de LINZ (functions/_lib/nz/prevision-nz.js).
-const VARIABLES_MARINE = "wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
+const VARIABLES_MARINE = "wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,swell_wave_peak_period,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
 
 async function previsionTodosSpots(spots, env = {}, { mareaOpenMeteo = true } = {}) {
   const [marinos, vientos, historicoPresion, coeficientes] = await Promise.all([
@@ -780,6 +781,8 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
   if (idxAhoraOla === -1) idxAhoraOla = 0;
 
   const bloques = [];
+  // Cociente del periodo de la boya más cercana (mar-de-fondo.js).
+  const factoresFondo = factoresPeriodo(PERIODO_BOYAS, spot.lat, spot.lon);
   for (let i = idxAhoraOla; i < horasOla.length && bloques.length < 8; i++) {
     const h = horaLocalDesdeISO(horasOla[i]);
     if (!(h in HORAS_BLOQUE)) continue;
@@ -815,10 +818,11 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
       : olaEstatica;
     // Mar de fondo en la orilla (mar-de-fondo.js): misma corrección de zona
     // y mismo coeficiente de orilla (o de abrigo) que la ola del spot.
+    // Periodo de PICO calibrado con las boyas (periodo-boyas-datos.js).
     const hsFondo = marino.hourly.swell_wave_height?.[i];
     const fondo = marDeFondo(
       Number.isFinite(hsFondo) ? hsFondo * factor : null,
-      marino.hourly.swell_wave_period?.[i] ?? null,
+      periodoFondoPico(marino.hourly.swell_wave_peak_period?.[i], marino.hourly.swell_wave_period?.[i], factoresFondo),
       orilla ? orilla.coef : olaEstatica.coefAbrigo
     );
 
@@ -857,7 +861,7 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     marea,
     presion,
     // Mar abierto / zona abrigada y dónde cae la celda del modelo.
-    zonaOleaje: { ...zonaOleaje(spot, marino.latitude, marino.longitude), orilla: tablaOrillaSpot(COEF_COSTA, spot.slug) },
+    zonaOleaje: { ...zonaOleaje(spot, marino.latitude, marino.longitude), orilla: tablaOrillaSpot(COEF_COSTA, spot.slug), periodoFondo: factoresPeriodo(PERIODO_BOYAS, spot.lat, spot.lon) },
     bloques,
   };
 }
