@@ -42,7 +42,7 @@ import { CAMARAS, camarasConLuz } from "./camaras.mjs";
 import {
   calibrarTodo, estimarAltura, claveCalibracion, emparejarEtiquetaSpot, elevacionSolar, ELEVACION_MINIMA, ERROR_MINIMO_POCOS_DATOS,
   ruidoCamara, camaraSustituyeModelo, etiquetasClaudeParaCalibrar,
-  muestrasCoefCosta,
+  muestrasCoefCosta, correlacionFondo,
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
 import { aprenderCoefCosta, coefCostaDe } from "../../functions/_lib/coef-costa.js";
@@ -174,6 +174,11 @@ function resumir(porEncuadre, extra = {}) {
       encuadre: id,
       espuma: mediana(usar.map((m) => m.espuma)),
       espumaMax: Math.max(...usar.map((m) => m.espuma ?? 0)),
+      // Estructura (espuma.mjs, estructuraEspuma): orilla frente a mar
+      // adentro y líneas frente a manchas.
+      espumaCerca: mediana(usar.map((m) => m.espumaCerca).filter(Number.isFinite)),
+      espumaLejos: mediana(usar.map((m) => m.espumaLejos).filter(Number.isFinite)),
+      lineas: mediana(usar.map((m) => m.lineas).filter(Number.isFinite)),
       frames: d.medidas.length,
       arena: mediana(usar.map((m) => m.arena)),
       brilloMedio: mediana(usar.map((m) => m.brilloMedio)),
@@ -423,6 +428,8 @@ function escribirCalibracion(fecha, historial, etiquetas, calibracion) {
     fecha, lineasHistorial: historial.length, etiquetas: etiquetas.length,
     etiquetasClaude: etiquetas.filter((e) => e.origen === "claude").length,
     calibracion, sustitucion: sustitucionPorCamara(historial, calibracion),
+    // ¿La estructura de la espuma separa mar de fondo y mar de viento?
+    fondoVsEspuma: correlacionFondo(historial),
   }, null, 1) + "\n");
 }
 

@@ -114,10 +114,26 @@ export function medirEspuma(data, width, height, roi) {
   const p25 = ordenados[Math.floor(ordenados.length * 0.25)];
   const umbral = Math.max(UMBRAL_BRILLO_MIN, Math.min(med + MARGEN_SOBRE_MEDIANA, p25 + MARGEN_SOBRE_AGUA));
   let blancos = 0, brillantes = 0;
+  const ancho = x1 - x0, alto = y1 - y0;
+  const porFila = new Array(alto).fill(0), rachaFila = new Array(alto).fill(0);
   for (let i = 0; i < n; i++) {
     if (brillos[i] >= UMBRAL_BRILLANTE && sats[i] <= UMBRAL_SATURACION_ESPUMA) brillantes++;
-    if (brillos[i] >= umbral && sats[i] <= UMBRAL_SATURACION_ESPUMA) blancos++;
+    const fila = Math.floor(i / ancho);
+    if (brillos[i] >= umbral && sats[i] <= UMBRAL_SATURACION_ESPUMA) {
+      blancos++;
+      porFila[fila]++;
+    }
   }
+  // Racha horizontal más larga de espuma en cada fila (para `lineas`).
+  for (let f = 0; f < alto; f++) {
+    let racha = 0, max = 0;
+    for (let c = 0; c < ancho; c++) {
+      const i = f * ancho + c;
+      if (brillos[i] >= umbral && sats[i] <= UMBRAL_SATURACION_ESPUMA) { racha++; if (racha > max) max = racha; } else racha = 0;
+    }
+    rachaFila[f] = max;
+  }
+  const estructura = estructuraEspuma(porFila, rachaFila, ancho);
   let estado = "ok";
   if (brilloMedio < BRILLO_MIN_CON_LUZ) estado = "sin_luz";
   else if (brillantes / n > FRACCION_BRILLANTE_DUDOSA && desviacion < DESVIACION_MAX_DUDOSA) estado = "dudosa";
@@ -129,8 +145,43 @@ export function medirEspuma(data, width, height, roi) {
     arena: +(arena / n).toFixed(3),
     desviacion: +desviacion.toFixed(3),
     pixeles: n,
+    ...estructura,
     estado,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Estructura de la espuma (2026-11-19, paso 4 del plan de la mar de fondo con
+// Mikel: "cuando ves mucha espuma en la costa es porque hay mar de fondo [...]
+// en los casos de mar fuerte se genera mucha ola por la violencia de la ola
+// pero no tiene por qué haber mar de fondo"). Sin IA, sobre los mismos
+// píxeles de espuma:
+//   espumaCerca / espumaLejos: espuma de la mitad de ABAJO del recorte (más
+//     cerca de la cámara, de la orilla) y de la de ARRIBA (más mar adentro).
+//     Vale para las cámaras que miran al mar desde tierra (casi todas); cada
+//     cámara se compara siempre con su propio histórico.
+//   lineas: de las filas con espuma, la fracción del ancho que ocupa su racha
+//     horizontal más larga (media). La mar de fondo rompe en LÍNEAS largas y
+//     paralelas a la orilla (valor alto); los borreguitos de la mar de viento
+//     son MANCHAS sueltas (valor bajo).
+//   perfil: espuma por cuartos del recorte, de mar adentro (0) a la orilla (3).
+// Se guardan en cada lectura; calibracion.mjs (correlacionFondo) mide si
+// separan de verdad mar de fondo y mar de viento antes de usarlos para nada.
+export const FILAS_PERFIL = 4;
+export const MIN_ESPUMA_FILA = 0.02;
+export function estructuraEspuma(porFila, rachaFila, ancho) {
+  const alto = porFila.length;
+  if (!alto || !ancho) return { espumaCerca: null, espumaLejos: null, lineas: null, perfil: null };
+  const mitad = Math.floor(alto / 2);
+  const frac = (a, b) => {
+    const filas = porFila.slice(a, b);
+    return filas.length ? +(filas.reduce((x, y) => x + y, 0) / (filas.length * ancho)).toFixed(4) : null;
+  };
+  const conEspuma = porFila.map((c, f) => ({ c, f })).filter(({ c }) => c / ancho >= MIN_ESPUMA_FILA);
+  const lineas = conEspuma.length ? +(conEspuma.reduce((a, { f }) => a + rachaFila[f] / ancho, 0) / conEspuma.length).toFixed(3) : 0;
+  const perfil = [];
+  for (let k = 0; k < FILAS_PERFIL; k++) perfil.push(frac(Math.floor((k * alto) / FILAS_PERFIL), Math.floor(((k + 1) * alto) / FILAS_PERFIL)));
+  return { espumaCerca: frac(mitad, alto), espumaLejos: frac(0, mitad), lineas, perfil };
 }
 
 // ---------------------------------------------------------------------------

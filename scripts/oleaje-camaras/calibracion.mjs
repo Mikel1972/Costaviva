@@ -401,3 +401,51 @@ export function muestrasCoefCosta(historial, etiquetas, centroBanda, toleranciaM
   }
   return out;
 }
+
+// ---------------------------------------------------------------------------
+// ¿Separa la estructura de la espuma la mar de fondo de la de viento?
+// (2026-11-19, paso 4 del plan de la mar de fondo). Por cámara, correlación de
+// rangos (Spearman) entre cada rasgo de la espuma (espuma.mjs,
+// estructuraEspuma) y la parte de mar de fondo del modelo (hsFondo / hs),
+// solo con lecturas "ok" con algo de espuma. Es una comprobación: nada lo usa
+// hasta que haya MIN_LECTURAS_FONDO lecturas y una correlación clara.
+export const MIN_LECTURAS_FONDO = 60;
+function rangos(v) {
+  const o = v.map((x, i) => ({ x, i })).sort((a, b) => a.x - b.x);
+  const r = new Array(v.length);
+  for (let k = 0; k < o.length; ) {
+    let j = k;
+    while (j + 1 < o.length && o[j + 1].x === o[k].x) j++;
+    for (let t = k; t <= j; t++) r[o[t].i] = (k + j) / 2 + 1;
+    k = j + 1;
+  }
+  return r;
+}
+export function spearman(a, b) {
+  if (a.length !== b.length || a.length < 3) return null;
+  const ra = rangos(a), rb = rangos(b), n = a.length;
+  const ma = ra.reduce((x, y) => x + y, 0) / n, mb = rb.reduce((x, y) => x + y, 0) / n;
+  let num = 0, da = 0, db = 0;
+  for (let i = 0; i < n; i++) { num += (ra[i] - ma) * (rb[i] - mb); da += (ra[i] - ma) ** 2; db += (rb[i] - mb) ** 2; }
+  return da && db ? +(num / Math.sqrt(da * db)).toFixed(3) : null;
+}
+export function correlacionFondo(historial, { minEspuma = 0.01 } = {}) {
+  const porCam = {};
+  for (const l of historial || []) {
+    const ma = l?.marAbierto;
+    if (l?.estado !== "ok" || !(l.espuma >= minEspuma) || !ma || !(ma.hs > 0) || !Number.isFinite(ma.hsFondo)) continue;
+    if (!Number.isFinite(l.lineas) || !Number.isFinite(l.espumaCerca) || !Number.isFinite(l.espumaLejos)) continue;
+    (porCam[l.camara] ||= []).push({ fondo: Math.min(1, ma.hsFondo / ma.hs), lineas: l.lineas, cerca: l.espumaCerca / Math.max(1e-4, l.espumaCerca + l.espumaLejos) });
+  }
+  const out = {};
+  for (const [cam, v] of Object.entries(porCam)) {
+    const fondo = v.map((x) => x.fondo);
+    out[cam] = {
+      n: v.length,
+      suficiente: v.length >= MIN_LECTURAS_FONDO,
+      lineas: spearman(v.map((x) => x.lineas), fondo),
+      cerca: spearman(v.map((x) => x.cerca), fondo),
+    };
+  }
+  return out;
+}
