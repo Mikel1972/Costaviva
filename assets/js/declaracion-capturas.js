@@ -87,3 +87,68 @@ export function declaracionNecesaria(cientifico, region) {
 export function textoParaDeclarar(campos) {
   return campos.filter(([, v]) => v != null && v !== "").map(([e, v]) => `${e}: ${v}`).join("\n");
 }
+
+// --- Recordatorio (2026-11-19) -------------------------------------------
+// Sin notificaciones push ni servidor: un evento de calendario (.ics) con
+// alarma que el móvil guarda en su propio calendario. Nada sale de Costaviva.
+
+const HORAS_ANTES_DEL_LIMITE = 4;
+
+// Etiqueta local "AAAA-MM-DDTHH:MM" del final de la actividad: hora de fin de
+// la salida (día siguiente si es anterior a la de inicio) o, si no la hay,
+// la hora de la captura. null si no hay ninguna.
+export function etiquetaFinActividad(salida, captura) {
+  if (!salida?.fecha) return null;
+  const h = (x) => (x ? String(x).slice(0, 5) : null);
+  const fin = h(salida.hora_fin), ini = h(salida.hora_inicio), cap = h(captura?.hora);
+  if (fin) {
+    const fecha = ini && fin < ini ? sumarUnDia(salida.fecha) : salida.fecha;
+    return `${fecha}T${fin}`;
+  }
+  if (cap) {
+    const fecha = ini && cap < ini ? sumarUnDia(salida.fecha) : salida.fecha;
+    return `${fecha}T${cap}`;
+  }
+  return null;
+}
+
+function sumarUnDia(fecha) {
+  const d = new Date(`${fecha}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+const icsFecha = (ms) => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+const icsTexto = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+
+// Evento de 30 min que empieza HORAS_ANTES_DEL_LIMITE antes de que venza el
+// plazo, con alarma al empezar. `finMs`: final de la actividad (UTC).
+export function icsRecordatorio({ uid, finMs, plazoHoras, titulo, descripcion, ahoraMs = Date.now() }) {
+  const limite = finMs + plazoHoras * 3600e3;
+  const inicio = Math.max(limite - HORAS_ANTES_DEL_LIMITE * 3600e3, ahoraMs + 5 * 60e3);
+  return [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Costaviva//Declarar captura//ES", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${uid}@costaviva.org`,
+    `DTSTAMP:${icsFecha(ahoraMs)}`,
+    `DTSTART:${icsFecha(inicio)}`,
+    `DTEND:${icsFecha(inicio + 30 * 60e3)}`,
+    `SUMMARY:${icsTexto(titulo)}`,
+    `DESCRIPTION:${icsTexto(descripcion)}`,
+    "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsTexto(titulo)}`, "TRIGGER:PT0M", "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR", "",
+  ].join("\r\n");
+}
+
+// Capturas marcadas como "ya declarada" en este dispositivo (localStorage;
+// es solo una comodidad: si se borra, vuelve a salir el aviso).
+const CLAVE_DECLARADAS = "cv-declaradas";
+export function leerDeclaradas(almacen = globalThis.localStorage) {
+  try { return new Set(JSON.parse(almacen?.getItem(CLAVE_DECLARADAS) || "[]")); } catch { return new Set(); }
+}
+export function marcarDeclarada(id, almacen = globalThis.localStorage) {
+  try {
+    const s = leerDeclaradas(almacen); s.add(String(id));
+    almacen?.setItem(CLAVE_DECLARADAS, JSON.stringify([...s].slice(-500)));
+  } catch { /* sin almacenamiento: no pasa nada */ }
+}

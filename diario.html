@@ -127,6 +127,7 @@
   .aviso-declarar { margin-top: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linea); font-size: 12px; color: var(--tinta); }
   .aviso-declarar .acciones { margin-top: 4px; }
   .aviso-declarar .acciones button { background: none; border: none; padding: 0; color: var(--acento); font-size: 12px; cursor: pointer; text-decoration: underline; }
+  .aviso-declarar.hecho { color: var(--ok-texto); border-style: dashed; }
   .aviso-declarar .norma { margin-top: 2px; font-size: 10px; color: var(--tinta-3); }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
   .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
@@ -308,7 +309,7 @@ async function fondoSalida(lat, lon, modalidad) {
 }
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
-import { declaracionNecesaria, puntoEnEspanaOPortugal, textoParaDeclarar } from "/assets/js/declaracion-capturas.js";
+import { declaracionNecesaria, puntoEnEspanaOPortugal, textoParaDeclarar, etiquetaFinActividad, icsRecordatorio, leerDeclaradas, marcarDeclarada } from "/assets/js/declaracion-capturas.js";
 import { solLuna } from "/assets/js/sol-luna.js";
 import { extrasMomento, HOURLY_MARINO_EXTRAS, HOURLY_TIEMPO_EXTRAS } from "/assets/js/extras-momento.js";
 // Temperatura del agua medida con sonda (2026-10-10).
@@ -1624,6 +1625,26 @@ function avisoDeclaracionHTML(captura, salida, cientifico) {
   if (!salida || !puntoEnEspanaOPortugal(salida.lat, salida.lon)) return "";
   const d = declaracionNecesaria(cientifico, Regiones.regionPorCoordenadas(salida.lat, salida.lon));
   if (!d) return "";
+  if (leerDeclaradas().has(String(captura.id))) {
+    return `<div class="aviso-declarar hecho" role="note">✓ ${I18n.t("diario.declarar.hecho", { app: d.app })}</div>`;
+  }
+  // Recordatorio en el calendario del móvil si el plazo aún no ha vencido.
+  let botonRecordar = "";
+  const etiquetaFin = etiquetaFinActividad(salida, captura);
+  if (etiquetaFin) {
+    const zona = Regiones.zonaPorCoordenadas(salida.lat, salida.lon);
+    const finMs = Regiones.msDeEtiqueta(etiquetaFin, zona);
+    const limiteMs = finMs + d.plazo_horas * 3600e3;
+    if (limiteMs > Date.now()) {
+      const limiteTxt = Regiones.isoLocal(limiteMs, zona).replace("T", " ");
+      const ics = icsRecordatorio({
+        uid: `declarar-${captura.id}`, finMs, plazoHoras: d.plazo_horas,
+        titulo: I18n.t("diario.declarar.ics_titulo", { especie: captura.especie, app: d.app }),
+        descripcion: I18n.t("diario.declarar.ics_texto", { app: d.app, limite: limiteTxt }),
+      });
+      botonRecordar = ` · <button type="button" class="recordar-declaracion" data-ics="${escNombre(ics)}" data-nombre="${escNombre(`declarar-${captura.especie}`.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}.ics">${I18n.t("diario.declarar.recordar")}</button>`;
+    }
+  }
   const texto = textoParaDeclarar([
     [I18n.t("diario.declarar.campo_especie"), `${captura.especie} (${cientifico})`],
     [I18n.t("diario.declarar.campo_fecha"), salida.fecha],
@@ -1636,7 +1657,7 @@ function avisoDeclaracionHTML(captura, salida, cientifico) {
     ? `<a href="${d.enlaces.ios}" target="_blank" rel="noopener">iPhone</a> · <a href="${d.enlaces.android}" target="_blank" rel="noopener">Android</a>`
     : `<a href="${d.enlaces.info}" target="_blank" rel="noopener">${I18n.t("diario.declarar.info")}</a>`;
   return `<div class="aviso-declarar" role="note">📋 ${I18n.t("diario.declarar.aviso", { app: d.app, horas: d.plazo_horas })}
-    <div class="acciones">${enlaces} · <button type="button" class="copiar-declaracion" data-texto="${escNombre(texto)}">${I18n.t("diario.declarar.copiar")}</button></div>
+    <div class="acciones">${enlaces} · <button type="button" class="copiar-declaracion" data-texto="${escNombre(texto)}">${I18n.t("diario.declarar.copiar")}</button>${botonRecordar} · <button type="button" class="marcar-declarada" data-id="${captura.id}">${I18n.t("diario.declarar.ya")}</button></div>
     <div class="norma">${escNombre(d.norma)}</div></div>`;
 }
 
@@ -2473,6 +2494,22 @@ async function abrirDia(iso, fechaObj) {
     btn.addEventListener("click", async () => {
       try { await navigator.clipboard.writeText(btn.dataset.texto); btn.textContent = I18n.t("diario.declarar.copiado"); }
       catch { prompt(I18n.t("diario.declarar.copiar"), btn.dataset.texto); }
+    });
+  });
+  contEl.querySelectorAll(".recordar-declaracion").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const url = URL.createObjectURL(new Blob([btn.dataset.ics], { type: "text/calendar" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = btn.dataset.nombre;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    });
+  });
+  contEl.querySelectorAll(".marcar-declarada").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      marcarDeclarada(btn.dataset.id);
+      const caja = btn.closest(".aviso-declarar");
+      if (caja) { caja.classList.add("hecho"); caja.textContent = "✓ " + I18n.t("diario.declarar.hecho_corto"); }
     });
   });
   contEl.querySelectorAll(".editar-captura").forEach((btn) => {
