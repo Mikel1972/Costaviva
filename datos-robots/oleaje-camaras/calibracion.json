@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-19T08:43:49.966Z",
- "lineasHistorial": 11498,
+ "fecha": "2026-11-19T09:07:47.110Z",
+ "lineasHistorial": 11509,
  "etiquetas": 941,
  "etiquetasClaude": 250,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1196,
+   "a": 1.1223,
    "p": 0.5,
-   "n": 329,
+   "n": 330,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -22,7 +22,7 @@
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.094
+   "correlacion": -0.096
   },
   "hondarribia/bocana": {
    "a": 3.1633,
@@ -129,9 +129,9 @@
    "correlacion": 0.412
   },
   "deba/rompiente": {
-   "a": 3.5607,
+   "a": 3.5818,
    "p": 0.5,
-   "n": 271,
+   "n": 272,
    "nEtiquetas": 37,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.355
+   "correlacion": 0.348
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -266,9 +266,9 @@
    "correlacion": 0.077
   },
   "berria/dinamico": {
-   "a": 2.9727,
+   "a": 2.9819,
    "p": 0.5,
-   "n": 414,
+   "n": 415,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -282,12 +282,12 @@
     "2026-11-04T16",
     "2026-11-06T16"
    ],
-   "dias": 41,
+   "dias": 42,
    "hMin": 0.27,
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.271
+   "correlacion": 0.268
   },
   "mutriku/principal": {
    "a": 10.8748,
@@ -489,8 +489,8 @@
    "sustituye": true,
    "motivo": "66 etiquetas",
    "ruido": {
-    "ruido": 0.598,
-    "pares": 144
+    "ruido": 0.605,
+    "pares": 145
    }
   },
   "donostia": {
@@ -577,16 +577,16 @@
    "sustituye": true,
    "motivo": "64 etiquetas",
    "ruido": {
-    "ruido": 0.886,
-    "pares": 187
+    "ruido": 0.893,
+    "pares": 188
    }
   },
   "castrourdiales": {
    "sustituye": true,
    "motivo": "42 etiquetas",
    "ruido": {
-    "ruido": 0.553,
-    "pares": 76
+    "ruido": 0.521,
+    "pares": 77
    }
   },
   "nz-napier": {
