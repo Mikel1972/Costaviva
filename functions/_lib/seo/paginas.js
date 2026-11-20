@@ -16,6 +16,7 @@ import {
 } from "./datos.js";
 import { NOMBRE_MODALIDAD, MODALIDADES } from "../../../assets/js/ventana-actividad.js";
 import { zonaDeSpot } from "../../../assets/js/regiones.js";
+import { tituloPescaRegion } from "../../mareas/_regiones.js";
 
 const nombreRegion = (r) => r.nombre.split(" (")[0];
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
@@ -176,7 +177,9 @@ export function paginaRegionSpots(region, spots, especiesDatos, mes) {
     .filter((e) => regionesEsp.some((r) => e.presencia?.[r]?.meses?.includes(mes)))
     .map((e) => ({ slug: slugEspecie(e.id), nombre: e.nombres?.es || e.id }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  const titulo = `Pesca en ${nombre}: ${del.length} spots, especies y temporada | Costaviva`;
+  // Con las zonas donde están los spots (2026-11-19): "golfo de cadiz pesca"
+  // pos. 8,7 y "pesca en portugal" pos. 17,7, sin clics.
+  const titulo = tituloPescaRegion(region, del.length) || `Pesca en ${nombre}: ${del.length} spots, especies y temporada | Costaviva`;
   const descripcion = `Spots de pesca en ${nombre} (${del.length}) y especies de temporada en ${mesLargo(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fondo, profundidad y condiciones de hoy.`;
   const migas = [{ nombre: "Spots", ruta: "/spots" }, { nombre, ruta }];
   const ld = [
