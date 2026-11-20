@@ -1,10 +1,10 @@
 {
- "actualizado": "2026-11-20T09:39:52.726Z",
+ "actualizado": "2026-11-20T10:10:08.460Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "bakio",
-   "alto": 9,
+   "alto": 11,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -13,7 +13,7 @@
   {
    "clave": "orio",
    "alto": 0,
-   "bajo": 8,
+   "bajo": 9,
    "spots": [
     "orio"
    ]
@@ -36,7 +36,7 @@
   },
   {
    "clave": "sopelana",
-   "alto": 4,
+   "alto": 5,
    "bajo": 0,
    "spots": [
     "sopelana"
@@ -430,6 +430,42 @@
    "antes": 0.4,
    "referencia": null,
    "visto": "2026-11-20T09:39:52.726Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-21T06:00",
+   "antes": 1.1,
+   "referencia": 1,
+   "visto": "2026-11-20T10:10:08.460Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-21T09:00",
+   "antes": 1,
+   "referencia": 0.9,
+   "visto": "2026-11-20T10:10:08.460Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-20T21:00",
+   "antes": 1.3,
+   "referencia": 1.2,
+   "visto": "2026-11-20T10:10:08.460Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "bajo",
+   "horaISO": "2026-11-21T00:00",
+   "antes": 0.9,
+   "referencia": null,
+   "visto": "2026-11-20T10:10:08.460Z"
   }
  ]
 }
