@@ -117,8 +117,9 @@ test("/pt/spots/region/portugal y la española con su par", () => {
   assert.equal((html.match(/<li><a href="\/pt\/spots\/[a-z]+">/g) || []).length, spotsPT(SPOTS).length);
   const region = REGIONES_MAREAS.find((r) => r.slug === "portugal");
   assert.match(paginaRegionSpots(region, SPOTS, especies, 10).html, /hreflang="pt-PT"/);
+  // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
   const galicia = REGIONES_MAREAS.find((r) => r.slug === "galicia");
-  assert.doesNotMatch(paginaRegionSpots(galicia, SPOTS, especies, 10).html, /hreflang/, "las regiones de España no cambian");
+  assert.match(paginaRegionSpots(galicia, SPOTS, especies, 10).html, /hreflang="pt-PT" href="https:\/\/costaviva\.org\/pt\/spots\/region\/galicia"/);
 });
 
 test("/pt/spots/<slug>: pesca en un spot de Portugal (handler real)", async () => {
@@ -129,13 +130,14 @@ test("/pt/spots/<slug>: pesca en un spot de Portugal (handler real)", async () =
   assert.match(h, /<h1>Pesca em Cascais<\/h1>/);
   assert.match(h, /O que se pesca em Cascais/);
   assert.match(h, /href="\/pt\/mareas\/cascais"/);
-  // Un spot de España no tiene versión pt.
-  const no = await rutaSpotPt.onRequestGet(contexto("/pt/spots/bakio", { slug: "bakio" }));
-  assert.equal(no.status, 404);
-  // La española de Cascais lleva el par; la de Bakio, no.
+  // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
+  const bakioPt = await rutaSpotPt.onRequestGet(contexto("/pt/spots/bakio", { slug: "bakio" }));
+  assert.equal(bakioPt.status, 200);
+  assert.match(await bakioPt.text(), /<h1>Pesca em Bakio<\/h1>/);
+  assert.equal((await rutaSpotPt.onRequestGet(contexto("/pt/spots/no-existe", { slug: "no-existe" }))).status, 404);
   const d = { especiesDatos: especies, tipoFondo: null, profundidad: null, caudales: null, camarasApp: {}, cond: null, indice: null, mes: 10 };
   assert.match(paginaSpot(cascais, SPOTS, d).html, /hreflang="pt-PT" href="https:\/\/costaviva\.org\/pt\/spots\/cascais"/);
-  assert.doesNotMatch(paginaSpot(SPOTS.find((s) => s.slug === "bakio"), SPOTS, d).html, /hreflang/);
+  assert.match(paginaSpot(SPOTS.find((s) => s.slug === "bakio"), SPOTS, d).html, /hreflang="pt-PT" href="https:\/\/costaviva\.org\/pt\/spots\/bakio"/);
   assert.match(paginaSpotPt(cascais, SPOTS, { ...d, spotPrev: null }).html, /Condições de hoje/);
 });
 
@@ -151,19 +153,23 @@ test("/pt/mareas/<slug> y /pt/mareas/region/portugal; /mareas/<spot de Portugal>
   const es = await (await rutaMareaEs.onRequestGet(contexto("/mareas/cascais", { slug: "cascais" }))).text();
   assert.match(es, /hreflang="pt-PT" href="https:\/\/costaviva\.org\/pt\/mareas\/cascais"/);
   const mundaka = await (await rutaMareaEs.onRequestGet(contexto("/mareas/mundaka", { slug: "mundaka" }))).text();
-  assert.doesNotMatch(mundaka, /hreflang/);
+  assert.match(mundaka, /hreflang="en" href="https:\/\/costaviva\.org\/en\/tides\/mundaka"/);
   assert.equal((await rutaEspeciePt.onRequestGet(contexto("/pt/especies/no-existe", { slug: "no-existe" }))).status, 404);
 });
 
 test("sitemap: /pt/ de Portugal y especies, y sitemap.xml al día", () => {
   const urls = urlsSitemap({ spots: SPOTS, especies: json("assets/datos/especies.json"), tipoFondo: null, profundidad: null });
   const pt = urls.filter((u) => u.loc.includes("/pt/"));
-  const n = spotsPT(SPOTS).length;
-  assert.equal(pt.filter((u) => /\/pt\/spots\/(?!region)/.test(u.loc)).length, n);
-  assert.equal(pt.filter((u) => /\/pt\/mareas\/(?!region)/.test(u.loc)).length, n);
-  assert.equal(pt.filter((u) => /\/pt\/especies\//.test(u.loc)).length, especies.especies.length);
+  // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
+  const n = SPOTS.filter((s) => s.pais !== "nz" && REGIONES_MAREAS.some((r) => r.spots.has(s.slug))).length;
+  assert.equal(pt.filter((u) => /\/pt\/spots\/(?!region|nz-)/.test(u.loc)).length, n);
+  assert.equal(pt.filter((u) => /\/pt\/mareas\/(?!region|nz-)/.test(u.loc)).length, n);
+  assert.equal(pt.filter((u) => /\/pt\/especies\/(?!nz-)/.test(u.loc)).length, especies.especies.length);
+  // Nueva Zelanda también en portugués (2026-11-20, espejo de idiomas).
+  assert.ok(pt.some((u) => u.loc === "https://costaviva.org/pt/especies/nz-snapper"));
   for (const r of ["/pt/spots/region/portugal", "/pt/mareas/region/portugal", "/pt/especies"]) assert.ok(pt.some((u) => u.loc === `https://costaviva.org${r}`), r);
-  assert.ok(!pt.some((u) => /\/nz-|bakio/.test(u.loc)), "nada de NZ ni de España en /pt/");
+  assert.ok(pt.some((u) => /\/pt\/spots\/bakio$/.test(u.loc)), "España también en /pt/");
   const disco = leer("sitemap.xml");
   assert.ok(disco.includes("<loc>https://costaviva.org/pt/spots/cascais</loc>"));
+  assert.ok(disco.includes("<loc>https://costaviva.org/pt/spots/nz-leigh</loc>"));
 });

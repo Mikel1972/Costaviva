@@ -32,10 +32,16 @@ export function claveDeUrl(loc) {
   return { idioma, clave: resto };
 }
 
+// La portada no cuenta: es el mapa, una sola página en los tres idiomas
+// (cambia de idioma dentro), y /en y /pt redirigen a sus secciones. Solo
+// está en el sitemap en español.
+export const SIN_ESPEJO = new Set(["inicio"]);
+
 export function huecos(locs) {
   const por = new Map();
   for (const loc of locs) {
     const { idioma, clave } = claveDeUrl(loc);
+    if (SIN_ESPEJO.has(clave)) continue;
     if (!por.has(clave)) por.set(clave, new Set());
     por.get(clave).add(idioma);
   }

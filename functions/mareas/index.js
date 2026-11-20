@@ -8,6 +8,9 @@
 // enlaces, los datos reales viven en la página de cada spot.
 
 import { REGIONES } from "./_regiones.js";
+import { enlacesHreflang } from "../_lib/seo/idiomas.js";
+import { ZONAS_NZ } from "../_lib/nz/zonas-nz.js";
+import { SPOTS } from "../prevision.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -44,6 +47,7 @@ export async function onRequestGet(context) {
 <title>Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
+${enlacesHreflang("/mareas", "https://costaviva.org", ["es", "en", "pt"])}
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva" />
@@ -96,7 +100,12 @@ export async function onRequestGet(context) {
       ${REGIONES.map((r) => `<li><a href="/mareas/region/${r.slug}">${escaparHtml(r.nombre)} (${r.spots.size})</a></li>`).join("\n      ")}
     </ul>
 
-    <p class="intro">¿Qué se pesca en cada sitio? <a href="/spots">Spots de pesca</a> y <a href="/especies">especies, tallas y temporada</a>. Nueva Zelanda: <a href="/en/tides" lang="en">New Zealand tide times (English)</a>.</p>
+    <p class="intro">¿Qué se pesca en cada sitio? <a href="/spots">Spots de pesca</a> y <a href="/especies">especies, tallas y temporada</a>.</p>
+
+    <h2>Nueva Zelanda</h2>
+    <ul class="regiones">
+      ${ZONAS_NZ.filter((z) => SPOTS.some((s) => s.pais === "nz" && s.zona === z.zona)).map((z) => `<li><a href="/mareas/region/${z.slug}">${escaparHtml(z.nombre.replace(/ & /g, " y ").replace("Waikato west coast", "Costa oeste de Waikato"))}</a></li>`).join("\n      ")}
+    </ul>
 
     <h2>Todos los spots</h2>
     <ul class="lista">

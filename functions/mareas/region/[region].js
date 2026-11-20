@@ -8,6 +8,7 @@
 
 import { REGIONES, tituloMareasRegion } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
+import { zonaMareasNZRespuesta } from "../../_lib/seo/rutas-nz.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -31,6 +32,9 @@ function paginaNoEncontrada(regionSlug) {
 export async function onRequestGet(context) {
   const { request, params } = context;
   const regionSlug = params.region;
+  // Zonas de Nueva Zelanda, en español (espejo de idiomas, 2026-11-20).
+  const nz = zonaMareasNZRespuesta(context, "es", String(regionSlug || ""));
+  if (nz) return nz;
   const region = REGIONES.find((r) => r.slug === regionSlug);
   if (!region) return paginaNoEncontrada(regionSlug);
 
@@ -78,7 +82,7 @@ export async function onRequestGet(context) {
 <title>${escaparHtml(tituloMareasRegion(region))}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
-${region.slug === "portugal" ? `${enlacesHreflang("/mareas/region/portugal", "https://costaviva.org", ["es", "pt"])}\n` : ""}
+${enlacesHreflang(`/mareas/region/${region.slug}`, "https://costaviva.org", ["es", "en", "pt"])}\n
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="Mareas y oleaje en ${nombre} | Costaviva" />

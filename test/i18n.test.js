@@ -322,7 +322,7 @@ test("index.html en español: puntos clave del mapa, letra por letra", () => {
   assert.equal(I18n.t("mapa.vigencia.caducado", { minutos: 75 }), "sin datos actuales (última respuesta hace 75 min, más de 1h)");
 });
 
-test("SEO /en/: encendido solo para Nueva Zelanda; España igual (sin hreflang, mismas canónicas)", async () => {
+test("SEO /en/: hreflang de los idiomas que existen; sin alternos, sin hreflang (mismas canónicas)", async () => {
   const S = await import("../functions/_lib/seo/idiomas.js");
   const { documento } = await import("../functions/_lib/seo/base.js");
   assert.equal(S.PUBLICAR_EN, true, "las rutas /en/ (NZ) se publican desde el 2026-10-11");
@@ -346,8 +346,9 @@ test("SEO /en/: encendido solo para Nueva Zelanda; España igual (sin hreflang, 
   assert.match(html, /<link rel="canonical" href="https:\/\/costaviva\.org\/spots\/bakio">\n<meta property="og:type"/);
   // En el sitemap, /en/ para NZ y el centro de formación (/en/aprende,
   // 2026-11-20: «todo lo que hagamos debe estar en todos los idiomas»).
-  assert.ok((leer("sitemap.xml").match(/<loc>https:\/\/costaviva\.org\/en\/[^<]*<\/loc>/g) || []).every((l) => /\/en\/(spots|tides|species|aprende)(\/|<)/.test(l)));
-  assert.doesNotMatch(leer("sitemap.xml"), /\/en\/(spots|tides)\/(?!nz-|region\/)[a-z]/);
+  assert.ok((leer("sitemap.xml").match(/<loc>https:\/\/costaviva\.org\/en\/[^<]*<\/loc>/g) || []).every((l) => /\/en\/(spots|tides|species|aprende|privacidad)(\/|<)/.test(l)));
+  // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
+  assert.match(leer("sitemap.xml"), /<loc>https:\/\/costaviva\.org\/en\/spots\/bakio<\/loc>/);
   const rutas = await import("../functions/_lib/rutas-publicas.js");
   assert.equal(rutas.esRutaPermitida("/en/spots/nz-leigh"), true);
 });

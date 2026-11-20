@@ -20,7 +20,7 @@
 
 import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
-import { redireccionNZ } from "../_lib/seo/redireccion-nz.js";
+import { mareaNZRespuesta } from "../_lib/seo/rutas-nz.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
 
 const DORADO = "#A8792A";
@@ -165,7 +165,7 @@ function renderizarPagina(spot, todos) {
 <title>${escaparHtml(titulo)}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
-${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "pt"])}\n` : ""}<meta property="og:type" content="website" />
+${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "en", "pt"])}\n` : ""}<meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="${escaparHtml(titulo)}" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />
@@ -288,8 +288,8 @@ ${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "http
 export async function onRequestGet(context) {
   const { request, params } = context;
   const slug = params.slug;
-  // Nueva Zelanda: sus mareas (LINZ) en inglés, /en/tides/<slug>.
-  const nz = redireccionNZ(request, "mareas", slug);
+  // Nueva Zelanda: sus mareas (LINZ), en español (espejo de idiomas, 2026-11-20).
+  const nz = mareaNZRespuesta(context, "es", slug);
   if (nz) return nz;
 
   const previsionUrl = new URL("/prevision", request.url).toString();

@@ -121,7 +121,7 @@ function CABECERA_PIE_EN(cuerpo, pie) {
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/en/spots">Fishing spots</a> · <a href="/en/species">Species</a> · <a href="/en/tides">Tides today</a> · <a href="/en/aprende">Learn to fish</a> · <a href="/privacidad">Privacy (Spanish)</a> · <a href="/login">Log in</a></p>
+  <p><a href="/en/spots">Fishing spots</a> · <a href="/en/species">Species</a> · <a href="/en/tides">Tides today</a> · <a href="/en/aprende">Learn to fish</a> · <a href="/en/privacidad">Privacy</a> · <a href="/login">Log in</a></p>
   ${pie ? `<p class="nota">${pie}</p>` : ""}
 </footer>`;
 }
@@ -138,7 +138,7 @@ function CABECERA_PIE_PT(cuerpo) {
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/pt/spots/region/portugal">Pesqueiros em Portugal</a> · <a href="/pt/especies">Espécies</a> · <a href="/pt/mareas/region/portugal">Marés de hoje</a> · <a href="/pt/aprende">Aprender a pescar</a> · <a href="/spots" lang="es">España (español)</a> · <a href="/privacidad">Privacidade (em espanhol)</a> · <a href="/login">Entrar</a></p>
+  <p><a href="/pt/spots/region/portugal">Pesqueiros em Portugal</a> · <a href="/pt/especies">Espécies</a> · <a href="/pt/mareas/region/portugal">Marés de hoje</a> · <a href="/pt/aprende">Aprender a pescar</a> · <a href="/spots" lang="es">España (español)</a> · <a href="/pt/privacidad">Privacidade</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Dados do mar e do tempo: Open-Meteo (CC BY 4.0). Profundidade: EMODnet Bathymetry (CC BY 4.0). Tipo de fundo: EMODnet Seabed Habitats (CC BY 4.0) e © contribuidores do OpenStreetMap (ODbL). Orientativo: não serve para navegar. Tamanhos mínimos e defesos orientativos: prevalece a norma em vigor publicada no Diário da República.</p>
 </footer>`;
 }

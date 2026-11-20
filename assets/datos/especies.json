@@ -1127,7 +1127,8 @@
     "eu": "Lupina arrunta",
     "ca": "Llobarro",
     "gl": null,
-    "pt": "Robalo-legítimo"
+    "pt": "Robalo-legítimo",
+    "en": "European sea bass"
    },
    "nombres_fuentes": [
     "miteco_peces",
@@ -1345,7 +1346,8 @@
       ],
       "verificado": false,
       "nota": "ICES: enero-marzo en el Golfo de Bizkaia. Licencia de la fuente por confirmar.",
-      "nota_pt": "ICES: janeiro-março no Golfo da Biscaia."
+      "nota_pt": "ICES: janeiro-março no Golfo da Biscaia.",
+      "nota_en": "ICES: January-March in the Bay of Biscay. Source licence to be confirmed."
      },
      "portugal": {
       "meses": [
@@ -1360,7 +1362,8 @@
       ],
       "verificado": false,
       "nota": "ICES: SW de Portugal dic-feb; NW de Portugal ene-abr (Ria de Aveiro: febrero). Unidos aquí.",
-      "nota_pt": "ICES: SW de Portugal dez-fev; NW de Portugal jan-abr (Ria de Aveiro: fevereiro)."
+      "nota_pt": "ICES: SW de Portugal dez-fev; NW de Portugal jan-abr (Ria de Aveiro: fevereiro).",
+      "nota_en": "ICES: SW Portugal Dec-Feb; NW Portugal Jan-Apr (Ria de Aveiro: February). Combined here."
      },
      "golfo_cadiz": {
       "meses": [
@@ -1374,7 +1377,8 @@
       ],
       "verificado": false,
       "nota": "ICES: octubre-enero en el Golfo de Cádiz.",
-      "nota_pt": "ICES: outubro-janeiro no Golfo de Cádis."
+      "nota_pt": "ICES: outubro-janeiro no Golfo de Cádis.",
+      "nota_en": "ICES: October-January in the Gulf of Cadiz."
      }
     }
    },
@@ -1414,7 +1418,8 @@
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2024-06-03",
-     "nota": "44 cm de la isla de Santa Clara (Donostia) hacia el este y 42 cm hacia el oeste. Cupo: 1 ejemplar/licencia/día al este; 5 kg al oeste."
+     "nota": "44 cm de la isla de Santa Clara (Donostia) hacia el este y 42 cm hacia el oeste. Cupo: 1 ejemplar/licencia/día al este; 5 kg al oeste.",
+     "ambito_corto_en": "Basque Country (Basque Government)"
     },
     {
      "jurisdiccion": "ES-recreativa-CNW",
@@ -1426,7 +1431,8 @@
      "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2026-03-19",
-     "nota": "Art. 4 bis del RD 347/2011."
+     "nota": "Art. 4 bis del RD 347/2011.",
+     "ambito_corto_en": "Spain, recreational fishing, Cantabrian-Northwest (Royal Decree 347/2011)"
     },
     {
      "jurisdiccion": "ES-RD560-I",
@@ -1438,7 +1444,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "44 cm en las divisiones CIEM 8a y 8b, también en pesca recreativa (nota *** del anexo I)."
+     "nota": "44 cm en las divisiones CIEM 8a y 8b, también en pesca recreativa (nota *** del anexo I).",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -1450,7 +1457,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -1462,7 +1471,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "El Reglamento (UE) 2019/1241 da 25 cm en el Mediterráneo: discrepancia por resolver con el texto consolidado."
+     "nota": "El Reglamento (UE) 2019/1241 da 25 cm en el Mediterráneo: discrepancia por resolver con el texto consolidado.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -1474,7 +1484,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -1485,7 +1497,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -1497,7 +1510,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -1562,7 +1577,8 @@
      "nota": "El Gobierno Vasco lo cita expresamente para la lubina.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Almeja",
@@ -1575,7 +1591,8 @@
      "nota": "Citada para pescados de roca, la dorada y el róbalo (lubina).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Clam"
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -1588,7 +1605,8 @@
      "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     },
     {
      "nombre": "Quisquilla o camarón",
@@ -1601,7 +1619,8 @@
      "nota": "Buen cebo para flotador o líneas a la deriva.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Shrimp or prawn"
     },
     {
      "nombre": "Vinilo o minnow",
@@ -1612,7 +1631,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Soft plastic or minnow"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -1625,7 +1645,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Sargo legítimo"
+    "pt": "Sargo legítimo",
+    "en": "White seabream"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -1847,7 +1868,8 @@
       ],
       "verificado": true,
       "nota": "Dato para 'el Atlántico' en general, no específico del Cantábrico.",
-      "nota_pt": "Dado para 'o Atlântico' em geral, não específico do Cantábrico."
+      "nota_pt": "Dado para 'o Atlântico' em geral, não específico do Cantábrico.",
+      "nota_en": "Data for 'the Atlantic' in general, not specific to the Bay of Biscay/Cantabrian Sea."
      },
      "atlantico_norte": {
       "meses": [
@@ -1861,7 +1883,8 @@
       ],
       "verificado": true,
       "nota": "Dato para 'el Atlántico' en general.",
-      "nota_pt": "Dado para 'o Atlântico' em geral."
+      "nota_pt": "Dado para 'o Atlântico' em geral.",
+      "nota_en": "Data for 'the Atlantic' in general."
      },
      "portugal": {
       "meses": [
@@ -1875,7 +1898,8 @@
       ],
       "verificado": true,
       "nota": "Dato para 'el Atlántico' en general.",
-      "nota_pt": "Dado para 'o Atlântico' em geral."
+      "nota_pt": "Dado para 'o Atlântico' em geral.",
+      "nota_en": "Data for 'the Atlantic' in general."
      },
      "golfo_cadiz": {
       "meses": [
@@ -1889,7 +1913,8 @@
       ],
       "verificado": true,
       "nota": "Dato para 'el Atlántico' en general.",
-      "nota_pt": "Dado para 'o Atlântico' em geral."
+      "nota_pt": "Dado para 'o Atlântico' em geral.",
+      "nota_en": "Data for 'the Atlantic' in general."
      },
      "mediterraneo": {
       "meses": [
@@ -1900,7 +1925,8 @@
       ],
       "verificado": true,
       "nota": "'In the Mediterranean, spawning occurs slightly later, mostly in early May'.",
-      "nota_pt": "'In the Mediterranean, spawning occurs slightly later, mostly in early May'."
+      "nota_pt": "'In the Mediterranean, spawning occurs slightly later, mostly in early May'.",
+      "nota_en": "'In the Mediterranean, spawning occurs slightly later, mostly in early May'."
      },
      "baleares": {
       "meses": [
@@ -1911,7 +1937,8 @@
       ],
       "verificado": true,
       "nota": "Dato del Mediterráneo occidental.",
-      "nota_pt": "Dado do Mediterrâneo ocidental."
+      "nota_pt": "Dado do Mediterrâneo ocidental.",
+      "nota_en": "Data from the western Mediterranean."
      }
     }
    },
@@ -1952,7 +1979,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "El anexo II dice 'Sargo (Diplodus spp) 15'; el Reglamento (UE) 2019/1241 da 23 cm para D. sargus en el Mediterráneo."
+     "nota": "El anexo II dice 'Sargo (Diplodus spp) 15'; el Reglamento (UE) 2019/1241 da 23 cm para D. sargus en el Mediterráneo.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -1964,7 +1992,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -1975,7 +2005,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -1987,7 +2018,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -2050,7 +2083,8 @@
      "nota": "'Especialmente para pescados de roca'; que el sargo entra en ese grupo es nuestra lectura.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Lapa",
@@ -2063,7 +2097,8 @@
      "nota": "'Eficaz para peces de roca pero no para grandes piezas'.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Limpet"
     },
     {
      "nombre": "Mejillón",
@@ -2074,7 +2109,8 @@
      "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Cangrejo",
@@ -2087,7 +2123,8 @@
      "nota": "Cebo de eficacia casi general.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Crab"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -2111,7 +2148,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Dourada"
+    "pt": "Dourada",
+    "en": "Gilthead seabream"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -2151,7 +2189,9 @@
        "mikel_campo_bizkaia"
       ],
       "tipo_fuente": "heuristica_experta_local",
-      "nota": "Mikel (embarcación): en verano se acerca a fondos de unos 20 m; en invierno, al enfriarse el agua, baja a más profundidad. Observación de campo, confianza media; sin fuente abierta para el rango de invierno."
+      "nota": "Mikel (embarcación): en verano se acerca a fondos de unos 20 m; en invierno, al enfriarse el agua, baja a más profundidad. Observación de campo, confianza media; sin fuente abierta para el rango de invierno.",
+      "verano_en": "at about 20 m",
+      "invierno_en": "deeper"
      }
     },
     "submarina": {
@@ -2330,7 +2370,8 @@
       ],
       "verificado": true,
       "nota": "Freza en el mar de octubre a marzo, pico 1 nov-31 ene (Golfo de León).",
-      "nota_pt": "Desova no mar de outubro a março, pico de 1 nov a 31 jan (Golfo de Leão)."
+      "nota_pt": "Desova no mar de outubro a março, pico de 1 nov a 31 jan (Golfo de Leão).",
+      "nota_en": "Spawns at sea from October to March, peak 1 Nov-31 Jan (Gulf of Lion)."
      },
      "baleares": {
       "meses": [
@@ -2346,7 +2387,8 @@
       ],
       "verificado": true,
       "nota": "Dato del Golfo de León, extrapolado.",
-      "nota_pt": "Dado do Golfo de Leão, extrapolado."
+      "nota_pt": "Dado do Golfo de Leão, extrapolado.",
+      "nota_en": "Data from the Gulf of Lion, extrapolated."
      }
     }
    },
@@ -2386,7 +2428,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -2397,7 +2440,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -2409,7 +2453,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -2420,7 +2466,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -2432,7 +2479,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -2466,7 +2515,8 @@
      "nota": "Citada expresamente para la dorada.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Clam"
     },
     {
      "nombre": "Mejillón",
@@ -2479,7 +2529,8 @@
      "nota": "Citado expresamente para la dorada.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Cangrejo",
@@ -2492,7 +2543,8 @@
      "nota": "Cebo de eficacia casi general.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Crab"
     },
     {
      "nombre": "Gusana",
@@ -2503,7 +2555,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2516,7 +2569,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Salmonete-legítimo"
+    "pt": "Salmonete-legítimo",
+    "en": "Striped red mullet"
    },
    "nombres_fuentes": [
     "boe_rd560",
@@ -2710,7 +2764,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -2723,7 +2778,9 @@
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
      "nota": "Mullus spp.",
-     "nota_pt": "Mullus spp."
+     "nota_pt": "Mullus spp.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)",
+     "nota_en": "Mullus spp."
     },
     {
      "jurisdiccion": "UE-MED",
@@ -2737,7 +2794,10 @@
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2019-07-25",
      "nota": "Mullus spp.",
-     "nota_pt": "Mullus spp."
+     "nota_pt": "Mullus spp.",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)",
+     "nota_en": "Mullus spp."
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -2750,7 +2810,9 @@
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
      "nota": "Mullus spp.",
-     "nota_pt": "Mullus spp."
+     "nota_pt": "Mullus spp.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)",
+     "nota_en": "Mullus spp."
     },
     {
      "jurisdiccion": "PT",
@@ -2762,7 +2824,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {},
@@ -2785,7 +2849,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Tira de calamar",
@@ -2797,7 +2862,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2810,7 +2876,8 @@
     "eu": "Txitxarro",
     "ca": null,
     "gl": null,
-    "pt": "Carapau"
+    "pt": "Carapau",
+    "en": "Atlantic horse mackerel"
    },
    "nombres_fuentes": [
     "pv_tallas_cupos",
@@ -2994,7 +3061,8 @@
       ],
       "verificado": true,
       "nota": "ICES: freza larga con pico a finales de primavera-principios de verano, principal zona el Golfo de Bizkaia. 'Mayo-julio' es nuestra traducción de ese pico.",
-      "nota_pt": "ICES: desova longa com pico no fim da primavera-início do verão; principal zona, o Golfo da Biscaia. 'Maio-julho' é a nossa leitura desse pico."
+      "nota_pt": "ICES: desova longa com pico no fim da primavera-início do verão; principal zona, o Golfo da Biscaia. 'Maio-julho' é a nossa leitura desse pico.",
+      "nota_en": "ICES: long spawning season peaking in late spring-early summer, main area the Bay of Biscay. 'May-July' is our reading of that peak."
      }
     }
    },
@@ -3023,7 +3091,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -3037,7 +3106,10 @@
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2019-07-25",
      "nota": "Excepciones: hasta un 5 % entre 12 y 15 cm; sin talla para T. picturatus en Azores.",
-     "nota_pt": "Exceções: até 5 % entre 12 e 15 cm; sem tamanho mínimo para T. picturatus nos Açores."
+     "nota_pt": "Exceções: até 5 % entre 12 e 15 cm; sem tamanho mínimo para T. picturatus nos Açores.",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)",
+     "nota_en": "Exceptions: up to 5 % between 12 and 15 cm; no minimum size for T. picturatus in the Azores."
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -3049,7 +3121,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Trachurus spp."
+     "nota": "Trachurus spp.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -3061,7 +3134,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -3073,7 +3148,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "'Jureles (Trachurus spp) — Chicharro'."
+     "nota": "'Jureles (Trachurus spp) — Chicharro'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -3085,7 +3161,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -3123,7 +3201,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Feathers or sabiki"
     },
     {
      "nombre": "Tira de sardina",
@@ -3136,7 +3215,8 @@
      "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Sardine strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3149,7 +3229,8 @@
     "eu": "Berdel",
     "ca": null,
     "gl": null,
-    "pt": "Sarda, cavala"
+    "pt": "Sarda, cavala",
+    "en": "Atlantic mackerel"
    },
    "nombres_fuentes": [
     "pv_tallas_cupos",
@@ -3324,7 +3405,8 @@
       ],
       "verificado": true,
       "nota": "ICES: en aguas ibéricas empieza en enero/febrero; en el componente sur 'mainly occurs in April'; en el Cantábrico se ha adelantado a enero-febrero algunos años.",
-      "nota_pt": "ICES: em águas ibéricas começa em janeiro/fevereiro; na componente sul 'mainly occurs in April'; no Cantábrico antecipou-se para janeiro-fevereiro nalguns anos."
+      "nota_pt": "ICES: em águas ibéricas começa em janeiro/fevereiro; na componente sul 'mainly occurs in April'; no Cantábrico antecipou-se para janeiro-fevereiro nalguns anos.",
+      "nota_en": "ICES: in Iberian waters it starts in January/February; in the southern component it 'mainly occurs in April'; in the Bay of Biscay/Cantabrian Sea it has moved earlier to January-February in some years."
      },
      "atlantico_norte": {
       "meses": [
@@ -3337,7 +3419,8 @@
       ],
       "verificado": true,
       "nota": "ICES: 'Spanish and Portuguese waters in January to March'.",
-      "nota_pt": "ICES: 'Spanish and Portuguese waters in January to March'."
+      "nota_pt": "ICES: 'Spanish and Portuguese waters in January to March'.",
+      "nota_en": "ICES: 'Spanish and Portuguese waters in January to March'."
      },
      "portugal": {
       "meses": [
@@ -3350,7 +3433,8 @@
       ],
       "verificado": true,
       "nota": "ICES: 'Spanish and Portuguese waters in January to March'.",
-      "nota_pt": "ICES: 'Spanish and Portuguese waters in January to March'."
+      "nota_pt": "ICES: 'Spanish and Portuguese waters in January to March'.",
+      "nota_en": "ICES: 'Spanish and Portuguese waters in January to March'."
      }
     }
    },
@@ -3383,7 +3467,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Scomber spp."
+     "nota": "Scomber spp.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -3395,7 +3480,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -3406,7 +3493,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -3418,7 +3506,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "PT",
@@ -3430,7 +3520,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -3468,7 +3560,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Feathers or sabiki"
     },
     {
      "nombre": "Cucharilla",
@@ -3479,7 +3572,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Spinner"
     },
     {
      "nombre": "Tira de sardina",
@@ -3492,7 +3586,8 @@
      "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Sardine strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3505,7 +3600,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Faneca"
+    "pt": "Faneca",
+    "en": "Pouting"
    },
    "nombres_fuentes": [
     "boe_rd560",
@@ -3625,7 +3721,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "El anexo I la lista como 'talla por determinar'."
+     "nota": "El anexo I la lista como 'talla por determinar'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -3637,7 +3734,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {},
@@ -3660,7 +3759,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Gusana",
@@ -3674,7 +3774,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Tira de calamar",
@@ -3688,7 +3789,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3701,7 +3803,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Congro, safio"
+    "pt": "Congro, safio",
+    "en": "European conger"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -3851,7 +3954,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -3863,7 +3967,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -3907,7 +4013,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Mackerel or sardine chunks"
     },
     {
      "nombre": "Calamar o jibia",
@@ -3921,7 +4028,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid or cuttlefish"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -3946,7 +4054,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Polvo-vulgar"
+    "pt": "Polvo-vulgar",
+    "en": "Common octopus"
    },
    "nombres_fuentes": [
     "boe_rd560",
@@ -4100,7 +4209,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "1 kg."
+     "nota": "1 kg.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -4113,7 +4223,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -4126,7 +4238,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "No se aplica en aguas interiores y plataforma de Baleares."
+     "nota": "No se aplica en aguas interiores y plataforma de Baleares.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -4138,7 +4251,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -4151,7 +4265,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -4183,7 +4299,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Octopus lure (octopus jig or cuttlefish jig)"
     },
     {
      "nombre": "Cangrejo atado",
@@ -4194,7 +4311,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Tied-on crab"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4207,7 +4325,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Choco-vulgar"
+    "pt": "Choco-vulgar",
+    "en": "Common cuttlefish"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -4339,7 +4458,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Jibias (Sepia spp): 'talla por determinar'."
+     "nota": "Jibias (Sepia spp): 'talla por determinar'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -4352,7 +4472,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -4394,7 +4516,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Cuttlefish jig or egi"
     },
     {
      "nombre": "Pez pequeño muerto en potera",
@@ -4406,7 +4529,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Small dead fish on a jig"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4419,7 +4543,8 @@
     "eu": "Txipiroi",
     "ca": null,
     "gl": null,
-    "pt": "Lula-vulgar"
+    "pt": "Lula-vulgar",
+    "en": "European squid"
    },
    "nombres_fuentes": [
     "pv_tallas_cupos",
@@ -4432,12 +4557,16 @@
     {
      "pregunta": "¿Chipirón y calamar son lo mismo?",
      "respuesta": "Sí: es el mismo animal, el calamar común (Loligo vulgaris). Lo que cambia es el nombre según la zona: en la mayor parte de España se dice calamar o chipirón; en Euskadi se le llama popularmente txipirón, y en euskera, txipiroi.",
-     "fuentes": ["eeh_upv_ehu"]
+     "fuentes": [
+      "eeh_upv_ehu"
+     ]
     },
     {
      "pregunta": "¿Cómo se dice calamar en euskera?",
      "respuesta": "Txipiroi (también xipiroi o xipiron). En el habla popular del País Vasco se dice txipirón, como en los txipirones en su tinta.",
-     "fuentes": ["eeh_upv_ehu"]
+     "fuentes": [
+      "eeh_upv_ehu"
+     ]
     }
    ],
    "habitat": {
@@ -4592,7 +4721,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "'Talla por determinar'."
+     "nota": "'Talla por determinar'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -4605,7 +4735,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -4663,7 +4795,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Egi (squid jig)"
     },
     {
      "nombre": "Potera con sardina",
@@ -4674,7 +4807,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Jig with sardine"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4687,7 +4821,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Juliana, paloco"
+    "pt": "Juliana, paloco",
+    "en": "Pollack"
    },
    "nombres_fuentes": [
     "boe_rd560",
@@ -4808,7 +4943,8 @@
       ],
       "verificado": true,
       "nota": "ICES (citando a Cohen et al. 1990): febrero en España y marzo en el Golfo de Bizkaia; a unos 100 m.",
-      "nota_pt": "ICES (citando Cohen et al. 1990): fevereiro em Espanha e março no Golfo da Biscaia; a cerca de 100 m."
+      "nota_pt": "ICES (citando Cohen et al. 1990): fevereiro em Espanha e março no Golfo da Biscaia; a cerca de 100 m.",
+      "nota_en": "ICES (citing Cohen et al. 1990): February in Spain and March in the Bay of Biscay; at about 100 m."
      },
      "atlantico_norte": {
       "meses": [
@@ -4819,7 +4955,8 @@
       ],
       "verificado": true,
       "nota": "ICES: febrero en España.",
-      "nota_pt": "ICES: fevereiro em Espanha."
+      "nota_pt": "ICES: fevereiro em Espanha.",
+      "nota_en": "ICES: February in Spain."
      }
     }
    },
@@ -4857,7 +4994,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -4871,7 +5009,10 @@
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2019-07-25",
      "nota": "Texto original de 2019. ICES (2025, CC BY) dice que el Reg. (UE) 2025/202 la subió a 42 cm.",
-     "nota_pt": "Texto original de 2019. O ICES (2025, CC BY) indica que o Reg. (UE) 2025/202 o subiu para 42 cm."
+     "nota_pt": "Texto original de 2019. O ICES (2025, CC BY) indica que o Reg. (UE) 2025/202 o subiu para 42 cm.",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)",
+     "nota_en": "Original 2019 text. ICES (2025, CC BY) says Reg. (EU) 2025/202 raised it to 42 cm."
     },
     {
      "jurisdiccion": "PT",
@@ -4885,7 +5026,10 @@
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-10-30",
      "nota": "La tabla DGRM de 30-10-2025 ya da 46 cm.",
-     "nota_pt": "A tabela da DGRM de 30-10-2025 já indica 46 cm."
+     "nota_pt": "A tabela da DGRM de 30-10-2025 já indica 46 cm.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "The DGRM table of 30-10-2025 already gives 46 cm."
     }
    ],
    "vedas": [
@@ -4910,7 +5054,8 @@
      "fuente": "ue_2026_249",
      "url": "https://boe.es/doue/2026/249/L00001-00212.pdf",
      "fecha_revision": "2026-10-15",
-     "verificado": true
+     "verificado": true,
+     "texto_en": "Reg. (EU) 2026/249, art. 13: in recreational fishing (including from the shore) in ICES areas 8, 9 and 10, pollack may not be caught or retained from 1 January to 30 April (catch and release is allowed); for the rest of the year, maximum 2 fish per angler per day. Without prejudice to stricter national measures."
     }
    ],
    "reglas": {},
@@ -4932,7 +5077,8 @@
      "nota": "Citados expresamente 'para el abadejo'.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Clam or cockle"
     },
     {
      "nombre": "Mejillón",
@@ -4945,7 +5091,8 @@
      "nota": "Citado expresamente para abadejos.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Vinilo o jig",
@@ -4956,7 +5103,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Soft plastic or jig"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -4980,7 +5128,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Atum-voador"
+    "pt": "Atum-voador",
+    "en": "Albacore"
    },
    "nombres_fuentes": [
     "pv_tallas_cupos"
@@ -5129,7 +5278,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Trolling lures (feathers, squid skirts)"
     },
     {
      "nombre": "Sardina (brumeo y anzuelo)",
@@ -5142,10 +5292,12 @@
      "nota": "El RD 347/2011 (art. 6) prohíbe atraer peces salvo el brumeo con pequeños pelágicos.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine (chum and hook bait)"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "lisa",
@@ -5155,7 +5307,8 @@
     "eu": "Hondoetako korrokoia",
     "ca": "Llissa vera",
     "gl": null,
-    "pt": "Tainhas"
+    "pt": "Tainhas",
+    "en": "Grey mullet"
    },
    "nombres_fuentes": [
     "miteco_peces",
@@ -5356,7 +5509,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Mugil spp."
+     "nota": "Mugil spp.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -5367,7 +5521,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -5379,7 +5534,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Mugil auratus, 'lisa amarilla'."
+     "nota": "Mugil auratus, 'lisa amarilla'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -5391,7 +5547,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {},
@@ -5412,7 +5570,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Bread or paste"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -5425,7 +5584,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Bica"
+    "pt": "Bica",
+    "en": "Common pandora"
    },
    "nombres_fuentes": [
     "boe_rd560",
@@ -5593,7 +5753,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "'Pagel, besugo (Pagellus spp)'."
+     "nota": "'Pagel, besugo (Pagellus spp)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -5605,7 +5766,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -5616,7 +5779,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -5628,7 +5792,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {},
@@ -5652,7 +5818,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Tira de calamar",
@@ -5666,7 +5833,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -5679,7 +5847,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Linguado"
+    "pt": "Linguado",
+    "en": "Sole"
    },
    "nombres_fuentes": [
     "boe_rd560",
@@ -5889,7 +6058,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Solea vulgaris."
+     "nota": "Solea vulgaris.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -5901,7 +6071,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -5912,7 +6084,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -5924,7 +6097,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "PT",
@@ -5936,7 +6111,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -5968,7 +6145,8 @@
      "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -5992,7 +6170,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Corvina-legítima"
+    "pt": "Corvina-legítima",
+    "en": "Meagre"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -6137,7 +6316,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {
@@ -6179,7 +6360,8 @@
      "nota": "El Gobierno Vasco lo da como el mejor cebo en general; la app ya lo citaba para la corvina en Rota.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Hermit crab"
     },
     {
      "nombre": "Vinilo grande",
@@ -6190,7 +6372,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Large soft plastic"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -6203,7 +6386,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Capatão-legítimo"
+    "pt": "Capatão-legítimo",
+    "en": "Common dentex"
    },
    "nombres_fuentes": [],
    "nombres_nota_pt": "Nombre portugués común puesto por Costaviva el 2026-10-11 (sin la tabla DGRM como fuente); pendiente de la revisión de un nativo.",
@@ -6240,7 +6424,9 @@
        "mikel_campo_bizkaia"
       ],
       "tipo_fuente": "heuristica_experta_local",
-      "nota": "Mikel (embarcación): en verano se acerca a fondos de unos 20 m; en invierno, al enfriarse el agua, baja a más profundidad. Observación de campo, confianza media; sin fuente abierta para el rango de invierno."
+      "nota": "Mikel (embarcación): en verano se acerca a fondos de unos 20 m; en invierno, al enfriarse el agua, baja a más profundidad. Observación de campo, confianza media; sin fuente abierta para el rango de invierno.",
+      "verano_en": "at about 20 m",
+      "invierno_en": "deeper"
      }
     },
     "submarina": {
@@ -6349,7 +6535,8 @@
      "nota": "Cebo muy efectivo para cualquier pez.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid or octopus"
     },
     {
      "nombre": "Jig o vinilo",
@@ -6360,10 +6547,12 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Jig or soft plastic"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "urta",
@@ -6373,7 +6562,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": null
+    "pt": null,
+    "en": "Redbanded seabream"
    },
    "nombres_fuentes": [],
    "cientifico": null,
@@ -6482,7 +6672,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab"
     },
     {
      "nombre": "Choco o calamar",
@@ -6493,7 +6684,8 @@
      "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Cuttlefish or squid"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -6506,7 +6698,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Pargo-legítimo"
+    "pt": "Pargo-legítimo",
+    "en": "Red porgy"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -6545,7 +6738,9 @@
        "gencat_guia_pr_2021"
       ],
       "tipo_fuente": "heuristica_experta_local",
-      "nota": "Mikel (embarcación): el pargo se acerca en verano a fondos de unos 20 m y en invierno baja a más profundidad. Lo confirma la guía de la Generalitat: en verano en aguas poco profundas (menos de 50 m), en invierno migra a profundidad y en primavera vuelve a subir para reproducirse. Sin rango numérico de invierno con fuente."
+      "nota": "Mikel (embarcación): el pargo se acerca en verano a fondos de unos 20 m y en invierno baja a más profundidad. Lo confirma la guía de la Generalitat: en verano en aguas poco profundas (menos de 50 m), en invierno migra a profundidad y en primavera vuelve a subir para reproducirse. Sin rango numérico de invierno con fuente.",
+      "verano_en": "at about 20 m",
+      "invierno_en": "deeper"
      }
     },
     "submarina": {
@@ -6763,7 +6958,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "'Pargo (Pagrus pagrus)'."
+     "nota": "'Pargo (Pagrus pagrus)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -6774,7 +6970,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -6786,7 +6983,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -6798,7 +6997,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "Nombre local canario: 'Bocinegro'."
+     "nota": "Nombre local canario: 'Bocinegro'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -6810,7 +7010,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {},
@@ -6832,7 +7034,8 @@
      "nota": "Cebo muy efectivo para cualquier pez.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid"
     },
     {
      "nombre": "Gamba o camarón",
@@ -6843,7 +7046,8 @@
      "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Prawn or shrimp"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -6856,7 +7060,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Sparisoma cretense"
+    "pt": "Sparisoma cretense",
+    "en": "Mediterranean parrotfish"
    },
    "nombres_fuentes": [],
    "nombres_nota_pt": "Sin nombre común portugués verificado: se enseña el científico (2026-10-11).",
@@ -6960,7 +7165,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2025-11-01",
-     "nota": "'Vieja colorada (Sparisoma cretense)'."
+     "nota": "'Vieja colorada (Sparisoma cretense)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "reglas": {},
@@ -6981,10 +7187,12 @@
      "nota": "Cebo de eficacia casi general.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Crab"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "No verified Portuguese common name: the scientific name is shown (2026-10-11)."
   },
   {
    "id": "sama",
@@ -6994,7 +7202,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Dentex filosus"
+    "pt": "Dentex filosus",
+    "en": "Pink dentex"
    },
    "nombres_fuentes": [],
    "nombres_nota_pt": "Sin nombre común portugués verificado: se enseña el científico (2026-10-11).",
@@ -7087,7 +7296,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "reglas": {},
@@ -7109,7 +7319,8 @@
      "nota": "Cebo muy efectivo para cualquier pez.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid"
     },
     {
      "nombre": "Camarón",
@@ -7120,10 +7331,12 @@
      "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Shrimp"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "No verified Portuguese common name: the scientific name is shown (2026-10-11)."
   },
   {
    "id": "medregal",
@@ -7133,7 +7346,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": null
+    "pt": null,
+    "en": "Amberjack"
    },
    "nombres_fuentes": [],
    "cientifico": null,
@@ -7238,7 +7452,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Jig"
     },
     {
      "nombre": "Calamar",
@@ -7251,7 +7466,8 @@
      "nota": "Cebo muy efectivo para cualquier pez.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -7264,7 +7480,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": null
+    "pt": null,
+    "en": "Barracuda"
    },
    "nombres_fuentes": [],
    "cientifico": null,
@@ -7375,7 +7592,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Spinning or trolling lure"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -7388,7 +7606,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Chicharro"
+    "pt": "Chicharro",
+    "en": "Horse mackerel"
    },
    "nombres_fuentes": [],
    "nombres_nota_pt": "Nombre portugués común puesto por Costaviva el 2026-10-11 (sin la tabla DGRM como fuente); pendiente de la revisión de un nativo.",
@@ -7484,7 +7703,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "reglas": {},
@@ -7506,10 +7726,12 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Feathers or sabiki"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "salema",
@@ -7519,7 +7741,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Salema"
+    "pt": "Salema",
+    "en": "Salema"
    },
    "nombres_fuentes": [
     "dgrm_tmc_2025"
@@ -7646,7 +7869,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -7657,7 +7881,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -7668,7 +7893,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -7680,7 +7906,9 @@
      "fuente": "dgrm_tmc_2025",
      "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-10-30"
+     "fecha_documento": "2025-10-30",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)"
     }
    ],
    "reglas": {},
@@ -7699,7 +7927,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Bread or paste"
     },
     {
      "nombre": "Alga",
@@ -7712,7 +7941,8 @@
      "nota": "El Gobierno Vasco cita los cebos vegetales; que la salema come casi solo algas viene de su ficha.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Seaweed"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -7725,7 +7955,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Garoupa"
+    "pt": "Garoupa",
+    "en": "Comber"
    },
    "nombres_fuentes": [],
    "nombres_nota_pt": "Nombre portugués común puesto por Costaviva el 2026-10-11 (sin la tabla DGRM como fuente); pendiente de la revisión de un nativo.",
@@ -7821,7 +8052,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-07",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "reglas": {},
@@ -7844,7 +8076,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Gamba",
@@ -7856,10 +8089,12 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Prawn"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "palometa",
@@ -7869,7 +8104,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": null
+    "pt": null,
+    "en": "Pompano"
    },
    "nombres_fuentes": [],
    "cientifico": null,
@@ -7980,7 +8216,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Especie de la app sin nombre científico verificado.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Small surface lure"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -7993,7 +8230,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Pregado"
+    "pt": "Pregado",
+    "en": "Turbot"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -8156,7 +8394,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Rodaballo (Psetta maxima)'."
+     "nota": "'Rodaballo (Psetta maxima)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -8170,7 +8409,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Pregado (Psetta maxima)'.",
-     "nota_pt": "'Pregado (Psetta maxima)'."
+     "nota_pt": "'Pregado (Psetta maxima)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Pregado (Psetta maxima)'."
     }
    ],
    "reglas": {},
@@ -8198,7 +8440,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Sardina",
@@ -8212,7 +8455,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Tira de calamar",
@@ -8226,7 +8470,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Pez pequeño entero (boga, jurel, lanzón)",
@@ -8238,7 +8483,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Small whole fish (bogue, horse mackerel, sand eel)"
     },
     {
      "nombre": "Pez pequeño o tira de pescado",
@@ -8249,7 +8495,8 @@
      "criterio": "Práctica habitual del surfcasting a peces planos grandes, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Small fish or fish strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -8273,7 +8520,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Rodovalho"
+    "pt": "Rodovalho",
+    "en": "Brill"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -8443,7 +8691,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Ramal (Scophthalmus rhombus)'."
+     "nota": "'Ramal (Scophthalmus rhombus)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -8457,7 +8706,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Rodovalho (Scophthalmus rhombus)'.",
-     "nota_pt": "'Rodovalho (Scophthalmus rhombus)'."
+     "nota_pt": "'Rodovalho (Scophthalmus rhombus)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Rodovalho (Scophthalmus rhombus)'."
     }
    ],
    "reglas": {},
@@ -8483,7 +8735,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Mussel"
     },
     {
      "nombre": "Sardina",
@@ -8497,7 +8750,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Tira de calamar",
@@ -8511,7 +8765,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -8524,7 +8779,8 @@
     "eu": null,
     "ca": "Escórpora de cap roig",
     "gl": null,
-    "pt": "Rascasso-vermelho"
+    "pt": "Rascasso-vermelho",
+    "en": "Red scorpionfish"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -8711,7 +8967,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Sardina",
@@ -8725,7 +8982,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -8739,7 +8997,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -8753,7 +9012,8 @@
     ],
     "verificado": false,
     "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
-   }
+   },
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "rascacio",
@@ -8763,7 +9023,8 @@
     "eu": null,
     "ca": "Escórpora",
     "gl": null,
-    "pt": "Scorpaena porcus"
+    "pt": "Scorpaena porcus",
+    "en": "Black scorpionfish"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -8926,7 +9187,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Sardina",
@@ -8940,7 +9202,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -8954,7 +9217,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -8968,7 +9232,8 @@
     ],
     "verificado": false,
     "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
-   }
+   },
+   "nombres_nota_en": "No verified Portuguese common name: the scientific name is shown (2026-10-11)."
   },
   {
    "id": "maragota",
@@ -8978,7 +9243,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Bodião"
+    "pt": "Bodião",
+    "en": "Ballan wrasse"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -9009,7 +9275,8 @@
        "texto_pt": "Parque Natural do Sudoeste Alentejano e Costa Vicentina: na pesca lúdica apeada, defeso do bodião de 1 de março a 31 de maio (o da pesca profissional apeada, Portaria 372/2024/1).",
        "fuente": "dgrm_faq_ludica_2026",
        "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
-       "fecha_revision": "2026-10-08"
+       "fecha_revision": "2026-10-08",
+       "texto_en": "Southwest Alentejo and Vicentine Coast Natural Park: in recreational shore fishing, closed season for wrasse (bodião) from 1 March to 31 May (the same as for commercial shore fishing, Portaria 372/2024/1)."
       }
      ]
     },
@@ -9173,7 +9440,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     },
     {
      "nombre": "Gusana",
@@ -9187,7 +9455,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Camarón, quisquilla o gamba",
@@ -9201,7 +9470,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Shrimp or prawn"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -9226,7 +9496,8 @@
     "eu": null,
     "ca": "Besuc de la piga",
     "gl": null,
-    "pt": "Goraz"
+    "pt": "Goraz",
+    "en": "Blackspot seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -9481,7 +9752,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "El Reglamento (UE) 2019/1241 da 33 cm en aguas suroccidentales: discrepancia por resolver con el texto consolidado."
+     "nota": "El Reglamento (UE) 2019/1241 da 33 cm en aguas suroccidentales: discrepancia por resolver con el texto consolidado.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -9493,7 +9765,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -9505,7 +9779,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Pagel, besugo (Pagellus spp)'. El Reglamento (UE) 2019/1241 da 33 cm para el besugo en el Mediterráneo."
+     "nota": "'Pagel, besugo (Pagellus spp)'. El Reglamento (UE) 2019/1241 da 33 cm para el besugo en el Mediterráneo.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -9517,7 +9792,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "PT",
@@ -9531,7 +9808,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Goraz (Pagellus bogaraveo)'.",
-     "nota_pt": "'Goraz (Pagellus bogaraveo)'."
+     "nota_pt": "'Goraz (Pagellus bogaraveo)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Goraz (Pagellus bogaraveo)'."
     }
    ],
    "reglas": {},
@@ -9557,7 +9837,8 @@
      "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al besugo en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Sardina",
@@ -9570,7 +9851,8 @@
      "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al besugo en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -9583,7 +9865,8 @@
     "eu": null,
     "ca": "Besuc blanc",
     "gl": null,
-    "pt": "Besugo"
+    "pt": "Besugo",
+    "en": "Axillary seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -9805,7 +10088,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Pagel, besugo (Pagellus spp)'. El Reglamento (UE) 2019/1241 da 17 cm para el aligote en el Mediterráneo."
+     "nota": "'Pagel, besugo (Pagellus spp)'. El Reglamento (UE) 2019/1241 da 17 cm para el aligote en el Mediterráneo.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -9817,7 +10101,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -9829,7 +10115,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Aligote (Pagellus acarne) — Besuguito aligote'."
+     "nota": "'Aligote (Pagellus acarne) — Besuguito aligote'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -9843,7 +10130,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "En la tabla DGRM figura como 'Besugo (Pagellus acarne)'.",
-     "nota_pt": "Na tabela da DGRM figura como 'Besugo (Pagellus acarne)'."
+     "nota_pt": "Na tabela da DGRM figura como 'Besugo (Pagellus acarne)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "Listed in the DGRM table as 'Besugo (Pagellus acarne)'."
     }
    ],
    "reglas": {},
@@ -9869,7 +10159,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Tira de calamar",
@@ -9883,7 +10174,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -9908,7 +10200,8 @@
     "eu": null,
     "ca": "Anfós",
     "gl": null,
-    "pt": "Mero"
+    "pt": "Mero",
+    "en": "Dusky grouper"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -10087,7 +10380,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Mero (Epinephelus spp)'."
+     "nota": "'Mero (Epinephelus spp)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -10101,7 +10395,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2019-07-25",
      "nota": "Epinephelus spp.",
-     "nota_pt": "Epinephelus spp."
+     "nota_pt": "Epinephelus spp.",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)",
+     "nota_en": "Epinephelus spp."
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -10113,7 +10410,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Mero (Epinephelus marginatus)'."
+     "nota": "'Mero (Epinephelus marginatus)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "vedas": [
@@ -10143,7 +10441,8 @@
      "fuente": "dgrm_faq_ludica_2026",
      "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
      "fecha_revision": "2026-10-08",
-     "verificado": true
+     "verificado": true,
+     "texto_en": "Portugal prohibits catching and retaining groupers (genus Epinephelus) in recreational fishing."
     }
    ],
    "reglas": {},
@@ -10171,7 +10470,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid, cuttlefish or octopus"
     },
     {
      "nombre": "Pez vivo (boga, chucla, caballa pequeña)",
@@ -10182,7 +10482,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Ojo: algunas comunidades prohíben el cebo vivo.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Live fish (bogue, chub mackerel, small mackerel)"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -10195,7 +10496,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Areeiro"
+    "pt": "Areeiro",
+    "en": "Megrim"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -10413,7 +10715,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Gallos (Lepidorhombus spp)'."
+     "nota": "'Gallos (Lepidorhombus spp)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -10425,7 +10728,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -10437,7 +10742,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Gallo (Lepidorhombus spp)'."
+     "nota": "'Gallo (Lepidorhombus spp)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -10451,7 +10757,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Areeiros (todas las especies del género Lepidorhombus)'.",
-     "nota_pt": "'Areeiros (todas as espécies do género Lepidorhombus)'."
+     "nota_pt": "'Areeiros (todas as espécies do género Lepidorhombus)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Areeiros (all species of the genus Lepidorhombus)'."
     }
    ],
    "reglas": {},
@@ -10475,7 +10784,8 @@
      "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al gallo en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Sardina",
@@ -10488,7 +10798,8 @@
      "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al gallo en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -10501,7 +10812,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Raia"
+    "pt": "Raia",
+    "en": "Ray"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -10530,7 +10842,8 @@
        "texto_pt": "Proibido capturar e reter a raia-curva (Raja undulata) e a raia-tairoga (Rostroraja alba) na pesca lúdica.",
        "fuente": "dgrm_faq_ludica_2026",
        "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
-       "fecha_revision": "2026-10-08"
+       "fecha_revision": "2026-10-08",
+       "texto_en": "Catching and retaining the undulate ray (Raja undulata) and the white skate (Rostroraja alba) is prohibited in recreational fishing."
       }
      ]
     },
@@ -10548,7 +10861,8 @@
        "texto_pt": "Proibido capturar e reter a raia-curva (Raja undulata) e a raia-tairoga (Rostroraja alba) na pesca lúdica.",
        "fuente": "dgrm_faq_ludica_2026",
        "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
-       "fecha_revision": "2026-10-08"
+       "fecha_revision": "2026-10-08",
+       "texto_en": "Catching and retaining the undulate ray (Raja undulata) and the white skate (Rostroraja alba) is prohibited in recreational fishing."
       }
      ]
     },
@@ -10685,7 +10999,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Raias (Raja spp. e Leucoraja spp.)'. La raia curva (R. undulata) tiene 78 cm mínimo y 97 cm máximo en la pesca profesional, pero en la lúdica está prohibida.",
-     "nota_pt": "'Raias (Raja spp. e Leucoraja spp.)'. A raia-curva (R. undulata) tem 78 cm de mínimo e 97 cm de máximo na pesca profissional, mas na lúdica é proibida."
+     "nota_pt": "'Raias (Raja spp. e Leucoraja spp.)'. A raia-curva (R. undulata) tem 78 cm de mínimo e 97 cm de máximo na pesca profissional, mas na lúdica é proibida.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Raias (Raja spp. and Leucoraja spp.)'. The undulate ray (R. undulata) has a 78 cm minimum and 97 cm maximum in commercial fishing, but it is prohibited in recreational fishing."
     }
    ],
    "reglas": {},
@@ -10714,7 +11031,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Tira de calamar",
@@ -10728,7 +11046,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Gusana",
@@ -10742,7 +11061,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -10767,7 +11087,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Pescada-branca"
+    "pt": "Pescada-branca",
+    "en": "European hake"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -11002,7 +11323,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-SWW",
@@ -11014,7 +11336,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, South Western Waters (Reg. 2019/1241, Annex VII, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -11025,7 +11349,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -11037,7 +11362,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "PT",
@@ -11051,7 +11378,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Pescada-branca (Merluccius merluccius)'.",
-     "nota_pt": "'Pescada-branca (Merluccius merluccius)'."
+     "nota_pt": "'Pescada-branca (Merluccius merluccius)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Pescada-branca (Merluccius merluccius)'."
     }
    ],
    "cupos": [
@@ -11084,7 +11414,8 @@
      "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la merluza en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Jig o vinilo de fondo",
@@ -11095,7 +11426,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Jig or bottom soft plastic"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -11108,7 +11440,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Tamboril"
+    "pt": "Tamboril",
+    "en": "Monkfish"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -11303,7 +11636,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "El anexo I dice 'Rape (Lophius piscatorius, L. Budegassa) — talla por determinar'."
+     "nota": "El anexo I dice 'Rape (Lophius piscatorius, L. Budegassa) — talla por determinar'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-II",
@@ -11315,7 +11649,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Rape (Lophius spp)'."
+     "nota": "'Rape (Lophius spp)'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "reglas": {},
@@ -11342,7 +11677,8 @@
      "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al rape en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Tira de calamar",
@@ -11355,10 +11691,12 @@
      "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al rape en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "White anglerfish (L. piscatorius) and black anglerfish (L. budegassa), according to Royal Decree 347/2011."
   },
   {
    "id": "chopa",
@@ -11368,7 +11706,8 @@
     "eu": null,
     "ca": "Càntera",
     "gl": null,
-    "pt": "Choupa"
+    "pt": "Choupa",
+    "en": "Black seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -11586,7 +11925,8 @@
      "fuente": "boe_rd560",
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2025-11-01"
+     "fecha_documento": "2025-11-01",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -11598,7 +11938,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Chopa (Spondyliosoma cantharus) — Chopa, negrón'."
+     "nota": "'Chopa (Spondyliosoma cantharus) — Chopa, negrón'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -11612,7 +11953,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Choupa (Spondyliosoma cantharus)'.",
-     "nota_pt": "'Choupa (Spondyliosoma cantharus)'."
+     "nota_pt": "'Choupa (Spondyliosoma cantharus)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Choupa (Spondyliosoma cantharus)'."
     }
    ],
    "reglas": {},
@@ -11638,7 +11982,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Tira de calamar",
@@ -11652,7 +11997,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -11666,7 +12012,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -11679,7 +12026,8 @@
     "eu": null,
     "ca": "Variada",
     "gl": null,
-    "pt": "Sargo-safia"
+    "pt": "Sargo-safia",
+    "en": "Common two-banded seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -11710,7 +12058,8 @@
        "texto_pt": "Parque Natural do Sudoeste Alentejano e Costa Vicentina: na pesca lúdica apeada, defeso dos sargos (D. sargus e D. vulgaris) de 1 a 28 de fevereiro.",
        "fuente": "dgrm_faq_ludica_2026",
        "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
-       "fecha_revision": "2026-10-08"
+       "fecha_revision": "2026-10-08",
+       "texto_en": "Southwest Alentejo and Vicentine Coast Natural Park: in recreational shore fishing, closed season for white and two-banded seabream (D. sargus and D. vulgaris) from 1 to 28 February."
       }
      ]
     },
@@ -11909,7 +12258,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 18 cm para la mojarra en el Mediterráneo."
+     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 18 cm para la mojarra en el Mediterráneo.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -11923,7 +12273,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2019-07-25",
      "nota": "'Sargo mojarra (Diplodus vulgaris)'.",
-     "nota_pt": "'Sargo mojarra (Diplodus vulgaris)'."
+     "nota_pt": "'Sargo mojarra (Diplodus vulgaris)'.",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)",
+     "nota_en": "'Sargo mojarra (Diplodus vulgaris)'."
     },
     {
      "jurisdiccion": "ES-RD560-III",
@@ -11935,7 +12288,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Mojarra (Diplodus vulgaris) — Seifia, seifio'."
+     "nota": "'Mojarra (Diplodus vulgaris) — Seifia, seifio'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "PT",
@@ -11949,7 +12303,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Sargo safia (Diplodus vulgaris)'.",
-     "nota_pt": "'Sargo-safia (Diplodus vulgaris)'."
+     "nota_pt": "'Sargo-safia (Diplodus vulgaris)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Sargo safia (Diplodus vulgaris)'."
     }
    ],
    "reglas": {},
@@ -11975,7 +12332,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -11989,7 +12347,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     },
     {
      "nombre": "Tira de calamar",
@@ -12003,7 +12362,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -12016,7 +12376,8 @@
     "eu": null,
     "ca": "Mabre",
     "gl": null,
-    "pt": "Ferreira"
+    "pt": "Ferreira",
+    "en": "Sand steenbras"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -12194,7 +12555,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2019-07-25",
      "nota": "'Herrero (Lithognathus mormyrus)'. No figura en el RD 560/1995 anexo II.",
-     "nota_pt": "'Herrero (Lithognathus mormyrus)'. Não figura no anexo II do RD 560/1995."
+     "nota_pt": "'Herrero (Lithognathus mormyrus)'. Não figura no anexo II do RD 560/1995.",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)",
+     "nota_en": "'Herrero (Lithognathus mormyrus)'. Not listed in Royal Decree 560/1995, Annex II."
     },
     {
      "jurisdiccion": "PT",
@@ -12208,7 +12572,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Ferreira (Lithognathus mormyrus)'.",
-     "nota_pt": "'Ferreira (Lithognathus mormyrus)'."
+     "nota_pt": "'Ferreira (Lithognathus mormyrus)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Ferreira (Lithognathus mormyrus)'."
     }
    ],
    "reglas": {},
@@ -12235,7 +12602,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Navaja o muergo",
@@ -12248,7 +12616,8 @@
      "nota": "'Para todos los peces en general'; no cita a la herrera en concreto.",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Razor clam"
     },
     {
      "nombre": "Tira de calamar",
@@ -12262,7 +12631,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
@@ -12286,7 +12656,8 @@
     "eu": null,
     "ca": "Esparrall",
     "gl": null,
-    "pt": "Sargo-alcorraz"
+    "pt": "Sargo-alcorraz",
+    "en": "Annular seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -12436,7 +12807,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 12 cm para el raspallón."
+     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 12 cm para el raspallón.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -12448,7 +12820,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "PT",
@@ -12462,7 +12836,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Sargo mucharra alcorraz (Diplodus annularis)'.",
-     "nota_pt": "'Sargo mucharra alcorraz (Diplodus annularis)'."
+     "nota_pt": "'Sargo mucharra alcorraz (Diplodus annularis)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Sargo mucharra alcorraz (Diplodus annularis)'."
     }
    ],
    "reglas": {},
@@ -12488,7 +12865,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Camarón, quisquilla o gamba",
@@ -12502,7 +12880,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Shrimp or prawn"
     },
     {
      "nombre": "Tira de calamar",
@@ -12516,7 +12895,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -12529,7 +12909,8 @@
     "eu": null,
     "ca": "Oblada",
     "gl": null,
-    "pt": "Dobrada"
+    "pt": "Dobrada",
+    "en": "Saddled seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -12667,7 +13048,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Shrimp or prawn"
     },
     {
      "nombre": "Cebo compuesto (engodo)",
@@ -12681,7 +13063,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Groundbait mix (chum)"
     },
     {
      "nombre": "Gusana",
@@ -12695,10 +13078,12 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "sargo_picudo",
@@ -12708,7 +13093,8 @@
     "eu": null,
     "ca": "Morruda",
     "gl": null,
-    "pt": "Sargo-bicudo"
+    "pt": "Sargo-bicudo",
+    "en": "Sharpsnout seabream"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -12857,7 +13243,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 18 cm para el sargo picudo."
+     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 18 cm para el sargo picudo.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     },
     {
      "jurisdiccion": "UE-MED",
@@ -12869,7 +13256,9 @@
      "fuente": "ue_2019_1241",
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-08",
-     "fecha_documento": "2019-07-25"
+     "fecha_documento": "2019-07-25",
+     "ambito_en": "EU, Mediterranean (Reg. 2019/1241, Annex IX, Part A): reference for commercial fishing; it does not apply to recreational fishing by itself (art. 2.2)",
+     "ambito_corto_en": "EU, commercial reference (Reg. 2019/1241)"
     },
     {
      "jurisdiccion": "PT",
@@ -12883,7 +13272,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'Sargo bicudo (Diplodus puntazzo)'.",
-     "nota_pt": "'Sargo-bicudo (Diplodus puntazzo)'."
+     "nota_pt": "'Sargo-bicudo (Diplodus puntazzo)'.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'Sargo bicudo (Diplodus puntazzo)'."
     }
    ],
    "reglas": {},
@@ -12908,7 +13300,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Ragworm"
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -12922,7 +13315,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Crab (hermit crab is best)"
     },
     {
      "nombre": "Tira de calamar",
@@ -12936,7 +13330,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -12949,7 +13344,8 @@
     "eu": null,
     "ca": "Círvia",
     "gl": null,
-    "pt": "Seriola dumerili"
+    "pt": "Seriola dumerili",
+    "en": "Greater amberjack"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -13061,7 +13457,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Ojo: algunas comunidades prohíben el cebo vivo.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Live fish (bogue, mackerel, horse mackerel)"
     },
     {
      "nombre": "Jig metálico",
@@ -13072,7 +13469,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Metal jig"
     },
     {
      "nombre": "Señuelo de curricán",
@@ -13083,10 +13481,12 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Trolling lure"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Also 'serviola'; 'pez de limón' in Royal Decree 347/2011. In the Canary Islands, 'medregal' (the Canary Islands 'medregal' entry is the same genus, species not verified)."
   },
   {
    "id": "bacoreta",
@@ -13096,7 +13496,8 @@
     "eu": null,
     "ca": "Bacoreta",
     "gl": null,
-    "pt": "Merma"
+    "pt": "Merma",
+    "en": "Little tunny"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -13202,7 +13603,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Small trolling lure"
     },
     {
      "nombre": "Jig metálico ligero",
@@ -13213,7 +13615,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Light metal jig"
     },
     {
      "nombre": "Sardina",
@@ -13226,10 +13629,12 @@
      "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la bacoreta en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Common Portuguese name added by Costaviva on 2026-10-11 (without the DGRM table as a source); pending review by a native speaker."
   },
   {
    "id": "atun_rojo",
@@ -13239,7 +13644,8 @@
     "eu": null,
     "ca": "Tonyina",
     "gl": null,
-    "pt": "Atum-rabilho"
+    "pt": "Atum-rabilho",
+    "en": "Atlantic bluefin tuna"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -13301,7 +13707,8 @@
        "texto_pt": "Proibido capturá-lo e retê-lo na pesca lúdica. Só é permitido reter, num total de 500 kg por ano para toda a pesca lúdica e exemplares com 115 cm ou mais, a bordo de embarcações de pesca-turística autorizadas pela DGRM. Desde 2026 é preciso comunicar as capturas na app RecFishing.",
        "fuente": "dgrm_faq_ludica_2026",
        "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
-       "fecha_revision": "2026-10-08"
+       "fecha_revision": "2026-10-08",
+       "texto_en": "Catching and retaining it is prohibited in recreational fishing. Retention is only allowed, up to a total of 500 kg per year for all recreational fishing and for specimens of 115 cm or more, on board fishing-tourism vessels authorised by the DGRM. Since 2026 catches must be reported in the RecFishing app."
       }
      ]
     },
@@ -13415,7 +13822,10 @@
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-10-30",
      "nota": "'30 kg o 115 cm'. Solo vale para la pesca-turística autorizada: en la pesca lúdica está prohibido retenerlo.",
-     "nota_pt": "'30 kg ou 115 cm'. Só vale para a pesca-turística autorizada: na pesca lúdica é proibido retê-lo."
+     "nota_pt": "'30 kg ou 115 cm'. Só vale para a pesca-turística autorizada: na pesca lúdica é proibido retê-lo.",
+     "ambito_en": "Mainland Portugal (DGRM table)",
+     "ambito_corto_en": "Portugal (DGRM)",
+     "nota_en": "'30 kg or 115 cm'. Only applies to authorised fishing-tourism: in recreational fishing it is prohibited to retain it."
     }
    ],
    "vedas": [
@@ -13477,7 +13887,8 @@
      "fuente": "dgrm_faq_ludica_2026",
      "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
      "fecha_revision": "2026-10-08",
-     "verificado": true
+     "verificado": true,
+     "texto_en": "Catching and retaining it is prohibited in recreational fishing (only fishing-tourism authorised by the DGRM)."
     }
    ],
    "reglas": {},
@@ -13503,7 +13914,8 @@
      "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al atún rojo en concreto.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Señuelo de curricán",
@@ -13514,7 +13926,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Trolling lure"
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -13527,7 +13940,8 @@
     "eu": null,
     "ca": "Llampuga",
     "gl": null,
-    "pt": "Doirado"
+    "pt": "Doirado",
+    "en": "Common dolphinfish"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -13648,7 +14062,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Trolling lure"
     },
     {
      "nombre": "Pez vivo pequeño",
@@ -13659,10 +14074,12 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Ojo: algunas comunidades prohíben el cebo vivo.",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Small live fish"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "'Lampuga' in Annex II of Royal Decree 347/2011; 'dorado' in other areas."
   },
   {
    "id": "abade",
@@ -13672,7 +14089,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Mycteroperca fusca"
+    "pt": "Mycteroperca fusca",
+    "en": "Island grouper"
    },
    "nombres_fuentes": [
     "boe_rd560"
@@ -13795,7 +14213,8 @@
      "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
      "fecha_revision": "2026-10-08",
      "fecha_documento": "2025-11-01",
-     "nota": "'Gitano (Mycteroperca fusca) — Abade, abadejo'."
+     "nota": "'Gitano (Mycteroperca fusca) — Abade, abadejo'.",
+     "ambito_corto_en": "Spain, external waters (Royal Decree 560/1995)"
     }
    ],
    "reglas": {},
@@ -13823,7 +14242,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     },
     {
      "nombre": "Sardina",
@@ -13837,7 +14257,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Pez vivo (boga, chicharro pequeño)",
@@ -13848,10 +14269,12 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Live fish (bogue, small horse mackerel)"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Royal Decree 560/1995, Annex III: 'Gitano (Mycteroperca fusca) — Abade, abadejo'. NOTE: the 'gitano' of Royal Decree 347/2011 is another species (M. rubra), and the mainland 'abadejo' is Pollachius pollachius."
   },
   {
    "id": "anjova",
@@ -13861,7 +14284,8 @@
     "eu": null,
     "ca": "Tallahams",
     "gl": null,
-    "pt": "Anchova"
+    "pt": "Anchova",
+    "en": "Bluefish"
    },
    "nombres_fuentes": [
     "boe_rd347",
@@ -13976,7 +14400,8 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "costa"
-     ]
+     ],
+     "nombre_en": "Spinner or soft plastic"
     },
     {
      "nombre": "Sardina",
@@ -13990,7 +14415,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Señuelo de curricán",
@@ -14001,10 +14427,12 @@
      "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
      "modalidades": [
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Trolling lure"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "In Catalan also 'lliri' (Generalitat guide); on other coasts 'chova'."
   },
   {
    "id": "pintarroja",
@@ -14014,7 +14442,8 @@
     "eu": null,
     "ca": null,
     "gl": null,
-    "pt": "Pata-roxa"
+    "pt": "Pata-roxa",
+    "en": "Small-spotted catshark"
    },
    "nombres_fuentes": [
     "boe_rd347"
@@ -14192,7 +14621,8 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Sardine"
     },
     {
      "nombre": "Tira de calamar",
@@ -14206,10 +14636,12 @@
      "modalidades": [
       "costa",
       "embarcacion"
-     ]
+     ],
+     "nombre_en": "Squid strip"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "nombres_nota_en": "Royal Decree 347/2011: 'Scyliorhinus spp. — Pintarroja, alital'. Also 'tiburón gato' or 'gato'."
   },
   {
    "id": "nz-snapper",
@@ -14218,7 +14650,8 @@
    "nombres": {
     "en": "Snapper",
     "mi": "Tāmure / Kouarea",
-    "es": "Pargo neozelandés (snapper)"
+    "es": "Pargo neozelandés (snapper)",
+    "pt": "Pargo-da-nova-zelândia (snapper)"
    },
    "nombres_fuentes": [
     "mpi_popular_fish"
@@ -14482,7 +14915,8 @@
    "nombres": {
     "en": "Yellowtail kingfish",
     "mi": "Haku",
-    "es": "Seriola (kingfish)"
+    "es": "Seriola (kingfish)",
+    "pt": "Seriola (kingfish)"
    },
    "nombres_fuentes": [
     "mpi_kin3_2024"
@@ -14692,7 +15126,8 @@
    "nombres": {
     "en": "Kahawai",
     "mi": "Kahawai",
-    "es": "Kahawai"
+    "es": "Kahawai",
+    "pt": "Kahawai"
    },
    "nombres_fuentes": [
     "mpi_popular_fish"
@@ -15032,7 +15467,8 @@
    "nombres": {
     "en": "Trevally",
     "mi": "Araara",
-    "es": "Jurel dentón (trevally)"
+    "es": "Jurel dentón (trevally)",
+    "pt": "Trevally"
    },
    "nombres_fuentes": [
     "mpi_tre"
@@ -15232,7 +15668,8 @@
    "nombres": {
     "en": "Tarakihi",
     "mi": "Tarakihi",
-    "es": "Tarakihi"
+    "es": "Tarakihi",
+    "pt": "Tarakihi"
    },
    "nombres_fuentes": [
     "mpi_tar"
@@ -15572,7 +16009,8 @@
    "nombres": {
     "en": "Blue cod",
     "mi": "Rāwaru / Pākirikiri",
-    "es": "Bacalao azul (blue cod)"
+    "es": "Bacalao azul (blue cod)",
+    "pt": "Bacalhau-azul (blue cod)"
    },
    "nombres_fuentes": [
     "mpi_bco"
@@ -15986,7 +16424,8 @@
    "nombres": {
     "en": "Red gurnard",
     "mi": "Kumukumu / Pūwhaiau",
-    "es": "Rubio rojo (red gurnard)"
+    "es": "Rubio rojo (red gurnard)",
+    "pt": "Ruivo (red gurnard)"
    },
    "nombres_fuentes": [
     "mpi_gur"
@@ -16493,7 +16932,8 @@
    "nombres": {
     "en": "Hāpuku / groper",
     "mi": "Hāpuku",
-    "es": "Cherna neozelandesa (hāpuku)"
+    "es": "Cherna neozelandesa (hāpuku)",
+    "pt": "Cherne-da-nova-zelândia (hāpuku)"
    },
    "nombres_fuentes": [
     "pmc_hapuku"
@@ -16857,7 +17297,8 @@
    "nombres": {
     "en": "Yellowbelly flounder",
     "mi": "Pātiki",
-    "es": "Platija de vientre amarillo"
+    "es": "Platija de vientre amarillo",
+    "pt": "Solha-de-barriga-amarela"
    },
    "nombres_fuentes": [
     "mpi_fla"
@@ -17132,7 +17573,8 @@
    "nombres": {
     "en": "Sand flounder",
     "mi": "Pātiki",
-    "es": "Platija de arena"
+    "es": "Platija de arena",
+    "pt": "Solha-da-areia"
    },
    "nombres_fuentes": [
     "mpi_fla"
@@ -17571,7 +18013,8 @@
    "nombres": {
     "en": "Arrow squid",
     "mi": "Ngū",
-    "es": "Pota (arrow squid)"
+    "es": "Pota (arrow squid)",
+    "pt": "Pota (arrow squid)"
    },
    "nombres_fuentes": [
     "mpi_squ"
@@ -17887,7 +18330,8 @@
    "nombres": {
     "en": "Red rock lobster (crayfish)",
     "mi": "Kōura",
-    "es": "Langosta roja (kōura)"
+    "es": "Langosta roja (kōura)",
+    "pt": "Lagosta-vermelha (kōura)"
    },
    "nombres_fuentes": [
     "mpi_cra_2025"
@@ -18281,7 +18725,8 @@
    "nombres": {
     "en": "Pāua (blackfoot)",
     "mi": "Pāua",
-    "es": "Pāua (oreja de mar)"
+    "es": "Pāua (oreja de mar)",
+    "pt": "Pāua (orelha-do-mar)"
    },
    "nombres_fuentes": [
     "mpi_popular_fish"
@@ -18678,7 +19123,8 @@
    "nombres": {
     "en": "Blue moki",
     "mi": "Moki",
-    "es": "Moki azul"
+    "es": "Moki azul",
+    "pt": "Moki-azul"
    },
    "nombres_fuentes": [
     "mpi_mok"
@@ -18978,7 +19424,8 @@
    "nombres": {
     "en": "Butterfish / greenbone",
     "mi": "Marari",
-    "es": "Butterfish (marari)"
+    "es": "Butterfish (marari)",
+    "pt": "Butterfish (marari)"
    },
    "nombres_fuentes": [
     "mpi_but"
@@ -19342,7 +19789,8 @@
    "nombres": {
     "en": "Red cod",
     "mi": "Hoka",
-    "es": "Bacalao rojo (red cod)"
+    "es": "Bacalao rojo (red cod)",
+    "pt": "Bacalhau-vermelho (red cod)"
    },
    "nombres_fuentes": [
     "fnz_plenary_2025"
@@ -19766,7 +20214,8 @@
      "tipo_fuente": "heuristica_experta",
      "criterio": "Término habitual de la pesca submarina en España; sin fuente abierta citable todavía."
     }
-   ]
+   ],
+   "sin_cebos_en": "No bait is used: in Portugal bait and groundbait are prohibited in spearfishing (Portaria 14/2014, art. 5.3), and in Spain any means of attraction is prohibited except chumming with small pelagic fish (arts. 12.d and 16 of Royal Decree 347/2011)."
   }
  },
  "cebos_modalidades_criterio": "Cada cebo lleva `modalidades` (pestañas donde aplica), derivado de su `modalidad`: surfcasting, roca, spinning, flotador y puerto → costa; embarcación, jigging y curricán → embarcacion; fondo y eging se hacen desde costa y desde barco → las dos. La pesca submarina no usa cebos (ver modalidades.submarina.sin_cebos).",
@@ -19799,7 +20248,8 @@
     "texto_peligro": "peligrosa para salir en embarcación de recreo",
     "texto_peligro_pt": "perigosa para sair em embarcação de recreio",
     "tipo": "criterio_de_diseno",
-    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15). Criterio de diseño, sin umbral oficial."
+    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15). Criterio de diseño, sin umbral oficial.",
+    "texto_peligro_en": "dangerous for going out in a leisure boat"
    },
    "viento": {
     "peso_lo": 0.4,
@@ -19877,7 +20327,8 @@
     "texto_peligro": "peligrosa para bucear",
     "texto_peligro_pt": "perigosa para mergulhar",
     "tipo": "heuristica_experta",
-    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15) (criterio de diseño)."
+    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15) (criterio de diseño).",
+    "texto_peligro_en": "dangerous for diving"
    },
    "viento": {
     "peso_lo": 0.24,
@@ -20304,7 +20755,8 @@
      }
     },
     "variable": "orilla_tipo",
-    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; de 1,5 a 2,5 m, entero; de 2,5 a 3 m se apaga hasta 0 (con mar grande se apartan, 2026-10-08) (el aviso de ola peligrosa va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018."
+    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; de 1,5 a 2,5 m, entero; de 2,5 a 3 m se apaga hasta 0 (con mar grande se apartan, 2026-10-08) (el aviso de ola peligrosa va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018.",
+    "texto_en": "rocky shore: a rock-fish spot, better with some white water"
    },
    {
     "id": "orilla_playa_arena",
@@ -20343,7 +20795,8 @@
      "logodds": 0.4
     },
     "variable": "orilla_tipo",
-    "nota": "Rodaballo desde playa (Bakio) y rayas desde costa (Armintza), observación de Mikel. 'playa' = playa de OSM sin superficie: en el Cantábrico casi siempre arena."
+    "nota": "Rodaballo desde playa (Bakio) y rayas desde costa (Armintza), observación de Mikel. 'playa' = playa de OSM sin superficie: en el Cantábrico casi siempre arena.",
+    "texto_en": "sandy beach: ground for turbot, sole and rays"
    },
    {
     "id": "dorada_arena_con_roca",
@@ -20384,7 +20837,8 @@
      "logodds": 0.35
     },
     "variable": "fondo_arena",
-    "nota": "Aprobado por Mikel el 2026-10-08. Fondo a 500 m del punto de costa (EUSeaMap 2025). Los bordes entre hábitats son de los más ricos (cheminee_2021_nurseries, juveniles)."
+    "nota": "Aprobado por Mikel el 2026-10-08. Fondo a 500 m del punto de costa (EUSeaMap 2025). Los bordes entre hábitats son de los más ricos (cheminee_2021_nurseries, juveniles).",
+    "texto_en": "sandy bottom with some rock: gilthead seabream like it"
    },
    {
     "id": "fondo_roca_submarina",
@@ -20438,7 +20892,8 @@
      }
     },
     "variable": "fondo_roca",
-    "nota": "Parte de roca del fondo a 500 m del punto de costa (EUSeaMap 2025). Sargo de arrecife rocoso (plos_dsargus_2018), maragota (ieo_labrus_galicia_2018), roca natural = hábitat más rico (cheminee_2021_nurseries)."
+    "nota": "Parte de roca del fondo a 500 m del punto de costa (EUSeaMap 2025). Sargo de arrecife rocoso (plos_dsargus_2018), maragota (ieo_labrus_galicia_2018), roca natural = hábitat más rico (cheminee_2021_nurseries).",
+    "texto_en": "rocky bottom nearby: a good spot for rock fish"
    },
    {
     "id": "posidonia_cerca",
@@ -20481,7 +20936,8 @@
      "logodds": 0.4
     },
     "variable": "posidonia",
-    "nota": "Aprobado por Mikel el 2026-10-08. Posidonia de EUSeaMap 2025 (MB252) y de las praderas de EMODnet a 500 m. Salpa (salema): herbívoro de la pradera (marco_mendez_2016_salpa); sepia: desova en poca agua (guerra_2006_sepia)."
+    "nota": "Aprobado por Mikel el 2026-10-08. Posidonia de EUSeaMap 2025 (MB252) y de las praderas de EMODnet a 500 m. Salpa (salema): herbívoro de la pradera (marco_mendez_2016_salpa); sepia: desova en poca agua (guerra_2006_sepia).",
+    "texto_en": "Posidonia seagrass meadow nearby: area for cuttlefish, gilthead seabream and salema"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20534,7 +20990,8 @@
      "heupel_2003",
      "bacheler_2019",
      "vanderweyst_2014"
-    ]
+    ],
+    "texto_en": "pressure falling over the last 6 h: they feed before the storm"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20594,7 +21051,8 @@
      "heupel_2003",
      "bacheler_2019",
      "vanderweyst_2014"
-    ]
+    ],
+    "texto_en": "pressure falling since yesterday (front approaching): they tend to feed more"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20646,7 +21104,8 @@
      "heupel_2003",
      "bacheler_2019",
      "vanderweyst_2014"
-    ]
+    ],
+    "texto_en": "pressure rising after the front has passed: they tend to be less active"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20689,7 +21148,8 @@
     "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m; desde 2,2 m se va apagando hasta 0 a 2,5 m (2026-10-08, para que la nota baje sin escalones hacia mar_grande_depredadores). Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. Por encima de 2,5 m resta mar_grande_depredadores y sale aparte el aviso de ola peligrosa (sin tope en la nota desde el 2026-10-08).",
     "sustituye": [
      "oleaje"
-    ]
+    ],
+    "texto_en": "moderate sea (1-2.5 m): coastal predators find food in the white water"
    },
    {
     "id": "mar_poca_depredadores_costa",
@@ -20728,7 +21188,8 @@
     "efecto": {
      "logodds": 0.3
     },
-    "nota": "Completa la escala de ola de los depredadores costeros cuando mar_movida_depredadores_costa sustituye al factor de oleaje: es el óptimo que ya tenían la lubina y el sargo (optimo_m 0,5-1,5, heurística heredada de la app), con menos peso que la banda de Mikel."
+    "nota": "Completa la escala de ola de los depredadores costeros cuando mar_movida_depredadores_costa sustituye al factor de oleaje: es el óptimo que ya tenían la lubina y el sargo (optimo_m 0,5-1,5, heurística heredada de la app), con menos peso que la banda de Mikel.",
+    "texto_en": "some swell (0.5-1 m): enough white water to hunt"
    },
    {
     "id": "mar_plana_depredadores_costa",
@@ -20762,7 +21223,8 @@
     "efecto": {
      "logodds": -0.3
     },
-    "nota": "Completa la escala de ola (ver mar_poca_depredadores_costa): el valor_bajo_minimo negativo que ya tenía la lubina (heurística heredada de la app)."
+    "nota": "Completa la escala de ola (ver mar_poca_depredadores_costa): el valor_bajo_minimo negativo que ya tenía la lubina (heurística heredada de la app).",
+    "texto_en": "almost flat sea (<0.5 m): with no white water and clear water they are wary"
    },
    {
     "id": "mar_grande_depredadores",
@@ -20809,7 +21271,8 @@
     },
     "mecanismo": "con temporal los peces de poco fondo se van a aguas más profundas; la flota de lubina pesca menos con más ola",
     "nota": "Cierra el hueco de la escala de ola de los depredadores costeros desde costa: mar_plana (< 0,5 m), mar_poca (0,5-1 m) y mar_movida (1-2,5 m) sustituyen al factor de oleaje, y por encima de 2,5 m no restaba nada desde que la ola dejó de poner tope (2026-10-08). Evidencia (EVIDENCIA_FACTORES.md, regla 2 de Mikel: 'respaldada en franja moderada; con mar grande se van'): temporales y emigración a lo profundo (Bacheler 2019, Udyawer 2013) y menos lubina por salida con más ola (flota inglesa, 2022). Efecto real = -2,0 x intensidad x 0,8: casi 0 justo por encima de 2,5 m y crece en línea recta hasta -1,6 log-odds a 4 m o más (sin escalón en 2,5 m: mar_movida se apaga entre 2,2 y 2,5 m). El aviso de ola peligrosa va aparte.",
-    "activada": "2026-10-08: pedida por Mikel al quitar el tope de ola (sesión del aviso de ola peligrosa)."
+    "activada": "2026-10-08: pedida por Mikel al quitar el tope de ola (sesión del aviso de ola peligrosa).",
+    "texto_en": "sea too big: they move away from the shore"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20849,7 +21312,8 @@
     "nota": "Mikel: con mucho caudal el río aporta comida y la lubina se acerca a las desembocaduras. Solo en spots con río asociado (RIOS de index.html, distancia a la desembocadura <= 3 km) y caudal real con umbrales oficiales; sin dato no aplica. En submarina ya resta el caudal alto (turbidez) y esta regla no aplica.",
     "sustituye": [
      "caudal_rio"
-    ]
+    ],
+    "texto_en": "river in spate nearby: it brings food and sea bass come close to the river mouth"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20898,7 +21362,8 @@
     "fuentes_adicionales": [
      "mercier_2012_dorada",
      "iglesias_2016_pulpo_salinidad"
-    ]
+    ],
+    "texto_en": "river in spate nearby: less salty water drives many species away from the river mouth"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -20949,7 +21414,8 @@
     "efecto": {
      "logodds": -0.5
     },
-    "nota": "Mikel: en el Cantábrico los vientos del este son malos para pescar. Sector 'este' = rumbos NE, ENE, E, ESE y SE de la rosa de 16 (33,75°-146,25°, dirección de donde viene el viento); al menos la mitad de las últimas 6 h y con 8 km/h o más de media (con calma la dirección no significa nada)."
+    "nota": "Mikel: en el Cantábrico los vientos del este son malos para pescar. Sector 'este' = rumbos NE, ENE, E, ESE y SE de la rosa de 16 (33,75°-146,25°, dirección de donde viene el viento); al menos la mitad de las últimas 6 h y con 8 km/h o más de media (con calma la dirección no significa nada).",
+    "texto_en": "easterly wind (NE-E-SE): fishing is worse in the Bay of Biscay/Cantabrian Sea"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -21022,7 +21488,8 @@
      "hegaluze_2010_alb",
      "ices_afloramiento_biscay",
      "lavin_2007_hom_alb"
-    ]
+    ],
+    "texto_en": "westerly storm in recent days that has now calmed: sometimes brings albacore in"
    },
    {
     "id": "rio_crecido_cefalopodos",
@@ -21071,7 +21538,8 @@
      "caudal_rio"
     ],
     "mecanismo": "osmorregulación: estenohalinos marinos",
-    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10)."
+    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10).",
+    "texto_en": "river in spate nearby: fresh water drives octopus, cuttlefish and squid away"
    },
    {
     "id": "lluvia_fuerte_pulpo",
@@ -21125,7 +21593,8 @@
     "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10).",
     "sustituye": [
      "lluvia"
-    ]
+    ],
+    "texto_en": "heavy rain in the last 2 days: fresh water pushes them away from the shore"
    },
    {
     "id": "enfriamiento_brusco_agua",
@@ -21175,7 +21644,8 @@
     "variable": "temp_agua@delta_48h",
     "nota": "La temperatura es de las variables que más mueven la capturabilidad (Stoner 2004). En el Cantábrico, el viento del este en primavera-verano provoca afloramientos que enfrían la costa en 1-2 días: es el mecanismo físico más probable detrás de la regla de levante de Mikel. Esta regla mira el efecto (el agua fría) en vez del viento. El umbral de -1,5 °C en 48 h es una traducción de Claude.",
     "mecanismo": "metabolismo y apetito dependen de la temperatura",
-    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10)."
+    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10).",
+    "texto_en": "the water has cooled suddenly: they feed less"
    },
    {
     "id": "bonito_mar_agitada_previa",
@@ -21222,7 +21692,8 @@
     "variable": "ola@mezcla_previa",
     "nota": "Tres fuentes de la pesquería vasca coinciden: la mezcla superficial resta en curricán y cebo vivo (Goñi 2015), la capa de mezcla profunda baja la capturabilidad (ICCAT 2013) y la CPUE de los de 2 años baja con la agitación del mar (Hegaluze 2010). Mira las horas anteriores a la salida (no la ola de ahora, que ya cuenta en el factor de oleaje de embarcación).",
     "mecanismo": "capa de mezcla más profunda: el bonito baja y se dispersa",
-    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10)."
+    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10).",
+    "texto_en": "very rough sea yesterday: albacore scatter"
    },
    {
     "id": "lubina_noche_invierno",
@@ -21266,7 +21737,8 @@
     "variable": "luz@invierno",
     "nota": "Inversión estacional del ritmo de alimentación (nocturno en invierno, diurno en primavera) medida en cautividad; en libertad las lubinas solas son nocturnas (Bégout Anras 1997) y de noche localizan la comida por el olfato (Faucher 2006). Se suma a la preferencia de luz de la especie (noche 0,4) solo en invierno.",
     "mecanismo": "ritmo circadiano con inversión estacional",
-    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10)."
+    "activada": "2026-10-08: aprobada por Mikel (propuestas_evidencia, top 10).",
+    "texto_en": "in winter sea bass feed more at night"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -21312,7 +21784,8 @@
       "minimo": 0.5
      }
     },
-    "nota": "Observación de campo (Mikel), 2026-10-08: con mucha luna el congrio no entra. Luna = fracción iluminada calculada en el propio motor (iluminacionLunar, fórmula astronómica, sin red); 'mucha luna' = 80 % o más (unos 4 días a cada lado de la llena), con más efecto cuanto más llena. Solo de noche, que es cuando se pesca. Coherente con la telemetría de pereira_2017_congrio (más actividad en cuartos de luna, muestra pequeña)."
+    "nota": "Observación de campo (Mikel), 2026-10-08: con mucha luna el congrio no entra. Luna = fracción iluminada calculada en el propio motor (iluminacionLunar, fórmula astronómica, sin red); 'mucha luna' = 80 % o más (unos 4 días a cada lado de la llena), con más efecto cuanto más llena. Solo de noche, que es cuando se pesca. Coherente con la telemetría de pereira_2017_congrio (más actividad en cuartos de luna, muestra pequeña).",
+    "texto_en": "full moon: conger rarely come in"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -21346,7 +21819,8 @@
       "minimo": 0.5
      }
     },
-    "nota": "Mikel (experiencia de campo, 2026-10-08): los coeficientes de marea altos (mareas vivas) favorecen la pesca de casi todas las especies. Es la amplitud de la marea, no el oleaje. Coeficiente = índice astronómico 20-120 calculado en el motor (coeficienteMareaAstronomico, sin red), el mismo para toda la costa. Solo desde costa: en embarcación no se aplica (pelágicos como el bonito no dependen de la marea). Umbral de 90 y escala hasta 110 = traducción de Claude. Convive con el factor de marea (fase de la marea de cada hora, escalado con el rango local): ese mira si la marea se mueve ahora; este, si es época de vivas."
+    "nota": "Mikel (experiencia de campo, 2026-10-08): los coeficientes de marea altos (mareas vivas) favorecen la pesca de casi todas las especies. Es la amplitud de la marea, no el oleaje. Coeficiente = índice astronómico 20-120 calculado en el motor (coeficienteMareaAstronomico, sin red), el mismo para toda la costa. Solo desde costa: en embarcación no se aplica (pelágicos como el bonito no dependen de la marea). Umbral de 90 y escala hasta 110 = traducción de Claude. Convive con el factor de marea (fase de la marea de cada hora, escalado con el rango local): ese mira si la marea se mueve ahora; este, si es época de vivas.",
+    "texto_en": "spring tides: more current and more food moving"
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -21388,7 +21862,8 @@
       "minimo": 0.5
      }
     },
-    "nota": "Mikel (experiencia de campo, 2026-10-08): el rodaballo desde playa en noviembre (por ejemplo en Bakio) se pesca sobre todo con mareas vivas. Refuerzo a propósito sobre coeficientes_altos para esta especie y estación (por eso 'coeficiente_marea@rodaballo_otono': es un término de interacción, no el mismo dato contado dos veces por error). Meses 10-12 = traducción de Claude de 'noviembre'."
+    "nota": "Mikel (experiencia de campo, 2026-10-08): el rodaballo desde playa en noviembre (por ejemplo en Bakio) se pesca sobre todo con mareas vivas. Refuerzo a propósito sobre coeficientes_altos para esta especie y estación (por eso 'coeficiente_marea@rodaballo_otono': es un término de interacción, no el mismo dato contado dos veces por error). Meses 10-12 = traducción de Claude de 'noviembre'.",
+    "texto_en": "spring tides in autumn: turbot come close to the beaches"
    },
    {
     "fuente": "mikel_campo_bizkaia",
@@ -21434,7 +21909,8 @@
     "efecto": {
      "logodds": 0.5
     },
-    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en verano, con el agua caliente, el pargo, la dorada y el dentón se acercan a fondos de unos 20 m. Suma si hay fondo de 10-30 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
+    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en verano, con el agua caliente, el pargo, la dorada y el dentón se acercan a fondos de unos 20 m. Suma si hay fondo de 10-30 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes.",
+    "texto_en": "suitable depth for the season"
    },
    {
     "fuente": "mikel_campo_bizkaia",
@@ -21480,7 +21956,8 @@
     "efecto": {
      "logodds": -0.5
     },
-    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, al enfriarse el agua, el pargo, la dorada y el dentón bajan a más profundidad. Resta si a 5 km de la orilla no hay más de 40 m. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
+    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, al enfriarse el agua, el pargo, la dorada y el dentón bajan a más profundidad. Resta si a 5 km de la orilla no hay más de 40 m. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes.",
+    "texto_en": "shallow water nearby for the season: in cold water they go deeper"
    },
    {
     "fuente": "mikel_campo_bizkaia",
@@ -21526,7 +22003,8 @@
     "efecto": {
      "logodds": 0.5
     },
-    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, con el agua fría, están más profundos. Suma si hay más de 40 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
+    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, con el agua fría, están más profundos. Suma si hay más de 40 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes.",
+    "texto_en": "suitable depth for the season"
    },
    {
     "id": "frente_cerca_tunidos",
@@ -21568,7 +22046,8 @@
      }
     },
     "variable": "frente_km",
-    "nota": "〰 Frentes en el índice (2026-10-09, pedido de Mikel: 'peso pequeño, que lo ajuste el aprendizaje'). Frente de clorofila o térmico (capa 〰 Frentes del día, assets/js/frentes.js contextoFrentes) a 10 km o menos: efecto entero; de 10 a 20 km se apaga en línea recta; más lejos, nada. Sin capa, nubes o costa: no aplica (nunca resta). Solo atún rojo y bacoreta: es lo que sostienen las fuentes (atún rojo en el Mediterráneo occidental, túnidos en general). El bonito del norte tiene su propia regla (solo clorofila, agosto-septiembre). 20 km = lo que se alcanza en una salida normal en barco (mismo radio que la evaluación en la sombra). Confianza 0,4, la mínima de las reglas científicas: el aprendizaje la ajusta (±20 %/semana, ±50 % como mucho) y propone retirarla si los datos dicen lo contrario."
+    "nota": "〰 Frentes en el índice (2026-10-09, pedido de Mikel: 'peso pequeño, que lo ajuste el aprendizaje'). Frente de clorofila o térmico (capa 〰 Frentes del día, assets/js/frentes.js contextoFrentes) a 10 km o menos: efecto entero; de 10 a 20 km se apaga en línea recta; más lejos, nada. Sin capa, nubes o costa: no aplica (nunca resta). Solo atún rojo y bacoreta: es lo que sostienen las fuentes (atún rojo en el Mediterráneo occidental, túnidos en general). El bonito del norte tiene su propia regla (solo clorofila, agosto-septiembre). 20 km = lo que se alcanza en una salida normal en barco (mismo radio que la evaluación en la sombra). Confianza 0,4, la mínima de las reglas científicas: el aprendizaje la ajusta (±20 %/semana, ±50 % como mucho) y propone retirarla si los datos dicen lo contrario.",
+    "texto_en": "water front nearby: favours passing fish"
    },
    {
     "id": "frente_clorofila_bonito",
@@ -21612,7 +22091,8 @@
      }
     },
     "variable": "frente_clorofila_km",
-    "nota": "Sagarminaga y Arrizabalaga 2014: el bonito juvenil del golfo de Bizkaia no sigue de forma consistente a los frentes térmicos y quizá sí a los de clorofila en agosto y septiembre. Por eso solo clorofila y solo esos meses, con efecto pequeño. Mismo tramo que frente_cerca_tunidos (entero a 10 km, nada a 20 km). Sin clorofila fiable (nubes, costa): no aplica."
+    "nota": "Sagarminaga y Arrizabalaga 2014: el bonito juvenil del golfo de Bizkaia no sigue de forma consistente a los frentes térmicos y quizá sí a los de clorofila en agosto y septiembre. Por eso solo clorofila y solo esos meses, con efecto pequeño. Mismo tramo que frente_cerca_tunidos (entero a 10 km, nada a 20 km). Sin clorofila fiable (nubes, costa): no aplica.",
+    "texto_en": "green/blue water front nearby: can concentrate albacore"
    },
    {
     "id": "clorofila_alta_submarina",
@@ -21644,7 +22124,8 @@
      "logodds": -0.3
     },
     "variable": "clorofila_nivel",
-    "nota": "Clorofila alta (2 mg/m³ o más: posible floración) en la celda fiable más cercana a 15 km o menos (fuera de la franja de 5 km de la costa, donde el satélite no es fiable). La clorofila apaga la luz bajo el agua (Morel 1988) y el agua turbia acorta lo que ve el pez y el buceador (Utne-Palm 2002). Resta poco: el dato es del mar de fuera, no de la orilla; la turbidez de la webcam (factor turbidez) mira la orilla. Desde costa (señuelo a la vista) no se aplica: el índice no sabe la técnica y pegado a la costa no hay clorofila fiable; queda en la evaluación en la sombra."
+    "nota": "Clorofila alta (2 mg/m³ o más: posible floración) en la celda fiable más cercana a 15 km o menos (fuera de la franja de 5 km de la costa, donde el satélite no es fiable). La clorofila apaga la luz bajo el agua (Morel 1988) y el agua turbia acorta lo que ve el pez y el buceador (Utne-Palm 2002). Resta poco: el dato es del mar de fuera, no de la orilla; la turbidez de la webcam (factor turbidez) mira la orilla. Desde costa (señuelo a la vista) no se aplica: el índice no sabe la técnica y pegado a la costa no hay clorofila fiable; queda en la evaluación en la sombra.",
+    "texto_en": "very green water (bloom): poor underwater visibility"
    },
    {
     "id": "corriente_fuerte_fondo",
@@ -21689,7 +22170,8 @@
      "logodds": -0.3
     },
     "variable": "corriente_ms",
-    "nota": "Stoner 2004: la corriente es de las variables que más cambian el rendimiento de los aparejos con cebo; con mucha corriente el pez se resguarda y el aparejo no se queda en el fondo. Umbral 0,5 m/s (~1 nudo) de la corriente media del día sin marea de IBI junto al spot: en el Cantábrico casi nunca se llega (p99 ~0,6 nudos), sí en el Estrecho y Canarias. Desde costa no: pegado a la orilla manda la marea y el modelo pierde detalle."
+    "nota": "Stoner 2004: la corriente es de las variables que más cambian el rendimiento de los aparejos con cebo; con mucha corriente el pez se resguarda y el aparejo no se queda en el fondo. Umbral 0,5 m/s (~1 nudo) de la corriente media del día sin marea de IBI junto al spot: en el Cantábrico casi nunca se llega (p99 ~0,6 nudos), sí en el Estrecho y Canarias. Desde costa no: pegado a la orilla manda la marea y el modelo pierde detalle.",
+    "texto_en": "strong current: bottom fishing is hard"
    },
    {
     "id": "borde_borrasca_tunidos",
@@ -21755,7 +22237,8 @@
      "logodds": 0.35
     },
     "variable": "presion@borde_borrasca",
-    "nota": "Mikel (2026-10-09): 'para los túnidos, los bordes de las borrascas son interesantes'. Definición operativa de Claude con lo que ya trae la serie del spot (sin peticiones nuevas): se acerca una borrasca (la presión ha bajado de 2 a 10 hPa en 24 h; más de 10 sería una bajada explosiva, el núcleo encima), todavía no es el centro (presión de 1000 hPa o más) y hay viento moderado de 10 a 30 km/h de media en las últimas 6 h (viento de sistema, no de calma ni de temporal: a partir de 30 km/h sale el aviso de embarcación pequeña). Nunca con mar peligroso: ola máxima de las últimas 6 h por debajo de 2,5 m (el aviso de ola peligrosa sigue aparte). No se encontró bibliografía abierta que lo mida; Goñi et al. 2015 (bonito) ven que la mezcla del agua por el temporal baja las capturas en superficie, por eso se excluyen el núcleo y la mar grande. Confianza 0,6, la habitual de las reglas de Mikel; el aprendizaje la ajusta con barreras y nunca cambia el signo solo."
+    "nota": "Mikel (2026-10-09): 'para los túnidos, los bordes de las borrascas son interesantes'. Definición operativa de Claude con lo que ya trae la serie del spot (sin peticiones nuevas): se acerca una borrasca (la presión ha bajado de 2 a 10 hPa en 24 h; más de 10 sería una bajada explosiva, el núcleo encima), todavía no es el centro (presión de 1000 hPa o más) y hay viento moderado de 10 a 30 km/h de media en las últimas 6 h (viento de sistema, no de calma ni de temporal: a partir de 30 km/h sale el aviso de embarcación pequeña). Nunca con mar peligroso: ola máxima de las últimas 6 h por debajo de 2,5 m (el aviso de ola peligrosa sigue aparte). No se encontró bibliografía abierta que lo mida; Goñi et al. 2015 (bonito) ven que la mezcla del agua por el temporal baja las capturas en superficie, por eso se excluyen el núcleo y la mar grande. Confianza 0,6, la habitual de las reglas de Mikel; el aprendizaje la ajusta con barreras y nunca cambia el signo solo.",
+    "texto_en": "edge of a low-pressure system: tends to get tuna moving"
    }
   ]
  },
