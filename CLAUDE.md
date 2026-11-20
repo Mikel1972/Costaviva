@@ -6110,3 +6110,13 @@ enseñar en la app el mapa por zonas y «qué técnica funciona aquí». Con k =
 hoy saldrían vacíos (11 capturas de 2 personas). No construirlo antes sin
 preguntar (`aprendizaje/decisiones.json`, decision-comunidad-esperar).
 Comprobar con `select count(*) from capturas_comunidad`.
+
+## Espejo de idiomas (2026-11-20)
+
+Mikel: «todo lo que hagamos debe estar en todos los idiomas». Cada página
+pública existe en español, inglés y portugués. `test/espejo-idiomas.test.js`
+(sin IA) falla si aparece una página en un idioma y no en los otros; lo que
+aún falta está en `datos-robots/seo/espejo-pendientes.json` y solo puede
+encoger (`node scripts/seo/espejo.mjs --escribir` al cubrir huecos). Aprende
+lleva sus traducciones en `assets/datos/formacion.en.json` y
+`formacion.pt.json` (mismos id; glosario `i18n/glosario-pt.json`).

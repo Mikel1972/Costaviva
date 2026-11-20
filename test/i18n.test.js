@@ -344,8 +344,9 @@ test("SEO /en/: encendido solo para Nueva Zelanda; España igual (sin hreflang, 
   assert.match(html, /<html lang="es">/);
   assert.doesNotMatch(html, /hreflang/);
   assert.match(html, /<link rel="canonical" href="https:\/\/costaviva\.org\/spots\/bakio">\n<meta property="og:type"/);
-  // En el sitemap, /en/ solo para NZ.
-  assert.ok((leer("sitemap.xml").match(/<loc>https:\/\/costaviva\.org\/en\/[^<]*<\/loc>/g) || []).every((l) => /\/en\/(spots|tides|species)(\/|<)/.test(l)));
+  // En el sitemap, /en/ para NZ y el centro de formación (/en/aprende,
+  // 2026-11-20: «todo lo que hagamos debe estar en todos los idiomas»).
+  assert.ok((leer("sitemap.xml").match(/<loc>https:\/\/costaviva\.org\/en\/[^<]*<\/loc>/g) || []).every((l) => /\/en\/(spots|tides|species|aprende)(\/|<)/.test(l)));
   assert.doesNotMatch(leer("sitemap.xml"), /\/en\/(spots|tides)\/(?!nz-|region\/)[a-z]/);
   const rutas = await import("../functions/_lib/rutas-publicas.js");
   assert.equal(rutas.esRutaPermitida("/en/spots/nz-leigh"), true);

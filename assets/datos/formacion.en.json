@@ -1,0 +1,3514 @@
+{
+ "version": "2026-11-20",
+ "nota": "Training centre (2026-11-20, requested by Mikel). Our own cards, in our own words, each with its source checked that day. Nothing without a source. Common topics (knots, lines…) are written once and linked from the chapters that use them.",
+ "capitulos": [
+  {
+   "id": "costa",
+   "nombre": "Shore fishing",
+   "emoji": "🪨",
+   "temas": [
+    "nudos",
+    "sedales",
+    "bajos",
+    "anzuelos",
+    "plomos",
+    "quitavueltas-perlas-topes",
+    "corchos",
+    "senuelos-spinning",
+    "cefalopodos",
+    "canas-costa",
+    "montajes-costa"
+   ]
+  },
+  {
+   "id": "embarcacion",
+   "nombre": "Boat fishing",
+   "emoji": "🚤",
+   "temas": [
+    "nudos",
+    "sedales",
+    "bajos",
+    "anzuelos",
+    "quitavueltas-perlas-topes",
+    "senuelos-spinning",
+    "cefalopodos",
+    "jigs-vinilos",
+    "currican",
+    "fondeo-deriva",
+    "canas-barco",
+    "montajes-fondo"
+   ]
+  },
+  {
+   "id": "submarina",
+   "nombre": "Spearfishing",
+   "emoji": "🤿",
+   "temas": [
+    "fusil-varilla-punta",
+    "traje-plomos-aletas",
+    "boya-seguridad",
+    "apnea-segura",
+    "normas-submarina"
+   ]
+  }
+ ],
+ "temas": {
+  "nudos": "Knots",
+  "sedales": "Lines: nylon, fluorocarbon and braid",
+  "bajos": "Rigs and leaders: types, thickness and length",
+  "anzuelos": "Hooks: types and sizes",
+  "plomos": "Leads (sinkers)",
+  "quitavueltas-perlas-topes": "Swivels, beads and stop knots",
+  "corchos": "Floats and buoys",
+  "senuelos-spinning": "Spinning lures",
+  "canas-costa": "Shore rods and reels",
+  "montajes-costa": "Surfcasting and float rigs",
+  "jigs-vinilos": "Jigs and soft plastics",
+  "currican": "Trolling",
+  "fondeo-deriva": "Fishing at anchor and on the drift",
+  "canas-barco": "Boat rods and reels",
+  "montajes-fondo": "Bottom rigs",
+  "fusil-varilla-punta": "Speargun, shaft and spear tip",
+  "traje-plomos-aletas": "Wetsuit, weights and fins",
+  "boya-seguridad": "Marker buoy and safety",
+  "apnea-segura": "Safe breath-hold diving",
+  "normas-submarina": "Spearfishing rules",
+  "cefalopodos": "Squid and cuttlefish: egi jigs and squid jigs"
+ },
+ "nota_resistencia": "Simple average of the published tests we found (Mikel, 2026-11-20: «when you find two or three references, put the average and that's it»). It varies a lot with the condition of the line and how the knot is tied.",
+ "fichas": [
+  {
+   "id": "nudo-palomar",
+   "tema": "nudos",
+   "nombre": "Palomar knot",
+   "otros_nombres": [
+    "Nudo palomar"
+   ],
+   "para": "Tie the line to a hook, a lure or a swivel.",
+   "resumen": "One of the easiest and most reliable hook knots. It works especially well with braid, which tends to slip in other knots.",
+   "pasos": [
+    "Double about 15 cm of the end of the line and pass the doubled line through the hook eye.",
+    "With the doubled line, tie a loose overhand knot, leaving the hook hanging from the loop.",
+    "Pass the whole hook through the loop that is left.",
+    "Wet the knot and pull the main line and the tag end at the same time until it seats on the eye.",
+    "Trim the tag end, leaving a few millimetres."
+   ],
+   "bien_con": [
+    "braid",
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "The hook or lure has to pass through the loop: with big lures or treble hooks you need a long loop and it is awkward.",
+   "fuente": {
+    "titulo": "Animated Knots: Palomar Knot",
+    "url": "https://www.animatedknots.com/palomar-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-palomar.jpg",
+    "alt": "Steps of the palomar knot",
+    "autor": "Vaughan Pratt",
+    "licencia": "CC BY-SA 3.0",
+    "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:PalomarKnotSequence.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 75,
+    "fuentes": [
+     "https://www.fieldandstream.com/fishing/tie-the-strongest-fishing-knots",
+     "https://www.sportfishingmag.com/best-fishing-knots-main-line-to-terminal-gear/",
+     "https://braidknotsolutions.blogspot.com/2020/05/072-palomar-test.html"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-clinch-mejorado",
+   "tema": "nudos",
+   "nombre": "Improved clinch knot",
+   "otros_nombres": [
+    "Nudo clinch mejorado"
+   ],
+   "para": "Tie the line to a hook, a lure or a swivel.",
+   "resumen": "The classic hook knot for thin and medium nylon. Quick to tie without looking.",
+   "pasos": [
+    "Pass the end of the line through the hook eye.",
+    "Make five or more turns with the tag end around the main line.",
+    "Pass the tag end through the small loop left next to the eye.",
+    "Then pass it through the big loop that has just formed.",
+    "Wet it and tighten by pulling the main line; trim the tag end."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "Not recommended with thick lines (over about 30 lb breaking strain): it is hard to tighten properly. With thick line four turns may be enough.",
+   "fuente": {
+    "titulo": "Animated Knots: Improved Clinch Knot",
+    "url": "https://www.animatedknots.com/improved-clinch-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-clinch-mejorado.jpg",
+    "alt": "Clinch knot, before tightening",
+    "autor": "Der Barbar",
+    "licencia": "CC BY-SA 4.0",
+    "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Barb._01_Clinchknoten.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 86,
+    "fuentes": [
+     "https://www.fieldandstream.com/fishing/tie-the-strongest-fishing-knots",
+     "https://www.ofah.org/oodonline/fishing/testing-knots"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-uni",
+   "tema": "nudos",
+   "nombre": "Uni knot (or Grinner, or Duncan)",
+   "otros_nombres": [
+    "Uni knot",
+    "Grinner",
+    "Duncan"
+   ],
+   "para": "Tie to hooks and swivels, make loops and, doubled (one on each line), join two lines.",
+   "resumen": "A knot for almost everything: you can tie on the hook, make a sliding loop or, by tying one on each end, join two lines (the «double uni»). It works with braid and with nylon.",
+   "pasos": [
+    "Pass the tag end through the eye and bring it back parallel to the main line, forming a loop.",
+    "Make four to six turns with the tag end around both lines, inside the loop.",
+    "Wet it and pull the tag end to close the turns.",
+    "Slide the knot down to the eye by pulling the main line; trim the tag end.",
+    "To join two lines (double uni): overlap the ends, tie a uni with each one around the other and pull both lines so they come together."
+   ],
+   "bien_con": [
+    "braid",
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "As a line-to-line join it is somewhat weaker than the same knot tied to a large eye; to join braid to a fluorocarbon leader, the FG is slimmer and passes better through the guides.",
+   "fuente": {
+    "titulo": "Animated Knots: Uni Knot",
+    "url": "https://www.animatedknots.com/uni-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 83,
+    "fuentes": [
+     "https://www.sportfishingmag.com/best-fishing-knots-main-line-to-terminal-gear/",
+     "https://odajournal.com/wp-content/uploads/2019/01/v2a9.pdf",
+     "https://braidknotsolutions.blogspot.com/2020/05/072-palomar-test.html"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-fg",
+   "tema": "nudos",
+   "nombre": "FG knot",
+   "otros_nombres": [
+    "Nudo FG"
+   ],
+   "para": "Join the braid main line to a fluorocarbon or nylon leader.",
+   "resumen": "The most used braid-to-leader join in spinning and jigging: very slim and strong, and it passes through the guides without catching when casting.",
+   "pasos": [
+    "Keep the braid tight (for example, held in your mouth or on the rod with the drag locked).",
+    "Cross the leader over the braid and wrap the braid around the leader, alternating over and under, about twenty times.",
+    "Without releasing the tension, finish with several half hitches of the braid around the leader.",
+    "Wet it and tighten hard by pulling both lines; trim the leader tag end.",
+    "Finish with a few half hitches of the braid on itself and trim."
+   ],
+   "bien_con": [
+    "braid"
+   ],
+   "ojo": "It is hard to learn: the details matter and you have to keep the braid tight the whole time. Better to practise it at home before going out.",
+   "fuente": {
+    "titulo": "Animated Knots: FG Knot",
+    "url": "https://www.animatedknots.com/fg-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 73,
+    "fuentes": [
+     "https://www.sportfishingmag.com/?p=45256"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-albright",
+   "tema": "nudos",
+   "nombre": "Albright knot",
+   "otros_nombres": [
+    "Nudo Albright"
+   ],
+   "para": "Join lines of different type or thickness: nylon to braid, or braid to wire.",
+   "resumen": "A simpler alternative to the FG for joining two different lines.",
+   "pasos": [
+    "Double the end of the thicker line to form a loop.",
+    "Pass the thinner line through the loop.",
+    "Wrap it ten or twelve turns around both legs of the loop, working towards the tip.",
+    "Bring the tag end out through the loop, on the same side it went in.",
+    "Wet it, tighten by pulling both lines and trim the tag ends."
+   ],
+   "bien_con": [
+    "braid",
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "Only moderately easy to tie; the turns must sit neatly, without riding over each other.",
+   "fuente": {
+    "titulo": "Animated Knots: Albright Knot",
+    "url": "https://www.animatedknots.com/albright-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-albright.png",
+    "alt": "Albright knot in 4 drawings: 1, the thin line enters the loop of the thick one (steps 1-2); 2, the turns towards the tip of the loop (step 3); 3, it comes out through the loop (step 4); 4, tightened (step 5)",
+    "autor": "Albright knot diagram (retouched), numbered by Costaviva",
+    "licencia": "public domain",
+    "licencia_url": "",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Albright_knot_diagram_retouched.png",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 82,
+    "fuentes": [
+     "https://www.saltstrong.com/?p=4063",
+     "https://www.saltstrong.com/?p=5445"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-lazo-perfeccion",
+   "tema": "nudos",
+   "nombre": "Perfection loop",
+   "otros_nombres": [
+    "Lazo de perfección"
+   ],
+   "para": "Make a small loop at the end of the leader, to change leaders loop to loop.",
+   "resumen": "A small loop that sits in line with the line: used to attach and change leaders or rigs without cutting.",
+   "pasos": [
+    "Make a first loop with the tag end, passing it behind the main line.",
+    "Make a second loop in front of the first.",
+    "Pass the tag end between the two loops.",
+    "Push the second loop through the first.",
+    "Tighten by pulling the second loop and the main line; trim the tag end."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "It is easier to tie in the hand than with the hook already on.",
+   "fuente": {
+    "titulo": "Animated Knots: Perfection Loop",
+    "url": "https://www.animatedknots.com/perfection-loop-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-lazo-perfeccion.jpg",
+    "alt": "Steps of the perfection loop",
+    "autor": "Thuringius (atribuido)",
+    "licencia": "public domain",
+    "licencia_url": null,
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Anglers_loop_how_to.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 80,
+    "fuentes": [
+     "https://macbrownflyfish.com/tippet-study/comprehensive-university-tippet-study",
+     "https://www.sexyloops.com/index.php/ps/tippet-knotshow-weak"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-pala",
+   "tema": "nudos",
+   "nombre": "Snell knot",
+   "otros_nombres": [
+    "Nudo de pala"
+   ],
+   "para": "Tie the leader directly to the hook shank, for natural bait.",
+   "resumen": "The line comes out in line with the hook shank, which helps the hook set. It was created for spade-end hooks (no eye) and is still widely used with bait.",
+   "pasos": [
+    "Pass the end of the leader through the eye (or lay it against the spade), leaving a good length of tag along the shank.",
+    "Form a loop along the shank.",
+    "Make five to seven tight turns around the shank and the line, from the eye towards the bend.",
+    "Hold the turns and pull the main line to close them.",
+    "Tighten by pulling the line and the tag end; trim the tag end."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "The turns must sit together on the shank, without crossing.",
+   "fuente": {
+    "titulo": "Animated Knots: Snell Knot",
+    "url": "https://www.animatedknots.com/snell-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-pala.jpg",
+    "alt": "Snell knot on a hook",
+    "autor": "Fishingknotsfast",
+    "licencia": "CC BY-SA 4.0",
+    "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Snell_Knot.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 91,
+    "fuentes": [
+     "https://allfishinggear.com/fishing-knot-strength-chart",
+     "https://huntfishsport.com/tools/knot-strength-calculator"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-san-diego-jam",
+   "tema": "nudos",
+   "nombre": "San Diego jam knot",
+   "otros_nombres": [
+    "San Diego jam knot",
+    "Reverse clinch",
+    "Heiliger"
+   ],
+   "para": "Tie the line to a hook or lure.",
+   "resumen": "A hook knot that keeps the line's strength very well. It works with nylon, braid and fluorocarbon.",
+   "pasos": [
+    "Pass the tag end through the eye and leave plenty of tag.",
+    "Wrap the tag end around both lines (the main line and the tag itself) towards the eye.",
+    "Pass the tag end through the first loop, next to the eye.",
+    "Then pass it through the loop that has just formed at the top.",
+    "Wet it and tighten by pulling the main line; trim the tag end."
+   ],
+   "bien_con": [
+    "nylon",
+    "braid",
+    "fluorocarbon"
+   ],
+   "ojo": "The thicker the line, the fewer the turns: about seven or eight with thin line and about three with thick line. Do not let the turns ride over each other.",
+   "fuente": {
+    "titulo": "Animated Knots: San Diego Jam Knot",
+    "url": "https://www.animatedknots.com/san-diego-jam-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 88,
+    "fuentes": [
+     "https://odajournal.com/wp-content/uploads/2019/01/v2a9.pdf"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-lazo-bajo",
+   "tema": "nudos",
+   "nombre": "Dropper loop",
+   "otros_nombres": [
+    "Lazo de bajo"
+   ],
+   "para": "Make a loop in the middle of the line, standing out at a right angle, to hang an extra hook (paternoster, bottom rigs).",
+   "resumen": "The basis of multi-hook rigs: each loop stands off the line and the hook does not tangle with the main line.",
+   "pasos": [
+    "Make a big loop at the point on the line where you want the dropper.",
+    "Wrap one side of the loop over the other several times (five to seven), leaving a gap in the centre.",
+    "Push the centre of the big loop through that gap.",
+    "Hold the loop that comes out and pull both ends of the line to close it.",
+    "Adjust the size of the loop before fully tightening."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbon"
+   ],
+   "ojo": "The loop should not be very long: it tangles and twists more. With nylon, the knot changes shape as you tighten it; that is normal.",
+   "fuente": {
+    "titulo": "Animated Knots: Dropper Loop",
+    "url": "https://www.animatedknots.com/dropper-loop-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-lazo-bajo.jpg",
+    "alt": "Finished dropper loop",
+    "autor": "TheHungryTiger",
+    "licencia": "public domain",
+    "licencia_url": null,
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Dropper_loop_knot.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 64,
+    "fuentes": [
+     "https://www.delaware-surf-fishing.com/drop-loop-strength-tests"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "sedal-nylon",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Nylon (monofilament)",
+   "otros_nombres": [
+    "Mono",
+    "Nylon (Spanish: nailon)",
+    "Monofilament"
+   ],
+   "para": "The traditional line: a single filament of polyamide.",
+   "resumen": "Cheap, easy to knot and stretchy. It is the most versatile and the one almost everyone starts with.",
+   "como_es": [
+    "It stretches quite a lot: it cushions the fish's head shakes and forgives mistakes on the strike, but transmits bites less well.",
+    "It almost floats (density close to that of water): it stays on the surface or sinks very slowly.",
+    "It absorbs some water and sunlight degrades it: over time it loses strength. It is worth changing it every season.",
+    "It has memory: if it stays on the spool for a long time it comes off in coils.",
+    "It resists abrasion reasonably well, but less than fluorocarbon of the same diameter."
+   ],
+   "colores": [
+    {
+     "color": "Clear or crystal",
+     "para": "The most discreet in clear water."
+    },
+    {
+     "color": "Green, grey or blue",
+     "para": "Blends with the bottom and the water; discreet and a little easier for the angler to see."
+    },
+    {
+     "color": "Fluorescent yellow or orange",
+     "para": "Easy to see from above the water to follow the line and spot bites, but the fish sees it more too: best with a clear leader."
+    }
+   ],
+   "usos_costa": [
+    "Main line for surfcasting and bottom fishing from the beach.",
+    "Float fishing: it floats and helps keep the float in place.",
+    "General-purpose leaders when the water is somewhat coloured.",
+    "Shock leaders and tapered lines for powerful casts."
+   ],
+   "usos_embarcacion": [
+    "Cheap main line for bait fishing at anchor and on the drift.",
+    "Surface trolling, where the stretch cushions sudden runs.",
+    "General-purpose leaders."
+   ],
+   "ojo": "Check it every trip: if the line feels rough or fuzzy when you run your fingers along it, cut that section off. Sun and salt age it even when it is not used.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    },
+    {
+     "titulo": "Rapala: Mono, Fluorocarbon or Braid?",
+     "url": "https://www.rapala.eu/eu_en/blog/mono-fluorocarbon-or-braid-how-to-choose-the-right-fishing-line"
+    },
+    {
+     "titulo": "Leurre de la Pêche: the best braid for surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/121-cual-es-la-mejor-trenza-para-surfcasting.html"
+    },
+    {
+     "titulo": "A. Álvarez: tapered surfcasting lines",
+     "url": "https://www.a-alvarez.com/en/2058-tapered-surf-casting-lines"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-copolimero",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Copolymer",
+   "otros_nombres": [
+    "Copolímero"
+   ],
+   "para": "An improved nylon: a blend of two or more types of nylon in a single filament.",
+   "resumen": "It handles like nylon but stretches less and resists abrasion better. It costs a bit more.",
+   "como_es": [
+    "It stretches less than normal nylon: a bit more sensitivity without losing the cushioning.",
+    "Better resistance to abrasion and sudden jerks than a nylon of the same diameter.",
+    "It is just as easy to knot as nylon.",
+    "It floats or sinks slowly, like nylon."
+   ],
+   "colores": [
+    {
+     "color": "Clear",
+     "para": "Discreet in clear water."
+    },
+    {
+     "color": "Green or grey",
+     "para": "Discreet and a little more visible to the angler."
+    },
+    {
+     "color": "Fluorescent",
+     "para": "To follow the line; a clear leader is advisable."
+    }
+   ],
+   "usos_costa": [
+    "Main line for light spinning and float fishing when you want a bit more sensitivity than with nylon.",
+    "Leaders and shock leaders on rocky ground."
+   ],
+   "usos_embarcacion": [
+    "Main line for fishing at anchor and on the drift over hard ground.",
+    "General-purpose leaders."
+   ],
+   "ojo": "It is more expensive than nylon and, like nylon, it degrades in the sun: store it in the shade.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: the 4 types of line (mono, fluoro, braid and copolymer)",
+     "url": "https://tacklevillage.com/gear/line/"
+    },
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-fluorocarbono",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Fluorocarbon",
+   "otros_nombres": [
+    "Fluoro",
+    "FC",
+    "Fluorocarbono"
+   ],
+   "para": "A fluoropolymer (PVDF) filament designed mainly for leaders.",
+   "resumen": "It is the line that is least visible underwater, it sinks and it stands up very well to abrasion from rocks and shells. Its natural place is the leader.",
+   "como_es": [
+    "It bends light almost like water does (refractive index ~1.42 compared with 1.33 for water and ~1.5–1.6 for nylon): that is why it is less visible. It helps, but it does not make it invisible.",
+    "It sinks (it is quite a lot denser than water): it takes the bait and the leader down towards the bottom.",
+    "It is the most abrasion-resistant for the same diameter.",
+    "It does not absorb water and stands up well to the sun: it lasts longer than nylon.",
+    "It is stiffer and harder to knot: always wet the knot before tightening."
+   ],
+   "colores": [
+    {
+     "color": "Clear",
+     "para": "It is almost always used like this: it is what people buying fluorocarbon are after."
+    },
+    {
+     "color": "Tinted (pink, green)",
+     "para": "Some brands tint it for particular bottoms or waters; the advantage is debated."
+    }
+   ],
+   "usos_costa": [
+    "Leaders for bass, white seabream, gilthead bream and other wary fish in clear water.",
+    "Leaders on rock, mussel beds or shells, where nylon gets cut.",
+    "Shock leader in surfcasting over hard ground."
+   ],
+   "usos_embarcacion": [
+    "Leaders for jigging, spinning and fishing at anchor in clear water.",
+    "Leaders for wary species and for fishing over rock.",
+    "Heavy leaders against teeth that are not very sharp when you do not want to use wire."
+   ],
+   "ojo": "As a main line on the reel it is heavy, sinks and has memory: it is almost always used only as a leader. It is expensive; buy leader spools, not main-line spools.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    },
+    {
+     "titulo": "FlyLife: fluorocarbon versus monofilament",
+     "url": "https://flylifemagazine.com/wednesday-fish-facts-fluorocarbon-versus-monofilament/"
+    },
+    {
+     "titulo": "Varivas: how to choose fishing line",
+     "url": "https://www.varivas.fishing/how-to-select-fishing-line/"
+    },
+    {
+     "titulo": "Shimano: line guide for predator fishing",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-trenzado",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Braid (PE)",
+   "otros_nombres": [
+    "Multifilament",
+    "Braid (Spanish: trenzado)",
+    "PE"
+   ],
+   "para": "Several polyethylene fibres braided (4, 8 or more) into a single line.",
+   "resumen": "Very thin and very strong for its diameter, it hardly stretches: you feel everything. It needs a nylon or fluorocarbon leader.",
+   "como_es": [
+    "It hardly stretches: it transmits bites and the bottom instantly and sets the hook better at distance.",
+    "Much thinner than a nylon of the same strength: it casts further and wind and current drag it less.",
+    "It floats.",
+    "It is rated by PE number (higher means thicker) as well as by kilos.",
+    "X4 (4 fibres): rougher but more abrasion-resistant. X8 (8 fibres): rounder and smoother, casts further but frays sooner on rock.",
+    "The sun does not affect it the way it affects nylon, but it frays with sideways abrasion."
+   ],
+   "colores": [
+    {
+     "color": "Moss green or grey",
+     "para": "Discreet: the most used in spinning."
+    },
+    {
+     "color": "Fluorescent yellow, orange or pink",
+     "para": "Visible from far away: to follow the line, see bites on the line and cast at night with a torch."
+    },
+    {
+     "color": "Multicolour (one colour every 10 m)",
+     "para": "To know how much line has gone out: each colour is 10 m. Some also have a mark every metre. Designed for vertical fishing."
+    }
+   ],
+   "usos_costa": [
+    "Spinning with lures: the main line is almost always braid.",
+    "Long-distance surfcasting, with a nylon or fluorocarbon shock leader.",
+    "Bottom fishing where feeling the bite matters."
+   ],
+   "usos_embarcacion": [
+    "Jigging and slow jigging, with multicolour braid to know the depth.",
+    "Vertical bottom fishing and drifting in deep water: thin line bows less in the current.",
+    "Spinning and popping from the boat."
+   ],
+   "ojo": "Always with a leader: it is very visible and sideways abrasion against rocks cuts it. Do not tie braid with nylon knots (it slips): use a palomar or FG. It cuts your fingers if you grab it while a fish is pulling.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Braid vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/braid-vs-monofilament-fishing-lines-and-when-to-use-each"
+    },
+    {
+     "titulo": "On The Water: how to choose a braided line",
+     "url": "https://onthewater.com/how-to-choose-a-braided-line"
+    },
+    {
+     "titulo": "Leurre de la Pêche: the best braid for surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/121-cual-es-la-mejor-trenza-para-surfcasting.html"
+    },
+    {
+     "titulo": "Daiwa J-Braid X8 multicolour (colour change every 10 m)",
+     "url": "https://www.leurredelapeche.fr/es/5709-braid-daiwa-j-braid-x8-multicolor.html"
+    },
+    {
+     "titulo": "Varivas 4 Marking (colour every 10 m and a mark every metre)",
+     "url": "https://www.leurredelapeche.fr/es/20484-hilo-trenzado-varivas-4-marcando-150m.html"
+    },
+    {
+     "titulo": "Shimano: saltwater line guide",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/saltwater-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-acero",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Wire (steel)",
+   "otros_nombres": [
+    "Wire trace",
+    "Wire leader",
+    "Bajo de acero (Spanish)"
+   ],
+   "para": "Steel wire leaders, single-strand or braided, sometimes nylon-coated.",
+   "resumen": "For toothy fish that cut through any line: conger eel, bluefish, barracuda, sea pike or shark.",
+   "como_es": [
+    "No toothy fish can cut it.",
+    "It is stiff and visible: some fish get wary and the lure loses some of its action.",
+    "Coated braided wire is more flexible; single-strand wire is stiffer and thinner.",
+    "It kinks and frays: check it after every fish."
+   ],
+   "colores": [
+    {
+     "color": "Silver",
+     "para": "The classic; it shines underwater."
+    },
+    {
+     "color": "Matt black or brown",
+     "para": "More discreet; the one recommended in clear water."
+    }
+   ],
+   "usos_costa": [
+    "Bottom fishing for conger eel from rocks, harbours and breakwaters: wire leader, or very heavy nylon if you prefer the fish not to notice it so much.",
+    "Spinning and bottom fishing when bluefish or other toothy fish come in.",
+    "A short length (about 15–30 cm) in front of the lure or hook."
+   ],
+   "usos_embarcacion": [
+    "Conger eel over rock and wrecks, with a wire or very heavy nylon leader.",
+    "Trolling and spinning for toothy predators (barracuda, sea pike, shark).",
+    "Short leaders above the lure, joined with a swivel or snap."
+   ],
+   "ojo": "Use it only when there are teeth: otherwise it scares fish and costs you bites. For conger, many anglers use very heavy nylon (130 lb and up) instead of wire: they cannot cut wire, but if the fish swallows the hook wire does it more harm; with nylon, check for abrasion after every fish.",
+   "fuentes": [
+    {
+     "titulo": "On The Water: how to choose the right leader material",
+     "url": "https://onthewater.com/how-to-choose-the-right-leader-material"
+    },
+    {
+     "titulo": "FishUSA: wire, copper and lead core",
+     "url": "https://www.fishusa.com/Wire-Lead-Core-Fishing-Line"
+    },
+    {
+     "titulo": "Shimano: line guide for predator fishing",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    },
+    {
+     "titulo": "Sea Angling Ireland: conger trace (wire or nylon)",
+     "url": "https://www.sea-angling-ireland.org/forum/viewtopic.php?p=11386"
+    },
+    {
+     "titulo": "Sea Angler: conger from the shore",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/282754882668798"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-lead-core",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Lead core line",
+   "otros_nombres": [
+    "Lead core",
+    "Línea de plomo (Spanish)"
+   ],
+   "para": "A braid with a lead core inside that makes the line sink on its own.",
+   "resumen": "For trolling in mid-water or near the bottom without using leads or diving planers.",
+   "como_es": [
+    "It changes colour every 10 yards (about 9 m): you count how many colours are out.",
+    "Rule of thumb: each colour goes down about 1.5 m at slow trolling speed (about 4 km/h); it changes a lot with speed and lure.",
+    "It is thick and very visible: it needs a long nylon or fluorocarbon leader."
+   ],
+   "colores": [
+    {
+     "color": "Multicolour (one colour every 10 yards)",
+     "para": "To work out the depth the lure is running at."
+    }
+   ],
+   "usos_costa": [
+    "Not used from the shore."
+   ],
+   "usos_embarcacion": [
+    "Bottom and mid-water trolling from a boat.",
+    "Always with a long leader (several metres) of nylon or fluorocarbon."
+   ],
+   "ojo": "The colours are a guide, not a measurement: with current or more speed the lure rises. Check on the echo sounder whether you are touching the bottom.",
+   "fuentes": [
+    {
+     "titulo": "FishUSA: wire, copper and lead core",
+     "url": "https://www.fishusa.com/Wire-Lead-Core-Fishing-Line"
+    },
+    {
+     "titulo": "Bass Pro: lead core guide",
+     "url": "https://1source.basspro.com/news-tips/fishing-tackle/23378/lead-core-line-buyers-guide"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "colores-del-sedal",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Line colours: which to choose",
+   "otros_nombres": [
+    "Line visibility"
+   ],
+   "para": "Which line colour to use depending on the water and what you want to see yourself.",
+   "resumen": "Colour is a balance between you seeing the line and the fish not seeing it. The usual solution: a visible main line and a clear leader.",
+   "como_es": [
+    "The fish mainly sees the part close to the bait: that is why the leader matters more than the main line.",
+    "In clear water, clear fluorocarbon is the least visible.",
+    "In coloured water or at night, colour matters much less.",
+    "The idea that red disappears underwater is debated: some divers say it looks black."
+   ],
+   "colores": [
+    {
+     "color": "Clear",
+     "para": "Leaders in clear water and for wary fish."
+    },
+    {
+     "color": "Green, grey or blue",
+     "para": "Discreet main line for clear water."
+    },
+    {
+     "color": "Fluorescent (yellow, orange, pink)",
+     "para": "Main line to see bites and follow the line; always with a clear leader."
+    },
+    {
+     "color": "Multicolour",
+     "para": "Knowing how much line has gone out (vertical fishing and trolling)."
+    }
+   ],
+   "usos_costa": [
+    "Surfcasting: visible-coloured main line to see the line and a clear leader.",
+    "Spinning in clear water: green or grey braid with a fluorocarbon leader."
+   ],
+   "usos_embarcacion": [
+    "Jigging: multicolour braid with a fluorocarbon leader.",
+    "Trolling: the long clear leader is what the fish sees."
+   ],
+   "ojo": "There are no conclusive studies on which colour each species sees: take this as a practical guide, not a rule.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: do fish see line?",
+     "url": "https://britishseafishing.co.uk/?p=15620"
+    },
+    {
+     "titulo": "Pure Fishing (Spiderwire): what do fish see",
+     "url": "https://www.purefishing.com/spiderwire-pro-tips-what-do-fish-see"
+    },
+    {
+     "titulo": "Fix.com: Do Fish See Line?",
+     "url": "https://www.fix.com/blog/do-fish-see-line/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-brazoladas",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Paternoster rig (with snoods)",
+   "otros_nombres": [
+    "Paternoster",
+    "2- or 3-hook rig"
+   ],
+   "para": "The hooks are on short snoods above the lead, which sits at the very bottom.",
+   "resumen": "The most used bottom rig: it carries several baits at once and keeps them off the bottom.",
+   "como_es": [
+    "The lead goes at the end; the snoods come off the rig body with swivels, beads or knots.",
+    "It carries one, two or three hooks: more baits, more scent in the water.",
+    "When it bites, the fish feels the weight of the lead and often hooks itself.",
+    "Sliding variant (running paternoster): the rig body runs on the main line and the fish feels less."
+   ],
+   "medidas": [
+    "Two-hook surfcasting rigs are usually about 170–180 cm in total, with snoods of about 70 cm.",
+    "Short snoods tangle less when casting; long ones move the bait more in the current.",
+    "Snoods a little thinner than the rig body: if you snag, only one breaks."
+   ],
+   "usos_costa": [
+    "Beach surfcasting: the beach rig par excellence.",
+    "Clean or mixed ground for white seabream, gilthead bream, sand steenbras, flatfish and similar.",
+    "On very rocky ground, better with a weak link for the lead (so the lead breaks off and not the whole rig)."
+   ],
+   "usos_embarcacion": [
+    "At anchor and on the drift: several hooks at different heights off the bottom.",
+    "Mixed bottom fishing (red seabream, pandora, horse mackerel…)."
+   ],
+   "ojo": "With strong wind and long casts, long snoods tangle: use bait clips to hold them during the cast.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: rigs for cod (paternoster, pulley, running)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "Tackle Tactics: running paternoster",
+     "url": "https://tackletactics.com.au/blogs/learn-to-fish/running-paternoster-rig"
+    },
+    {
+     "titulo": "British Sea Fishing: how to tie sea rigs",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    },
+    {
+     "titulo": "Leurre de la Pêche: how to set up for surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    },
+    {
+     "titulo": "Two-hook surfcasting rig (commercial example)",
+     "url": "https://www.leurredelapeche.fr/es/14840-bajo-de-linea-surfcasting-sunset-rs-competition-multi-especies-fluoro.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-corredizo",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Running ledger (sliding lead)",
+   "otros_nombres": [
+    "Running ledger",
+    "Sliding rig"
+   ],
+   "para": "The lead runs freely on the main line, above a swivel; below it goes the hook length.",
+   "resumen": "The fish takes the bait and swims off without feeling the weight of the lead: for big, wary fish.",
+   "como_es": [
+    "A running lead (or a clip with a lead) runs on the main line; a bead protects the knot at the swivel.",
+    "The hook length comes off the swivel, usually with a single hook.",
+    "Positive bite: the line runs through the lead and shows on the rod tip."
+   ],
+   "medidas": [
+    "A hook length of 1 to 1.5 m to start with on the beach.",
+    "More current, longer hook length: the bait moves more naturally.",
+    "Just enough lead to hold the bottom in whatever current there is."
+   ],
+   "usos_costa": [
+    "Bass, gilthead bream and big fish from the beach or rocks.",
+    "Night bottom fishing with big baits.",
+    "Conger eel from harbours or rocks (with a cut-resistant leader)."
+   ],
+   "usos_embarcacion": [
+    "At anchor in deep water for big bottom fish (conger eel, pollack, rays).",
+    "Slow drifting with a single big bait."
+   ],
+   "ojo": "If the lead is too light, the current drags it and the hook length wraps around the main line: go up in lead before lengthening the hook length.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: rigs for cod (paternoster, pulley, running)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: paternoster or running ledger",
+     "url": "https://www.sea-angling-ireland.org/forum/viewtopic.php?p=30067"
+    },
+    {
+     "titulo": "British Sea Fishing: how to tie sea rigs",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    },
+    {
+     "titulo": "Leurre de la Pêche: how to set up for surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-polea",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Pulley rig",
+   "otros_nombres": [
+    "Pulley rig",
+    "Bajo de polea (Spanish)"
+   ],
+   "para": "A rig in which the lead and the hook travel together on the cast and, when the fish bites, the lead rises above it.",
+   "resumen": "It casts far and protects the bait during the cast; when the hook is set, the lead moves away from the fish and snags less on rock.",
+   "como_es": [
+    "The rig body runs through a swivel (the «pulley») attached to the main line.",
+    "On the cast, the hook is held against the lead with a clip: more distance and the bait does not break up.",
+    "While playing the fish, the lead stays above and rises over the rocks."
+   ],
+   "medidas": [
+    "Around one rod length in total; the hook length, from 60 cm to 1 m.",
+    "Heavy rig body (abrasion-resistant) and a slightly thinner snood."
+   ],
+   "usos_costa": [
+    "Long-distance surfcasting on clean beaches.",
+    "Ground with rock or weed for big fish: the lead snags less on the retrieve."
+   ],
+   "usos_embarcacion": [
+    "Rarely used from a boat: when fishing vertically it is not needed."
+   ],
+   "ojo": "The rig works doubled over: check the rig body for wear at the swivel every few fish.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: rigs for cod (paternoster, pulley, running)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "British Sea Fishing: how to tie sea rigs",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-boya",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Float rig",
+   "otros_nombres": [
+    "Float fishing (Spanish: corcheo)",
+    "Sliding float",
+    "Float rig"
+   ],
+   "para": "The bait hangs from a float at the depth you choose; a stop knot on the main line sets how far it goes down.",
+   "resumen": "For fishing in mid-water or close to the rocks without snagging: white seabream, bass, mullet, ballan wrasse, mackerel…",
+   "como_es": [
+    "Fixed float for shallow water (up to 1.5–2 m) or a sliding float with stop knot and bead for deeper water.",
+    "Shot under the float until only the tip shows: that way you notice even the most delicate bite.",
+    "The final hook length is usually thinner than the main line."
+   ],
+   "medidas": [
+    "Depth: start at one metre and go deeper until they bite; for ballan wrasse, the bait should brush the bottom.",
+    "A bigger float the rougher the sea and the deeper the water.",
+    "Final hook length of 50 cm to 1 m."
+   ],
+   "usos_costa": [
+    "Breakwaters, harbours and rocks: in mid-water next to the weed.",
+    "Mullet and other species in calm water, with a small float.",
+    "Bass with live bait under the float."
+   ],
+   "usos_embarcacion": [
+    "At anchor or on a slow drift next to the rocks, with a float.",
+    "Mackerel and horse mackerel in mid-water."
+   ],
+   "ojo": "The tide changes the depth: readjust the stop knot regularly.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: how to use a sliding float",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: float fishing",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: setting up a sliding float",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-carolina",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Carolina rig",
+   "otros_nombres": [
+    "Bajo carolina (Spanish)"
+   ],
+   "para": "A lead on the main line, a swivel that stops it and a leader with a hook behind.",
+   "resumen": "The lead drags along the bottom and the bait or soft plastic floats a little above it: very good for bottom fish that look upwards.",
+   "como_es": [
+    "Bullet or barrel lead running on the main line, a bead and the swivel.",
+    "Leader with one hook; natural bait or soft plastic.",
+    "Cast it and retrieve very slowly, dragging the lead."
+   ],
+   "medidas": [
+    "Short leader (about 15–30 cm in the guides consulted) to keep the bait close to the bottom; longer so it moves more.",
+    "Lead according to depth and current."
+   ],
+   "usos_costa": [
+    "Flatfish (sole, turbot) and other bottom fish on sand, with a slow retrieve.",
+    "Soft plastic fishing from the beach and from rocks with clean ground."
+   ],
+   "usos_embarcacion": [
+    "Slow drifting over sand for flatfish."
+   ],
+   "ojo": "On rock it snags a lot: it is a clean-ground rig.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: the Carolina rig in saltwater",
+     "url": "https://www.saltwatersportsman.com/story/howto/carolina-rigs-for-saltwater/"
+    },
+    {
+     "titulo": "The Tackle Room: Carolina rig in saltwater",
+     "url": "https://thetackleroom.com/blogs/news/how-to-fish-a-carolina-rig-in-saltwater"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-sabiki",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Sabiki (feather rig)",
+   "otros_nombres": [
+    "Sabiki",
+    "Feather rig"
+   ],
+   "para": "A rig with many small hooks dressed with feathers or flash; the lead goes at the bottom.",
+   "resumen": "Used to catch live bait (mackerel, horse mackerel, sardine, bogue…) when there are shoals.",
+   "como_es": [
+    "6 to 10 small hooks on short snoods.",
+    "It needs no bait: the flash is enough; some anglers add a small piece.",
+    "Lower it to the shoal and lift and drop it gently."
+   ],
+   "medidas": [
+    "Just enough lead for it to drop slowly through the shoal: with too much lead it goes through the shoal too fast.",
+    "More lead if it tangles: the rig stays tighter."
+   ],
+   "usos_costa": [
+    "Harbours and breakwaters when mackerel or horse mackerel come in.",
+    "To get live bait for bass or squid."
+   ],
+   "usos_embarcacion": [
+    "Over shoals marked on the echo sounder.",
+    "Before going out to fish with live bait."
+   ],
+   "ojo": "Lots of hooks together: it tangles and pricks. Unhook with pliers and keep it on its winder. Respect minimum sizes with bait fish too.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: what a sabiki is and how to use it",
+     "url": "https://tacklevillage.com/sabiki-rigs/"
+    },
+    {
+     "titulo": "Mercury Marine: live bait with a sabiki",
+     "url": "https://www.mercurymarine.com/us/en/lifestyle/dockline/how-to-use-a-sabiki-rig-to-catch-bait"
+    },
+    {
+     "titulo": "Florida Sportsman: Sabiki sense",
+     "url": "https://floridasportsman.com/editorial/sabiki-sense/401301"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-spinning",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Spinning leader",
+   "otros_nombres": [
+    "Leader",
+    "Fluoro leader"
+   ],
+   "para": "A length of fluorocarbon or nylon between the braid and the lure.",
+   "resumen": "It protects against abrasion, hides the braid and adds cushioning: braid never goes straight to the lure.",
+   "como_es": [
+    "It is joined to the braid with a slim knot (FG or Albright) and to the lure with a knot or a snap.",
+    "Fluorocarbon in clear water or around rock; nylon if you want more stretch.",
+    "If there are teeth, a short length of wire at the end."
+   ],
+   "medidas": [
+    "Length: the knot with the braid should not go into the guides when casting (or it should pass through them as a very slim knot).",
+    "Clear water, longer leader; coloured water, it can be shorter.",
+    "Thickness: a leader stronger than the braid is pointless; around rock, a little thicker."
+   ],
+   "usos_costa": [
+    "Spinning for bass, bluefish and other predators from the shore.",
+    "Fishing with soft plastics and stickbaits on rock: the leader is what rubs."
+   ],
+   "usos_embarcacion": [
+    "Spinning and jigging from the boat.",
+    "Popping for tuna and big predators with a heavy leader."
+   ],
+   "ojo": "Check the last few centimetres after every fish or snag: the leader gets nicked and it is the first thing to break.",
+   "fuentes": [
+    {
+     "titulo": "Seaguar: fluorocarbon leader length",
+     "url": "https://seaguar.com/blogs/pro-tips/setting-the-length-of-your-fluorocarbon-leader-1"
+    },
+    {
+     "titulo": "AFTCO: how to choose leader size and strength",
+     "url": "https://www.aftco.com/blogs/saltwater-how-to/how-to-select-a-leader-size"
+    },
+    {
+     "titulo": "AFTCO: when to use a fluorocarbon leader",
+     "url": "https://www.aftco.com/blogs/tackle-how-to/when-why-you-should-use-a-fluorocarbon-leader"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-grosor-largo",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Leader thickness and length: how to choose",
+   "otros_nombres": [
+    "Leader diameter"
+   ],
+   "para": "Practical rules for choosing leader diameter and length depending on the water, the bottom and the fish.",
+   "resumen": "The leader is what the fish sees and what rubs: thinner gets more bites, thicker holds more. You look for the balance.",
+   "como_es": [
+    "Thinner than the main line (or snoods thinner than the rig body): if something breaks, let it be only the leader.",
+    "Fluorocarbon is slightly thinner than nylon of the same strength.",
+    "With rock, shells or fish with hard scales or spines, thicker.",
+    "More current, longer leader so the bait moves naturally."
+   ],
+   "medidas": [
+    "Beach surfcasting: final fluorocarbon hook lengths of 0.30–0.35 mm are common for medium-sized fish.",
+    "Clear water and wary fish: thinner, longer leader.",
+    "Coloured water or at night: you can go thicker without losing bites."
+   ],
+   "usos_costa": [
+    "Clean beach: thin leader.",
+    "Rock and mussels: thick leader or fluorocarbon.",
+    "Toothy fish: wire or very heavy nylon."
+   ],
+   "usos_embarcacion": [
+    "Rocky bottom: thick snoods.",
+    "Very clear water in summer: thin and long."
+   ],
+   "ojo": "These are guides, not rules: the condition of the line and the knot matter more than the exact diameter.",
+   "fuentes": [
+    {
+     "titulo": "AFTCO: how to choose leader size and strength",
+     "url": "https://www.aftco.com/blogs/saltwater-how-to/how-to-select-a-leader-size"
+    },
+    {
+     "titulo": "Salt Water Sportsman: fishing with long leaders",
+     "url": "https://saltwatersportsman.com/story/howto/how-to-fish-using-long-leaders"
+    },
+    {
+     "titulo": "Leurre de la Pêche: how to set up for surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    },
+    {
+     "titulo": "Seaguar: fluorocarbon leader length",
+     "url": "https://seaguar.com/blogs/pro-tips/setting-the-length-of-your-fluorocarbon-leader-1"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-tamanos",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Hook sizes: how they are numbered",
+   "otros_nombres": [
+    "Hook numbering"
+   ],
+   "para": "How to read a hook number and why a size 2 is not the same in every brand.",
+   "resumen": "Up to size 1, the higher the number, the smaller the hook. After that come the «aughts» (1/0, 2/0…), where the higher the number, the bigger the hook. And almost all of us fish with hooks that are too big.",
+   "como_es": [
+    "Order from small to large: … 10, 8, 6, 4, 2, 1, 1/0, 2/0, 3/0, 4/0…",
+    "1/0 comes after 1; 4/0 is quite a lot bigger than 1/0.",
+    "Wire thickness is marked with «X»: a 2X is thicker and stronger than the standard hook of its size.",
+    "There is no standard between brands: a size 2 from one brand may differ from another's. If there is no number, look at the gap (the distance between the point and the shank)."
+   ],
+   "medidas": [
+    "Choose the size by the fish's mouth and the size of the bait, not by the size of the fish.",
+    "The bait must leave the point free: if it covers it, the hook is too small for that bait."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Small baits (thin worm, bits of prawn): high numbers (6–8).",
+    "Medium baits for white seabream, gilthead bream or bass: around 2 to 1/0 in commercial rigs.",
+    "Big baits (whole sardine, squid): 1/0 or more."
+   ],
+   "usos_embarcacion": [
+    "Mixed bottom fishing: medium numbers.",
+    "Big fish and big baits: aught sizes."
+   ],
+   "ojo": "Always compare within the same brand and model. And respect minimum sizes: a bigger hook helps avoid hooking small fish.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: saltwater hook size chart",
+     "url": "https://thetackleroom.com/blogs/news/hook-size-chart"
+    },
+    {
+     "titulo": "Academy: hook size chart",
+     "url": "https://www.academy.com/expert-advice/fishing-hook-size-chart"
+    },
+    {
+     "titulo": "Salt Strong: the truth about hook sizes",
+     "url": "https://www.saltstrong.com/?p=38583"
+    },
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "Sea Angler: the complete guide to sea fishing hooks",
+     "url": "https://www.seaangler.co.uk/fishing-tips/tackle/the-complete-guide-to-sea-fishing-hooks/"
+    },
+    {
+     "titulo": "Sea Angler: why hook size matters",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/clothing/why-fishing-hook-size-is-so-important/"
+    },
+    {
+     "titulo": "British Sea Fishing: hooks",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/hooks/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: hook sizes by species (anglers)",
+     "url": "https://sea-angling-ireland.org/forum/viewtopic.php?p=98773"
+    },
+    {
+     "titulo": "The Tackle Room: the hook depends on the bait, not the fish",
+     "url": "https://thetackleroom.com/blogs/news/saltwater-fishing-hook-sizes-explained"
+    },
+    {
+     "titulo": "BoatUS: hooks too big for live bait",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Surfcasting rigs by species (Caperlan: gilthead bream size 1–6, sand steenbras 4–8, bass 2–1/0)",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/bajos-de-linea-surfcasting"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "pasarse": [
+    "Size is chosen by the fish's mouth and by the bait, not by what the fish weighs. A 2 kg gilthead bream has a small mouth and is caught on a small hook; what changes with weight is the wire thickness (a «strong» or 2X hook of the same size), not the number.",
+    "A hook that is too big does not fit fully into the fish's mouth: it bites, feels the metal and drops it, or does not even take it. With live bait it is worse: the weight of the hook stops it swimming and the hole kills it sooner.",
+    "Going a little too small can be fixed (more bites, the odd one gets away); going too big leaves the rig with no bites. If in doubt, one size smaller.",
+    "Quick rule: the bait has to cover the hook, leaving the point free. If you need a huge bait to cover the hook, the hook is too big."
+   ],
+   "por_especie": [
+    {
+     "pez": "Sand steenbras, two-banded seabream, small white seabream",
+     "tam": "6 to 8",
+     "nota": "small mouth: the most common mistake is to give them a size 2"
+    },
+    {
+     "pez": "Mullet, sole, flounder and other small flatfish",
+     "tam": "4 to 6",
+     "nota": ""
+    },
+    {
+     "pez": "White seabream, black seabream, red seabream",
+     "tam": "4 to 6 (2 for very big ones)",
+     "nota": "even if it weighs over a kilo, the mouth is still small"
+    },
+    {
+     "pez": "Gilthead bream",
+     "tam": "2 to 6 (1 with big hard baits)",
+     "nota": "with big crab or razor clam, 1–1/0 in strong wire"
+    },
+    {
+     "pez": "Mackerel, horse mackerel",
+     "tam": "2 to 4",
+     "nota": ""
+    },
+    {
+     "pez": "European sea bass",
+     "tam": "2 to 1/0 with worm or prawn; 1/0 to 3/0 with big or live bait",
+     "nota": "the bait decides, not the fish"
+    },
+    {
+     "pez": "Ballan wrasse",
+     "tam": "1 to 2/0",
+     "nota": ""
+    },
+    {
+     "pez": "Pollack",
+     "tam": "1/0 to 3/0",
+     "nota": ""
+    },
+    {
+     "pez": "Conger eel",
+     "tam": "4/0 to 6/0",
+     "nota": "with whole squid or mackerel; heavy wire"
+    }
+   ]
+  },
+  {
+   "id": "anzuelo-j",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Standard hook (J hook)",
+   "otros_nombres": [
+    "J hook",
+    "Straight-shank hook"
+   ],
+   "para": "The classic hook: straight shank and the point facing the shank, shaped like a J.",
+   "resumen": "The most versatile: it works for almost any bait fishing. You have to set the hook yourself.",
+   "como_es": [
+    "Straight shank, bend and point parallel to the shank.",
+    "With a barb so neither the bait nor the fish comes off.",
+    "There are short, normal and long-shank versions, and fine or heavy wire."
+   ],
+   "medidas": [
+    "From 8 to 4/0 depending on the bait and the fish.",
+    "Fine wire for delicate baits; heavy wire for hard-pulling fish."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Surfcasting and bottom fishing with all kinds of bait.",
+    "Float fishing with prawn, worm or mussel."
+   ],
+   "usos_embarcacion": [
+    "Bait fishing at anchor and on the drift.",
+    "Trolling with natural bait."
+   ],
+   "ojo": "Strike as soon as you feel the bite: if you wait, the fish swallows it and the hook goes in very deep. If you are going to release the fish, a circle hook is better.",
+   "fuentes": [
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "BoatUS: fishing hooks",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Tackle Village: types of hook",
+     "url": "https://tacklevillage.com/?p=1012774"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-aberdeen",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Aberdeen (long shank, fine wire)",
+   "otros_nombres": [
+    "Aberdeen"
+   ],
+   "para": "A long-shank, fine-wire hook.",
+   "resumen": "The surfcasting classic for worm: the bait is threaded straight along the shank and the hook does little damage to the bait.",
+   "como_es": [
+    "Long, straight shank: the bait sits stretched out and looks natural.",
+    "Fine wire: it goes in easily and does little damage to live bait.",
+    "If it snags on the bottom, it opens out and you get the rig back."
+   ],
+   "medidas": [
+    "In surfcasting it usually runs from size 1 to 8.",
+    "High numbers (6–8) for thin worm and small fish; 1–2 for big worms."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Surfcasting with ragworm, Korean ragworm, American ragworm or tita worm.",
+    "Fishing for sand steenbras, small white seabream and flatfish."
+   ],
+   "usos_embarcacion": [
+    "Bottom fishing with worm over sand."
+   ],
+   "ojo": "Because it is fine, a big fish can open it out: do not use it for big bass or for conger.",
+   "fuentes": [
+    {
+     "titulo": "Daiwa Tournament Surf SaqSas Aberdeen (sizes 1 to 8)",
+     "url": "https://www.leurredelapeche.fr/es/11050-anzuelo-daiwa-torneo-anzuelo-surf-saqsas-aberdeen.html"
+    },
+    {
+     "titulo": "Tackle Village: types of hook",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-baitholder",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Baitholder (barbs on the shank)",
+   "otros_nombres": [
+    "Baitholder",
+    "Bait-holding hook"
+   ],
+   "para": "A hook with one or two barbs on the shank to hold the bait.",
+   "resumen": "The bait does not slide down when casting or when the fish gives small tugs.",
+   "como_es": [
+    "One or two barbs or slices on the shank.",
+    "The bait stays locked and does not slip down to the bend."
+   ],
+   "medidas": [
+    "From 6 to 1/0 in the sea, depending on the bait."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Surfcasting with worm, prawn, squid or fish strips on powerful casts."
+   ],
+   "usos_embarcacion": [
+    "Bottom fishing with squid or fish strips."
+   ],
+   "ojo": "The barbs also damage live bait: for live bait, a plain hook is better.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: all about hooks",
+     "url": "https://www.thefisherman.com/article/inshore-all-about-hooks/"
+    },
+    {
+     "titulo": "Tackle Village: types of hook",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-circular",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Circle hook",
+   "otros_nombres": [
+    "Circle hook",
+    "Anzuelo circular (Spanish)"
+   ],
+   "para": "A hook with the point turned sharply towards the shank, almost forming a circle.",
+   "resumen": "It hooks itself in the corner of the mouth. Fewer fish swallow it and it is the best for releasing fish: in a Mediterranean study it cut the number of deep-hooked fish (annular seabream, rainbow wrasse) by more than half, without catching fewer.",
+   "como_es": [
+    "The point faces the shank: when the fish pulls, the hook slides to the corner of the mouth and sets there.",
+    "Do not strike hard: just tighten up and reel in.",
+    "Circle hooks with an offset point lose part of the advantage."
+   ],
+   "medidas": [
+    "They are usually marked somewhat bigger than the equivalent J hook: compare within the same brand."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Bottom fishing with bait when you are going to release fish.",
+    "With big baits for bass or gilthead bream, letting the bite run."
+   ],
+   "usos_embarcacion": [
+    "Natural bait fishing at anchor and on the drift.",
+    "Trolling and live-bait fishing for big fish."
+   ],
+   "ojo": "Do not strike hard: tighten up and reel in. With flatfish (sole and similar) studies show no advantage.",
+   "fuentes": [
+    {
+     "titulo": "Florida FWC: reducing catch-and-release mortality",
+     "url": "https://myfwc.com/research/saltwater/fish/snook/reduce-catch-release-mortality/"
+    },
+    {
+     "titulo": "Study in a mixed recreational fishery in the Mediterranean (FAO AGRIS)",
+     "url": "https://agris.fao.org/search/en/records/65df7d1bb766d82b1801f80e"
+    },
+    {
+     "titulo": "SCDNR: circle hooks for red drum",
+     "url": "https://dnr.sc.gov/marine/mrri/insh_fish/reddrum/hooks.html"
+    },
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-pulpo",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Short shank (octopus / beak)",
+   "otros_nombres": [
+    "Octopus",
+    "Beak",
+    "Live-bait hook"
+   ],
+   "para": "A short-shank, compact and light hook, often with an angled eye.",
+   "resumen": "It is light and small: the bait, especially live bait, swims naturally.",
+   "como_es": [
+    "Short shank and a wide bend for its size.",
+    "Light: it does not slow down live bait.",
+    "The angled eye gives a good angle with knots such as the snell or the palomar."
+   ],
+   "medidas": [
+    "From 4 to 4/0 in the sea, depending on the live bait (prawn, shrimp, horse mackerel…)."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Bass with live bait under a float.",
+    "Light bottom fishing with prawn or shrimp."
+   ],
+   "usos_embarcacion": [
+    "Live bait on the drift or at anchor (horse mackerel, mackerel, squid).",
+    "Light rigs for wary fish."
+   ],
+   "ojo": "Because it is light, for big fish choose its heavy-wire version.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: types of hook",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-triple",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Treble hook",
+   "otros_nombres": [
+    "Treble",
+    "Anzuelo triple (Spanish)"
+   ],
+   "para": "Three hooks joined at the shank: the ones fitted to almost all hard lures.",
+   "resumen": "It hooks well when a fish hits the lure, but does more damage and snags the bottom more.",
+   "como_es": [
+    "Three points on a single shank.",
+    "Changed using a split ring and pliers.",
+    "There are fine-wire versions (for small lures) and heavy-wire ones (for hard-pulling fish)."
+   ],
+   "medidas": [
+    "From 14 to 1/0; choose it so the hooks do not clash with each other or with the line as the lure swims."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Spinning lures (stickbaits, minnows) for bass, bluefish…"
+   ],
+   "usos_embarcacion": [
+    "Trolling and spinning lures from the boat."
+   ],
+   "ojo": "It does more damage to the fish and snags more: if you are going to release it, swap it for a single hook (barbless or with the barb flattened). In some areas it is banned: check the rules.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: treble hook sizes",
+     "url": "https://tacklevillage.com/treble-hook-size-chart"
+    },
+    {
+     "titulo": "The Tackle Room: treble hooks",
+     "url": "https://thetackleroom.com/blogs/news/treble-hook-sizes-guide-how-to-choose-the-right-treble"
+    },
+    {
+     "titulo": "Discount Tackle: hook types, sizes and uses",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-asistente",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Assist hook (jigging)",
+   "otros_nombres": [
+    "Assist hook",
+    "Asistente (Spanish)"
+   ],
+   "para": "A hook attached to a short cord that hangs from the jig's ring.",
+   "resumen": "Used in jigging: fish usually attack the head of the jig and the assist hook is right there. And it snags the bottom less than a treble on the tail.",
+   "como_es": [
+    "One or two hooks on a short cord (Kevlar or similar) attached to a ring.",
+    "They go on the top ring of the jig; in slow pitch one is also fitted at the bottom.",
+    "Fairly stiff cord: if it is very soft, it tangles in the line as the jig drops."
+   ],
+   "medidas": [
+    "From 1/0 to 7/0 depending on the jig and the fish.",
+    "The point should not go past the middle of the jig, so it does not tangle."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "usos_costa": [
+    "Light jigging from the rocks (shore jigging)."
+   ],
+   "usos_embarcacion": [
+    "Vertical and slow pitch jigging from the boat.",
+    "Speed jigs (with doubts: with the jig always rising, the top assist hook sits tight against the jig)."
+   ],
+   "ojo": "Check the cord after every fish: if it is frayed, replace it. Sources do not agree on where to fit it in speed jigging.",
+   "fuentes": [
+    {
+     "titulo": "Ocean's Legacy: assist hook configurations",
+     "url": "https://oceanslegacy.co.nz/assist-hooks-for-metal-jigs-understanding-basic-configurations/"
+    },
+    {
+     "titulo": "Mustad: slow pitch jigging",
+     "url": "https://mustad-fishing.com/us/article/get-in-on-the-slow-pitch-jig-craze"
+    },
+    {
+     "titulo": "FishTrack: how to rig a speed jig",
+     "url": "https://fishtrack.com/article/how-to-rig-a-speed-jig"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-guia",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Swivels: which one to use when",
+   "otros_nombres": [
+    "Swivels",
+    "Quitavueltas"
+   ],
+   "para": "Quick guide to choosing between the types of swivel.",
+   "resumen": "A swivel joins two lengths of line and lets them turn separately, so the line doesn't twist. There are five families and each has its place: you don't need the most expensive one for everything.",
+   "como_es": [
+    "Barrel: the basic one. Joins main line and rig or holds the lead. Turns little under load.",
+    "Rolling (ring type): the most used at sea. Turns better than the barrel and is stronger for its small size.",
+    "Ball-bearing: turns freely even under heavy load. For anything that spins a lot: spinners, trolling, baits that spin.",
+    "With snap or clip: any of the above with a clip to change lure, lead or rig without cutting.",
+    "Three-way (T): three eyes; for snoods and multi-hook rigs."
+   ],
+   "medidas": [
+    "Choose the smallest one that matches the breaking strain of the rig (or a little more).",
+    "Sizes are not the same across brands: check the kilos on the pack, not the number.",
+    "For trolling, it should hold at least 1.5 times the line's strength."
+   ],
+   "medidas_titulo": "📏 Size and strength",
+   "usos_costa": [
+    "Surfcasting: rolling swivel with snap for the lead, and rolling or three-way swivels for the snoods.",
+    "Spinning: snap only (no swivel) with swimming lures; rolling or ball-bearing swivel with spinners.",
+    "Float fishing: small rolling swivel between main line and leader, which also acts as a stop for the shot."
+   ],
+   "usos_embarcacion": [
+    "Anchored and drift fishing: three-way or rolling swivels on snood rigs.",
+    "Trolling: ball-bearing swivel with snap; this is where the line twists most."
+   ],
+   "ojo": "A swivel is also a weak point and a flash the fish can see: use one only where needed and just the right size.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: types and sizes of swivel",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: learning about swivels (1)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-1"
+    },
+    {
+     "titulo": "Seabreeze: learning about swivels (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "British Sea Fishing: swivels",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    },
+    {
+     "titulo": "boats.com: choosing a swivel",
+     "url": "https://www.boats.com/on-the-water/how-to-fish-choosing-the-right-swivel/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-barril",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Barrel swivel",
+   "otros_nombres": [
+    "Barrilete",
+    "Barrel swivel"
+   ],
+   "para": "A barrel-shaped body with an eye at each end.",
+   "resumen": "The simplest and cheapest. Fine for joining lines and attaching leads, but turns little when the line is tight.",
+   "como_es": [
+    "Two eyes that turn inside a barrel.",
+    "Under heavy load it stops turning well.",
+    "Brass or steel; at sea, better a black or stainless finish."
+   ],
+   "medidas": [
+    "From size 14 (small) to 1/0 or bigger; check the kilos."
+   ],
+   "medidas_titulo": "📏 Size and strength",
+   "usos_costa": [
+    "Basic bottom and float rigs without much tension.",
+    "Stop for running leads."
+   ],
+   "usos_embarcacion": [
+    "Simple bottom rigs."
+   ],
+   "ojo": "Don't use it where the line spins a lot (spinners, trolling): it's not up to the job there.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: types and sizes of swivel",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: learning about swivels (1)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-1"
+    },
+    {
+     "titulo": "Wikipedia: Fishing swivel",
+     "url": "https://en.wikipedia.org/wiki/Fishing_swivel"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-rolling",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Rolling swivel (ring type)",
+   "otros_nombres": [
+    "Rolling swivel",
+    "Crane swivel"
+   ],
+   "para": "Swivel with double rings and no closed barrel: the standard in sea fishing.",
+   "resumen": "Turns better than a barrel swivel and is very strong for its size. The one to always have in your box.",
+   "como_es": [
+    "Crossed rings that turn on a pin.",
+    "Halfway between the barrel and the ball-bearing swivel in turning and in price.",
+    "Handles heavy load better than a barrel swivel of the same size."
+   ],
+   "medidas": [
+    "Example from one brand: No. 10 ≈ 14 kg; No. 7 ≈ 22 kg; No. 5 ≈ 32 kg; No. 1 ≈ 47 kg.",
+    "For a 0.35–0.40 mm leader, a No. 8–10 is usually enough."
+   ],
+   "medidas_titulo": "📏 Size and strength",
+   "usos_costa": [
+    "Joining main line and rig in surfcasting and bottom fishing.",
+    "Snoods on paternoster rigs.",
+    "Float rigs, as a stop for the shot."
+   ],
+   "usos_embarcacion": [
+    "Anchored and drift rigs.",
+    "Joining main line and live-bait rigs."
+   ],
+   "ojo": "Check it isn't rusty: salt seizes it up and it stops turning.",
+   "fuentes": [
+    {
+     "titulo": "Seabreeze: learning about swivels (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "British Sea Fishing: swivels",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    },
+    {
+     "titulo": "The Tackle Room: types and sizes of swivel",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-rodamiento",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Ball-bearing swivel",
+   "otros_nombres": [
+    "Ball bearing swivel"
+   ],
+   "para": "Swivel with steel balls inside.",
+   "resumen": "Turns freely even under heavy load. It's the one that really prevents line twist when something keeps spinning. It's quite a bit more expensive.",
+   "como_es": [
+    "Stainless steel ball bearing.",
+    "Turns even under a lot of tension and speed.",
+    "Usually has welded rings: stronger."
+   ],
+   "medidas": [
+    "As with the rolling swivel: choose by kilos.",
+    "For trolling, at least 1.5 times the line's strength."
+   ],
+   "medidas_titulo": "📏 Size and strength",
+   "usos_costa": [
+    "Spinning with spinners or lures that tend to spin.",
+    "Casting large baits that spin on the retrieve."
+   ],
+   "usos_embarcacion": [
+    "Trolling: this swivel's natural home.",
+    "Drifting with dead bait that spins."
+   ],
+   "ojo": "For simple bottom rigs it's a waste of money: a rolling swivel is enough.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: types and sizes of swivel",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: learning about swivels (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "boats.com: choosing a swivel",
+     "url": "https://www.boats.com/on-the-water/how-to-fish-choosing-the-right-swivel/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-mosqueton",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Snaps and lead clips (with or without swivel)",
+   "otros_nombres": [
+    "Snap",
+    "Lead clip",
+    "Snap swivel"
+   ],
+   "para": "A clip that opens and closes to change lures, leads or rigs without cutting the line.",
+   "resumen": "Saves a lot of time, but choose carefully: with swimming lures, a snap on its own is better; with anything that spins, use one with a swivel.",
+   "como_es": [
+    "Snap on its own: a clip with no swivel. Hardly affects the lure's action.",
+    "Snap swivel: for quick changes and to avoid line twist.",
+    "Lead clip: a clip to attach the lead in surfcasting.",
+    "Locking snap (insurance / cross-lock): doesn't open under sharp pulls."
+   ],
+   "medidas": [
+    "The smallest size that matches the rig.",
+    "With small lures, a small snap: a big one changes their action."
+   ],
+   "medidas_titulo": "📏 Size and strength",
+   "usos_costa": [
+    "Spinning: snap only with minnows, stickbaits and soft plastics; snap swivel with spinners.",
+    "Surfcasting: lead clip with swivel for the lead."
+   ],
+   "usos_embarcacion": [
+    "Trolling: locking snap with ball-bearing swivel.",
+    "Jigging: solid ring and split ring rather than a snap (stronger)."
+   ],
+   "ojo": "A snap swivel plus a split ring makes a double joint and the lure can swim jerkily: with swimming lures use the snap only. And check it's closed before every cast.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: snap swivel sizes",
+     "url": "https://thetackleroom.com/blogs/news/snap-swivel-sizes-explained-which-one-goes-on-which-setup"
+    },
+    {
+     "titulo": "Wikipedia: Fishing swivel",
+     "url": "https://en.wikipedia.org/wiki/Fishing_swivel"
+    },
+    {
+     "titulo": "Bass Resource: snap with or without swivel? (forum)",
+     "url": "https://www.bassresource.com/bass-fishing-forums/topic/12064-swivel-snaps-on-crankbaits/"
+    },
+    {
+     "titulo": "Decathlon: swivels and lead clips for surfcasting",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/emerillones-y-grapas"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-triple",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Three-way swivel (T-swivel)",
+   "otros_nombres": [
+    "Three-way swivel",
+    "Triple swivel"
+   ],
+   "para": "A swivel with three eyes: two in line and one to the side.",
+   "resumen": "To take a snood off the rig body without it tangling.",
+   "como_es": [
+    "Three eyes that turn separately.",
+    "The side eye takes the snood with the hook; the other two, the main line and the lead (or the rest of the rig)."
+   ],
+   "medidas": [
+    "By kilos, like the others; it shouldn't be weaker than the rig body."
+   ],
+   "medidas_titulo": "📏 Size and strength",
+   "usos_costa": [
+    "Paternoster rigs for surfcasting and bottom fishing over rock."
+   ],
+   "usos_embarcacion": [
+    "Snood rigs for anchored and drift fishing.",
+    "Drift rigs with the lead on one eye and the bait on another."
+   ],
+   "ojo": "It's bulky and visible: in very clear water, better snoods tied with a loop knot and beads.",
+   "fuentes": [
+    {
+     "titulo": "Outdoor Canada: three-way swivels",
+     "url": "https://outdoorcanada.ca/?p=3631"
+    },
+    {
+     "titulo": "Seabreeze: learning about swivels (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "Decathlon: swivels and lead clips for surfcasting",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/emerillones-y-grapas"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "perlas",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Beads",
+   "otros_nombres": [
+    "Rig beads",
+    "Beads"
+   ],
+   "para": "Plastic or glass beads threaded onto the line.",
+   "resumen": "They protect the knot from the lead hitting it, act as a stop, and some attract fish with colour or light.",
+   "como_es": [
+    "Soft or hard; coloured, fluorescent or luminous.",
+    "Between the running lead and the swivel: the lead hits the bead, not the knot.",
+    "On a sliding float: between the stop and the float, so the stop doesn't slip through the hole."
+   ],
+   "medidas": [
+    "Just the right diameter so the stop or knot can't pass through."
+   ],
+   "medidas_titulo": "📏 Size",
+   "usos_costa": [
+    "Running and float rigs.",
+    "Surfcasting rigs with luminous or coloured beads in front of the hook."
+   ],
+   "usos_embarcacion": [
+    "Bottom rigs with coloured beads to attract."
+   ],
+   "ojo": "Coloured and luminous beads catch the fish's attention, but there is no proof they always help: test them against a rig without them.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: how to use a sliding float",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: setting up a sliding float",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: swivels",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "topes",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Stops",
+   "otros_nombres": [
+    "Stops",
+    "Stop knot"
+   ],
+   "para": "Small pieces or knots that fix a position on the line.",
+   "resumen": "They mark how deep the float goes, or where a lead or snood stops. They can be moved without cutting.",
+   "como_es": [
+    "Stop knot: line tied over the main line; move it by loosening and tightening.",
+    "Rubber or silicone stops: put on with a threader.",
+    "Leaving the tag ends of the knot about 2.5 cm long helps it pass through the rod guides."
+   ],
+   "medidas": [
+    "It shouldn't slip under the weight of the float or on the cast."
+   ],
+   "medidas_titulo": "📏 Size",
+   "usos_costa": [
+    "Sliding float: the stop sets the bait's depth.",
+    "Fixing snoods on the rig body without knots."
+   ],
+   "usos_embarcacion": [
+    "Sliding float at anchor or on the drift."
+   ],
+   "ojo": "The depth changes with the tide: move the stop up or down every so often.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: how to use a sliding float",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: setting up a sliding float",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: float fishing",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-grapa",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Grip lead (wired lead)",
+   "otros_nombres": [
+    "Grip lead",
+    "Spike lead"
+   ],
+   "para": "Lead with wires that dig into the seabed.",
+   "resumen": "Holds the bait still in current and swell. On the retrieve, the wires open or bend and pull out of the bottom.",
+   "como_es": [
+    "Fixed wires: grip harder; for strong current or rough sea.",
+    "Breakaway: the wires release when a fish bites or on the retrieve.",
+    "The most used lead on beaches with current."
+   ],
+   "medidas": [
+    "Just enough to hold: start light and go heavier if it drags.",
+    "With wind or a rising tide, more weight."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "usos_costa": [
+    "Surfcasting with current, surf or swell.",
+    "Beaches where a plain lead rolls and drags the rig."
+   ],
+   "usos_embarcacion": [
+    "Little: from a boat you fish more vertically."
+   ],
+   "ojo": "It snags on rock: there, use a plain lead or a drop lead on a weak link.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: know your sea leads",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "British Sea Fishing: leads",
+     "url": "https://britishseafishing.co.uk/?p=549"
+    },
+    {
+     "titulo": "Salt Strong: 7 types of sinker",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-liso",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Plain lead (pear, bullet, torpedo)",
+   "otros_nombres": [
+    "Bomb",
+    "Pear lead"
+   ],
+   "para": "Lead without wires, with an aerodynamic shape.",
+   "resumen": "Casts further and lets the bait roll slowly with the current, searching for fish.",
+   "como_es": [
+    "Pear, bullet or torpedo: the shapes that fly furthest.",
+    "Doesn't dig in: the rig moves with the current.",
+    "Snags less on rock."
+   ],
+   "medidas": [
+    "Light in a calm sea; if the sea gets up, change to a grip lead."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "usos_costa": [
+    "Surfcasting in calm conditions and long casts.",
+    "Rock and weed ground (with a weak link for the lead)."
+   ],
+   "usos_embarcacion": [
+    "Anchored and drift fishing straight down."
+   ],
+   "ojo": "If you see your line swing sideways with every wave, it's no longer holding: change to a grip lead.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: know your sea leads",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "Outdoor Life: complete guide to sinkers",
+     "url": "https://www.outdoorlife.com/complete-guide-to-using-fishing-sinkers/"
+    },
+    {
+     "titulo": "British Sea Fishing: leads",
+     "url": "https://britishseafishing.co.uk/?p=549"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-piramide",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Pyramid and watch leads",
+   "otros_nombres": [
+    "Pyramid",
+    "Watch lead"
+   ],
+   "para": "Leads with edges or flat faces that grip sand and mud without wires.",
+   "resumen": "They sink fast and stay put on soft ground with moderate current.",
+   "como_es": [
+    "Pyramid: digs into the sand.",
+    "Watch lead (flat and round): settles on the bottom and doesn't roll."
+   ],
+   "medidas": [
+    "Just enough to hold bottom."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "usos_costa": [
+    "Sandy beaches with little or moderate current."
+   ],
+   "usos_embarcacion": [
+    "Anchored over sand or mud."
+   ],
+   "ojo": "In strong current they drag: change to a grip lead.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: know your sea leads",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "Salt Strong: 7 types of sinker",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-corredizo",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Running sinker (olive, drilled bullet)",
+   "otros_nombres": [
+    "Egg sinker",
+    "Running lead"
+   ],
+   "para": "Lead with a hole the main line passes through.",
+   "resumen": "The fish takes the bait without feeling the weight: it's the lead for running rigs and the Carolina rig.",
+   "como_es": [
+    "Runs freely along the main line down to the swivel.",
+    "Put a bead between lead and swivel to protect the knot."
+   ],
+   "medidas": [
+    "The lightest that keeps the bait on the bottom."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "usos_costa": [
+    "Running rigs for bass, gilthead bream or conger eel.",
+    "Carolina rig with a soft plastic over sand."
+   ],
+   "usos_embarcacion": [
+    "Anchored with a single large bait."
+   ],
+   "ojo": "If it's too light, the current drags it and the rig tangles around the main line.",
+   "fuentes": [
+    {
+     "titulo": "Outdoor Life: complete guide to sinkers",
+     "url": "https://www.outdoorlife.com/complete-guide-to-using-fishing-sinkers/"
+    },
+    {
+     "titulo": "Salt Strong: 7 types of sinker",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-fija-corrediza",
+   "tema": "corchos",
+   "tipo": "material",
+   "nombre": "Fixed or sliding float",
+   "otros_nombres": [
+    "Bobber",
+    "Float"
+   ],
+   "para": "The float holds the bait at the depth you choose and signals the bite.",
+   "resumen": "A fixed float works down to 1.5–2 m depth; for deeper, a sliding float with a stop lets you cast easily and fish at any depth.",
+   "como_es": [
+    "Fixed: attached to the line top and bottom; fixed depth.",
+    "Sliding: runs along the main line up to a stop; you cast with the rig folded up.",
+    "Some can be used either way."
+   ],
+   "medidas": [
+    "At sea they usually range from about 7 to 40 g.",
+    "Bigger float the rougher the sea, the deeper the water and the further you need to cast.",
+    "Weight it underneath until only the tip shows."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "usos_costa": [
+    "Breakwaters, harbours and rocks: bass, white seabream, mullet, ballan wrasse, mackerel.",
+    "In calm water, a small slim float."
+   ],
+   "usos_embarcacion": [
+    "At anchor next to rock or on a slow drift."
+   ],
+   "ojo": "A fixed float with more than 2 m of rig is impossible to cast: change to a sliding float.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: how to use a sliding float",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: float fishing",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: setting up a sliding float",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "Sea Angler: float fishing tips",
+     "url": "https://www.seaangler.co.uk/fishing-tips/float-fishing-tips-for-sea-angling"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-nocturna",
+   "tema": "corchos",
+   "tipo": "material",
+   "nombre": "Night float (luminous)",
+   "otros_nombres": [
+    "Starlight",
+    "Lighted float"
+   ],
+   "para": "Float with a chemical light stick or a light on the tip so you can see it at night.",
+   "resumen": "Lets you float fish at night, when bass, white seabream or conger eel come close to shore.",
+   "como_es": [
+    "Antenna with a slot for a chemical light stick (the most common is 4.5 mm).",
+    "Battery-powered electric floats: brighter and last longer."
+   ],
+   "medidas": [
+    "From 7.5 to 30 g and more, like daytime floats."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "usos_costa": [
+    "Night float fishing in harbours, breakwaters and rocks."
+   ],
+   "usos_embarcacion": [
+    "Float fishing at anchor at night."
+   ],
+   "ojo": "Carry spare light sticks and don't throw used ones in the water.",
+   "fuentes": [
+    {
+     "titulo": "Caperlan: sea sliding float (10 g, antenna for 4.5 mm chemical light)",
+     "url": "https://www.decathlon.ie/p/352537-288864-saltwater-fishing-sliding-float-sw-flt-sld-10-g.html"
+    },
+    {
+     "titulo": "Ragot Sealight: fixed or sliding float with chemical light",
+     "url": "https://www.tradeinn.com/waveinn/en/ragot-sealight-float/138402350/p"
+    },
+    {
+     "titulo": "British Sea Fishing: float fishing",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-guia",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Spinning lures: which one for the sea conditions",
+   "otros_nombres": [
+    "Choosing a lure"
+   ],
+   "para": "Which lure family to use depending on the state of the sea.",
+   "resumen": "The state of the sea decides: in calm, clear water, surface lures and light soft plastics; in foam and rough sea, lures that grip the water or get down below the foam.",
+   "como_es": [
+    "Calm sea and clear water: stickbait, small popper, floating minnow or unweighted soft plastic.",
+    "Rough sea with foam: a minnow that “bites” the water, sinking pencil, soft plastic on a jig head or a somewhat larger stickbait.",
+    "Headwind: sinking pencil or casting jig, which fly and cut through the wind.",
+    "Coloured (murky) water: white soft plastics or lures with a strong silhouette at different depths; very noisy surface lures usually do poorly.",
+    "Very rocky or weedy ground in calm conditions: unweighted soft plastic rigged weedless."
+   ],
+   "medidas": [
+    "9 to 15 cm and 10 to 30 g covers almost all shore fishing for bass.",
+    "More weight if it's windy or you need to reach far; less if the fish are tight to the shore."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Bass on rock and beach: the basic box is a stickbait, a minnow, a sinking pencil and a couple of soft plastics with heads of different weights.",
+    "Mackerel, bluefish and Atlantic bonito: casting jig or spinner."
+   ],
+   "usos_embarcacion": [
+    "Spinning under birds (mackerel, Atlantic bonito, bluefish): casting jig or sinking pencil.",
+    "Casting at the rocks from a boat: the same as from the shore."
+   ],
+   "ojo": "No lure works every time: if nothing happens in half an hour, change lure family before colour.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: reading the sea and the weather for bass on lures",
+     "url": "https://www.seaangler.co.uk/fishing-news/lure-fishing-bass-cracking-code-watercraft-weather/"
+    },
+    {
+     "titulo": "Sea Angler: Fish in rough seas",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: questions about lure fishing (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    },
+    {
+     "titulo": "Angling Times: the best shore lures for bass",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    },
+    {
+     "titulo": "Leurre de la Pêche: which lure to choose for bass",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-paseante",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Stickbait (surface walker)",
+   "otros_nombres": [
+    "Stickbait",
+    "Walk the dog"
+   ],
+   "para": "A hard lure with no lip that floats and zigzags across the surface.",
+   "resumen": "Imitates an injured fish at the surface: the strikes are visible and spectacular. It's the classic for bass in low light.",
+   "como_es": [
+    "No lip: you create the zigzag with short twitches of the rod tip while taking in the slack (“walk the dog”).",
+    "Floats: if you stop, it sits still on the surface."
+   ],
+   "medidas": [
+    "9 to 14 cm; the heavier ones (20–30 g) cast better in wind and are easier to see in a sea."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Bass at dawn and dusk, in calm or with some sea.",
+    "Over rocks and shallows where a sinking lure would snag."
+   ],
+   "usos_embarcacion": [
+    "Casting at the rocks and at shoals of fish on the surface."
+   ],
+   "ojo": "When a fish strikes, don't set the hook until you feel the weight: many miss by striking at the splash.",
+   "fuentes": [
+    {
+     "titulo": "Minnesota DNR: surface lures",
+     "url": "https://dnr.state.mn.us/minnaqua/et/surface-lures.html"
+    },
+    {
+     "titulo": "Bass Resource: surface lures",
+     "url": "https://www.bassresource.com/fishing/topwater_baits.html"
+    },
+    {
+     "titulo": "Sea Angler: Fish in rough seas",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Angling Times: the best shore lures for bass",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-popper",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Popper",
+   "otros_nombres": [
+    "Chugger"
+   ],
+   "para": "Surface lure with a concave mouth that splashes and makes noise when pulled.",
+   "resumen": "Calls fish from a distance with its splashing. Works well in low light and to raise active fish.",
+   "como_es": [
+    "Concave mouth: every pull makes a “pop” and a splash.",
+    "Fished with jerks and pauses."
+   ],
+   "medidas": [
+    "7 to 12 cm from the shore; bigger for fish under birds and tuna."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Bass in low light, in calm or with a bit of swell.",
+    "Bluefish and other predators near the surface."
+   ],
+   "usos_embarcacion": [
+    "Birds and shoals on the surface (Atlantic bonito, bluefish)."
+   ],
+   "ojo": "In very coloured water with lots of foam it usually does poorly: there, better a lure that gets down.",
+   "fuentes": [
+    {
+     "titulo": "Minnesota DNR: surface lures",
+     "url": "https://dnr.state.mn.us/minnaqua/et/surface-lures.html"
+    },
+    {
+     "titulo": "Bass Resource: surface lures",
+     "url": "https://www.bassresource.com/fishing/topwater_baits.html"
+    },
+    {
+     "titulo": "Sea Angler: questions about lure fishing (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-minnow",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Minnow (lipped plug)",
+   "otros_nombres": [
+    "Jerkbait",
+    "Lipped plug"
+   ],
+   "para": "Hard fish-shaped lure with a lip that makes it swim and dive.",
+   "resumen": "The most versatile lure: it swims on a straight retrieve and the lip sets the depth it works at.",
+   "como_es": [
+    "Floating: dives on the retrieve and rises when you stop.",
+    "Suspending: stays still in mid-water when you stop.",
+    "Sinking: sinks by itself; to fish deeper or in wind.",
+    "Bigger lip, more depth."
+   ],
+   "medidas": [
+    "9 to 14 cm; 12–20 g are the usual ones from the shore."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Bass on beach and rock in a rough sea: it “bites” the water and keeps swimming in the waves.",
+    "Straight retrieve with the odd pause."
+   ],
+   "usos_embarcacion": [
+    "Spinning at the rocks.",
+    "Slow trolling with long-lipped minnows."
+   ],
+   "ojo": "In big waves, very light floating ones jump out of the water: use a heavier or sinking one.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: lure guide for beginners",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    },
+    {
+     "titulo": "Sea Angler: Fish in rough seas",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Leurre de la Pêche: which lure to choose for bass",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    },
+    {
+     "titulo": "Angling Times: the best shore lures for bass",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-lapiz-hundido",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Sinking pencil",
+   "otros_nombres": [
+    "Lápiz hundido",
+    "Needlefish"
+   ],
+   "para": "Hard, elongated lure with no lip that sinks.",
+   "resumen": "Casts a very long way, cuts through the wind and works below the foam. Imitates sandeels and slim fish.",
+   "como_es": [
+    "No lip and heavy for its size.",
+    "Let it sink and retrieve slowly, with a gentle action."
+   ],
+   "medidas": [
+    "9 to 15 cm; 15–30 g."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Bass in a headwind or a swell.",
+    "Beaches with foam: get it down below the breakers.",
+    "Bluefish and mackerel far from the shore."
+   ],
+   "usos_embarcacion": [
+    "Birds and fish on the surface far from the boat."
+   ],
+   "ojo": "Retrieved fast it rises to the surface; retrieved slowly in shallow water it snags: match the speed to the depth.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: Fish in rough seas",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: reading the sea and the weather for bass on lures",
+     "url": "https://www.seaangler.co.uk/fishing-news/lure-fishing-bass-cracking-code-watercraft-weather/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-vinilo",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Soft plastic (soft lure)",
+   "otros_nombres": [
+    "Shad",
+    "Paddletail",
+    "Slug"
+   ],
+   "para": "Soft rubber lure, with a paddle tail (shad) or without (slug), rigged on a jig head or unweighted.",
+   "resumen": "Probably the most used for bass: works all year round, in calm and rough seas, and rigged weedless it comes over weed and rock.",
+   "como_es": [
+    "Shad or paddletail: vibrates on the retrieve; on a jig head it sinks and can be fished at different depths.",
+    "Slug or tailless soft plastic: zigzags near the surface, unweighted.",
+    "Weedless: the hook point is hidden in the rubber."
+   ],
+   "medidas": [
+    "9 to 15 cm; head from 5 to 30 g depending on bottom, current and wind."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Bass on weedy rock (unweighted, weedless, in calm).",
+    "In rough sea or coloured water: shad on a jig head, in white.",
+    "Flatfish and other bottom fish, dragged slowly."
+   ],
+   "usos_embarcacion": [
+    "Vertical and drift fishing with heavy heads.",
+    "Casting at the rocks."
+   ],
+   "ojo": "Fish bite off the tail: carry spares. Change the head weight before the soft plastic.",
+   "fuentes": [
+    {
+     "titulo": "Leurre de la Pêche: which lure to choose for bass",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    },
+    {
+     "titulo": "Sea Angler: Fish in rough seas",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: questions about lure fishing (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    },
+    {
+     "titulo": "Wired2Fish: lure guide for beginners",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-jig-lance",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Casting jig",
+   "otros_nombres": [
+    "Casting jig",
+    "Metal jig"
+   ],
+   "para": "A piece of metal that flies far and sinks fast.",
+   "resumen": "The lure for reaching far and fast: mackerel, Atlantic bonito, bluefish and bass when they're far out or it's windy.",
+   "como_es": [
+    "Compact metal: casts far and sinks fast.",
+    "Retrieved fast or in jerks; also let it drop and lift it."
+   ],
+   "medidas": [
+    "From the shore, 20 to 60 g: 20–30 g for fast work at the surface (Atlantic bonito); 30–60 g the usual for mackerel and in general."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Mackerel, Atlantic bonito and bluefish from rocks and breakwaters (shore jigging).",
+    "Bass in strong wind or far out."
+   ],
+   "usos_embarcacion": [
+    "Birds and shoals on the surface.",
+    "Light vertical jigging."
+   ],
+   "ojo": "Over rocky ground, count the seconds as it drops and start retrieving before it touches: it snags easily.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: the metal jig, from boat or beach",
+     "url": "https://www.thefisherman.com/article/by-boat-or-beach-the-versatile-metal-jig/"
+    },
+    {
+     "titulo": "FishingBooker: shore jigging guide",
+     "url": "https://fishingbooker.com/blog/?p=422"
+    },
+    {
+     "titulo": "On The Water: mackerel from the shore with jigs",
+     "url": "https://onthewater.com/how-to-catch-spanish-mackerel-from-shore"
+    },
+    {
+     "titulo": "Sea Angler: Fish in rough seas",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-cucharilla",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Spinner and wobbling spoon",
+   "otros_nombres": [
+    "Spinner",
+    "Spoon"
+   ],
+   "para": "A spinner has a blade that turns around a shaft; a wobbling spoon is a curved metal plate that wobbles.",
+   "resumen": "Simple, cheap lures that flash and vibrate: good for beginners and for active fish.",
+   "como_es": [
+    "Spinner: the blade turns and vibrates; it twists the line, use a swivel.",
+    "Wobbling spoon: curved plate that wobbles on the retrieve; casts far."
+   ],
+   "medidas": [
+    "Spinners from 5 to 20 g; spoons from 10 to 40 g."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Mackerel, horse mackerel and small bass from breakwaters and harbours.",
+    "To get started in lure fishing."
+   ],
+   "usos_embarcacion": [
+    "Light trolling and fishing for mackerel shoals."
+   ],
+   "ojo": "They twist the line: put a ball-bearing swivel in front.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: the Johnson Silver Minnow spoon",
+     "url": "https://www.wired2fish.com/tackle-tips/20-most-influential-fishing-lures-no-17-johnson-silver-minnow"
+    },
+    {
+     "titulo": "Missouri Dept. of Conservation: The Lure of Lures",
+     "url": "https://mdc.mo.gov/node/297484"
+    },
+    {
+     "titulo": "Wired2Fish: lure guide for beginners",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-colores",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Lure colours: which to choose",
+   "otros_nombres": [
+    "Lure colour"
+   ],
+   "para": "Which colour to choose depending on the light and how clear the water is.",
+   "resumen": "Simple rule: natural in clear water and good light; white or bright colours in coloured water; dark at night, as it shows up better in silhouette against the surface.",
+   "como_es": [
+    "In murky water or at great depth, size, shape, movement and contrast matter more than colour.",
+    "Change lure family before colour."
+   ],
+   "medidas": [
+    "Same size as the baitfish in the area."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "Clear summer water: silver, sardine, clear.",
+    "Coloured water after a storm: white or bright colours.",
+    "At night from the rocks: black or very dark."
+   ],
+   "usos_embarcacion": [
+    "Birds: silver and blue, like the baitfish."
+   ],
+   "ojo": "Almost all guides are for freshwater or largemouth bass: take this as guidance, not a rule.",
+   "fuentes": [
+    {
+     "titulo": "Bass Pro: choosing lure colour",
+     "url": "https://1source.basspro.com/news-tips/fishing-tackle/7368/simple-guide-choosing-lure-colors-bass"
+    },
+    {
+     "titulo": "BCF: the right lure colours",
+     "url": "https://www.bcf.com.au/be-a-bcfing-expert/fishing/buyers-guide/right-lure-colours.html"
+    },
+    {
+     "titulo": "Minnesota DNR: lure colours",
+     "url": "https://dnr.state.mn.us/minnaqua/et/lure-colors.html"
+    },
+    {
+     "titulo": "Sea Angler: questions about lure fishing (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "colores": [
+    {
+     "color": "Natural (silver, sardine, clear)",
+     "para": "Clear water and lots of light."
+    },
+    {
+     "color": "White or bright colours",
+     "para": "Coloured water: more contrast."
+    },
+    {
+     "color": "Black or very dark",
+     "para": "At night and in low light: the silhouette shows up better against the surface."
+    }
+   ]
+  },
+  {
+   "id": "cana-partes",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "The rod: parts and how to read its specs",
+   "otros_nombres": [
+    "Rod parts"
+   ],
+   "para": "What each part of a rod is and what the numbers printed on it mean.",
+   "resumen": "Every rod has the same parts: the blank, the guides, the reel seat and the handle. What changes between a surfcasting rod and a jigging rod is the length, power, action and casting weight.",
+   "como_es": [
+    "Blank: the rod's tube (carbon, fibreglass or a mix). Carbon is lighter and more sensitive; fibreglass is tougher against knocks.",
+    "Guides (rings): carry the line; the inner ring must be smooth, with no cracks.",
+    "Reel seat: where the reel screws in; different for spinning or overhead reels.",
+    "Handle: cork or EVA; long on casting rods for leverage.",
+    "Tip: the last section; shows the bite.",
+    "Power: the force needed to bend it (light, medium, heavy): set by the size of the fish and the line.",
+    "Action: where it bends. Fast: only the tip (sensitive, sets the hook quickly). Moderate or slow: bends right down (more forgiving, cushions more).",
+    "Casting weight (e.g. 10–40 g or 100–200 g): the weight of lure or lead it casts well. Outside that range it casts badly or can break.",
+    "Sections: spigot/put-in joints (better action) or telescopic (easy to carry)."
+   ],
+   "medidas": [
+    "Long rod: casts further. Short: more accurate and more power to fight.",
+    "The rod's casting weight must cover your lures or leads."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Surfcasting: long and powerful.",
+    "Spinning: medium and sensitive."
+   ],
+   "usos_embarcacion": [
+    "Boat: shorter and more powerful."
+   ],
+   "ojo": "Don't cast above the casting weight marked on the rod: it's the most common way to break it.",
+   "fuentes": [
+    {
+     "titulo": "Academy: parts of a fishing rod",
+     "url": "https://www.academy.com/expert-advice/parts-of-a-fishing-rod"
+    },
+    {
+     "titulo": "Okuma: anatomy of a rod",
+     "url": "https://okumafishingusa.com/blogs/news/anatomy-of-a-fishing-rod-okuma-tune-up-tuesday"
+    },
+    {
+     "titulo": "West Marine: choosing a rod",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    },
+    {
+     "titulo": "Salt Water Sportsman: how to choose a sea rod",
+     "url": "https://www.saltwatersportsman.com/find-right-fishing-rod/"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "carrete-partes",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "The reel: types and parts",
+   "otros_nombres": [
+    "Reel parts"
+   ],
+   "para": "Types of reel and what each spec means: size, ratio and drag.",
+   "resumen": "At sea two are mainly used: the spinning reel, easy and universal, and the overhead (multiplier) reel, stronger for boat fishing and trolling.",
+   "como_es": [
+    "Spinning (fixed spool): the spool doesn't turn; the line comes off the front. The easiest, and the one used for surfcasting and spinning.",
+    "Overhead (multiplier, “boat reel”): the spool turns; more power and stamina for boat fishing, heavy jigging and trolling.",
+    "Spool: holds the line; surfcasting spools are long and tapered to cast far.",
+    "Drag: lets line out when the fish pulls harder than the line can take. Front (finer and stronger) or rear.",
+    "Ratio (e.g. 5.7:1): turns of the rotor per turn of the handle. But how much line you retrieve also depends on the spool diameter.",
+    "Bail arm (pick-up): the arm that winds the line onto a spinning reel."
+   ],
+   "medidas": [
+    "Size (1000, 2500, 4000, 10000…) is not the same across brands; within a brand, a higher number is bigger.",
+    "In the specs, look at the maximum drag and the line capacity."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Spinning: medium-sized spinning reel.",
+    "Surfcasting: large long-spool spinning reel."
+   ],
+   "usos_embarcacion": [
+    "Heavy jigging, deep bottom fishing and trolling: overhead reel or large saltwater spinning reel."
+   ],
+   "ojo": "At sea, it must be a reel built for salt water: freshwater reels corrode in no time.",
+   "fuentes": [
+    {
+     "titulo": "West Marine: choosing a spinning reel",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "FishingBooker: saltwater spinning reels",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "Bass Resource: spinning reel guide",
+     "url": "https://bassresource.com/fishing/spinning-reels-buyers-guide.html"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "carrete-tamanos",
+   "tema": "canas-costa",
+   "tambien_en": [
+    "canas-barco"
+   ],
+   "tipo": "material",
+   "nombre": "Reel size: when to use a 2500, a 3000, a 5000…",
+   "otros_nombres": [
+    "Reel sizes"
+   ],
+   "para": "Which size of spinning reel to choose for each type of fishing.",
+   "resumen": "The reel's number indicates its size and how much line it holds. Rule of thumb: smaller the finer the line and the lighter the lures; bigger for long casting, thick lines and hard-pulling fish.",
+   "como_es": [
+    "Within a brand, higher number = bigger reel, more line and more drag.",
+    "Across brands it's not the same: one brand's 4000 can be quite a bit smaller than another's. Compare line capacity and maximum drag.",
+    "Daiwa standardised its LT sizes (spool diameter) as 1000, 2000, 2500, 3000, 4000, 5000 and 6000.",
+    "The reel must balance the rod: a very big reel on a light rod tires your wrist."
+   ],
+   "por_especie_titulo": "🎣 Which size for each type of fishing",
+   "por_especie": [
+    {
+     "pez": "Light harbour fishing (LRF), small fish",
+     "tam": "1000–2000",
+     "nota": "very fine lines"
+    },
+    {
+     "pez": "Light bass spinning, float fishing",
+     "tam": "2500–3000",
+     "nota": "the most versatile to start with"
+    },
+    {
+     "pez": "Spinning for big bass, bluefish, heavier lures",
+     "tam": "4000",
+     "nota": "more line and drag"
+    },
+    {
+     "pez": "Shore jigging, heavy spinning, light bottom fishing from a boat",
+     "tam": "5000–6000",
+     "nota": ""
+    },
+    {
+     "pez": "Surf and heavy jigging from a boat",
+     "tam": "6000–10000",
+     "nota": ""
+    },
+    {
+     "pez": "Long-distance surfcasting",
+     "tam": "10000–14000 long-spool (long cast)",
+     "nota": "some surfcasting rods recommend 5000–10000"
+    }
+   ],
+   "medidas": [
+    "Always check the capacity (metres of line of a given diameter) and the maximum drag of the specific model.",
+    "With braid, far more line fits on the same reel than with nylon."
+   ],
+   "medidas_titulo": "📏 What to look for when buying",
+   "usos_costa": [
+    "Spinning: 2500–4000.",
+    "Surfcasting: 5000–14000 long-spool."
+   ],
+   "usos_embarcacion": [
+    "Bottom fishing and spinning from a boat: 4000–6000.",
+    "Heavy jigging: 6000–10000 or overhead reels."
+   ],
+   "ojo": "The number is a guide: two “4000s” from different brands can have very different capacities. The guides' tables are for fishing in the US, so take them as a starting point.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: spinning reel sizes (with tables)",
+     "url": "https://tacklevillage.com/?p=1010135"
+    },
+    {
+     "titulo": "FishingBooker: saltwater spinning reels",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "West Marine: choosing a spinning reel",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "Daiwa: LT sizes (standardised spool diameters)",
+     "url": "https://daiwafishing.com.au/light-tough/"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: surfcasting rod with 5000–10000 reel",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: 14000 reels",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "carrete-freno",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "The reel drag: how to set it",
+   "otros_nombres": [
+    "Setting the drag"
+   ],
+   "para": "How tight to set the drag so you don't snap the line or lose the fish.",
+   "resumen": "The general rule is to set it to roughly a quarter of the line's breaking strain (or the leader's, if it's weaker). With braid, a bit less.",
+   "como_es": [
+    "Measure it with a spring balance (or luggage scale), pulling the line through the guides with the rod bent.",
+    "With nylon: around 20 % of the line's strength on fine lines and 25–30 % on heavy lines.",
+    "With braid: less (15 to 25 %), because it doesn't stretch and the full shock gets through.",
+    "Calculate it on the weakest link: the leader, the knot or the rod."
+   ],
+   "medidas": [
+    "Example: 10 kg leader → drag around 2–2.5 kg."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Spinning with fine braid: light drag, the leader is the limit.",
+    "Surfcasting: a bit tighter to set the hook at distance, without overdoing it."
+   ],
+   "usos_embarcacion": [
+    "Jigging and trolling: set it before you start and don't adjust it blindly with a fish on."
+   ],
+   "ojo": "Don't tighten the drag by hand while the fish is pulling: that's when most lines break. Sources disagree on whether to back it off when storing the reel.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: how to use the reel drag",
+     "url": "https://www.saltwatersportsman.com/how-to-manage-your-drag"
+    },
+    {
+     "titulo": "Salt Water Sportsman: how much drag to use?",
+     "url": "https://www.saltwatersportsman.com/?p=58503"
+    },
+    {
+     "titulo": "George Poveromo: how to handle the drag",
+     "url": "https://georgepoveromo.com/how_to_manage_your_drag.html"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "cana-carrete-mantenimiento",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Rod and reel maintenance",
+   "otros_nombres": [
+    "Cleaning your tackle"
+   ],
+   "para": "How to look after your tackle after sea fishing so it lasts for years.",
+   "resumen": "Salt is the enemy: a gentle rinse with fresh water after every trip, drying well and a drop of lubricant prevent almost all breakdowns.",
+   "como_es": [
+    "After every trip: rinse rod and reel with gentle fresh water, as a light shower or with a cloth. Never with a pressure jet or submerged: that drives the salt inside.",
+    "Dry everything well before storing; don't store it in a wet bag.",
+    "Check the guides: run a cotton bud round them; if it catches, there's a crack that will cut the line.",
+    "Clean the reel seat, where salt builds up.",
+    "Now and then, a thin coat of anti-corrosion protector or lubricant on the external metal parts (never on the drag).",
+    "Once a year, a reel service at a shop, or strip it down yourself if you know how."
+   ],
+   "medidas": [
+    "Rinse: every trip. Full service: once a year (or sooner if it's noisy or turns stiffly)."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "After beach fishing, the sand: also rinse the reel's bail arm and rotor."
+   ],
+   "usos_embarcacion": [
+    "On a boat, spray gets on everything all day: always rinse when you get back."
+   ],
+   "ojo": "Don't use strong soap or solvents on the reel: they remove the grease inside. And don't put oil on the drag.",
+   "fuentes": [
+    {
+     "titulo": "Mercury Marine: how to clean reels",
+     "url": "https://mercurymarine.com/ch/fr/dockline/how-to-clean-fishing-reels"
+    },
+    {
+     "titulo": "Texas Parks and Wildlife: fishing tackle maintenance (PDF)",
+     "url": "https://tpwd.texas.gov/education/angler-education/fishing-gear-maintenance-and-repair.pdf"
+    },
+    {
+     "titulo": "Pure Fishing: cleaning and storing saltwater tackle",
+     "url": "https://www.purefishing.com/dock-talk-April-2023-cleaning-and-storing-saltwater-fishing-gear"
+    },
+    {
+     "titulo": "BoatUS: rod care",
+     "url": "https://boatus.geico.com/expert-advice/expert-advice-archive/2015/april/fishing-rod-care"
+    },
+    {
+     "titulo": "Marlin: reel maintenance",
+     "url": "https://www.marlinmag.com/howto/fishing-reel-maintenance-aftermarket-performance-tweaks/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: how to clean reels",
+     "url": "https://www.saltwatersportsman.com/spinning-reels-maintenance/"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "equipo-surfcasting",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Surfcasting outfit",
+   "otros_nombres": [
+    "Surfcasting rod"
+   ],
+   "para": "Rod and reel for casting far from the beach with lead and bait.",
+   "resumen": "Long (around 4.20–4.50 m), powerful rods with large long-spool reels for casting far.",
+   "como_es": [
+    "Long rod with an action for powerful casting; long handle.",
+    "Large spinning reel with a long, tapered spool (long cast).",
+    "Fine main line to fly further and a shock leader to take the strain of the cast.",
+    "Sections: three-piece put-over/spigot (better action and casting) or telescopic (easy to carry and set up)."
+   ],
+   "medidas": [
+    "Rod: 4.20–4.50 m; usual casting weight 100–200 g (optimum around 130 g on some models).",
+    "Reel: sizes 5000–14000 long-spool.",
+    "Main line around 0.14–0.35 mm depending on rod and style, with a thicker shock leader."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Beaches: bottom fishing for white seabream, gilthead bream, bass, sand steenbras, flatfish.",
+    "With current or swell, a grip lead of a weight the rod can handle."
+   ],
+   "usos_embarcacion": [
+    "Not used from a boat."
+   ],
+   "ojo": "Casting a heavier lead than the rod is rated for can break it; and without a shock leader, the force of the cast snaps the fine main line.",
+   "fuentes": [
+    {
+     "titulo": "Caperlan Symbios 500: 4.20 m 100–200 g surfcasting rod and 5000–10000 reel",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: 4.50 m 100–200 g",
+     "url": "https://www.decathlon.ie/p/338548-281436-surfcasting-fishing-rod-symbios-500-450-100-200-gr.html"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: 4.20 m, 150–200 g, 14000 reels",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-spinning-costa",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Shore spinning outfit",
+   "otros_nombres": [
+    "Spinning rod"
+   ],
+   "para": "Rod and reel for casting lures from rocks and beaches.",
+   "resumen": "Light, sensitive rod with a medium spinning reel and braid: you'll cast thousands of times, so weight matters.",
+   "como_es": [
+    "Fast or medium-fast action rod: sensitive and sets the hook well at distance.",
+    "Medium spinning reel with a good drag.",
+    "Fine braid with a fluorocarbon leader.",
+    "Sections: usually two pieces; travel rods come in three or four. Telescopic rods cast worse."
+   ],
+   "medidas": [
+    "Casting weight that covers your lures (for example 10–40 g for 10–30 g lures).",
+    "Reel size 3000–4000 (4000 for bigger lures and fish).",
+    "On rock and beach, longer rods than freshwater ones are used: they cast further and control the lure over waves and rocks."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Bass, bluefish, mackerel from rocks and beaches.",
+    "Shore jigging with 20–60 g jigs: a more powerful rod."
+   ],
+   "usos_embarcacion": [
+    "The same rod works for casting from a boat at the rocks."
+   ],
+   "ojo": "A very stiff rod with light lures doesn't load and casts short: match the casting weight to what you use most.",
+   "fuentes": [
+    {
+     "titulo": "Bass Resource: spinning combos",
+     "url": "https://www.bassresource.com/fishing/spinning-outfits.html"
+    },
+    {
+     "titulo": "Outdoor Life: saltwater spinning rods",
+     "url": "https://www.outdoorlife.com/gear/best-inshore-spinning-rods.md"
+    },
+    {
+     "titulo": "West Marine: choosing a spinning reel",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-jigging",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Jigging outfit (boat)",
+   "otros_nombres": [
+    "Jigging rod",
+    "Slow pitch"
+   ],
+   "para": "Rod and reel for fishing metal jigs vertically from a boat.",
+   "resumen": "Short, powerful, light rods. For speed jigging, a fast tip; for slow pitch, more parabolic rods that make the jig dance on the drop.",
+   "como_es": [
+    "Short rod with backbone to lift the fish off the bottom.",
+    "Speed jigging: fast action.",
+    "Slow pitch: a somewhat longer, softer rod that gives the jig movement.",
+    "Overhead reel or saltwater spinning reel with a strong drag; multicolour braid.",
+    "Sections: one piece, or one piece with a detachable handle; the fewer joints, the more power."
+   ],
+   "medidas": [
+    "Short rods (around 1.8–2.1 m) to work vertically.",
+    "Jig weight according to depth and current."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Shore jigging: see “Shore spinning outfit” (longer rod)."
+   ],
+   "usos_embarcacion": [
+    "Vertical jigging and slow pitch over rock and wrecks."
+   ],
+   "ojo": "A heavier jig than the rod is rated for overloads it: change rod before changing jig.",
+   "fuentes": [
+    {
+     "titulo": "FishingBooker: deep sea fishing rods",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    },
+    {
+     "titulo": "Salt Water Sportsman: choosing the right rod",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "Mustad: slow pitch jigging",
+     "url": "https://mustad-fishing.com/us/article/get-in-on-the-slow-pitch-jig-craze"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-currican",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Trolling outfit",
+   "otros_nombres": [
+    "Trolling rod",
+    "Trolling"
+   ],
+   "para": "Rod and reel for towing lures or baits behind a moving boat.",
+   "resumen": "Short, sturdy rods with a slower action, and overhead reels holding lots of line.",
+   "como_es": [
+    "Short, strong rod; slow or moderate action so the fish takes the lure before it feels the rod.",
+    "High-capacity overhead reel with lever or star drag.",
+    "Rod holders on the boat: the rod works on its own until the strike.",
+    "Sections: one piece, or one piece with a detachable butt, so it can take the strain."
+   ],
+   "medidas": [
+    "Shorter rods than casting rods: here power matters, not distance."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Not used from the shore."
+   ],
+   "usos_embarcacion": [
+    "Surface trolling (Atlantic bonito, mackerel, bluefish) and deep trolling with lead-core line."
+   ],
+   "ojo": "Set the drag before letting out: with the boat moving the strike is a sharp jolt.",
+   "fuentes": [
+    {
+     "titulo": "West Marine: choosing a rod",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    },
+    {
+     "titulo": "Salt Water Sportsman: choosing the right rod",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "FishingBooker: deep sea fishing rods",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-fondo-barco",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Boat bottom-fishing outfit",
+   "otros_nombres": [
+    "Boat rod"
+   ],
+   "para": "Rod and reel for bait fishing at anchor or on the drift.",
+   "resumen": "Medium-length rod with a sensitive tip to see the bite and backbone to pull the fish up off the bottom.",
+   "como_es": [
+    "Sensitive tip to feel the bite in deep water.",
+    "Strong backbone to lift the fish clear of the rock.",
+    "Saltwater spinning reel or overhead reel, depending on depth and lead.",
+    "Sections: two pieces or telescopic; on small boats a telescopic rod stows better."
+   ],
+   "medidas": [
+    "Medium length; on small boats, shorter so it's easy to handle."
+   ],
+   "medidas_titulo": "📏 Typical sizes",
+   "usos_costa": [
+    "Not used from the shore (from the shore, see surfcasting)."
+   ],
+   "usos_embarcacion": [
+    "Anchored and drift fishing with snood rigs: red seabream, pandora, horse mackerel, conger eel, pollack."
+   ],
+   "ojo": "In deep water, braid transmits the bite much better than nylon.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: choosing the right rod",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "FishingBooker: deep sea fishing rods",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    },
+    {
+     "titulo": "West Marine: choosing a rod",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jibionera-egi",
+   "tema": "cefalopodos",
+   "tipo": "material",
+   "nombre": "Egi (squid jig)",
+   "otros_nombres": [
+    "Egi",
+    "Squid jig",
+    "Jibionera (Spanish)"
+   ],
+   "para": "A prawn-shaped lure with a crown of barbless pins at the tail, for squid and cuttlefish.",
+   "resumen": "Cast it, let it sink and make it dart with sharp lifts: squid attack it as it falls. It is the way to catch squid from harbours and rocks.",
+   "como_es": [
+    "Prawn-shaped body, often cloth-covered; a crown of barbless pins behind.",
+    "There are sinking (standard), floating and slow-sinking «shallow» models for shallow water.",
+    "Sizes are numbers (2.5, 3.0, 3.5…): a 2.5 is about 7.5 cm long and a 3.5 about 10.5 cm.",
+    "Sink rate is given in seconds per metre (standard models, about 3–3.5 s/m)."
+   ],
+   "medidas": [
+    "2.5: small squid, shallow and calm water.",
+    "3.0: the most used all-rounder.",
+    "3.5: deeper water, current or big squid.",
+    "Check the weight and sink rate on the packet: they vary a lot between models."
+   ],
+   "medidas_titulo": "📏 Size",
+   "usos_costa": [
+    "At night under harbour and breakwater lights, or at dawn and dusk.",
+    "Cast, count it down, make two or three sharp lifts and let it fall again on a slack line."
+   ],
+   "usos_embarcacion": [
+    "Slow drifting or anchored over sand and weed.",
+    "With lights at night, where allowed."
+   ],
+   "ojo": "Your rod must handle the jig's weight. Carry different colours: the one that works changes from day to day.",
+   "fuentes": [
+    {
+     "titulo": "Daiwa: the basics of egi squid fishing",
+     "url": "https://daiwafishing.com.au/blogs/news/inky-business-the-basics-of-egi-squid-fishing"
+    },
+    {
+     "titulo": "Fishing Mad: the best squid jigs (sizes 2.5–3.5)",
+     "url": "https://fishingmad.com.au/review/best-squid-jigs-2025/"
+    },
+    {
+     "titulo": "Yamashita Egi Oh Live 3.0: weight and sink rate",
+     "url": "https://compleatangler.com.au/products/yamashita-egi-oh-live-3-0-squid-jig"
+    },
+    {
+     "titulo": "Decathlon: squid jigs (sinking, floating and shallow)",
+     "url": "https://www.decathlon.es/es/deportes/pesca/jibioneras-pesca"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "colores": [
+    {
+     "color": "Glow",
+     "para": "At night, in low light or in coloured water."
+    },
+    {
+     "color": "UV and natural colours",
+     "para": "Clear water and sunshine."
+    },
+    {
+     "color": "Several colours",
+     "para": "There is no fixed rule: carry several and change if they don't take."
+    }
+   ]
+  },
+  {
+   "id": "potera",
+   "tema": "cefalopodos",
+   "tipo": "material",
+   "nombre": "Squid jig (potera)",
+   "otros_nombres": [
+    "Potera (Spanish)",
+    "Vertical squid jig"
+   ],
+   "para": "A vertical lure with one or more crowns of barbless pins, worked up and down for squid.",
+   "resumen": "The traditional way to catch squid from a boat: the jig is lifted and dropped vertically, often with a light at night. In Spain, «calamar de potera» means squid caught this way, one by one.",
+   "como_es": [
+    "Long body (often glow-in-the-dark) with crowns of barbless pins.",
+    "Barbless pins don't damage the squid and keep it whole.",
+    "Several can be rigged on the same line, spaced apart."
+   ],
+   "medidas": [
+    "Weight according to depth and current."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "From harbours and breakwaters with depth, fished vertically."
+   ],
+   "usos_embarcacion": [
+    "Squid fishing from a boat, anchored or drifting, working the jig up and down.",
+    "At night with a light to attract baitfish and squid, where allowed."
+   ],
+   "ojo": "Check your local rules on using lights and on squid catches.",
+   "fuentes": [
+    {
+     "titulo": "Directo al Paladar: what «calamar de potera» means",
+     "url": "https://www.directoalpaladar.com/ingredientes-y-alimentos/no-senora-pueblo-especie-que-significa-calamar-potera-que-importa-palabra"
+    },
+    {
+     "titulo": "IMARPE: artisanal squid jigging with lights (PDF)",
+     "url": "https://repositorio.imarpe.gob.pe/server/api/core/bitstreams/4dd6d88c-1ccf-4ea4-b1e0-5bad0c2d4ccc/content"
+    },
+    {
+     "titulo": "Decathlon: squid jigs (sinking, floating and shallow)",
+     "url": "https://www.decathlon.es/es/deportes/pesca/jibioneras-pesca"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plumas-caballa",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Feathers for mackerel and horse mackerel",
+   "otros_nombres": [
+    "Feathers",
+    "Plumas (Spanish)",
+    "Txitxarro",
+    "Sabiki"
+   ],
+   "para": "A rig with several hooks dressed with feathers or shiny strips, with a lead or a jig at the end.",
+   "resumen": "The classic way to catch mackerel and horse mackerel when they come in shoals: it imitates a small shoal of fish. The sabiki is the version with smaller hooks.",
+   "como_es": [
+    "Feathers: 3 to 6 dressed hooks about 30 cm apart.",
+    "Sabiki: 6 to 10 small hooks, for small horse mackerel, sardine or bogue.",
+    "At the end, a lead or, better, a small bright jig.",
+    "A glow stick on the rig helps from a pier at night."
+   ],
+   "medidas": [
+    "Lead or jig of about 28 to 113 g depending on depth and current.",
+    "Big feathers for mackerel; sabiki for horse mackerel and small baitfish."
+   ],
+   "medidas_titulo": "📏 Size and weight",
+   "usos_costa": [
+    "From a pier or harbour: cast and retrieve with up-and-down lifts, like a shoal of fish.",
+    "Or straight down: drop to the bottom and lift in jerks, about 2–3 m below the surface if the fish are up high."
+   ],
+   "usos_embarcacion": [
+    "Drop to the bottom controlling the line with your thumb and lift in jerks.",
+    "Boat rod and reel with a lead of about 110 g."
+   ],
+   "ojo": "Many hooks together tangle and snag on the pier wall. Respect minimum sizes and don't take more than you will use.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: three methods for mackerel",
+     "url": "https://www.seaangler.co.uk/fishing-tips/advanced/fishing-for-mackerel-three-great-methods/"
+    },
+    {
+     "titulo": "British Sea Fishing: feathers and daylights",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/fishing-with-feathers-and-daylights/"
+    },
+    {
+     "titulo": "Advnture: how to catch mackerel (rigs and tips)",
+     "url": "https://www.advnture.com/how-to/mackerel-fishing-tips"
+    },
+    {
+     "titulo": "Wikipedia: Sabiki",
+     "url": "https://en.wikipedia.org/wiki/Sabiki"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "currican"
+   ]
+  },
+  {
+   "id": "currican-senuelos",
+   "tema": "currican",
+   "tipo": "material",
+   "nombre": "Trolling lures",
+   "otros_nombres": [
+    "Feather",
+    "Skirted lure",
+    "Cedar plug",
+    "Señuelos de curricán (Spanish)"
+   ],
+   "para": "Lures towed behind a moving boat: feathers, skirted lures and hard-headed lures.",
+   "resumen": "For bonito, big mackerel, frigate tuna and tuna. Each type works at its own speed: feathers and cedar plugs slower, skirts a bit faster.",
+   "como_es": [
+    "Feather: heavy head with a feather skirt; the classic bonito lure.",
+    "Skirted lure: plastic or metal head with a vinyl skirt.",
+    "Cedar plug: hard wooden body that vibrates at speed.",
+    "Big-lipped minnows for slower, deeper trolling."
+   ],
+   "medidas": [
+    "Feathers and cedar plugs: around 5–8 knots.",
+    "Skirts: around 6–9 knots; some bonito models hold up to about 9 knots.",
+    "What matters is how each lure swims: check it doesn't jump or spin."
+   ],
+   "medidas_titulo": "📏 Speed",
+   "usos_costa": [
+    "Not used from the shore."
+   ],
+   "usos_embarcacion": [
+    "Surface trolling for bonito, big mackerel and bluefish.",
+    "Several rods at different distances behind the boat."
+   ],
+   "ojo": "Speeds are a guide and sources don't agree on the top end: adjust by watching how the lure swims.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: trolling a feather",
+     "url": "https://www.thefisherman.com/article/old-school-offshore-troll-a-feather/"
+    },
+    {
+     "titulo": "Pakula: the art of trolling skirted lures",
+     "url": "https://pakula.com.au/index.php/2014-09-23-04-02-2/trolling-articles/the-art-of-lure-trolling"
+    },
+    {
+     "titulo": "TackleDirect: trolling speeds",
+     "url": "https://www.tackledirect.com/blog/trolling-speedsters"
+    },
+    {
+     "titulo": "Williamson Tuna Catcher: trolling lure for bonito and tuna",
+     "url": "https://www.rapala.com/williamson/trolling-lures/light-trolling-lures/tuna-catcher-rigged/Tuna+Catcher+Rigged.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  }
+ ]
+}
