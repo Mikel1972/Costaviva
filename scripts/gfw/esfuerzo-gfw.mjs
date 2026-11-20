@@ -60,6 +60,15 @@ export function grupoArte(geartype) {
 // celda en "todas" y en el grupo de su arte, sea cual sea la agrupación
 // (día, bandera, barco). Solo celdas con horas > 0. Nunca devuelve barcos.
 // `escala` divide las horas (lo habitual: media de varios años).
+// Sin "group-by": "GEARTYPE" GFW no manda el arte y todo caía en «otras»
+// (caso real, Mikel 2026-11-20: «¿por qué el único campo con datos es
+// otras?»). Si vuelve a pasar, el robot falla en rojo en vez de guardarlo.
+export function filasSinArte(json) {
+  let con = 0, sin = 0;
+  for (const entrada of json?.entries || []) for (const filas of Object.values(entrada || {})) for (const f of Array.isArray(filas) ? filas : []) (f?.geartype ? con++ : sin++);
+  return con === 0 && sin > 0;
+}
+
 export function celdasDeRespuesta(json, escala = 1) {
   const suma = new Map();
   const sumar = (k, h) => suma.set(k, (suma.get(k) || 0) + h);
@@ -135,7 +144,7 @@ async function diasDelUltimoCalculo() {
 }
 
 async function pedirPagina(region, caja, v, token, offset) {
-  const q = new URLSearchParams({ "spatial-resolution": "LOW", "temporal-resolution": "ENTIRE", "datasets[0]": DATASET, "date-range": `${v.desde},${v.hasta}`, format: "JSON", ...(offset ? { offset: String(offset) } : {}) });
+  const q = new URLSearchParams({ "spatial-resolution": "LOW", "temporal-resolution": "ENTIRE", "datasets[0]": DATASET, "date-range": `${v.desde},${v.hasta}`, format: "JSON", "group-by": "GEARTYPE", ...(offset ? { offset: String(offset) } : {}) });
   const r = await fetch(`${API}?${q}`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -164,12 +173,13 @@ async function main() {
       const primera = Object.values(json?.entries?.[0] || {})[0]?.[0];
       console.log(`${region}: ${json.entries.length} bloques, total ${json.total}; campos de fila: ${JSON.stringify(Object.keys(primera || {}))}`);
     }
+    if (filasSinArte(json)) throw new Error(`GFW (${region}): las filas llegan sin arte (geartype); no se guarda para no meterlo todo en «otras».`);
     const recientes = celdasDeRespuesta(json).map((c) => ({ ...c, region, periodo: "reciente", desde: v.desde, hasta: v.hasta }));
     const anos = [];
     for (const vh of habituales) anos.push(await pedir(region, caja, vh, token));
     const desdeH = habituales.at(-1).desde, hastaH = habituales[0].hasta;
     const habitual = celdasDeRespuesta(juntarRespuestas(anos), habituales.length).map((c) => ({ ...c, region, periodo: "habitual", desde: desdeH, hasta: hastaH }));
-    const resumen = (xs) => `${xs.filter((c) => c.arte === "todas").length} celdas (arrastre ${xs.filter((c) => c.arte === "arrastre").length})`;
+    const resumen = (xs) => `${xs.filter((c) => c.arte === "todas").length} celdas (${LISTA_ARTES.slice(1).map((a) => `${a} ${xs.filter((c) => c.arte === a).length}`).join(", ")})`;
     console.log(`${region}: reciente ${v.desde} a ${v.hasta}: ${resumen(recientes)}; habitual (mismo mes, ${habituales.length} años): ${resumen(habitual)}.`);
     todas.push(...recientes, ...habitual);
   }
