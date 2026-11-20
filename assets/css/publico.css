@@ -152,3 +152,16 @@ body.publica { margin: 0; background: var(--fondo); color: var(--tinta); font-fa
 /* Temas desplegables del centro de formación (2026-11-20). */
 details.tema summary { cursor: pointer; padding: 6px 0; }
 details.tema[open] summary { margin-bottom: 6px; }
+details.bloque { margin: 10px 0; }
+ul.temas-aprende { list-style: none; padding: 0; margin: 0; }
+ul.temas-aprende > li { margin: 0; }
+/* Flecha a la derecha apuntando abajo (Mikel: «pasa la flecha a la derecha
+   pero apuntando hacia abajo, para que se intuya que es desplegable»). */
+details.bloque > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
+details.bloque > summary::-webkit-details-marker { display: none; }
+details.bloque > summary::after { content: ""; margin-left: auto; flex: 0 0 auto; width: 9px; height: 9px; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor; transform: rotate(45deg); transition: transform .2s; opacity: .7; margin-right: 4px; margin-top: -4px; }
+details.bloque[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
+.tema-vacio { margin: 8px 0; padding: 10px 16px; border: 1px dashed rgba(0,0,0,.18); border-radius: 14px; color: var(--tinta-2, #555); font-size: 15px; }
+details.bloque summary { font-size: 17px; }
+details.bloque ul { margin: 4px 0 6px; padding-left: 20px; }
+details.bloque li { margin: 4px 0; }
