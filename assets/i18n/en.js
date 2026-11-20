@@ -782,7 +782,7 @@
   "flota.especie_probable": "Probably {especie}",
   "flota.vacio_24h": "No fishing fleet recorded in the last 24 h",
   "flota.vacio_ayer": "No fishing fleet recorded yesterday",
-  "flota.atribucion": "AIS data: <a href=\"https://aisstream.io\" target=\"_blank\" rel=\"noopener\">aisstream.io</a>",
+  "flota.atribucion": "AIS data: <a href=\"https://aisstream.io\" target=\"_blank\" rel=\"noopener\">aisstream.io</a> · Fish auction sales: Fonte: Xunta de Galicia – <a href=\"https://www.pescadegalicia.gal\" target=\"_blank\" rel=\"noopener\">pescadegalicia.gal</a>",
   "fondo.atribucion": "Seabed: <a href=\"https://emodnet.ec.europa.eu/en/seabed-habitats\" target=\"_blank\" rel=\"noopener\">EMODnet Seabed Habitats</a> (EUSeaMap 2025), <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>, funded by the European Commission. Indicative only, not for navigation.",
   "fondo.ley.roca": "Rock",
   "fondo.ley.arena": "Sand",

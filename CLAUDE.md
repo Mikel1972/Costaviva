@@ -130,6 +130,22 @@ Sin IA. No toca los ficheros de la flota.
   en el mapa, también en sus créditos).
 - Test: `test/lonjas-galicia.test.js` (fixtures recortadas de respuestas
   reales en `test/fixtures/pescadegalicia-agregacion*.html`).
+- **Cruce con la flota (2026-11-20, Mikel: «cruza lonjas con flota»):**
+  `flota-ais.mjs` (`especieProbable`, `conEspecie`) rellena `especie_probable`
+  de `flota_zonas` y `flota_zonas_dia` con un **id de especies.json**: suma
+  los kg de peces y cefalópodos vendidos en las lonxas a ≤ 30 km del centro
+  de la celda el día de la zona (o el anterior si la Xunta aún no lo ha
+  subido); solo si una especie llega al 50 % con ≥ 300 kg en total y está en
+  `ESPECIE_DE_LONJA` (equivalencias seguras por nombre científico). Si la que
+  domina no está, null: nunca la segunda. El mapa enseña «Probablemente
+  <nombre en el idioma>» y la cita de la Xunta en la atribución. Probado con
+  3 semanas reales: 6 de 39 zonas tenían lonja cerca y 2 salieron (jurel).
+- **Otras regiones (búsqueda 2026-11-20):** ninguna publica como Galicia
+  (diario, lonja × especie, abierto). Docapesca (PT): diario por lota y
+  especie, solo precio, sin licencia de reutilización (pedir permiso).
+  Asturias: mensual por lonja sin especie (CC BY 4.0). Canarias: mensual por
+  isla. IDAPES (Andalucía, CC BY 4.0): sin comprobar a mano. Euskadi,
+  Cataluña, MAPA: anuales. Cantabria y Baleares: nada encontrado.
 
 ## Copia de seguridad y pruebas en el navegador (2026-10-12, pedido de Mikel)
 

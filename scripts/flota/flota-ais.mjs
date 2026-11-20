@@ -323,6 +323,77 @@ export function zonasPorDia(filas, clases, ahora, min = MIN_BARCOS_CELDA) {
   return { dias, zonas };
 }
 
+// ---------------------------------------------------------------------------
+// Especie probable de cada zona caliente (2026-11-20, Mikel: «cruza lonjas
+// con flota»). Sin IA: lo vendido en las lonjas de Galicia (lonja_ventas, del
+// robot scripts/lonjas/galicia.mjs) a menos de RADIO_LONJA_KM del centro de
+// la celda, el día de la zona (o el anterior, si la Xunta aún no lo ha
+// publicado). Solo se pone si UNA especie domina claramente (>= DOMINIO_LONJA
+// de los kg de peces y cefalópodos, con al menos MIN_KG_LONJA en total) y es
+// una especie de la app (ESPECIE_DE_LONJA, nombre de la fuente -> id de
+// especies.json, solo equivalencias seguras). Si la que domina no está en la
+// lista, null: nunca se salta a la segunda. Fiabilidad por encima de todo.
+// Fonte: Xunta de Galicia – pescadegalicia.gal (va en la atribución del mapa).
+export const RADIO_LONJA_KM = 30;
+export const MIN_KG_LONJA = 300;
+export const DOMINIO_LONJA = 0.5;
+export const GRUPOS_LONJA = ["Peixes", "Cefalópodos"];
+// Nombre gallego de la fuente (tal cual) -> id de assets/datos/especies.json.
+// Comprobado con el nombre científico de cada id. Fuera a propósito: "Xarda
+// pintada" (Scomber colias, no es la caballa de la app), "Bonito do atlántico"
+// (Sarda sarda, no el bonito del norte), "Pota común" (Todarodes, no el
+// calamar) y las rayas que no son Raja clavata.
+export const ESPECIE_DE_LONJA = Object.freeze({
+  Xurelo: "jurel", Xarda: "caballa", Pescada: "merluza", Polbo: "pulpo", Choco: "sepia", Lura: "calamar",
+  Congro: "congrio", Faneca: "faneca", Robaliza: "lubina", Abadexo: "abadejo", Maragota: "maragota",
+  "Peixe sapo": "rape", Rapante: "gallo", "Rapante de manchas": "gallo", "Salmonete de rocha": "salmonete",
+  "Atún vermello": "atun_rojo", "Raia cravuda": "raya", Melgacho: "pintarroja",
+});
+
+export function cargarLonjas() {
+  return JSON.parse(readFileSync(new URL("../lonjas/lonjas-galicia.json", import.meta.url), "utf8")).lonjas
+    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon));
+}
+
+// Centro de una celda de PASO_CELDA (celda() da la esquina de abajo a la izquierda).
+const centro = (v) => v + PASO_CELDA / 2;
+const diaAnterior = (dia) => new Date(Date.parse(`${dia}T12:00:00Z`) - 24 * HORA_MS).toISOString().slice(0, 10);
+
+// ventas: filas de lonja_ventas { fecha, lonja, especie, grupo, kg }.
+// Devuelve el id de especie o null.
+export function especieProbable(lat, lon, dia, ventas, lonjas) {
+  const cerca = new Set(lonjas.filter((l) => distanciaKm(centro(lat), centro(lon), l.lat, l.lon) <= RADIO_LONJA_KM).map((l) => l.nombre));
+  if (!cerca.size) return null;
+  for (const d of [dia, diaAnterior(dia)]) {
+    const porEspecie = new Map();
+    let total = 0;
+    for (const v of ventas) {
+      if (v.fecha !== d || !cerca.has(v.lonja) || !GRUPOS_LONJA.includes(v.grupo)) continue;
+      const kg = Number(v.kg) || 0;
+      if (kg <= 0) continue;
+      total += kg;
+      porEspecie.set(v.especie, (porEspecie.get(v.especie) || 0) + kg);
+    }
+    if (!total) continue; // ese día aún sin publicar: se mira el anterior
+    if (total < MIN_KG_LONJA) return null;
+    const [especie, kg] = [...porEspecie].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+    return kg / total >= DOMINIO_LONJA ? ESPECIE_DE_LONJA[especie] || null : null;
+  }
+  return null;
+}
+
+// Rellena especie_probable de las zonas (flota_zonas: periodo; flota_zonas_dia: dia).
+export function conEspecie(zonas, ventas, lonjas, ahora) {
+  const hoy = diaMadrid(ahora);
+  const diaDe = (z) => z.dia || (z.periodo === "24h" ? hoy : diaAnterior(hoy));
+  const cache = new Map();
+  return zonas.map((z) => {
+    const k = `${diaDe(z)}|${z.celda_lat}|${z.celda_lon}`;
+    if (!cache.has(k)) cache.set(k, especieProbable(z.celda_lat, z.celda_lon, diaDe(z), ventas, lonjas));
+    return { ...z, especie_probable: cache.get(k) };
+  });
+}
+
 // Lo común: barcos DISTINTOS por grupo (periodo o día), celda y clase, con
 // el umbral y la regla contra la resta. grupoDe(ms) -> grupo o null.
 function agregarCeldas(filas, clases, grupoDe, min) {
@@ -433,14 +504,19 @@ async function main() {
   // 50 h: cubre las 24 h + ayer y el día de ayer de Madrid entero.
   const desde = encodeURIComponent(new Date(ahora.getTime() - 50 * HORA_MS).toISOString());
   const recientes = await leerTodo(`flota_faena?select=hora,celda_lat,celda_lon,barco,clase&hora=gt.${desde}&order=hora,celda_lat,celda_lon,barco`);
-  const zonas = zonasDeFaena(recientes, conocidas, ahora);
+  // Ventas en lonja de los últimos días (peces y cefalópodos) para la especie probable.
+  const desdeLonja = new Date(ahora.getTime() - 4 * 24 * HORA_MS).toISOString().slice(0, 10);
+  const ventas = await leerTodo(`lonja_ventas?select=fecha,lonja,especie,grupo,kg&region=eq.galicia&fecha=gte.${desdeLonja}&grupo=in.(${GRUPOS_LONJA.map(encodeURIComponent).join(",")})&order=fecha,lonja,especie`);
+  const lonjas = cargarLonjas();
+  const zonas = conEspecie(zonasDeFaena(recientes, conocidas, ahora), ventas, lonjas, ahora);
   if (zonas.length) await supabase("flota_zonas?on_conflict=periodo,celda_lat,celda_lon,clase", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(zonas) });
   await supabase(`flota_zonas?calculado=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
 
   // Histórico diario (▶️ de 14 días): hoy y ayer (días de Madrid), igual:
   // primero lo nuevo, luego se borra lo viejo de esos dos días; y lo de más
   // de 60 días.
-  const { dias, zonas: zonasDia } = zonasPorDia(recientes, conocidas, ahora);
+  const { dias, zonas: zonasDiaSin } = zonasPorDia(recientes, conocidas, ahora);
+  const zonasDia = conEspecie(zonasDiaSin, ventas, lonjas, ahora);
   if (zonasDia.length) await supabase("flota_zonas_dia?on_conflict=dia,celda_lat,celda_lon,clase", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(zonasDia) });
   await supabase(`flota_zonas_dia?dia=in.(${dias.join(",")})&calculado=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
   await supabase(`flota_zonas_dia?dia=lt.${corte}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
@@ -466,6 +542,9 @@ async function main() {
   // Solo cuántas celdas se publican, nunca cuáles.
   const celdasPublicadas = (p) => zonas.filter((z) => z.periodo === p && z.clase === "todas").length;
   console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer; histórico de hoy: ${zonasDia.filter((z) => z.dia === dias[1] && z.clase === "todas").length} celdas.`);
+  // Solo cuántas zonas llevan especie y cuáles especies (nunca dónde).
+  const conEsp = zonas.filter((z) => z.periodo === "24h" && z.clase === "todas" && z.especie_probable);
+  console.log(`Especie probable (lonjas de Galicia, ${ventas.length} filas de venta): ${conEsp.length} de ${celdasPublicadas("24h")} zonas de las últimas 24 h; ${JSON.stringify(conEsp.reduce((a, z) => ((a[z.especie_probable] = (a[z.especie_probable] || 0) + 1), a), {}))}. Fonte: Xunta de Galicia – pescadegalicia.gal`);
   console.log(`Flota parada (>= ${MIN_BARCOS_CELDA} barcos): ${parados.filter((p) => p.tipo === "puerto").length} puertos, ${parados.filter((p) => p.tipo === "mar").length} celdas en el mar.`);
   console.log(`Pesqueros en el mar en movimiento (>= ${MIN_BARCOS_CELDA} por celda de ${PASO_MAR}°): ${navegando.length} celdas, ${navegando.reduce((s, f) => s + f.n_barcos, 0)} barcos.`);
   if (!mensajes) throw new Error("aisstream no mandó ningún mensaje.");

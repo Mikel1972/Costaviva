@@ -3079,6 +3079,9 @@ conBatimetria((B) => {
 // celdas con 3 barcos o más). Escucha el evento `modalidad`, no las pestañas.
 function montarFlota(F) {
   F.montarCapa(map, {
+    // Especie probable de cada zona (cruce con las lonjas): nombre en el
+    // idioma del usuario; null mientras especies.json no haya cargado.
+    nombreEspecie: (id) => { const e = especiesDatos?.especies?.find((x) => x.id === id); return e ? I18n.nombre(e) : null; },
     consultar: async () => {
       if (!window.supabaseCliente) return [];
       const { data, error } = await window.supabaseCliente.from("flota_zonas")

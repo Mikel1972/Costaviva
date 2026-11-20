@@ -10,8 +10,10 @@
 // barcos DISTINTOS faenando por celda de 0,05° (~5 km), en las últimas 24 h
 // ("24h") o en las 24 h anteriores ("ayer"), por clase de eslora o "todas".
 // Privacidad: nunca barcos ni rutas, y solo celdas con 3 barcos o más (lo
-// exige también la base de datos). especie_probable vendrá de cruzar con las
-// lonjas (más adelante); hoy siempre null y no se enseña.
+// exige también la base de datos). especie_probable (2026-11-20): id de
+// especies.json que pone el robot cruzando con las ventas en las lonjas de
+// Galicia, solo si una especie domina claramente; null si no. El nombre en el
+// idioma del usuario lo da index.html (montarCapa({ nombreEspecie })).
 //
 // La capa escucha el estado de la modalidad con el evento
 // `modalidad` ({ detail: { modalidad } }) que lanza index.html cada vez que
@@ -136,10 +138,14 @@ export function zonasVisibles(filas, { periodo = "24h", clase = "todas", ahora =
 }
 
 // Texto del tooltip de una celda (con la especie probable cuando la haya).
-export function textoCelda(f) {
+const escTexto = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let nombreEspecie = (id) => id;
+export function textoCelda(f, nombre = nombreEspecie) {
   const partes = [I18n.t("flota.barcos_faenando", { n: Number(f.n_barcos) })];
   if (f.clase !== "todas") partes.push(I18n.t(`flota.clase.${claveClase(f.clase)}`));
-  if (f.especie_probable) partes.push(I18n.t("flota.especie_probable", { especie: f.especie_probable }));
+  // Sin nombre (especies.json aún sin cargar): no se enseña un id suelto.
+  const especie = f.especie_probable ? nombre(f.especie_probable) : null;
+  if (especie) partes.push(I18n.t("flota.especie_probable", { especie: escTexto(String(especie).toLowerCase()) }));
   return partes.join(" · ");
 }
 export const claveClase = (c) => ({ todas: "todas", "<24": "menos24", "24-40": "de24a40", ">40": "mas40" })[c];
@@ -607,7 +613,8 @@ export function modalidadInicial(doc = globalThis.document, almacen = globalThis
 // map: el mapa de Leaflet; consultar(): promesa con las filas de flota_zonas.
 // consultarDias(desde): promesa con las filas de flota_zonas_dia desde ese día.
 // consultarParados(): promesa con las filas de flota_parados.
-export function montarCapa(map, { consultar: fn, consultarDias: fnDias, consultarParados: fnParados } = {}) {
+export function montarCapa(map, { consultar: fn, consultarDias: fnDias, consultarParados: fnParados, nombreEspecie: fnNombre } = {}) {
+  if (fnNombre) nombreEspecie = fnNombre;
   if (fnParados) consultarParados = fnParados;
   mapa = map;
   if (fn) consultar = fn;

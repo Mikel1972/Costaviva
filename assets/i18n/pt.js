@@ -784,7 +784,7 @@
   "flota.especie_probable": "Provavelmente {especie}",
   "flota.vacio_24h": "Sem frota a pescar registada nas últimas 24 h",
   "flota.vacio_ayer": "Sem frota a pescar registada ontem",
-  "flota.atribucion": "Dados AIS: <a href=\"https://aisstream.io\" target=\"_blank\" rel=\"noopener\">aisstream.io</a>",
+  "flota.atribucion": "Dados AIS: <a href=\"https://aisstream.io\" target=\"_blank\" rel=\"noopener\">aisstream.io</a> · Vendas em lota: Fonte: Xunta de Galicia – <a href=\"https://www.pescadegalicia.gal\" target=\"_blank\" rel=\"noopener\">pescadegalicia.gal</a>",
   "fondo.atribucion": "Substrato: <a href=\"https://emodnet.ec.europa.eu/en/seabed-habitats\" target=\"_blank\" rel=\"noopener\">EMODnet Seabed Habitats</a> (EUSeaMap 2025), <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>, financiado pela Comissão Europeia. Orientativo, não serve para navegar.",
   "fondo.ley.roca": "Rocha",
   "fondo.ley.arena": "Areia",
