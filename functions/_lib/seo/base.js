@@ -309,9 +309,13 @@ export async function pedirConLimite(url, ms = ESPERA_MAX_DATOS_MS, context = nu
 // Caché real en el edge (la cabecera cache-control sola no cachea una
 // Function, ver functions/prevision.js). `generar` devuelve { html, status,
 // ttl }. La clave es la URL sin query: ?utm=... no crea copias.
-export async function conCache(context, generar) {
+// `version` (opcional) entra en la clave: si cambian los datos, la caché
+// vieja deja de servirse al momento en vez de esperar a que caduque (caso
+// real 2026-11-20: /aprende siguió una hora «en preparación» tras publicar
+// los sedales, porque la caché de Cloudflare no se borra al desplegar).
+export async function conCache(context, generar, version = "") {
   const url = new URL(context.request.url);
-  url.search = "";
+  url.search = version ? `?v=${encodeURIComponent(version)}` : "";
   const clave = new Request(url.toString(), { method: "GET" });
   const cache = typeof caches !== "undefined" ? caches.default : null;
   if (cache) {
@@ -322,6 +326,14 @@ export async function conCache(context, generar) {
   const resp = respuestaHtml(html, { status, ttl, noindex });
   if (cache && status === 200) context.waitUntil?.(cache.put(clave, resp.clone()));
   return resp;
+}
+
+// Huella corta de unos datos para usarla como `version` de conCache.
+export function huella(datos) {
+  const t = JSON.stringify(datos);
+  let h = 0;
+  for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0;
+  return `${t.length.toString(36)}${(h >>> 0).toString(36)}`;
 }
 
 // Hora actual de Madrid como "AAAA-MM-DDTHH:00" (formato de Open-Meteo). Solo

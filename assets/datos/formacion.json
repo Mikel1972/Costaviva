@@ -1245,7 +1245,7 @@
     "Numeración de anzuelos"
    ],
    "para": "Cómo leer el número de un anzuelo y por qué un 2 no es igual en todas las marcas.",
-   "resumen": "Hasta el n.º 1, cuanto más alto el número, más pequeño el anzuelo. A partir de ahí van los «barra cero» (1/0, 2/0…), donde cuanto más alto, más grande.",
+   "resumen": "Hasta el n.º 1, cuanto más alto el número, más pequeño el anzuelo. A partir de ahí van los «barra cero» (1/0, 2/0…), donde cuanto más alto, más grande. Y casi todos pescamos con anzuelos demasiado grandes.",
    "como_es": [
     "Orden de pequeño a grande: … 10, 8, 6, 4, 2, 1, 1/0, 2/0, 3/0, 4/0…",
     "El 1/0 es el siguiente al 1; el 4/0 es bastante más grande que el 1/0.",
@@ -1283,9 +1283,90 @@
     {
      "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
      "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "Sea Angler: la guía completa de anzuelos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tips/tackle/the-complete-guide-to-sea-fishing-hooks/"
+    },
+    {
+     "titulo": "Sea Angler: por qué importa el tamaño del anzuelo",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/clothing/why-fishing-hook-size-is-so-important/"
+    },
+    {
+     "titulo": "British Sea Fishing: anzuelos",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/hooks/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: tamaños de anzuelo por especie (pescadores)",
+     "url": "https://sea-angling-ireland.org/forum/viewtopic.php?p=98773"
+    },
+    {
+     "titulo": "The Tackle Room: el anzuelo según el cebo, no según el pez",
+     "url": "https://thetackleroom.com/blogs/news/saltwater-fishing-hook-sizes-explained"
+    },
+    {
+     "titulo": "BoatUS: anzuelos demasiado grandes con cebo vivo",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Montajes de surfcasting por especie (Caperlan: dorada n.º 1–6, herrera 4–8, lubina 2–1/0)",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/bajos-de-linea-surfcasting"
     }
    ],
-   "consultada": "2026-11-20"
+   "consultada": "2026-11-20",
+   "pasarse": [
+    "El tamaño se elige por la boca del pez y por el cebo, no por lo que pesa el pez. Una dorada de 2 kg tiene la boca pequeña y se pesca con un anzuelo pequeño; lo que cambia con el peso es el grosor del alambre (un anzuelo «fuerte» o 2X del mismo número), no el número.",
+    "Un anzuelo demasiado grande no entra entero en la boca del pez: pica, nota el hierro y lo suelta, o ni siquiera lo coge. Con cebo vivo es peor: el peso del anzuelo no le deja nadar y el agujero lo mata antes.",
+    "Pasarse un poco por abajo tiene arreglo (más picadas, alguna se escapa); pasarse por arriba deja el bajo sin picadas. Ante la duda, un número más pequeño.",
+    "Regla rápida: el cebo tiene que tapar el anzuelo dejando libre la punta. Si para tapar el anzuelo necesitas un cebo enorme, el anzuelo es grande."
+   ],
+   "por_especie": [
+    {
+     "pez": "Herrera, mojarra, sargo pequeño",
+     "tam": "6 a 8",
+     "nota": "boca pequeña: el error más común es ponerles un 2"
+    },
+    {
+     "pez": "Mújol, lenguado, platija y otros peces planos pequeños",
+     "tam": "4 a 6",
+     "nota": ""
+    },
+    {
+     "pez": "Sargo, chopa, besugo",
+     "tam": "4 a 6 (2 para los muy grandes)",
+     "nota": "aunque pese más de un kilo, la boca sigue siendo pequeña"
+    },
+    {
+     "pez": "Dorada",
+     "tam": "2 a 6 (1 con cebos duros grandes)",
+     "nota": "con cangrejo o navaja grandes, 1–1/0 de alambre fuerte"
+    },
+    {
+     "pez": "Caballa, chicharro",
+     "tam": "2 a 4",
+     "nota": ""
+    },
+    {
+     "pez": "Lubina",
+     "tam": "2 a 1/0 con gusana o gamba; 1/0 a 3/0 con cebo grande o vivo",
+     "nota": "manda el cebo, no el pez"
+    },
+    {
+     "pez": "Maragota",
+     "tam": "1 a 2/0",
+     "nota": ""
+    },
+    {
+     "pez": "Abadejo",
+     "tam": "1/0 a 3/0",
+     "nota": ""
+    },
+    {
+     "pez": "Congrio",
+     "tam": "4/0 a 6/0",
+     "nota": "con calamar entero o caballa; alambre grueso"
+    }
+   ]
   },
   {
    "id": "anzuelo-j",
