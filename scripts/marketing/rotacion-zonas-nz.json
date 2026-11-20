@@ -8,11 +8,12 @@
     "waikato-west-coast",
     "taranaki",
     "wellington",
-    "nelson-marlborough"
+    "nelson-marlborough",
+    "canterbury"
   ],
   "ciclo": 1,
-  "ultimaZona": "nelson-marlborough",
-  "ultimaRegion": "nz_challenger",
-  "ultimoSpot": "nz-kaiteriteri",
-  "fecha": "2026-11-13T05:20:51.161Z"
+  "ultimaZona": "canterbury",
+  "ultimaRegion": "nz_kaikoura",
+  "ultimoSpot": "nz-motunau-beach",
+  "fecha": "2026-11-20T05:30:34.032Z"
 }

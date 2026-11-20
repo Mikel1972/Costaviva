@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-20-post-nz": {
-      "tipo": "especies-nz",
-      "campana": "20261020-especies-nz-kingfish",
-      "en": "2026-10-19T05:40:39.342Z"
-    },
     "2026-10-22-post": {
       "tipo": "funcion-grupos",
       "campana": "20261022-funcion-grupos",
@@ -199,6 +194,11 @@
       "tipo": "reel-calamar",
       "campana": "20261120-reel-calamar",
       "en": "2026-11-20T01:17:46.602Z"
+    },
+    "2026-11-21-reel-nz": {
+      "tipo": "reel-condiciones",
+      "campana": "20261121-reel-condiciones-nz-motunau-beach",
+      "en": "2026-11-20T05:31:16.578Z"
     }
   },
   "ultimaFuncion": "alarma"
