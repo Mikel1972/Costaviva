@@ -134,7 +134,7 @@ export function cargarPuertos() {
   const leer = (ruta) => JSON.parse(readFileSync(new URL(ruta, import.meta.url), "utf8"));
   const propios = leer("./puertos.json").puertos;
   const galicia = leer("../lonjas/lonjas-galicia.json").lonjas
-    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon))
+    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon) && !l.antigua)
     .map((l) => ({ id: `gal-${l.id}`, nombre: l.nombre.replace(/\.$/, ""), zona: "Galicia", lat: l.lat, lon: l.lon }));
   // Solo los de dentro de la caja del AIS (A Guarda, p. ej., queda al sur).
   const dentro = (x) => x.lat >= CAJA[0][0] && x.lat <= CAJA[1][0] && x.lon >= CAJA[0][1] && x.lon <= CAJA[1][1];
@@ -359,7 +359,7 @@ export const LONJAS_ALTURA = Object.freeze(["Vigo", "A Coruña (Lonja Coruña, S
 
 export function cargarLonjas() {
   return JSON.parse(readFileSync(new URL("../lonjas/lonjas-galicia.json", import.meta.url), "utf8")).lonjas
-    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon) && !LONJAS_ALTURA.includes(l.nombre));
+    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon) && !l.antigua && !LONJAS_ALTURA.includes(l.nombre));
 }
 
 // Centro de una celda de PASO_CELDA (celda() da la esquina de abajo a la izquierda).

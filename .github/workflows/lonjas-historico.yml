@@ -1,0 +1,54 @@
+name: Lonjas de Galicia (histórico para patrones)
+
+# 2026-11-20, aprobado por Mikel (fase 1 de los patrones de especie):
+# scripts/lonjas/historico-galicia.mjs baja día a día la primera venta de las
+# lonjas de BAJURA de Galicia desde 2002 (peces y cefalópodos, por zona
+# costera y especie) y la guarda en datos/lonjas/galicia/<año>.csv.gz.
+# Sin IA y sin base de datos. Despacio para no cargar a la Xunta: una
+# petición cada ~1,2 s y como mucho 800 días por noche (~12 noches para todo
+# el histórico); después solo añade los días nuevos del año en curso.
+# Igual que los demás robots de datos, sube solo datos/lonjas/galicia a main.
+# Fonte: Xunta de Galicia – pescadegalicia.gal.
+
+on:
+  schedule:
+    - cron: "41 2 * * *"
+  workflow_dispatch:
+    inputs:
+      max_dias:
+        description: "Días como mucho en esta pasada (1-3000)"
+        default: "800"
+
+concurrency:
+  group: lonjas-historico
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  historico:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Bajar días del histórico
+        env:
+          MAX_DIAS: ${{ github.event.inputs.max_dias || '800' }}
+        run: |
+          case "$MAX_DIAS" in ''|*[!0-9]*) echo "::error::max_dias tiene que ser un número"; exit 1;; esac
+          node scripts/lonjas/historico-galicia.mjs --max-dias "$MAX_DIAS"
+          echo "Fonte: Xunta de Galicia – pescadegalicia.gal" >> "$GITHUB_STEP_SUMMARY"
+      - name: Guardar en el repositorio
+        run: |
+          git config user.name "Costaviva (lonjas)"
+          git config user.email "noreply@anthropic.com"
+          git add datos/lonjas/galicia
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Histórico de lonjas de Galicia $(date -u +%F) [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::error::no se pudo subir el histórico"; exit 1
