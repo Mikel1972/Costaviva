@@ -148,16 +148,18 @@ test("reglas expertas sin `regiones` (de España) no se aplican en NZ", () => {
   assert.equal(enAmbito({ ambito: { regiones: ["nz_central"] } }, { especieId: "nz-snapper", modalidad: "costa", region: "nz_central", mes: 1 }), true);
 });
 
-test("NZ activa: sus especies van en inglés bajo /en/species; /especies (español) sigue solo con España", () => {
+test("NZ activa: sus especies en los tres idiomas (espejo); el índice español de datos sigue solo con España", () => {
   assert.equal(especiesVisibles(DATOS.especies).length, DATOS.especies.length);
   assert.equal(especiesVisibles(DATOS.especies, ["es"]).length, ES.length);
   assert.equal(especiesDePais(DATOS.especies, "es").length, ES.length);
   assert.ok(especiesDePais(DATOS.especies, "nz").every((e) => e.id.startsWith("nz-")));
   const urls = urlsSitemap({ spots: SPOTS, especies: DATOS, tipoFondo: null, profundidad: null });
-  assert.ok(!urls.some((u) => /\/especies\/nz-/.test(u.loc)));
+  // 2026-11-20 (espejo de idiomas): también en español y portugués.
+  assert.ok(urls.some((u) => u.loc === "https://costaviva.org/especies/nz-snapper"));
+  assert.ok(urls.some((u) => u.loc === "https://costaviva.org/pt/especies/nz-snapper"));
   assert.ok(urls.some((u) => u.loc === "https://costaviva.org/en/species/nz-snapper"));
   const sitemap = readFileSync(new URL("../sitemap.xml", import.meta.url), "utf8");
-  assert.ok(!sitemap.includes("/especies/nz-"));
+  assert.ok(sitemap.includes("/especies/nz-snapper"));
   assert.ok(sitemap.includes("/en/species/nz-snapper"));
   assert.equal(datosEspeciesDePais(DATOS, "es").especies.length, ES.length);
   assert.match(readFileSync(new URL("../functions/_lib/seo/carga.js", import.meta.url), "utf8"), /datosEspeciesDePais\(d, "es"\)/);

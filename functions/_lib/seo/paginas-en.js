@@ -171,6 +171,9 @@ ${m ? notaMareaLinz(m.puerto) : ""}
 </section>`;
 }
 
+// Las páginas de NZ existen también en español y portugués (paginas-nz.js,
+// espejo de idiomas 2026-11-20).
+const ALTERNOS_NZ_EN = ["es", "en", "pt"];
 function documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen = imagenOg("spots"), imagenAlt = "Costaviva: live fishing conditions in New Zealand", ogTipo, alternos = ["en"] }) {
   return documento({ titulo, descripcion, ruta, cuerpo, ld, imagen, imagenAlt, ogTipo, idioma: "en", alternos, pie: PIE_EN });
 }
@@ -217,11 +220,11 @@ export function paginaSpotNZ(spot, todos, d) {
   const ruta = `/spots/${spot.slug}`;
   const titulo = `Fishing at ${spot.nombre}, NZ: species, season, tides and today's conditions | Costaviva`;
   const descripcion = `Fishing at ${spot.nombre}${zona ? ` (${zona.nombre})` : ""}, New Zealand: what to catch from the shore, from a boat and spearfishing, season by month, LINZ tides, today's waves and wind, and links to the MPI fishing rules.`;
-  const migas = [{ nombre: "Spots", ruta: "/en/spots" }, ...(zona ? [{ nombre: zona.nombre, ruta: `/en/spots/region/${zona.slug}` }] : []), { nombre: spot.nombre, ruta: `/en${ruta}` }];
+  const migas = [{ nombre: "Spots", ruta: "/en/spots" }, ...(zona ? [{ nombre: zona.nombre, ruta: `/en/spots/region/${zona.slug}` }] : []), { nombre: spot.nombre, ruta: rutaIdioma(ruta, "en") }];
   const ld = [
     {
       "@context": "https://schema.org", "@type": ["Place", "TouristAttraction"], name: `Fishing at ${spot.nombre}`, description: intro,
-      url: `${DOMINIO}/en${ruta}`, geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon }, touristType: "Recreational fishing",
+      url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon }, touristType: "Recreational fishing",
       containedInPlace: { "@type": "Place", name: zona ? `${zona.nombre}, New Zealand` : "New Zealand" },
     },
     migasJsonLd(migas),
@@ -241,7 +244,7 @@ ${ctaEn(`Fish smarter at ${spot.nombre}`)}
 <ul class="cercanos">${cercanos.map((s) => `<li><a href="/en/spots/${esc(s.slug)}">${esc(s.nombre)}</a> <span class="nota">${kmTexto(s.km)} km</span> · <a href="/en/tides/${esc(s.slug)}">tides</a></li>`).join("")}</ul>
 ${zona ? `<p><a href="/en/spots/region/${esc(zona.slug)}">All spots in ${esc(zona.nombre)} →</a></p>` : ""}
 </section>`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagenAlt: `Fishing at ${spot.nombre} with Costaviva` }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagenAlt: `Fishing at ${spot.nombre} with Costaviva`, alternos: ALTERNOS_NZ_EN }) };
 }
 
 // ---------------------------------------------------------------------------
@@ -281,8 +284,8 @@ export function paginaZonaSpotsNZ(zona, todos, especiesDatos, mes) {
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "en"));
   const titulo = `Fishing in ${zona.nombre}, NZ: ${del.length} spots, species and season | Costaviva`;
   const descripcion = `Fishing spots in ${zona.nombre}, New Zealand (${del.length}) and species in season in ${mesLargoEn(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. LINZ tides and today's conditions.`;
-  const migas = [{ nombre: "Spots", ruta: "/en/spots" }, { nombre: zona.nombre, ruta: `/en${ruta}` }];
-  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", about: { "@type": "Place", name: `${zona.nombre}, New Zealand` } }, migasJsonLd(migas)];
+  const migas = [{ nombre: "Spots", ruta: "/en/spots" }, { nombre: zona.nombre, ruta: rutaIdioma(ruta, "en") }];
+  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", about: { "@type": "Place", name: `${zona.nombre}, New Zealand` } }, migasJsonLd(migas)];
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>Fishing in ${esc(zona.nombre)}</h1>
 <p class="intro">${del.length} fishing spots in ${esc(zona.nombre)}. For each one: species by kind of fishing and season, tide times and today's conditions. Tides for the area: <a href="/en/tides/region/${esc(zona.slug)}">${esc(zona.nombre)} tides</a>.</p>
@@ -292,7 +295,7 @@ ${listaSpotsEn(del, "/en/spots")}
 ${[...areas].map((a) => bloqueNormativa(a)).slice(0, 1).join("")}
 ${ctaEn()}
 <p><a href="/en/spots">All of New Zealand →</a></p>`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagenAlt: `Fishing in ${zona.nombre} with Costaviva` }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagenAlt: `Fishing in ${zona.nombre} with Costaviva`, alternos: ALTERNOS_NZ_EN }) };
 }
 
 // ---------------------------------------------------------------------------
@@ -325,17 +328,17 @@ export function paginaMareaNZ(spot, todos, d) {
   const { spotPrev, dias = [] } = d;
   const m = spotPrev?.marea || null;
   const zona = zonaDeSpotNZ(spot);
-  const ruta = `/tides/${spot.slug}`;
+  const ruta = `/mareas/${spot.slug}`; // → /en/tides/… (rutaIdioma)
   const pleamar = m?.proximas?.find((e) => e.tipo === "pleamar");
   const bajamar = m?.proximas?.find((e) => e.tipo === "bajamar");
   const b = spotPrev?.bloques?.[0];
   const resumen = [pleamar && `next high tide ${textoEvento(pleamar)}`, bajamar && `low tide ${textoEvento(bajamar)}`].filter(Boolean).join(", ");
   const titulo = `${spot.nombre} tide times today: high and low tide, waves | Costaviva`;
   const descripcion = `Tide times today at ${spot.nombre}, New Zealand${resumen ? `: ${resumen}` : ""}${b?.altura ? `; waves ${b.altura[0]}–${b.altura[1]} m` : ""}${b?.viento != null ? `, wind ${b.viento} km/h${b.dirViento ? ` ${b.dirViento}` : ""}` : ""}. LINZ tide predictions, free and without an account.`;
-  const migas = [{ nombre: "Tides", ruta: "/en/tides" }, ...(zona ? [{ nombre: zona.nombre, ruta: `/en/tides/region/${zona.slug}` }] : []), { nombre: spot.nombre, ruta: `/en${ruta}` }];
+  const migas = [{ nombre: "Tides", ruta: "/en/tides" }, ...(zona ? [{ nombre: zona.nombre, ruta: `/en/tides/region/${zona.slug}` }] : []), { nombre: spot.nombre, ruta: rutaIdioma(ruta, "en") }];
   const ld = [
-    { "@context": "https://schema.org", "@type": "Place", name: spot.nombre, geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon }, url: `${DOMINIO}/en${ruta}` },
-    { "@context": "https://schema.org", "@type": "WebPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", isPartOf: { "@type": "WebSite", name: "Costaviva", url: `${DOMINIO}/` }, about: { "@type": "Place", name: spot.nombre } },
+    { "@context": "https://schema.org", "@type": "Place", name: spot.nombre, geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon }, url: `${DOMINIO}${rutaIdioma(ruta, "en")}` },
+    { "@context": "https://schema.org", "@type": "WebPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", isPartOf: { "@type": "WebSite", name: "Costaviva", url: `${DOMINIO}/` }, about: { "@type": "Place", name: spot.nombre } },
     migasJsonLd(migas),
   ];
   const tabla = dias.length
@@ -362,7 +365,7 @@ ${ctaEn()}
 <ul class="chips">${cercanos.map((s) => `<li><a href="/en/tides/${esc(s.slug)}">${esc(s.nombre)}</a></li>`).join("")}</ul>
 ${zona ? `<p><a href="/en/tides/region/${esc(zona.slug)}">All tides in ${esc(zona.nombre)} →</a></p>` : ""}</section>
 <p><a href="/en/spots/${esc(spot.slug)}">Fishing at ${esc(spot.nombre)}: species, season and rules →</a></p>`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: `${spot.nombre} tide times` }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: `${spot.nombre} tide times`, alternos: ALTERNOS_NZ_EN }) };
 }
 
 export function paginaIndiceMareasNZ(todos) {
@@ -387,11 +390,11 @@ ${ctaEn()}`;
 
 export function paginaZonaMareasNZ(zona, todos) {
   const del = spotsNZ(todos).filter((s) => s.zona === zona.zona);
-  const ruta = `/tides/region/${zona.slug}`;
+  const ruta = `/mareas/region/${zona.slug}`; // → /en/tides/region/…
   const titulo = `${zona.nombre} tide times today: ${del.length} fishing spots | Costaviva`;
   const descripcion = `Tide times today in ${zona.nombre}, New Zealand: high and low tides at ${del.length} fishing spots from LINZ predictions, with waves and wind.`;
-  const migas = [{ nombre: "Tides", ruta: "/en/tides" }, { nombre: zona.nombre, ruta: `/en${ruta}` }];
-  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", about: { "@type": "Place", name: `${zona.nombre}, New Zealand` } }, migasJsonLd(migas)];
+  const migas = [{ nombre: "Tides", ruta: "/en/tides" }, { nombre: zona.nombre, ruta: rutaIdioma(ruta, "en") }];
+  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", about: { "@type": "Place", name: `${zona.nombre}, New Zealand` } }, migasJsonLd(migas)];
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>${esc(zona.nombre)} tide times today</h1>
 <p class="intro">Tides at ${del.length} fishing spots in ${esc(zona.nombre)}. Fishing guide for the area: <a href="/en/spots/region/${esc(zona.slug)}">fishing in ${esc(zona.nombre)}</a>.</p>
@@ -399,7 +402,7 @@ ${listaSpotsEn(del, "/en/tides")}
 <p class="nota">${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>
 ${ctaEn()}
 <p><a href="/en/tides">All of New Zealand →</a></p>`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: `${zona.nombre} tide times` }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: `${zona.nombre} tide times`, alternos: ALTERNOS_NZ_EN }) };
 }
 
 // ---------------------------------------------------------------------------
@@ -423,13 +426,13 @@ export function fichaEspecieNZ(e, todos, mes) {
 
 export function paginaEspecieNZ(e, especiesDatos, todos, mes) {
   const f = fichaEspecieNZ(e, todos, mes);
-  const ruta = `/species/${f.slug}`;
+  const ruta = `/especies/${f.slug}`; // → /en/species/…
   const titulo = `${f.nombre}${f.maori && f.maori !== f.nombre ? ` (${f.maori})` : ""}: where and when to catch it in NZ | Costaviva`;
   const descripcion = `${f.nombre}${f.cientifico ? ` (${f.cientifico})` : ""} in New Zealand: season by MPI fishing area, how it is fished, habitat and the spots where you can catch it. Size and bag limits: MPI.`;
-  const migas = [{ nombre: "Species", ruta: "/en/species" }, { nombre: f.nombre, ruta: `/en${ruta}` }];
+  const migas = [{ nombre: "Species", ruta: "/en/species" }, { nombre: f.nombre, ruta: rutaIdioma(ruta, "en") }];
   const intro = `${f.nombre}${f.maori ? ` (te reo Māori: ${f.maori})` : ""}${f.cientifico ? `, ${f.cientifico}` : ""}. ${f.modalidades.length ? `Fished ${listaY(f.modalidades.map((m) => MODALIDAD_CORTA_EN[m]))}.` : ""}${f.temporada.some((t) => t.ahora) ? ` In ${mesLargoEn(mes)} it is in season in ${listaY(f.temporada.filter((t) => t.ahora).map((t) => t.nombre))}.` : ""}`;
   const ld = [
-    { "@context": "https://schema.org", "@type": "WebPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", description: intro, dateModified: especiesDatos.version || undefined,
+    { "@context": "https://schema.org", "@type": "WebPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", description: intro, dateModified: especiesDatos.version || undefined,
       about: { "@type": "Thing", name: f.nombre, alternateName: [f.maori, f.cientifico].filter(Boolean) }, publisher: ORG_LD },
     migasJsonLd(migas),
   ];
@@ -456,7 +459,7 @@ ${f.porZona.length ? `<section aria-labelledby="t-donde"><h2 id="t-donde">Where 
 ${f.porZona.map((z) => `<h3><a href="/en/spots/region/${esc(z.slug)}">${esc(z.nombre)}</a></h3><ul class="chips">${z.spots.map((s) => `<li><a href="/en/spots/${esc(s.slug)}">${esc(s.nombre)}</a></li>`).join("")}</ul>`).join("")}
 </section>` : ""}
 <p><a href="/en/species">All New Zealand species →</a></p>`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article", imagen: imagenOg("especies"), imagenAlt: "New Zealand fishing species" }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article", imagen: imagenOg("especies"), imagenAlt: "New Zealand fishing species", alternos: ALTERNOS_NZ_EN }) };
 }
 
 export function paginaIndiceEspeciesNZ(especiesDatos, mes) {

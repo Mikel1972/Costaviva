@@ -78,7 +78,9 @@ test("IndexNow: de ficheros cambiados a URLs públicas afectadas", () => {
   assert.equal(r(["functions/_lib/seo/base.js"]).length, todas.length);
   // Páginas de spots, de especies, de mareas, portada y privacidad.
   const spots = rutas(r(["functions/spots/[slug].js"]));
-  assert.ok(spots.length === SPOTS.length + REGIONES_MAREAS.length + 1 && spots.every((p) => p.startsWith("/spots")), "solo /spots");
+  // + Nueva Zelanda en español (2026-11-20, espejo de idiomas): sus spots y zonas.
+  const zonasNz = new Set(SPOTS_NZ.map((s) => s.zona)).size;
+  assert.ok(spots.length === SPOTS.length + SPOTS_NZ.length + REGIONES_MAREAS.length + zonasNz + 1 && spots.every((p) => p.startsWith("/spots")), "solo /spots");
   assert.ok(rutas(r(["functions/especies/[slug].js"])).every((p) => p.startsWith("/especies")));
   const esp = rutas(r(["assets/datos/especies.json"]));
   assert.ok(esp.includes("/especies/lubina") && esp.includes("/spots/bakio") && !esp.some((p) => p.startsWith("/mareas")));
@@ -92,8 +94,9 @@ test("IndexNow: de ficheros cambiados a URLs públicas afectadas", () => {
 
 test("IndexNow: a diario solo las páginas de cada spot (pesca y marea)", () => {
   const hoy = urlsCondicionesHoy(sitemap).map((u) => new URL(u).pathname);
-  // España (pesca y marea, en español y en inglés) y Nueva Zelanda en inglés.
-  assert.equal(hoy.length, (2 * SPOTS.length + SPOTS_NZ.length) * 2);
+  // España y Nueva Zelanda, pesca y marea, en español y en inglés (2026-11-20).
+  assert.equal(hoy.length, (SPOTS.length + SPOTS_NZ.length) * 4);
+  assert.ok(hoy.includes("/spots/nz-leigh") && hoy.includes("/mareas/nz-leigh"));
   assert.ok(hoy.includes("/spots/bakio") && hoy.includes("/mareas/bakio"));
   assert.ok(hoy.includes("/en/spots/nz-leigh") && hoy.includes("/en/tides/nz-leigh"));
   assert.ok(!hoy.some((p) => p.includes("/region/") || p.startsWith("/especies") || p === "/spots" || p === "/mareas"));

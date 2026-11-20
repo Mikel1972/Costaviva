@@ -162,11 +162,14 @@ test("sitemap: /pt/ de Portugal y especies, y sitemap.xml al día", () => {
   const pt = urls.filter((u) => u.loc.includes("/pt/"));
   // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
   const n = SPOTS.filter((s) => s.pais !== "nz" && REGIONES_MAREAS.some((r) => r.spots.has(s.slug))).length;
-  assert.equal(pt.filter((u) => /\/pt\/spots\/(?!region)/.test(u.loc)).length, n);
-  assert.equal(pt.filter((u) => /\/pt\/mareas\/(?!region)/.test(u.loc)).length, n);
-  assert.equal(pt.filter((u) => /\/pt\/especies\//.test(u.loc)).length, especies.especies.length);
+  assert.equal(pt.filter((u) => /\/pt\/spots\/(?!region|nz-)/.test(u.loc)).length, n);
+  assert.equal(pt.filter((u) => /\/pt\/mareas\/(?!region|nz-)/.test(u.loc)).length, n);
+  assert.equal(pt.filter((u) => /\/pt\/especies\/(?!nz-)/.test(u.loc)).length, especies.especies.length);
+  // Nueva Zelanda también en portugués (2026-11-20, espejo de idiomas).
+  assert.ok(pt.some((u) => u.loc === "https://costaviva.org/pt/especies/nz-snapper"));
   for (const r of ["/pt/spots/region/portugal", "/pt/mareas/region/portugal", "/pt/especies"]) assert.ok(pt.some((u) => u.loc === `https://costaviva.org${r}`), r);
   assert.ok(pt.some((u) => /\/pt\/spots\/bakio$/.test(u.loc)), "España también en /pt/");
   const disco = leer("sitemap.xml");
   assert.ok(disco.includes("<loc>https://costaviva.org/pt/spots/cascais</loc>"));
+  assert.ok(disco.includes("<loc>https://costaviva.org/pt/spots/nz-leigh</loc>"));
 });

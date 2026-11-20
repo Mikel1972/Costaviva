@@ -28,6 +28,12 @@ import * as rutaMareaEn from "../functions/en/tides/[slug].js";
 import * as rutaMareasEn from "../functions/en/tides/index.js";
 import * as rutaEspecieEn from "../functions/en/species/[slug].js";
 import * as rutaEspeciesEn from "../functions/en/species/index.js";
+import * as rutaZonaEs from "../functions/spots/region/[region].js";
+import * as rutaZonaMareasEs from "../functions/mareas/region/[region].js";
+import * as rutaSpotPt from "../functions/pt/spots/[slug].js";
+import * as rutaMareaPt from "../functions/pt/mareas/[slug].js";
+import * as rutaEspeciePt from "../functions/pt/especies/[slug].js";
+import * as rutaZonaPt from "../functions/pt/spots/region/[region].js";
 import { ATRIBUCION_LINZ, ATRIBUCION_LINZ_CORTA, AVISO_LINZ, URL_LICENCIA_LINZ } from "../functions/_lib/nz/mareas-linz.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -149,16 +155,20 @@ test("/prevision?region=nz&lista=1 pública (sin sesión ni clave)", async () =>
 // ---------------------------------------------------------------------------
 // Sitemap: España igual, NZ en /en/
 // ---------------------------------------------------------------------------
-test("sitemap: las URL de España de siempre (284) y las de NZ solo bajo /en/, sin /login", () => {
+test("sitemap: las URL de España de siempre (284), NZ en los tres idiomas, sin /login", () => {
   const formacion = JSON.parse(leer("assets/datos/formacion.json"));
   const urls = urlsSitemap({ spots: SPOTS, especies, tipoFondo: null, profundidad: null, formacion, formacionEn: JSON.parse(leer("assets/datos/formacion.en.json")), formacionPt: JSON.parse(leer("assets/datos/formacion.pt.json")) });
   // Las /aprende (centro de formación, 2026-11-20) aparte.
   // Las /pt/ (portugués, 2026-10-11) aparte: test/seo-pt.test.js.
-  const es = urls.filter((u) => !u.loc.includes("/en/") && !u.loc.includes("/pt/") && !u.loc.includes("/aprende"));
+  // NZ en español y portugués (2026-11-20, espejo de idiomas) aparte.
+  const deNZ = (u) => /\/nz-|\/region\/(northland|auckland-hauraki-gulf|coromandel|bay-of-plenty|gisborne-hawkes-bay|waikato-west-coast|taranaki|wellington|nelson-marlborough|canterbury|otago|southland|fiordland|west-coast)$/.test(u.loc);
+  const es = urls.filter((u) => !u.loc.includes("/en/") && !u.loc.includes("/pt/") && !u.loc.includes("/aprende") && !deNZ(u));
   assert.equal(urls.filter((u) => u.loc.includes("/aprende")).length, 3 * (1 + formacion.fichas.length));
   const en = urls.filter((u) => u.loc.includes("/en/") && !u.loc.includes("/aprende"));
   assert.equal(es.length, 284);
-  assert.ok(!es.some((u) => /\/nz-|\/nz\//.test(u.loc)), "nada de NZ en las URL en español");
+  const esNz = urls.filter((u) => !u.loc.includes("/en/") && !u.loc.includes("/pt/") && deNZ(u));
+  assert.equal(esNz.filter((u) => /\/spots\/nz-/.test(u.loc)).length, SPOTS_NZ.length);
+  assert.equal(urls.filter((u) => /\/pt\/spots\/nz-/.test(u.loc)).length, SPOTS_NZ.length);
   for (const r of ["/en/spots", "/en/tides", "/en/species", "/en/spots/nz-leigh", "/en/tides/nz-leigh", "/en/species/nz-snapper", "/en/spots/region/auckland-hauraki-gulf", "/en/tides/region/otago"]) {
     assert.ok(en.some((u) => u.loc === `https://costaviva.org${r}`), r);
   }
@@ -172,18 +182,42 @@ test("sitemap: las URL de España de siempre (284) y las de NZ solo bajo /en/, s
 // ---------------------------------------------------------------------------
 // Rutas: España igual; NZ en inglés
 // ---------------------------------------------------------------------------
-test("rutas en español de un spot o especie de NZ: 301 a su página en inglés", async () => {
+test("NZ en español y portugués (espejo de idiomas): 200, su idioma, canónica propia, hreflang de los tres, LINZ, MPI y rāhui", async () => {
   const e = entorno();
   const casos = [
-    [rutaSpotEs, "https://costaviva.org/spots/nz-leigh", { slug: "nz-leigh" }, "https://costaviva.org/en/spots/nz-leigh"],
-    [rutaMareaEs, "https://costaviva.org/mareas/nz-leigh", { slug: "nz-leigh" }, "https://costaviva.org/en/tides/nz-leigh"],
-    [rutaEspecieEs, "https://costaviva.org/especies/nz-snapper", { slug: "nz-snapper" }, "https://costaviva.org/en/species/nz-snapper"],
+    [rutaSpotEs, "https://costaviva.org/spots/nz-leigh", { slug: "nz-leigh" }, "es", "/spots/nz-leigh"],
+    [rutaMareaEs, "https://costaviva.org/mareas/nz-leigh", { slug: "nz-leigh" }, "es", "/mareas/nz-leigh"],
+    [rutaEspecieEs, "https://costaviva.org/especies/nz-snapper", { slug: "nz-snapper" }, "es", "/especies/nz-snapper"],
+    [rutaZonaEs, "https://costaviva.org/spots/region/otago", { region: "otago" }, "es", "/spots/region/otago"],
+    [rutaZonaMareasEs, "https://costaviva.org/mareas/region/otago", { region: "otago" }, "es", "/mareas/region/otago"],
+    [rutaSpotPt, "https://costaviva.org/pt/spots/nz-leigh", { slug: "nz-leigh" }, "pt-PT", "/spots/nz-leigh"],
+    [rutaMareaPt, "https://costaviva.org/pt/mareas/nz-leigh", { slug: "nz-leigh" }, "pt-PT", "/mareas/nz-leigh"],
+    [rutaEspeciePt, "https://costaviva.org/pt/especies/nz-snapper", { slug: "nz-snapper" }, "pt-PT", "/especies/nz-snapper"],
+    [rutaZonaPt, "https://costaviva.org/pt/spots/region/otago", { region: "otago" }, "pt-PT", "/spots/region/otago"],
   ];
-  for (const [ruta, url, params, destino] of casos) {
+  const en = { "/spots": "/en/spots", "/mareas": "/en/tides", "/especies": "/en/species" };
+  for (const [ruta, url, params, lang, base] of casos) {
     const r = await ruta.onRequestGet(e.ctx(url, params));
-    assert.equal(r.status, 301, url);
-    assert.equal(r.headers.get("location"), destino);
+    assert.equal(r.status, 200, url);
+    const html = await r.text();
+    assert.match(html, new RegExp(`<html lang="${lang}">`), url);
+    assert.ok(html.includes(`<link rel="canonical" href="${url}">`), `${url}: canónica`);
+    const enUrl = base.replace(/^\/(spots|mareas|especies)/, (m) => en[m]);
+    for (const [h, ruta2] of [["es", base], ["en", enUrl], ["pt-PT", `/pt${base}`], ["x-default", base]]) {
+      assert.ok(html.includes(`<link rel="alternate" hreflang="${h}" href="https://costaviva.org${ruta2}">`), `${url}: hreflang ${h}`);
+    }
+    assert.ok(html.includes(ATRIBUCION_LINZ), `${url}: LINZ`);
+    assert.ok(html.includes(AVISO_LINZ), `${url}: aviso LINZ`);
+    const visible = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, " ");
+    assert.doesNotMatch(visible, /\b\d+\s?cm\b/, `${url}: sin cifras de normativa`);
+    // Nada de la plantilla inglesa a la vista.
+    assert.doesNotMatch(visible, /\b(Fishing at|Tides today|What you can catch|Nearby spots|Fishing rules)\b/, `${url}: texto en inglés`);
   }
+  const spot = await (await rutaSpotEs.onRequestGet(e.ctx("https://costaviva.org/spots/nz-leigh?x=1", { slug: "nz-leigh" }))).text();
+  assert.match(spot, /rāhui/);
+  assert.match(spot, /href="https:\/\/www\.mpi\.govt\.nz\/fishing-aquaculture\/recreational-fishing\/fishing-rules\/auckland-kermadec-fishing-rules"/);
+  // Un slug de NZ que no existe: 404, no la página de España.
+  assert.equal((await rutaSpotEs.onRequestGet(e.ctx("https://costaviva.org/spots/nz-nada", { slug: "nz-nada" }))).status, 404);
 });
 
 test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LINZ, MPI y rāhui", async () => {
@@ -204,9 +238,8 @@ test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LIN
     assert.match(html, /<html lang="en">/, url);
     assert.ok(html.includes(`<link rel="canonical" href="${url}">`), `${url}: canónica`);
     assert.ok(html.includes(`<link rel="alternate" hreflang="en" href="${url}">`), `${url}: hreflang en`);
-    // Los índices tienen su versión en español (x-default); las de NZ, solo en inglés.
-    const indice = /\/en\/(spots|tides|species)$/.test(url);
-    const xdef = indice ? url.replace("/en/tides", "/mareas").replace("/en/species", "/especies").replace("/en/spots", "/spots") : url;
+    // Todas tienen versión en español (x-default) desde el espejo de idiomas (2026-11-20).
+    const xdef = url.replace("/en/tides", "/mareas").replace("/en/species", "/especies").replace("/en/spots", "/spots");
     assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="${xdef}">`), `${url}: x-default`);
     assert.match(html, /<meta property="og:locale" content="en_NZ">/);
     // Atribución de LINZ (fórmula exacta de obra adaptada, con enlace a la
@@ -217,7 +250,7 @@ test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LIN
     assert.ok(html.includes("Department of Conservation (DOC), Crown copyright, CC BY 4.0"), url);
     // Nada en español a la vista (salvo el enlace a la versión de España).
     const visible = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, " ");
-    assert.doesNotMatch(visible.replace(/Spots in Spain and Portugal \(in Spanish\)|Privacy \(Spanish\)/g, ""), /\b(Pesca|Mareas|Especies|temporada|Entrar|hoy)\b/, `${url}: texto en español`);
+    assert.doesNotMatch(visible.replace(/Spots in Spain and Portugal \(in Spanish\)|Privacy/g, ""), /\b(Pesca|Mareas|Especies|temporada|Entrar|hoy)\b/, `${url}: texto en español`);
     // Ninguna cifra de normativa.
     assert.doesNotMatch(visible, /\b\d+\s?cm\b|bag limit of \d/i, url);
   }

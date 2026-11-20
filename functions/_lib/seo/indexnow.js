@@ -66,6 +66,10 @@ const REGLAS = [
   [(f) => f.startsWith("functions/mareas/"), empieza("/mareas")],
   [(f) => f === "index.html" || f === "login.html", exacta("/")],
   [(f) => f === "privacidad.html", exacta("/privacidad")],
+  [(f) => f === "en/privacidad.html", exacta("/en/privacidad")],
+  [(f) => f === "pt/privacidad.html", exacta("/pt/privacidad")],
+  // Nueva Zelanda en español y portugués (2026-11-20, espejo de idiomas).
+  [(f) => ["functions/_lib/seo/paginas-nz.js", "functions/_lib/seo/rutas-nz.js"].includes(f), (u) => /\/(spots|mareas|especies)\/(region\/)?(nz-|northland|auckland|coromandel|bay-of|gisborne|waikato|taranaki|wellington|nelson|canterbury|otago|southland|fiordland|west-coast)/.test(u)],
   // Nueva Zelanda en inglés (/en/...): sus rutas, su HTML, sus datos y los
   // de LINZ/DOC; las especies de NZ van en especies.json (regla de arriba).
   [(f) => f.startsWith("functions/en/") || f.startsWith("functions/_lib/nz/") || f.startsWith("datos/nz/") ||

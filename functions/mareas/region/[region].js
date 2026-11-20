@@ -8,6 +8,7 @@
 
 import { REGIONES, tituloMareasRegion } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
+import { zonaMareasNZRespuesta } from "../../_lib/seo/rutas-nz.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -31,6 +32,9 @@ function paginaNoEncontrada(regionSlug) {
 export async function onRequestGet(context) {
   const { request, params } = context;
   const regionSlug = params.region;
+  // Zonas de Nueva Zelanda, en español (espejo de idiomas, 2026-11-20).
+  const nz = zonaMareasNZRespuesta(context, "es", String(regionSlug || ""));
+  if (nz) return nz;
   const region = REGIONES.find((r) => r.slug === regionSlug);
   if (!region) return paginaNoEncontrada(regionSlug);
 

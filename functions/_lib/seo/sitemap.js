@@ -6,6 +6,7 @@ import { REGIONES_MAREAS, slugEspecie, fechaDatos } from "./datos.js";
 import { especiesDePais } from "../regiones-activas.js";
 import { urlsEn } from "./paginas-en.js";
 import { IB } from "./paginas-ib.js";
+import { NZ } from "./paginas-nz.js";
 
 // Fecha de la última revisión de la portada, privacidad y las páginas de
 // mareas (su contenido de datos cambia cada hora, la plantilla no).
@@ -20,6 +21,8 @@ export const FECHA_MAREAS_REGION = "2026-10-11";
 export const FECHA_EN = "2026-10-11";
 // Lanzamiento de las páginas en portugués (Portugal y especies).
 export const FECHA_PT = "2026-10-11";
+// Espejo de idiomas: Nueva Zelanda en español y portugués, privacidad traducida.
+export const FECHA_ESPEJO = "2026-11-20";
 
 export function urlsSitemap({ spots, especies, tipoFondo, profundidad, formacion = null, formacionEn = null, formacionPt = null }) {
   const fEsp = fechaDatos(especies?.version) || FECHA_PAGINAS_FIJAS;
@@ -43,9 +46,15 @@ export function urlsSitemap({ spots, especies, tipoFondo, profundidad, formacion
     // Formación en inglés y portugués (2026-11-20, mismos id que en español).
     ...[["/en", formacionEn], ["/pt", formacionPt]].flatMap(([p, fo]) => (fo ? [u(`${p}/aprende`, fo.version, "weekly", "0.7"), ...fo.fichas.map((f) => u(`${p}/aprende/${f.id}`, fo.version, "monthly", "0.5"))] : [])),
     u("/privacidad", FECHA_PAGINAS_FIJAS, "yearly", "0.2"),
+    // Privacidad traducida (2026-11-20, espejo de idiomas).
+    u("/en/privacidad", FECHA_ESPEJO, "yearly", "0.2"),
+    u("/pt/privacidad", FECHA_ESPEJO, "yearly", "0.2"),
     ...urlsEn({ spots, especies, fecha: fechaDatos(especies?.version, FECHA_EN) || FECHA_EN }),
     // España y Portugal en portugués e inglés (2026-11-20, espejo de idiomas).
     ...IB.pt.urls({ spots, especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),
+    // Nueva Zelanda en español y portugués (2026-11-20, espejo de idiomas).
+    ...NZ.es.urls({ spots, especies: especies.especies, fecha: fechaDatos(especies?.version, FECHA_ESPEJO) || FECHA_ESPEJO }),
+    ...NZ.pt.urls({ spots, especies: especies.especies, fecha: fechaDatos(especies?.version, FECHA_ESPEJO) || FECHA_ESPEJO }),
     ...IB.en.urls({ spots, especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),
   ];
 }
