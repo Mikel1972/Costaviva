@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-20T06:07:27.359Z",
+ "actualizado": "2026-11-20T06:37:28.098Z",
  "dias": 7,
  "repetidos": [
   {
@@ -20,7 +20,7 @@
   },
   {
    "clave": "hondarribia",
-   "alto": 10,
+   "alto": 11,
    "bajo": 0,
    "spots": [
     "hondarribia"
@@ -28,7 +28,7 @@
   },
   {
    "clave": "mundaka",
-   "alto": 6,
+   "alto": 7,
    "bajo": 0,
    "spots": [
     "mundaka"
@@ -332,6 +332,24 @@
    "antes": 0.6,
    "referencia": 0.5,
    "visto": "2026-11-20T03:37:37.164Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-21T06:00",
+   "antes": 1.2,
+   "referencia": 1,
+   "visto": "2026-11-20T06:37:28.098Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "alto",
+   "horaISO": "2026-11-21T06:00",
+   "antes": 0.6,
+   "referencia": 0.5,
+   "visto": "2026-11-20T06:37:28.098Z"
   }
  ]
 }
