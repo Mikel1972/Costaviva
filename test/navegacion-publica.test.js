@@ -113,3 +113,19 @@ test("señuelos de spinning: fichas desplegables con tamaño y peso, costa y emb
     assert.ok(f.fuentes.length >= 2, f.id);
   }
 });
+
+test("cañas y carretes: comunes en costa y barco, por modalidad y mantenimiento", async () => {
+  const { paginaFicha, paginaIndiceFormacion } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  const fs = datos.fichas.filter((f) => f.tema === "canas-costa" || f.tema === "canas-barco");
+  assert.ok(fs.length >= 9);
+  for (const f of fs) {
+    const { html } = paginaFicha(datos, f);
+    for (const id of ["como-es", "medidas", "costa", "embarcacion", "ojo", "fuentes"]) assert.match(html, new RegExp(`id="${id}">`), `${f.id} ${id}`);
+  }
+  const indice = paginaIndiceFormacion(datos).html;
+  // Las comunes (partes, freno, mantenimiento) salen en los dos capítulos.
+  assert.equal(indice.split('href="/aprende/cana-carrete-mantenimiento"').length - 1, 2);
+  // Spinning también en embarcación.
+  assert.ok(datos.capitulos.find((c) => c.id === "embarcacion").temas.includes("senuelos-spinning"));
+});

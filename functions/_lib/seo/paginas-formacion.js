@@ -11,7 +11,9 @@ import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, imagenOg } from "
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
 const NOMBRE_SEDAL = { nylon: "nylon", fluorocarbono: "fluorocarbono", trenzado: "trenzado" };
 
-const fichasDeTema = (datos, tema) => datos.fichas.filter((f) => f.tema === tema);
+// Una ficha puede salir en más de un tema (p. ej. las partes de la caña, en
+// costa y en barco) con `tambien_en`.
+const fichasDeTema = (datos, tema) => datos.fichas.filter((f) => f.tema === tema || f.tambien_en?.includes(tema));
 
 export function paginaIndiceFormacion(datos) {
   const ruta = "/aprende";
