@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-20T15:07:55.676Z",
- "lineasHistorial": 11921,
+ "fecha": "2026-11-20T15:38:07.747Z",
+ "lineasHistorial": 11932,
  "etiquetas": 1240,
  "etiquetasClaude": 252,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.106
   },
   "zarautz/dinamico": {
-   "a": 2.9647,
+   "a": 2.9653,
    "p": 0.5,
-   "n": 949,
+   "n": 950,
    "nEtiquetas": 196,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -109,9 +109,9 @@
    "correlacion": -0.559
   },
   "zumaia/a": {
-   "a": 3.9825,
+   "a": 3.9663,
    "p": 0.5,
-   "n": 98,
+   "n": 99,
    "nEtiquetas": 12,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -126,12 +126,12 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.216
+   "correlacion": 0.215
   },
   "deba/rompiente": {
-   "a": 3.564,
+   "a": 3.5588,
    "p": 0.5,
-   "n": 308,
+   "n": 309,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -206,9 +206,9 @@
    "correlacion": 0.052
   },
   "sopelana/principal": {
-   "a": 3.1113,
+   "a": 3.1055,
    "p": 0.5,
-   "n": 187,
+   "n": 188,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -226,7 +226,7 @@
    "dias": 29,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.995,
+   "errorRel": 0.994,
    "pocosDatos": false,
    "correlacion": 0.372
   },
@@ -266,9 +266,9 @@
    "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.9171,
+   "a": 2.9166,
    "p": 0.5,
-   "n": 479,
+   "n": 480,
    "nEtiquetas": 102,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -515,7 +515,7 @@
    "motivo": "204 etiquetas",
    "ruido": {
     "ruido": 0.575,
-    "pares": 650
+    "pares": 651
    }
   },
   "getaria": {
@@ -530,8 +530,8 @@
    "sustituye": true,
    "motivo": "13 etiquetas",
    "ruido": {
-    "ruido": 0.635,
-    "pares": 41
+    "ruido": 0.659,
+    "pares": 42
    }
   },
   "deba": {
@@ -578,8 +578,8 @@
    "sustituye": true,
    "motivo": "102 etiquetas",
    "ruido": {
-    "ruido": 0.79,
-    "pares": 210
+    "ruido": 0.781,
+    "pares": 211
    }
   },
   "castrourdiales": {
@@ -647,10 +647,10 @@
    "cerca": null
   },
   "zumaia": {
-   "n": 7,
+   "n": 8,
    "suficiente": false,
-   "lineas": 0,
-   "cerca": -0.239
+   "lineas": -0.069,
+   "cerca": -0.371
   },
   "nz-napier": {
    "n": 2,
