@@ -876,7 +876,7 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     marea,
     presion,
     // Mar abierto / zona abrigada y dónde cae la celda del modelo.
-    zonaOleaje: { ...zonaOleaje(spot, marino.latitude, marino.longitude), orilla: tablaOrillaSpot(COEF_COSTA, spot.slug), periodoFondo: factoresPeriodo(PERIODO_BOYAS, spot.lat, spot.lon), sesgoPlazo: PLAZOS_APP.map(([a]) => factorPlazo(SESGO_PLAZO, spot.slug, a)) },
+    zonaOleaje: { ...zonaOleaje(spot, marino.latitude, marino.longitude), orilla: tablaOrillaSpot(COEF_COSTA, spot.slug), orillaTipica: COEF_COSTA?.globalTamanos || null, periodoFondo: factoresPeriodo(PERIODO_BOYAS, spot.lat, spot.lon), sesgoPlazo: PLAZOS_APP.map(([a]) => factorPlazo(SESGO_PLAZO, spot.slug, a)) },
     bloques,
   };
 }
