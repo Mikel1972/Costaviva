@@ -151,12 +151,12 @@ test("/prevision?region=nz&lista=1 pública (sin sesión ni clave)", async () =>
 // ---------------------------------------------------------------------------
 test("sitemap: las URL de España de siempre (284) y las de NZ solo bajo /en/, sin /login", () => {
   const formacion = JSON.parse(leer("assets/datos/formacion.json"));
-  const urls = urlsSitemap({ spots: SPOTS, especies, tipoFondo: null, profundidad: null, formacion });
+  const urls = urlsSitemap({ spots: SPOTS, especies, tipoFondo: null, profundidad: null, formacion, formacionEn: JSON.parse(leer("assets/datos/formacion.en.json")), formacionPt: JSON.parse(leer("assets/datos/formacion.pt.json")) });
   // Las /aprende (centro de formación, 2026-11-20) aparte.
   // Las /pt/ (portugués, 2026-10-11) aparte: test/seo-pt.test.js.
   const es = urls.filter((u) => !u.loc.includes("/en/") && !u.loc.includes("/pt/") && !u.loc.includes("/aprende"));
-  assert.equal(urls.filter((u) => u.loc.includes("/aprende")).length, 1 + formacion.fichas.length);
-  const en = urls.filter((u) => u.loc.includes("/en/"));
+  assert.equal(urls.filter((u) => u.loc.includes("/aprende")).length, 3 * (1 + formacion.fichas.length));
+  const en = urls.filter((u) => u.loc.includes("/en/") && !u.loc.includes("/aprende"));
   assert.equal(es.length, 284);
   assert.ok(!es.some((u) => /\/nz-|\/nz\//.test(u.loc)), "nada de NZ en las URL en español");
   for (const r of ["/en/spots", "/en/tides", "/en/species", "/en/spots/nz-leigh", "/en/tides/nz-leigh", "/en/species/nz-snapper", "/en/spots/region/auckland-hauraki-gulf", "/en/tides/region/otago"]) {

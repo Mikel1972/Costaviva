@@ -1,0 +1,3514 @@
+{
+ "version": "2026-11-20",
+ "nota": "Centro de formação (2026-11-20, pedido do Mikel). Fichas próprias, escritas por palavras nossas, cada uma com a sua fonte verificada nesse dia. Nada sem fonte. Os temas comuns (nós, linhas…) escrevem-se uma vez e ligam-se a partir dos capítulos que os usam.",
+ "capitulos": [
+  {
+   "id": "costa",
+   "nombre": "Pesca de costa",
+   "emoji": "🪨",
+   "temas": [
+    "nudos",
+    "sedales",
+    "bajos",
+    "anzuelos",
+    "plomos",
+    "quitavueltas-perlas-topes",
+    "corchos",
+    "senuelos-spinning",
+    "cefalopodos",
+    "canas-costa",
+    "montajes-costa"
+   ]
+  },
+  {
+   "id": "embarcacion",
+   "nombre": "Pesca embarcada",
+   "emoji": "🚤",
+   "temas": [
+    "nudos",
+    "sedales",
+    "bajos",
+    "anzuelos",
+    "quitavueltas-perlas-topes",
+    "senuelos-spinning",
+    "cefalopodos",
+    "jigs-vinilos",
+    "currican",
+    "fondeo-deriva",
+    "canas-barco",
+    "montajes-fondo"
+   ]
+  },
+  {
+   "id": "submarina",
+   "nombre": "Pesca submarina",
+   "emoji": "🤿",
+   "temas": [
+    "fusil-varilla-punta",
+    "traje-plomos-aletas",
+    "boya-seguridad",
+    "apnea-segura",
+    "normas-submarina"
+   ]
+  }
+ ],
+ "temas": {
+  "nudos": "Nós",
+  "sedales": "Linhas: nylon, fluorocarbono e multifilamento",
+  "bajos": "Baixadas: tipos, espessura e comprimento",
+  "anzuelos": "Anzóis: tipos e tamanhos",
+  "plomos": "Chumbos",
+  "quitavueltas-perlas-topes": "Destorcedores, missangas e batentes",
+  "corchos": "Flutuadores e boias",
+  "senuelos-spinning": "Amostras de spinning",
+  "canas-costa": "Canas e carretos de costa",
+  "montajes-costa": "Montagens de surfcasting e pesca à boia",
+  "jigs-vinilos": "Jigs e vinis",
+  "currican": "Corrico",
+  "fondeo-deriva": "Fundeado e à deriva",
+  "canas-barco": "Canas e carretos de barco",
+  "montajes-fondo": "Montagens de fundo",
+  "fusil-varilla-punta": "Arma, arpão e ponta",
+  "traje-plomos-aletas": "Fato, chumbos e barbatanas",
+  "boya-seguridad": "Boia de sinalização e segurança",
+  "apnea-segura": "Apneia segura",
+  "normas-submarina": "Regras da pesca submarina",
+  "cefalopodos": "Lula, lulinha e choco: toneiras (egi) e zagaias"
+ },
+ "nota_resistencia": "Média simples dos testes publicados que se encontraram (Mikel, 2026-11-20: «quando encontrares duas ou três referências, põe o valor médio e pronto»). Varia muito com o estado da linha e com a forma como se ata.",
+ "fichas": [
+  {
+   "id": "nudo-palomar",
+   "tema": "nudos",
+   "nombre": "Nó palomar",
+   "otros_nombres": [
+    "Palomar knot"
+   ],
+   "para": "Atar a linha a um anzol, a uma amostra ou a um destorcedor.",
+   "resumen": "Um dos nós de anzol mais fáceis e fiáveis. Funciona especialmente bem com multifilamento, que noutros nós tende a escorregar.",
+   "pasos": [
+    "Dobra uns 15 cm da ponta da linha e passa essa dobra pelo olhal do anzol.",
+    "Com a dobra, faz um nó simples sem apertar, deixando o anzol pendurado na laçada.",
+    "Passa o anzol inteiro pela laçada que fica.",
+    "Molha o nó e puxa ao mesmo tempo a linha principal e a ponta até o nó assentar sobre o olhal.",
+    "Corta a sobra, deixando uns milímetros."
+   ],
+   "bien_con": [
+    "multifilamento",
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "O anzol ou a amostra tem de passar pela laçada: com amostras grandes ou com fateixas é preciso deixar uma laçada comprida e torna-se incómodo.",
+   "fuente": {
+    "titulo": "Animated Knots: Palomar Knot",
+    "url": "https://www.animatedknots.com/palomar-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-palomar.jpg",
+    "alt": "Passos do nó palomar",
+    "autor": "Vaughan Pratt",
+    "licencia": "CC BY-SA 3.0",
+    "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:PalomarKnotSequence.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 75,
+    "fuentes": [
+     "https://www.fieldandstream.com/fishing/tie-the-strongest-fishing-knots",
+     "https://www.sportfishingmag.com/best-fishing-knots-main-line-to-terminal-gear/",
+     "https://braidknotsolutions.blogspot.com/2020/05/072-palomar-test.html"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-clinch-mejorado",
+   "tema": "nudos",
+   "nombre": "Nó clinch melhorado",
+   "otros_nombres": [
+    "Improved clinch knot"
+   ],
+   "para": "Atar a linha a um anzol, a uma amostra ou a um destorcedor.",
+   "resumen": "O nó de anzol clássico com nylon fino e médio. Rápido de fazer sem olhar.",
+   "pasos": [
+    "Passa a ponta da linha pelo olhal do anzol.",
+    "Dá cinco ou mais voltas com a ponta à volta da linha principal.",
+    "Passa a ponta pela pequena laçada que ficou junto ao olhal.",
+    "Volta a passá-la pela laçada grande que acabou de se formar.",
+    "Molha e aperta puxando a linha principal; corta a sobra."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "Não é recomendado com linhas grossas (mais de umas 30 libras de resistência): custa apertá-lo bem. Com linha grossa podem bastar quatro voltas.",
+   "fuente": {
+    "titulo": "Animated Knots: Improved Clinch Knot",
+    "url": "https://www.animatedknots.com/improved-clinch-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-clinch-mejorado.jpg",
+    "alt": "Nó clinch, antes de apertar",
+    "autor": "Der Barbar",
+    "licencia": "CC BY-SA 4.0",
+    "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Barb._01_Clinchknoten.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 86,
+    "fuentes": [
+     "https://www.fieldandstream.com/fishing/tie-the-strongest-fishing-knots",
+     "https://www.ofah.org/oodonline/fishing/testing-knots"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-uni",
+   "tema": "nudos",
+   "nombre": "Nó uni (ou Grinner, ou Duncan)",
+   "otros_nombres": [
+    "Uni knot",
+    "Grinner",
+    "Duncan"
+   ],
+   "para": "Atar a anzóis e destorcedores, fazer laçadas e, duplo (um em cada linha), emendar duas linhas.",
+   "resumen": "Um nó para quase tudo: com ele pode atar-se o anzol, fazer uma laçada corrediça ou, fazendo um em cada ponta, unir duas linhas (o «uni duplo»). Funciona com multifilamento e com nylon.",
+   "pasos": [
+    "Passa a ponta pelo olhal e trá-la de volta paralela à linha principal, formando uma laçada.",
+    "Dá entre quatro e seis voltas com a ponta à volta das duas linhas, por dentro da laçada.",
+    "Molha e puxa a ponta para fechar as voltas.",
+    "Desliza o nó até ao olhal puxando a linha principal; corta a sobra.",
+    "Para emendar duas linhas (uni duplo): sobrepõe as pontas, faz um uni com cada uma à volta da outra e puxa as duas linhas para que se juntem."
+   ],
+   "bien_con": [
+    "multifilamento",
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "Como emenda de duas linhas é um pouco mais fraco do que o mesmo nó atado a um olhal grande; para unir multifilamento a uma baixada de fluorocarbono, o FG fica mais fino e passa melhor pelos passadores.",
+   "fuente": {
+    "titulo": "Animated Knots: Uni Knot",
+    "url": "https://www.animatedknots.com/uni-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 83,
+    "fuentes": [
+     "https://www.sportfishingmag.com/best-fishing-knots-main-line-to-terminal-gear/",
+     "https://odajournal.com/wp-content/uploads/2019/01/v2a9.pdf",
+     "https://braidknotsolutions.blogspot.com/2020/05/072-palomar-test.html"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-fg",
+   "tema": "nudos",
+   "nombre": "Nó FG",
+   "otros_nombres": [
+    "FG knot"
+   ],
+   "para": "Unir o multifilamento da linha madre a uma baixada de fluorocarbono ou de nylon.",
+   "resumen": "A emenda mais usada entre multifilamento e baixada no spinning e no jigging: muito fina e resistente, e passa sem prender pelos passadores no lançamento.",
+   "pasos": [
+    "Mantém o multifilamento esticado (por exemplo, preso com a boca ou na cana com o travão fechado).",
+    "Cruza a baixada sobre o multifilamento e vai enrolando o multifilamento à volta da baixada, alternando por cima e por baixo, umas vinte vezes.",
+    "Sem largar a tensão, remata com várias meias-voltas do multifilamento à volta da baixada.",
+    "Molha e aperta com força puxando as duas linhas; corta a ponta da baixada.",
+    "Termina com umas meias-voltas do multifilamento sobre si próprio e corta."
+   ],
+   "bien_con": [
+    "multifilamento"
+   ],
+   "ojo": "Custa a aprender: os pormenores contam e é preciso manter o multifilamento esticado o tempo todo. Melhor praticá-lo em casa antes de sair.",
+   "fuente": {
+    "titulo": "Animated Knots: FG Knot",
+    "url": "https://www.animatedknots.com/fg-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 73,
+    "fuentes": [
+     "https://www.sportfishingmag.com/?p=45256"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-albright",
+   "tema": "nudos",
+   "nombre": "Nó Albright",
+   "otros_nombres": [
+    "Albright knot"
+   ],
+   "para": "Unir linhas de tipo ou espessura diferentes: nylon a multifilamento, ou multifilamento a cabo de aço.",
+   "resumen": "Alternativa mais simples ao FG para emendar duas linhas diferentes.",
+   "pasos": [
+    "Dobra a ponta da linha mais grossa formando uma laçada.",
+    "Passa a linha fina por dentro da laçada.",
+    "Enrola-a dez ou doze voltas à volta dos dois ramos da laçada, avançando para a ponta.",
+    "Tira a ponta pela laçada, pelo mesmo lado por onde entrou.",
+    "Molha, aperta puxando as duas linhas e corta as sobras."
+   ],
+   "bien_con": [
+    "multifilamento",
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "Só moderadamente fácil de fazer; as voltas devem ficar ordenadas, sem se sobreporem.",
+   "fuente": {
+    "titulo": "Animated Knots: Albright Knot",
+    "url": "https://www.animatedknots.com/albright-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-albright.png",
+    "alt": "Nó Albright em 4 desenhos: 1, a linha fina entra na laçada da grossa (passos 1-2); 2, as voltas em direção à ponta da laçada (passo 3); 3, sai pela laçada (passo 4); 4, apertado (passo 5)",
+    "autor": "diagrama Albright knot diagram (retocado), numerado pela Costaviva",
+    "licencia": "domínio público",
+    "licencia_url": "",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Albright_knot_diagram_retouched.png",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 82,
+    "fuentes": [
+     "https://www.saltstrong.com/?p=4063",
+     "https://www.saltstrong.com/?p=5445"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-lazo-perfeccion",
+   "tema": "nudos",
+   "nombre": "Laçada perfeita",
+   "otros_nombres": [
+    "Perfection loop"
+   ],
+   "para": "Fazer uma laçada pequena na ponta da baixada, para trocar baixadas laçada com laçada.",
+   "resumen": "Uma laçada pequena que fica alinhada com a linha: serve para prender e trocar baixadas ou montagens sem cortar.",
+   "pasos": [
+    "Faz uma primeira laçada com a ponta, passando-a por trás da linha principal.",
+    "Faz uma segunda laçada à frente da primeira.",
+    "Passa a ponta entre as duas laçadas.",
+    "Mete a segunda laçada por dentro da primeira.",
+    "Aperta puxando a segunda laçada e a linha principal; corta a sobra."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "É mais fácil fazê-la na mão do que com o anzol já posto.",
+   "fuente": {
+    "titulo": "Animated Knots: Perfection Loop",
+    "url": "https://www.animatedknots.com/perfection-loop-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-lazo-perfeccion.jpg",
+    "alt": "Passos da laçada perfeita",
+    "autor": "Thuringius (atribuido)",
+    "licencia": "domínio público",
+    "licencia_url": null,
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Anglers_loop_how_to.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 80,
+    "fuentes": [
+     "https://macbrownflyfish.com/tippet-study/comprehensive-university-tippet-study",
+     "https://www.sexyloops.com/index.php/ps/tippet-knotshow-weak"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-pala",
+   "tema": "nudos",
+   "nombre": "Nó de pá (snell)",
+   "otros_nombres": [
+    "Snell knot"
+   ],
+   "para": "Atar a baixada diretamente à haste do anzol, para isco natural.",
+   "resumen": "A linha sai alinhada com a haste do anzol, o que ajuda a ferrar. Nasceu para anzóis de pá (sem olhal) e continua a usar-se muito com isco.",
+   "pasos": [
+    "Passa a ponta da baixada pelo olhal (ou apoia-a na pá) deixando um bom bocado de sobra ao longo da haste.",
+    "Forma uma laçada ao longo da haste.",
+    "Dá cinco a sete voltas apertadas à volta da haste e da linha, do olhal para a curva.",
+    "Segura as voltas e puxa a linha principal para as fechar.",
+    "Aperta puxando a linha e a ponta; corta a sobra."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "As voltas devem ficar juntas e sem se cruzarem sobre a haste.",
+   "fuente": {
+    "titulo": "Animated Knots: Snell Knot",
+    "url": "https://www.animatedknots.com/snell-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-pala.jpg",
+    "alt": "Nó de pá num anzol",
+    "autor": "Fishingknotsfast",
+    "licencia": "CC BY-SA 4.0",
+    "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Snell_Knot.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 91,
+    "fuentes": [
+     "https://allfishinggear.com/fishing-knot-strength-chart",
+     "https://huntfishsport.com/tools/knot-strength-calculator"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-san-diego-jam",
+   "tema": "nudos",
+   "nombre": "Nó San Diego Jam",
+   "otros_nombres": [
+    "San Diego jam knot",
+    "Reverse clinch",
+    "Heiliger"
+   ],
+   "para": "Atar a linha a um anzol ou a uma amostra.",
+   "resumen": "Nó de anzol que conserva muito bem a resistência da linha. Serve com nylon, multifilamento e fluorocarbono.",
+   "pasos": [
+    "Passa a ponta pelo olhal e deixa bastante sobra.",
+    "Enrola a ponta à volta das duas linhas (a principal e a própria ponta) em direção ao olhal.",
+    "Passa a ponta pela primeira laçada, junto ao olhal.",
+    "Passa-a depois pela laçada que acabou de se formar em cima.",
+    "Molha e aperta puxando a linha principal; corta a sobra."
+   ],
+   "bien_con": [
+    "nylon",
+    "multifilamento",
+    "fluorocarbono"
+   ],
+   "ojo": "Quanto mais grossa a linha, menos voltas: umas sete ou oito com linha fina e umas três com linha grossa. As voltas não se devem sobrepor.",
+   "fuente": {
+    "titulo": "Animated Knots: San Diego Jam Knot",
+    "url": "https://www.animatedknots.com/san-diego-jam-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 88,
+    "fuentes": [
+     "https://odajournal.com/wp-content/uploads/2019/01/v2a9.pdf"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "nudo-lazo-bajo",
+   "tema": "nudos",
+   "nombre": "Laçada de estralho (dropper loop)",
+   "otros_nombres": [
+    "Dropper loop"
+   ],
+   "para": "Fazer uma laçada a meio da linha, que sai em ângulo reto, para pendurar mais um anzol (paternoster, montagens de fundo).",
+   "resumen": "A base das montagens com vários anzóis: cada laçada afasta-se da linha e o anzol não se enrola na linha principal.",
+   "pasos": [
+    "Faz uma laçada grande no ponto da linha onde queres a laçada.",
+    "Enrola um lado da laçada sobre o outro várias vezes (cinco a sete), deixando um espaço no centro.",
+    "Mete o centro da laçada grande por esse espaço.",
+    "Segura a laçada que sai e puxa as duas pontas da linha para fechar.",
+    "Ajusta o tamanho da laçada antes de apertar de vez."
+   ],
+   "bien_con": [
+    "nylon",
+    "fluorocarbono"
+   ],
+   "ojo": "A laçada não deve ser muito comprida: enrola-se e roda mais. Com nylon, ao apertar, o nó muda de forma; é normal.",
+   "fuente": {
+    "titulo": "Animated Knots: Dropper Loop",
+    "url": "https://www.animatedknots.com/dropper-loop-knot",
+    "consultada": "2026-11-20"
+   },
+   "imagen": {
+    "src": "/assets/formacion/nudo-lazo-bajo.jpg",
+    "alt": "Laçada de estralho terminada",
+    "autor": "TheHungryTiger",
+    "licencia": "domínio público",
+    "licencia_url": null,
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Dropper_loop_knot.jpg",
+    "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 64,
+    "fuentes": [
+     "https://www.delaware-surf-fishing.com/drop-loop-strength-tests"
+    ],
+    "consultada": "2026-11-20"
+   }
+  },
+  {
+   "id": "sedal-nylon",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Nylon (monofilamento)",
+   "otros_nombres": [
+    "Mono",
+    "Náilon",
+    "Monofilament"
+   ],
+   "para": "A linha de sempre: um único filamento de poliamida.",
+   "resumen": "Barato, fácil de atar e elástico. É o mais versátil e aquele com que quase toda a gente começa.",
+   "como_es": [
+    "Estica bastante: amortece as cabeçadas do peixe e perdoa erros ao ferrar, mas transmite pior a picada.",
+    "Quase flutua (densidade próxima da da água): fica à superfície ou desce muito devagar.",
+    "Absorve alguma água e a luz do sol degrada-o: com o tempo perde resistência. Convém mudá-lo todas as temporadas.",
+    "Tem memória: se passar muito tempo na bobina, sai em espirais.",
+    "Resiste razoavelmente à abrasão, mas menos do que o fluorocarbono da mesma espessura."
+   ],
+   "colores": [
+    {
+     "color": "Transparente ou cristal",
+     "para": "O mais discreto em água clara."
+    },
+    {
+     "color": "Verde, cinzento ou azulado",
+     "para": "Confunde-se com o fundo e a água; discreto e um pouco mais fácil de ver para o pescador."
+    },
+    {
+     "color": "Amarelo ou laranja fluorescente",
+     "para": "Vê-se bem de fora para seguir a linha e notar a picada, mas o peixe também o vê mais: melhor com uma baixada transparente."
+    }
+   ],
+   "usos_costa": [
+    "Linha madre de surfcasting e de pesca ao fundo na praia.",
+    "Pesca à boia: flutua e ajuda a segurar a boia.",
+    "Baixadas de uso geral quando a água está um pouco turva.",
+    "Shock leader (linha de choque) e linhas cónicas para lançamentos fortes."
+   ],
+   "usos_embarcacion": [
+    "Linha madre barata para pesca fundeada e à deriva com isco.",
+    "Corrico de superfície, onde a elasticidade amortece as arrancadas.",
+    "Baixadas de uso geral."
+   ],
+   "ojo": "Verifica-o em cada saída: se ao passar os dedos sentires a linha áspera ou com pelos, corta esse troço. O sol e o sal envelhecem-no mesmo sem uso.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    },
+    {
+     "titulo": "Rapala: Mono, Fluorocarbon or Braid?",
+     "url": "https://www.rapala.eu/eu_en/blog/mono-fluorocarbon-or-braid-how-to-choose-the-right-fishing-line"
+    },
+    {
+     "titulo": "Leurre de la Pêche: o melhor multifilamento para surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/121-cual-es-la-mejor-trenza-para-surfcasting.html"
+    },
+    {
+     "titulo": "A. Álvarez: linhas cónicas de surfcasting",
+     "url": "https://www.a-alvarez.com/en/2058-tapered-surf-casting-lines"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-copolimero",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Copolímero",
+   "otros_nombres": [
+    "Copolymer"
+   ],
+   "para": "Um nylon melhorado: mistura de dois ou mais tipos de nylon num único filamento.",
+   "resumen": "Maneja-se como o nylon, mas estica menos e aguenta melhor a abrasão. Custa um pouco mais.",
+   "como_es": [
+    "Estica menos do que o nylon normal: um pouco mais de sensibilidade sem perder o amortecimento.",
+    "Melhor resistência à abrasão e aos esticões bruscos do que um nylon da mesma espessura.",
+    "Ata-se com a mesma facilidade que o nylon.",
+    "Flutua ou desce devagar, como o nylon."
+   ],
+   "colores": [
+    {
+     "color": "Transparente",
+     "para": "Discreto em água clara."
+    },
+    {
+     "color": "Verde ou cinzento",
+     "para": "Discreto e um pouco mais visível para o pescador."
+    },
+    {
+     "color": "Fluorescente",
+     "para": "Para seguir a linha; convém uma baixada transparente."
+    }
+   ],
+   "usos_costa": [
+    "Linha madre de spinning ligeiro e pesca à boia quando se quer um pouco mais de sensibilidade do que com nylon.",
+    "Baixadas e shock leaders em zonas de rocha."
+   ],
+   "usos_embarcacion": [
+    "Linha madre de pesca fundeada e à deriva em zonas de fundo duro.",
+    "Baixadas de uso geral."
+   ],
+   "ojo": "É mais caro do que o nylon e, como ele, degrada-se com o sol: guarda-o à sombra.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: os 4 tipos de linha (mono, fluoro, multifilamento e copolímero)",
+     "url": "https://tacklevillage.com/gear/line/"
+    },
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-fluorocarbono",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Fluorocarbono",
+   "otros_nombres": [
+    "Fluoro",
+    "FC",
+    "Fluorocarbon"
+   ],
+   "para": "Um filamento de fluoropolímero (PVDF) pensado sobretudo para as baixadas.",
+   "resumen": "É a linha que menos se vê debaixo de água, afunda e aguenta muito bem a abrasão de rochas e conchas. O seu lugar natural é a baixada.",
+   "como_es": [
+    "Desvia a luz quase como a água (índice de refração ~1,42, contra 1,33 da água e ~1,5–1,6 do nylon): por isso vê-se menos. Ajuda, mas não o torna invisível.",
+    "Afunda (é bastante mais denso do que a água): leva o isco e a baixada para o fundo.",
+    "É o que melhor aguenta a abrasão com a mesma espessura.",
+    "Não absorve água e aguenta bem o sol: dura mais do que o nylon.",
+    "É mais rígido e custa mais a atar: molha sempre o nó antes de apertar."
+   ],
+   "colores": [
+    {
+     "color": "Transparente",
+     "para": "Quase sempre se usa assim: é o que procura quem compra fluorocarbono."
+    },
+    {
+     "color": "Tingido (rosa, verde)",
+     "para": "Algumas marcas tingem-no para fundos ou águas concretas; a vantagem é discutível."
+    }
+   ],
+   "usos_costa": [
+    "Baixadas para robalo, sargo, dourada e outros peixes desconfiados em água clara.",
+    "Baixadas em zonas de rocha, mexilhão ou conchas, onde o nylon se desgasta.",
+    "Shock leader no surfcasting sobre fundos duros."
+   ],
+   "usos_embarcacion": [
+    "Baixadas de jigging, spinning e pesca fundeada em água clara.",
+    "Baixadas para espécies desconfiadas e para pescar na pedra.",
+    "Baixadas grossas contra dentes não muito afiados quando não se quer usar aço."
+   ],
+   "ojo": "Como linha madre no carreto pesa, afunda e tem memória: usa-se quase sempre só como baixada. É caro; compra bobinas de baixada, não de linha madre.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    },
+    {
+     "titulo": "FlyLife: fluorocarbono versus monofilamento",
+     "url": "https://flylifemagazine.com/wednesday-fish-facts-fluorocarbon-versus-monofilament/"
+    },
+    {
+     "titulo": "Varivas: como escolher a linha",
+     "url": "https://www.varivas.fishing/how-to-select-fishing-line/"
+    },
+    {
+     "titulo": "Shimano: guia de linhas para predadores",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-trenzado",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Multifilamento (PE)",
+   "otros_nombres": [
+    "Entrançado",
+    "Braid",
+    "PE"
+   ],
+   "para": "Várias fibras de polietileno entrançadas (4, 8 ou mais) num único fio.",
+   "resumen": "Muito fino e muito forte para a sua espessura, quase não estica: sentes tudo. Precisa de uma baixada de nylon ou fluorocarbono.",
+   "como_es": [
+    "Quase não estica: transmite a picada e o fundo de imediato e ferra melhor à distância.",
+    "Muito mais fino do que um nylon da mesma resistência: lança mais longe e o vento e a corrente arrastam-no menos.",
+    "Flutua.",
+    "Mede-se pelo número PE (mais alto, mais grosso), além de pelos quilos.",
+    "X4 (4 fibras): mais áspero, mas aguenta melhor a abrasão. X8 (8 fibras): mais redondo e liso, lança mais longe, mas desgasta-se mais depressa na rocha.",
+    "O sol não o afeta como ao nylon, mas desfia com a abrasão lateral."
+   ],
+   "colores": [
+    {
+     "color": "Verde-musgo ou cinzento",
+     "para": "Discreto: o mais usado no spinning."
+    },
+    {
+     "color": "Amarelo, laranja ou rosa fluorescente",
+     "para": "Vê-se de longe: para seguir a linha, ver toques na ponta da linha e lançar de noite com lanterna."
+    },
+    {
+     "color": "Multicolor (uma cor a cada 10 m)",
+     "para": "Para saber quanta linha saiu: cada cor são 10 m. Alguns têm ainda uma marca a cada metro. Pensado para pesca vertical."
+    }
+   ],
+   "usos_costa": [
+    "Spinning com amostra: linha madre quase sempre em multifilamento.",
+    "Surfcasting à distância, com um shock leader de nylon ou fluorocarbono.",
+    "Pesca ao fundo onde importa sentir o toque."
+   ],
+   "usos_embarcacion": [
+    "Jigging e slow jigging, com multifilamento multicolor para saber a profundidade.",
+    "Pesca vertical ao fundo e deriva em profundidade: a linha fina faz menos barriga com a corrente.",
+    "Spinning e popping a partir do barco."
+   ],
+   "ojo": "Sempre com baixada: é muito visível e a abrasão lateral contra as pedras corta-o. Não ates multifilamento com nós de nylon (escorrega): usa palomar ou FG. Corta os dedos se o agarrares com o peixe a puxar.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Braid vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/braid-vs-monofilament-fishing-lines-and-when-to-use-each"
+    },
+    {
+     "titulo": "On The Water: como escolher um multifilamento",
+     "url": "https://onthewater.com/how-to-choose-a-braided-line"
+    },
+    {
+     "titulo": "Leurre de la Pêche: o melhor multifilamento para surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/121-cual-es-la-mejor-trenza-para-surfcasting.html"
+    },
+    {
+     "titulo": "Daiwa J-Braid X8 multicolor (muda de cor a cada 10 m)",
+     "url": "https://www.leurredelapeche.fr/es/5709-braid-daiwa-j-braid-x8-multicolor.html"
+    },
+    {
+     "titulo": "Varivas 4 Marking (cor a cada 10 m e marca a cada metro)",
+     "url": "https://www.leurredelapeche.fr/es/20484-hilo-trenzado-varivas-4-marcando-150m.html"
+    },
+    {
+     "titulo": "Shimano: guia de linhas de mar",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/saltwater-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-acero",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Aço (cabo)",
+   "otros_nombres": [
+    "Baixada de aço",
+    "Wire leader",
+    "Cabo de aço"
+   ],
+   "para": "Baixadas de cabo de aço, simples ou entrançado, por vezes revestido de plástico.",
+   "resumen": "Para peixes com dentes que cortam qualquer linha: congro (safio), anchova (enchova), barracuda, bicuda ou tubarão.",
+   "como_es": [
+    "Nenhum peixe com dentes o corta.",
+    "É rígido e visível: alguns peixes desconfiam e a amostra perde algum movimento.",
+    "O aço entrançado revestido é mais flexível; o monofilamento de aço, mais rígido e mais fino.",
+    "Dobra-se e desfia: verifica-o depois de cada peixe."
+   ],
+   "colores": [
+    {
+     "color": "Prateado",
+     "para": "O clássico; brilha debaixo de água."
+    },
+    {
+     "color": "Preto mate ou castanho",
+     "para": "Mais discreto; o recomendado em água clara."
+    }
+   ],
+   "usos_costa": [
+    "Pesca ao fundo ao congro a partir de rochas, portos e esporões: baixada de aço, ou de nylon muito grosso se preferires que o peixe não a note tanto.",
+    "Spinning e fundo quando entra a anchova ou outros peixes com dentes.",
+    "Um troço curto (uns 15–30 cm) à frente da amostra ou do anzol."
+   ],
+   "usos_embarcacion": [
+    "Congro sobre pedra e naufrágios, com baixada de aço ou nylon muito grosso.",
+    "Corrico e spinning de predadores com dentes (barracuda, bicuda, tubarão).",
+    "Baixadas curtas sobre a amostra, unidas com destorcedor ou mosquetão."
+   ],
+   "ojo": "Usa-o só quando houver dentes: nos restantes casos assusta e tira picadas. Com o congro, muitos pescadores usam nylon muito grosso (de 130 lb para cima) em vez de aço: o aço não o cortam, mas se o peixe engolir o anzol faz-lhe mais dano; com nylon verifica o desgaste depois de cada peixe.",
+   "fuentes": [
+    {
+     "titulo": "On The Water: como escolher o material da baixada",
+     "url": "https://onthewater.com/how-to-choose-the-right-leader-material"
+    },
+    {
+     "titulo": "FishUSA: aço, cobre e lead core",
+     "url": "https://www.fishusa.com/Wire-Lead-Core-Fishing-Line"
+    },
+    {
+     "titulo": "Shimano: guia de linhas para predadores",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    },
+    {
+     "titulo": "Sea Angling Ireland: baixada para congro (aço ou nylon)",
+     "url": "https://www.sea-angling-ireland.org/forum/viewtopic.php?p=11386"
+    },
+    {
+     "titulo": "Sea Angler: congro de costa",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/282754882668798"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-lead-core",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Linha de chumbo (lead core)",
+   "otros_nombres": [
+    "Lead core",
+    "Linha com alma de chumbo"
+   ],
+   "para": "Um multifilamento com uma alma de chumbo lá dentro que faz a linha afundar sozinha.",
+   "resumen": "Para corrico a meia-água ou perto do fundo sem usar chumbos nem planadores.",
+   "como_es": [
+    "Muda de cor a cada 10 jardas (uns 9 m): conta-se quantas cores estão fora.",
+    "Regra orientativa: cada cor desce uns 1,5 m a uma velocidade de corrico lenta (uns 4 km/h); muda muito com a velocidade e a amostra.",
+    "É grosso e muito visível: precisa de uma baixada comprida de nylon ou fluorocarbono."
+   ],
+   "colores": [
+    {
+     "color": "Multicolor (uma cor a cada 10 jardas)",
+     "para": "Para calcular a profundidade a que vai a amostra."
+    }
+   ],
+   "usos_costa": [
+    "Não se usa na pesca de costa."
+   ],
+   "usos_embarcacion": [
+    "Corrico de fundo e de meia-água a partir do barco.",
+    "Sempre com uma baixada comprida (vários metros) de nylon ou fluorocarbono."
+   ],
+   "ojo": "As cores são uma orientação, não uma medida: com corrente ou mais velocidade a amostra sobe. Confirma com a sonda se tocas no fundo.",
+   "fuentes": [
+    {
+     "titulo": "FishUSA: aço, cobre e lead core",
+     "url": "https://www.fishusa.com/Wire-Lead-Core-Fishing-Line"
+    },
+    {
+     "titulo": "Bass Pro: guia de lead core",
+     "url": "https://1source.basspro.com/news-tips/fishing-tackle/23378/lead-core-line-buyers-guide"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "colores-del-sedal",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Cores da linha: qual escolher",
+   "otros_nombres": [
+    "Visibilidade da linha"
+   ],
+   "para": "Que cor de linha usar conforme a água e o que tu queres ver.",
+   "resumen": "A cor é um equilíbrio entre tu veres a linha e o peixe não a ver. A solução habitual: linha madre visível e baixada transparente.",
+   "como_es": [
+    "O peixe vê sobretudo o troço próximo do isco: por isso a baixada importa mais do que a linha madre.",
+    "Em água clara, o fluorocarbono transparente é o menos visível.",
+    "Com água turva ou de noite, a cor importa muito menos.",
+    "A ideia de que o vermelho desaparece debaixo de água é discutível: há mergulhadores que dizem que se vê preto."
+   ],
+   "colores": [
+    {
+     "color": "Transparente",
+     "para": "Baixadas em água clara e peixes desconfiados."
+    },
+    {
+     "color": "Verde, cinzento ou azul",
+     "para": "Linha madre discreta para água clara."
+    },
+    {
+     "color": "Fluorescente (amarelo, laranja, rosa)",
+     "para": "Linha madre para ver picadas e seguir a linha; sempre com baixada transparente."
+    },
+    {
+     "color": "Multicolor",
+     "para": "Saber quanta linha saiu (pesca vertical e corrico)."
+    }
+   ],
+   "usos_costa": [
+    "Surfcasting: linha madre de cor visível para ver a linha e baixada transparente.",
+    "Spinning em água clara: multifilamento verde ou cinzento com baixada de fluorocarbono."
+   ],
+   "usos_embarcacion": [
+    "Jigging: multifilamento multicolor com baixada de fluorocarbono.",
+    "Corrico: a baixada comprida transparente é o que o peixe vê."
+   ],
+   "ojo": "Não há estudos conclusivos sobre que cor vê cada espécie: toma isto como guia prático, não como regra.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: os peixes veem a linha?",
+     "url": "https://britishseafishing.co.uk/?p=15620"
+    },
+    {
+     "titulo": "Pure Fishing (Spiderwire): o que veem os peixes",
+     "url": "https://www.purefishing.com/spiderwire-pro-tips-what-do-fish-see"
+    },
+    {
+     "titulo": "Fix.com: Do Fish See Line?",
+     "url": "https://www.fix.com/blog/do-fish-see-line/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-brazoladas",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Baixada de estralhos (paternoster)",
+   "otros_nombres": [
+    "Paternoster",
+    "Baixada de 2 ou 3 anzóis"
+   ],
+   "para": "Os anzóis vão em estralhos curtos acima do chumbo, que fica mesmo em baixo.",
+   "resumen": "A baixada mais usada ao fundo: leva vários iscos ao mesmo tempo e mantém-nos afastados do fundo.",
+   "como_es": [
+    "O chumbo vai no fim; os estralhos saem do corpo da baixada com destorcedores, missangas ou nós.",
+    "Leva um, dois ou três anzóis: mais iscos, mais cheiro na água.",
+    "Ao picar, o peixe sente o peso do chumbo e muitas vezes ferra-se sozinho.",
+    "Variante corrediça (running paternoster): o corpo corre pela linha madre e o peixe sente menos."
+   ],
+   "medidas": [
+    "As de surfcasting de dois estralhos costumam medir uns 170–180 cm no total, com estralhos de uns 70 cm.",
+    "Estralhos curtos enrolam menos no lançamento; compridos mexem mais o isco com a corrente.",
+    "Estralhos um pouco mais finos do que o corpo da baixada: se prenderes, parte só um."
+   ],
+   "usos_costa": [
+    "Surfcasting na praia: a baixada de praia por excelência.",
+    "Fundo limpo ou misto para sargo, dourada, ferreira, peixe chato e semelhantes.",
+    "Em rocha com muita pedra, melhor com um troço fraco para o chumbo (que parta o chumbo e não a baixada toda)."
+   ],
+   "usos_embarcacion": [
+    "Fundeado e à deriva: vários anzóis a diferentes alturas do fundo.",
+    "Pesca de fundo variada (besugo, bicas, carapaus…)."
+   ],
+   "ojo": "Com muito vento e lançamentos longos, os estralhos compridos enrolam-se: usa clipes para os prender durante o lançamento.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: baixadas para o bacalhau (paternoster, roldana, corrediça)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "Tackle Tactics: running paternoster",
+     "url": "https://tackletactics.com.au/blogs/learn-to-fish/running-paternoster-rig"
+    },
+    {
+     "titulo": "British Sea Fishing: como montar baixadas de mar",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    },
+    {
+     "titulo": "Leurre de la Pêche: como se monta o surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    },
+    {
+     "titulo": "Baixada de surfcasting de dois estralhos (exemplo comercial)",
+     "url": "https://www.leurredelapeche.fr/es/14840-bajo-de-linea-surfcasting-sunset-rs-competition-multi-especies-fluoro.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-corredizo",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Baixada corrediça (chumbo corrediço)",
+   "otros_nombres": [
+    "Running ledger",
+    "Montagem corrediça"
+   ],
+   "para": "O chumbo corre livre pela linha madre, acima de um destorcedor; por baixo vai a baixada com o anzol.",
+   "resumen": "O peixe pega no isco e leva-o sem sentir o peso do chumbo: para peixes grandes e desconfiados.",
+   "como_es": [
+    "Um chumbo corrediço (ou um clipe com chumbo) passa pela linha madre; uma missanga protege o nó do destorcedor.",
+    "Do destorcedor sai a baixada, normalmente de um só anzol.",
+    "Picada franca: a linha corre pelo chumbo e nota-se na ponteira."
+   ],
+   "medidas": [
+    "Baixada de 1 a 1,5 m para começar na praia.",
+    "Mais corrente, baixada mais comprida: o isco mexe-se de forma mais natural.",
+    "Chumbo à justa para aguentar no fundo com a corrente que houver."
+   ],
+   "usos_costa": [
+    "Robalo, dourada e peixes grandes a partir da praia ou da rocha.",
+    "Pesca ao fundo noturna com iscos grandes.",
+    "Congro a partir do porto ou da rocha (com baixada resistente ao corte)."
+   ],
+   "usos_embarcacion": [
+    "Fundeado em profundidade para peixes grandes de fundo (congro, juliana, raias).",
+    "Deriva lenta com um só isco grande."
+   ],
+   "ojo": "Se o chumbo for muito leve, a corrente arrasta-o e a baixada enrola-se na linha madre: aumenta o chumbo antes de alongar a baixada.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: baixadas para o bacalhau (paternoster, roldana, corrediça)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: paternoster ou corrediça",
+     "url": "https://www.sea-angling-ireland.org/forum/viewtopic.php?p=30067"
+    },
+    {
+     "titulo": "British Sea Fishing: como montar baixadas de mar",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    },
+    {
+     "titulo": "Leurre de la Pêche: como se monta o surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-polea",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Baixada de roldana (pulley rig)",
+   "otros_nombres": [
+    "Pulley rig",
+    "Montagem de roldana"
+   ],
+   "para": "Uma baixada em que o chumbo e o anzol vão juntos no lançamento e, quando o peixe pica, o chumbo sobe acima dele.",
+   "resumen": "Lança longe e protege o isco no lançamento; ao ferrar, o chumbo afasta-se do peixe e prende menos na pedra.",
+   "como_es": [
+    "O corpo da baixada passa por um destorcedor (a «roldana») unido à linha madre.",
+    "No lançamento, o anzol vai preso ao chumbo com um clipe: mais distância e o isco não se desfaz.",
+    "Durante a luta com o peixe, o chumbo fica em cima e sobe por cima das pedras."
+   ],
+   "medidas": [
+    "Da ordem do comprimento de uma cana no total; a baixada até ao anzol, de 60 cm a 1 m.",
+    "Corpo da baixada grosso (resistente à abrasão) e estralho um pouco mais fino."
+   ],
+   "usos_costa": [
+    "Surfcasting à distância em praia limpa.",
+    "Fundos com pedra ou algas para peixes grandes: o chumbo prende menos ao recolher."
+   ],
+   "usos_embarcacion": [
+    "Pouco habitual a partir do barco: na vertical não faz falta."
+   ],
+   "ojo": "A baixada trabalha dobrada: verifica o desgaste do corpo no destorcedor a cada poucas capturas.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: baixadas para o bacalhau (paternoster, roldana, corrediça)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "British Sea Fishing: como montar baixadas de mar",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-boya",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Baixada de boia (pesca à boia)",
+   "otros_nombres": [
+    "Pesca à boia",
+    "Boia corrediça",
+    "Float rig"
+   ],
+   "para": "O isco fica pendurado numa boia à profundidade que escolheres; um batente na linha madre marca até onde desce.",
+   "resumen": "Para pescar a meia-água ou junto à pedra sem prender: sargo, robalo, tainha, bodião, cavala…",
+   "como_es": [
+    "Boia fixa para pouca profundidade (até 1,5–2 m) ou corrediça com batente e missanga para mais profundidade.",
+    "Chumbos debaixo da boia até ficar de fora só a ponta: assim nota-se até o toque mais fino.",
+    "A baixada final costuma ser mais fina do que a linha madre."
+   ],
+   "medidas": [
+    "Profundidade: começa a um metro e vai descendo até picarem; para o bodião, o isco deve roçar o fundo.",
+    "Boia maior quanto mais mar e mais profundidade.",
+    "Baixada final de 50 cm a 1 m."
+   ],
+   "usos_costa": [
+    "Esporões, portos e rochas: a meia-água junto às algas.",
+    "Tainha e outras espécies em água calma, com boia pequena.",
+    "Robalo com isco vivo debaixo da boia."
+   ],
+   "usos_embarcacion": [
+    "Fundeado ou à deriva lenta junto à pedra, com boia.",
+    "Cavala e carapau a meia-água."
+   ],
+   "ojo": "A maré muda a profundidade: reajusta o batente de vez em quando.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: como usar uma boia corrediça",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca à boia",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar uma boia corrediça",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-carolina",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Baixada carolina",
+   "otros_nombres": [
+    "Carolina rig"
+   ],
+   "para": "Um chumbo na linha madre, um destorcedor que o trava e uma baixada com um anzol atrás.",
+   "resumen": "O chumbo vai arrastando no fundo e o isco ou o vinil flutuam um pouco acima: muito boa para peixes de fundo que olham para cima.",
+   "como_es": [
+    "Chumbo de bala ou de azeitona a correr na linha madre, uma missanga e o destorcedor.",
+    "Baixada com um anzol; isco natural ou vinil.",
+    "Lança-se e recolhe-se muito devagar, arrastando o chumbo."
+   ],
+   "medidas": [
+    "Baixada curta (uns 15–30 cm nos guias consultados) para ter o isco perto do fundo; mais comprida para que se mexa mais.",
+    "Chumbo conforme a profundidade e a corrente."
+   ],
+   "usos_costa": [
+    "Peixes chatos (linguado, pregado) e outros de fundo na areia, com recolha lenta.",
+    "Pesca com vinil a partir da praia e da rocha com fundo limpo."
+   ],
+   "usos_embarcacion": [
+    "Deriva lenta sobre areia para peixes chatos."
+   ],
+   "ojo": "Na pedra prende muito: é uma baixada de fundo limpo.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: o carolina no mar",
+     "url": "https://www.saltwatersportsman.com/story/howto/carolina-rigs-for-saltwater/"
+    },
+    {
+     "titulo": "The Tackle Room: carolina em água salgada",
+     "url": "https://thetackleroom.com/blogs/news/how-to-fish-a-carolina-rig-in-saltwater"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-sabiki",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Sabiki (baixada de penas)",
+   "otros_nombres": [
+    "Sabiki",
+    "Baixada de penas"
+   ],
+   "para": "Uma baixada com muitos anzóis pequenos vestidos com peninhas ou brilhos; o chumbo vai em baixo.",
+   "resumen": "Serve para apanhar isco vivo (cavala, carapau, sardinha, boga…) quando há cardumes.",
+   "como_es": [
+    "De 6 a 10 anzóis pequenos em estralhos curtos.",
+    "Não precisa de isco: os brilhos bastam; há quem ponha um bocadinho.",
+    "Desce-se até ao cardume e sobe-se e desce-se suavemente."
+   ],
+   "medidas": [
+    "Chumbo à justa para descer devagar pelo cardume: com muito chumbo atravessa o cardume depressa demais.",
+    "Mais chumbo se se enrolar: a baixada vai mais esticada."
+   ],
+   "usos_costa": [
+    "Portos e esporões quando entra a cavala ou o carapau.",
+    "Para ter isco vivo para o robalo ou a lula."
+   ],
+   "usos_embarcacion": [
+    "Sobre cardumes marcados na sonda.",
+    "Antes de sair para pescar com isco vivo."
+   ],
+   "ojo": "Muitos anzóis juntos: enrola-se e pica. Desprende com alicate e guarda-o no seu enrolador. Respeita os tamanhos mínimos também com o isco.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: o que é um sabiki e como se usa",
+     "url": "https://tacklevillage.com/sabiki-rigs/"
+    },
+    {
+     "titulo": "Mercury Marine: isco vivo com sabiki",
+     "url": "https://www.mercurymarine.com/us/en/lifestyle/dockline/how-to-use-a-sabiki-rig-to-catch-bait"
+    },
+    {
+     "titulo": "Florida Sportsman: Sabiki sense",
+     "url": "https://floridasportsman.com/editorial/sabiki-sense/401301"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-spinning",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Baixada de spinning (leader)",
+   "otros_nombres": [
+    "Leader",
+    "Baixada de fluoro"
+   ],
+   "para": "Um troço de fluorocarbono ou nylon entre o multifilamento e a amostra.",
+   "resumen": "Protege da abrasão, esconde o multifilamento e amortece: o multifilamento nunca vai diretamente à amostra.",
+   "como_es": [
+    "Une-se ao multifilamento com um nó fino (FG ou Albright) e à amostra com um nó ou um mosquetão.",
+    "Fluorocarbono em água clara ou com rocha; nylon se quiseres mais elasticidade.",
+    "Se houver dentes, um troço curto de aço no fim."
+   ],
+   "medidas": [
+    "Comprimento: o nó com o multifilamento não deve entrar nos passadores ao lançar (ou deve passar por eles com um nó muito fino).",
+    "Água clara, baixada mais comprida; água turva, pode ser mais curta.",
+    "Espessura: mais resistente do que o multifilamento não serve de nada; com rocha, um pouco mais grossa."
+   ],
+   "usos_costa": [
+    "Spinning ao robalo, à anchova e a outros predadores a partir da costa.",
+    "Pesca com vinil e amostra de superfície (paseante) na rocha: a baixada é o que roça."
+   ],
+   "usos_embarcacion": [
+    "Spinning e jigging a partir do barco.",
+    "Popping a tunídeos e grandes predadores com baixada grossa."
+   ],
+   "ojo": "Verifica os últimos centímetros depois de cada peixe ou de cada prisão: a baixada desgasta-se e é a primeira coisa que parte.",
+   "fuentes": [
+    {
+     "titulo": "Seaguar: comprimento da baixada de fluorocarbono",
+     "url": "https://seaguar.com/blogs/pro-tips/setting-the-length-of-your-fluorocarbon-leader-1"
+    },
+    {
+     "titulo": "AFTCO: como escolher a espessura e a resistência da baixada",
+     "url": "https://www.aftco.com/blogs/saltwater-how-to/how-to-select-a-leader-size"
+    },
+    {
+     "titulo": "AFTCO: quando usar baixada de fluorocarbono",
+     "url": "https://www.aftco.com/blogs/tackle-how-to/when-why-you-should-use-a-fluorocarbon-leader"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-grosor-largo",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Espessura e comprimento da baixada: como escolher",
+   "otros_nombres": [
+    "Espessura da baixada"
+   ],
+   "para": "Regras práticas para escolher o diâmetro e o comprimento da baixada conforme a água, o fundo e o peixe.",
+   "resumen": "A baixada é o que o peixe vê e o que roça: mais fina dá mais picadas, mais grossa aguenta mais. Procura-se o equilíbrio.",
+   "como_es": [
+    "Mais fina do que a linha madre (ou os estralhos mais finos do que o corpo): se partir, que seja só a baixada.",
+    "O fluorocarbono é um pouco mais fino do que o nylon da mesma resistência.",
+    "Com rocha, conchas ou peixes de escamas ou espinhos duros, mais grossa.",
+    "Mais corrente, baixada mais comprida para que o isco se mexa de forma natural."
+   ],
+   "medidas": [
+    "Surfcasting na praia: pontas finais de fluorocarbono de 0,30–0,35 mm são habituais para peixes médios.",
+    "Água clara e peixes desconfiados: baixada mais fina e mais comprida.",
+    "Água turva ou de noite: podes aumentar a espessura sem perder picadas."
+   ],
+   "usos_costa": [
+    "Praia limpa: baixada fina.",
+    "Rocha e mexilhão: baixada grossa ou fluorocarbono.",
+    "Peixes com dentes: aço ou nylon muito grosso."
+   ],
+   "usos_embarcacion": [
+    "Fundo com pedra: estralhos grossos.",
+    "Água muito clara no verão: fina e comprida."
+   ],
+   "ojo": "São orientações, não regras: o estado da linha e o nó pesam mais do que a espessura exata.",
+   "fuentes": [
+    {
+     "titulo": "AFTCO: como escolher a espessura e a resistência da baixada",
+     "url": "https://www.aftco.com/blogs/saltwater-how-to/how-to-select-a-leader-size"
+    },
+    {
+     "titulo": "Salt Water Sportsman: pescar com baixadas compridas",
+     "url": "https://saltwatersportsman.com/story/howto/how-to-fish-using-long-leaders"
+    },
+    {
+     "titulo": "Leurre de la Pêche: como se monta o surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    },
+    {
+     "titulo": "Seaguar: comprimento da baixada de fluorocarbono",
+     "url": "https://seaguar.com/blogs/pro-tips/setting-the-length-of-your-fluorocarbon-leader-1"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-tamanos",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Tamanhos de anzol: como se numeram",
+   "otros_nombres": [
+    "Numeração dos anzóis"
+   ],
+   "para": "Como ler o número de um anzol e porque é que um 2 não é igual em todas as marcas.",
+   "resumen": "Até ao n.º 1, quanto mais alto o número, mais pequeno o anzol. A partir daí vêm os «barra zero» (1/0, 2/0…), em que quanto mais alto, maior. E quase todos pescamos com anzóis grandes demais.",
+   "como_es": [
+    "Ordem do mais pequeno para o maior: … 10, 8, 6, 4, 2, 1, 1/0, 2/0, 3/0, 4/0…",
+    "O 1/0 é o seguinte ao 1; o 4/0 é bastante maior do que o 1/0.",
+    "A espessura do arame marca-se com «X»: um 2X é mais grosso e forte do que o normal do seu número.",
+    "Não há um padrão entre marcas: um 2 de uma marca pode ser diferente do 2 de outra. Se não houver número, olha para a abertura (a distância entre a ponta e a haste)."
+   ],
+   "medidas": [
+    "Escolhe o tamanho pela boca do peixe e pelo tamanho do isco, não pelo tamanho do peixe.",
+    "O isco deve deixar a ponta livre: se a tapar, o anzol é pequeno para esse isco."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Iscos pequenos (minhoca fina, bocadinhos de camarão): números altos (6–8).",
+    "Iscos médios para sargo, dourada ou robalo: à volta do 2 ao 1/0 nas montagens comerciais.",
+    "Iscos grandes (sardinha inteira, lula): 1/0 ou mais."
+   ],
+   "usos_embarcacion": [
+    "Pesca ao fundo variada: números médios.",
+    "Peixes grandes e iscos grandes: barra zero."
+   ],
+   "ojo": "Compara sempre dentro da mesma marca e modelo. E respeita os tamanhos mínimos: um anzol maior ajuda a não ferrar peixes pequenos.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tabela de tamanhos de anzol de mar",
+     "url": "https://thetackleroom.com/blogs/news/hook-size-chart"
+    },
+    {
+     "titulo": "Academy: tabela de tamanhos de anzol",
+     "url": "https://www.academy.com/expert-advice/fishing-hook-size-chart"
+    },
+    {
+     "titulo": "Salt Strong: a verdade sobre os tamanhos de anzol",
+     "url": "https://www.saltstrong.com/?p=38583"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "Sea Angler: o guia completo de anzóis de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tips/tackle/the-complete-guide-to-sea-fishing-hooks/"
+    },
+    {
+     "titulo": "Sea Angler: porque é que o tamanho do anzol importa",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/clothing/why-fishing-hook-size-is-so-important/"
+    },
+    {
+     "titulo": "British Sea Fishing: anzóis",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/hooks/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: tamanhos de anzol por espécie (pescadores)",
+     "url": "https://sea-angling-ireland.org/forum/viewtopic.php?p=98773"
+    },
+    {
+     "titulo": "The Tackle Room: o anzol conforme o isco, não conforme o peixe",
+     "url": "https://thetackleroom.com/blogs/news/saltwater-fishing-hook-sizes-explained"
+    },
+    {
+     "titulo": "BoatUS: anzóis demasiado grandes com isco vivo",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Montagens de surfcasting por espécie (Caperlan: dourada n.º 1–6, ferreira 4–8, robalo 2–1/0)",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/bajos-de-linea-surfcasting"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "pasarse": [
+    "O tamanho escolhe-se pela boca do peixe e pelo isco, não pelo que o peixe pesa. Uma dourada de 2 kg tem a boca pequena e pesca-se com um anzol pequeno; o que muda com o peso é a espessura do arame (um anzol «forte» ou 2X do mesmo número), não o número.",
+    "Um anzol grande demais não entra inteiro na boca do peixe: pica, sente o ferro e larga-o, ou nem sequer lhe pega. Com isco vivo é pior: o peso do anzol não o deixa nadar e o furo mata-o mais depressa.",
+    "Errar um pouco para baixo tem remédio (mais picadas, alguma escapa-se); errar para cima deixa a baixada sem picadas. Na dúvida, um número mais pequeno.",
+    "Regra rápida: o isco tem de tapar o anzol deixando a ponta livre. Se para tapar o anzol precisas de um isco enorme, o anzol é grande."
+   ],
+   "por_especie": [
+    {
+     "pez": "Ferreira, mucharra, sargo pequeno",
+     "tam": "6 a 8",
+     "nota": "boca pequena: o erro mais comum é pôr-lhes um 2"
+    },
+    {
+     "pez": "Tainha, linguado, solha e outros peixes chatos pequenos",
+     "tam": "4 a 6",
+     "nota": ""
+    },
+    {
+     "pez": "Sargo, choupa, besugo",
+     "tam": "4 a 6 (2 para os muito grandes)",
+     "nota": "mesmo que pese mais de um quilo, a boca continua a ser pequena"
+    },
+    {
+     "pez": "Dourada",
+     "tam": "2 a 6 (1 com iscos duros grandes)",
+     "nota": "com caranguejo ou longueirão grandes, 1–1/0 de arame forte"
+    },
+    {
+     "pez": "Cavala, carapau",
+     "tam": "2 a 4",
+     "nota": ""
+    },
+    {
+     "pez": "Robalo",
+     "tam": "2 a 1/0 com minhoca ou camarão; 1/0 a 3/0 com isco grande ou vivo",
+     "nota": "manda o isco, não o peixe"
+    },
+    {
+     "pez": "Bodião",
+     "tam": "1 a 2/0",
+     "nota": ""
+    },
+    {
+     "pez": "Juliana",
+     "tam": "1/0 a 3/0",
+     "nota": ""
+    },
+    {
+     "pez": "Congro (safio)",
+     "tam": "4/0 a 6/0",
+     "nota": "com lula inteira ou cavala; arame grosso"
+    }
+   ]
+  },
+  {
+   "id": "anzuelo-j",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Anzol normal (em J)",
+   "otros_nombres": [
+    "J hook",
+    "Anzol de haste direita"
+   ],
+   "para": "O anzol clássico: haste direita e a ponta virada para a haste, em forma de J.",
+   "resumen": "O mais versátil: serve para quase qualquer pesca com isco. Precisa que sejas tu a ferrar.",
+   "como_es": [
+    "Haste direita, curva e ponta paralela à haste.",
+    "Com barbela para que não saia o isco nem o peixe.",
+    "Há versões de haste curta, normal e comprida, e de arame fino ou grosso."
+   ],
+   "medidas": [
+    "Do 8 ao 4/0 conforme o isco e o peixe.",
+    "Arame fino para iscos delicados; grosso para peixes que puxam com força."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Surfcasting e pesca ao fundo com todo o tipo de iscos.",
+    "Pesca à boia com camarão, minhoca ou mexilhão."
+   ],
+   "usos_embarcacion": [
+    "Fundeado e à deriva com isco.",
+    "Corrico com isco natural."
+   ],
+   "ojo": "Ferra assim que sentires a picada: se esperares, o peixe engole-o e o anzol crava-se muito fundo. Se vais devolver o peixe, melhor um circular.",
+   "fuentes": [
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "BoatUS: anzóis de pesca",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Tackle Village: tipos de anzol",
+     "url": "https://tacklevillage.com/?p=1012774"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-aberdeen",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Aberdeen (haste comprida, arame fino)",
+   "otros_nombres": [
+    "Aberdeen"
+   ],
+   "para": "Anzol de haste comprida e arame fino.",
+   "resumen": "O clássico do surfcasting para minhoca: o isco enfia-se direito ao longo da haste e o anzol estraga pouco o isco.",
+   "como_es": [
+    "Haste comprida e direita: o isco fica esticado e parece natural.",
+    "Arame fino: entra com facilidade e estraga pouco o isco vivo.",
+    "Se prender no fundo, abre e recupera-se a baixada."
+   ],
+   "medidas": [
+    "No surfcasting costuma ir do n.º 1 ao 8.",
+    "Números altos (6–8) para minhoca fina e peixes pequenos; 1–2 para minhocas grandes."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Surfcasting com minhoca, coreano, americano ou tita.",
+    "Pesca de ferreira, sargo pequeno e peixes chatos."
+   ],
+   "usos_embarcacion": [
+    "Pesca ao fundo com minhoca na areia."
+   ],
+   "ojo": "Por ser fino, um peixe grande pode abri-lo: não o uses para robalos grandes nem para congro.",
+   "fuentes": [
+    {
+     "titulo": "Daiwa Tournament Surf SaqSas Aberdeen (n.º 1 a 8)",
+     "url": "https://www.leurredelapeche.fr/es/11050-anzuelo-daiwa-torneo-anzuelo-surf-saqsas-aberdeen.html"
+    },
+    {
+     "titulo": "Tackle Village: tipos de anzol",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-baitholder",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Com farpas na haste (baitholder)",
+   "otros_nombres": [
+    "Baitholder",
+    "Anzol porta-isco"
+   ],
+   "para": "Anzol com uma ou duas farpas na haste para segurar o isco.",
+   "resumen": "O isco não escorrega no lançamento nem quando o peixe dá pequenos esticões.",
+   "como_es": [
+    "Uma ou duas farpas ou cortes na haste.",
+    "O isco fica preso e não desce para a curva."
+   ],
+   "medidas": [
+    "Do 6 ao 1/0 no mar, conforme o isco."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Surfcasting com minhoca, camarão, lula ou pedaços de peixe em lançamentos fortes."
+   ],
+   "usos_embarcacion": [
+    "Fundo com lula ou tiras de peixe."
+   ],
+   "ojo": "As farpas também estragam o isco vivo: para isco vivo, melhor um anzol liso.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: tudo sobre anzóis",
+     "url": "https://www.thefisherman.com/article/inshore-all-about-hooks/"
+    },
+    {
+     "titulo": "Tackle Village: tipos de anzol",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-circular",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Circular (circle)",
+   "otros_nombres": [
+    "Circle hook",
+    "Anzol circular"
+   ],
+   "para": "Anzol com a ponta muito virada para a haste, quase formando um círculo.",
+   "resumen": "Crava-se sozinho na comissura da boca. É menos engolido e é o melhor para devolver o peixe: num estudo do Mediterrâneo reduziu para menos de metade os peixes ferrados por dentro (sargo-alcorraz, peixe-rei), sem pescar menos.",
+   "como_es": [
+    "A ponta está virada para a haste: quando o peixe puxa, o anzol escorrega até à comissura e crava-se aí.",
+    "Não se ferra de golpe: basta esticar e recolher.",
+    "Com anzóis circulares de ponta torcida (offset) perde-se parte da vantagem."
+   ],
+   "medidas": [
+    "Costumam vir marcados um pouco maiores do que o J equivalente: compara dentro da mesma marca."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Pesca ao fundo com isco quando vais devolver peixes.",
+    "Com iscos grandes para robalo ou dourada, deixando correr a picada."
+   ],
+   "usos_embarcacion": [
+    "Fundeado e à deriva com isco natural.",
+    "Corrico e pesca com isco vivo de peixes grandes."
+   ],
+   "ojo": "Não ferres de golpe: estica e recolhe. Com peixes chatos (linguado e semelhantes) os estudos não veem vantagem.",
+   "fuentes": [
+    {
+     "titulo": "Florida FWC: reduzir a mortalidade na captura e devolução",
+     "url": "https://myfwc.com/research/saltwater/fish/snook/reduce-catch-release-mortality/"
+    },
+    {
+     "titulo": "Estudo numa pescaria lúdica mista do Mediterrâneo (FAO AGRIS)",
+     "url": "https://agris.fao.org/search/en/records/65df7d1bb766d82b1801f80e"
+    },
+    {
+     "titulo": "SCDNR: anzóis circulares na corvina-ruiva (red drum)",
+     "url": "https://dnr.sc.gov/marine/mrri/insh_fish/reddrum/hooks.html"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-pulpo",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Haste curta (octopus / beak)",
+   "otros_nombres": [
+    "Octopus",
+    "Beak",
+    "Anzol de isco vivo"
+   ],
+   "para": "Anzol de haste curta, compacto e leve, muitas vezes com o olhal inclinado.",
+   "resumen": "Pesa pouco e ocupa pouco: o isco, sobretudo o vivo, nada de forma natural.",
+   "como_es": [
+    "Haste curta e curva larga para o seu tamanho.",
+    "Leve: não trava o isco vivo.",
+    "O olhal inclinado faz um bom ângulo com nós como o snell ou o palomar."
+   ],
+   "medidas": [
+    "Do 4 ao 4/0 no mar, conforme o isco vivo (camarão, camarão-da-costa, carapau…)."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Robalo com isco vivo debaixo da boia.",
+    "Pesca ao fundo fina com camarão ou camarão-da-costa."
+   ],
+   "usos_embarcacion": [
+    "Isco vivo à deriva ou fundeado (carapau, cavala, lula).",
+    "Baixadas finas para peixes desconfiados."
+   ],
+   "ojo": "Por ser leve, com peixes grandes escolhe a versão de arame grosso.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tipos de anzol",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-triple",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Fateixa (anzol triplo)",
+   "otros_nombres": [
+    "Treble",
+    "Anzol triplo"
+   ],
+   "para": "Três anzóis unidos pela haste: os que trazem quase todas as amostras duras.",
+   "resumen": "Ferra bem quando o peixe ataca a amostra, mas faz mais dano e prende mais no fundo.",
+   "como_es": [
+    "Três pontas numa mesma haste.",
+    "Trocam-se com uma argola partida e um alicate.",
+    "Há de arame fino (para amostras pequenas) e grosso (para peixes que puxam)."
+   ],
+   "medidas": [
+    "Do 14 ao 1/0; escolhe-se para que não batam umas nas outras nem na linha quando a amostra nada."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Amostras de spinning (stickbaits, minnows) para robalo, anchova…"
+   ],
+   "usos_embarcacion": [
+    "Amostras de corrico e spinning a partir do barco."
+   ],
+   "ojo": "Faz mais dano ao peixe e prende mais: se o vais devolver, troca-a por um anzol simples (sem barbela ou com a barbela esmagada). Em algumas zonas é proibida: consulta as regras.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tamanhos de fateixa",
+     "url": "https://tacklevillage.com/treble-hook-size-chart"
+    },
+    {
+     "titulo": "The Tackle Room: fateixas",
+     "url": "https://thetackleroom.com/blogs/news/treble-hook-sizes-guide-how-to-choose-the-right-treble"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamanhos e usos dos anzóis",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-asistente",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Anzol assistente (jigging)",
+   "otros_nombres": [
+    "Assist hook",
+    "Assistente"
+   ],
+   "para": "Anzol unido a um cordão curto que fica pendurado na argola do jig.",
+   "resumen": "Usa-se no jigging: o peixe costuma atacar a cabeça do jig e o assistente está lá. E prende menos no fundo do que uma fateixa na cauda.",
+   "como_es": [
+    "Um ou dois anzóis com um cordão curto (kevlar ou semelhante) unidos a uma argola.",
+    "Vão na argola de cima do jig; no slow pitch também se põe um em baixo.",
+    "Cordão um pouco rígido: se for muito mole, enrola-se na linha quando o jig desce."
+   ],
+   "medidas": [
+    "Do 1/0 ao 7/0 conforme o jig e o peixe.",
+    "A ponta não deve passar de metade do jig, para não se enrolar."
+   ],
+   "medidas_titulo": "📏 Tamanhos",
+   "usos_costa": [
+    "Jigging ligeiro a partir da rocha (shore jigging)."
+   ],
+   "usos_embarcacion": [
+    "Jigging vertical e slow pitch a partir do barco.",
+    "Jigs de velocidade (com dúvidas: com o jig sempre a subir, o assistente de cima vai encostado ao jig)."
+   ],
+   "ojo": "Verifica o cordão depois de cada peixe: se estiver descarnado, troca-o. As fontes não estão de acordo sobre onde pô-lo no jigging de velocidade.",
+   "fuentes": [
+    {
+     "titulo": "Ocean's Legacy: configurações de anzóis assistentes",
+     "url": "https://oceanslegacy.co.nz/assist-hooks-for-metal-jigs-understanding-basic-configurations/"
+    },
+    {
+     "titulo": "Mustad: slow pitch jigging",
+     "url": "https://mustad-fishing.com/us/article/get-in-on-the-slow-pitch-jig-craze"
+    },
+    {
+     "titulo": "FishTrack: como montar um jig de velocidade",
+     "url": "https://fishtrack.com/article/how-to-rig-a-speed-jig"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-guia",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Destorcedores: qual usar em cada caso",
+   "otros_nombres": [
+    "Emerillones",
+    "Quitavueltas"
+   ],
+   "para": "Guia rápido para escolher entre os tipos de destorcedor.",
+   "resumen": "O destorcedor une dois troços e deixa-os rodar em separado, para que a linha não se torça. Há cinco famílias e cada uma tem o seu lugar: não é preciso o mais caro para tudo.",
+   "como_es": [
+    "Barril: o básico. Une a linha madre à baixada ou segura o chumbo. Roda pouco sob carga.",
+    "Rolling (de argolas): o mais usado no mar. Roda melhor que o de barril e aguenta mais num tamanho pequeno.",
+    "De rolamentos (esferas): roda livre mesmo muito carregado. Para o que dá muitas voltas: colherinhas, corrico, iscos que rodam.",
+    "Com mosquetão ou clip: qualquer um dos anteriores com um fecho para trocar a amostra, o chumbo ou a baixada sem cortar.",
+    "Triplo (em T): três saídas; para estralhos e montagens de vários anzóis."
+   ],
+   "medidas": [
+    "Escolhe o mais pequeno que aguente a resistência da baixada (ou um pouco mais).",
+    "O número não é igual entre marcas: vê os quilos que diz a embalagem, não o número.",
+    "No corrico, que aguente pelo menos 1,5 vezes o que aguenta a linha."
+   ],
+   "medidas_titulo": "📏 Tamanho e resistência",
+   "usos_costa": [
+    "Surfcasting: rolling com mosquetão para o chumbo e rolling ou triplo para os estralhos.",
+    "Spinning: só mosquetão (sem destorcedor) com amostras que nadam; rolling ou de rolamentos com colherinhas que rodam.",
+    "Pesca à boia: rolling pequeno entre a linha madre e a baixada, que serve também de batente para os chumbos."
+   ],
+   "usos_embarcacion": [
+    "Fundeado e à deriva: triplos ou rolling nas baixadas de estralhos.",
+    "Corrico: de rolamentos com mosquetão; é onde a linha dá mais voltas."
+   ],
+   "ojo": "O destorcedor também é um ponto fraco e um brilho que o peixe vê: põe-no só onde for preciso e do tamanho certo.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tipos e tamanhos de destorcedores",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre destorcedores (1)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-1"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre destorcedores (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "British Sea Fishing: destorcedores",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    },
+    {
+     "titulo": "boats.com: escolher o destorcedor",
+     "url": "https://www.boats.com/on-the-water/how-to-fish-choosing-the-right-swivel/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-barril",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Destorcedor de barril",
+   "otros_nombres": [
+    "Barrilete",
+    "Barrel swivel"
+   ],
+   "para": "Um corpo em forma de barril com uma argola de cada lado.",
+   "resumen": "O mais simples e barato. Serve para unir troços e pôr chumbos, mas roda pouco quando a linha vai tensa.",
+   "como_es": [
+    "Duas argolas que rodam dentro de um barril.",
+    "Com carga forte deixa de rodar bem.",
+    "Latão ou aço; no mar, melhor acabamento preto ou inoxidável."
+   ],
+   "medidas": [
+    "Do 14 (pequeno) ao 1/0 ou mais; vê os quilos."
+   ],
+   "medidas_titulo": "📏 Tamanho e resistência",
+   "usos_costa": [
+    "Montagens básicas de fundo e de boia sem muita tensão.",
+    "Batente de chumbos corrediços."
+   ],
+   "usos_embarcacion": [
+    "Baixadas simples de fundo."
+   ],
+   "ojo": "Não o uses onde a linha rode muito (colherinhas, corrico): aí não chega.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tipos e tamanhos de destorcedores",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre destorcedores (1)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-1"
+    },
+    {
+     "titulo": "Wikipedia: Fishing swivel",
+     "url": "https://en.wikipedia.org/wiki/Fishing_swivel"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-rolling",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Destorcedor rolling (de argolas)",
+   "otros_nombres": [
+    "Rolling swivel",
+    "Crane swivel"
+   ],
+   "para": "Destorcedor de argolas duplas, sem barril fechado: o padrão na pesca de mar.",
+   "resumen": "Roda melhor que o de barril e aguenta muito para o seu tamanho. É o que convém ter sempre na caixa.",
+   "como_es": [
+    "Argolas cruzadas que rodam sobre um eixo.",
+    "A meio caminho entre o de barril e o de rolamentos, na rotação e no preço.",
+    "Aguenta melhor a carga forte que o de barril do mesmo tamanho."
+   ],
+   "medidas": [
+    "Exemplo de uma marca: n.º 10 ≈ 14 kg; n.º 7 ≈ 22 kg; n.º 5 ≈ 32 kg; n.º 1 ≈ 47 kg.",
+    "Para uma baixada de 0,35–0,40 mm costuma chegar um n.º 8–10."
+   ],
+   "medidas_titulo": "📏 Tamanho e resistência",
+   "usos_costa": [
+    "União da linha madre com a baixada no surfcasting e na pesca de fundo.",
+    "Estralhos das baixadas de paternoster.",
+    "Baixadas de pesca à boia, como batente dos chumbos."
+   ],
+   "usos_embarcacion": [
+    "Baixadas para pesca fundeada e à deriva.",
+    "União da linha madre com baixadas de isco vivo."
+   ],
+   "ojo": "Verifica que não tem ferrugem: com o sal emperra e deixa de rodar.",
+   "fuentes": [
+    {
+     "titulo": "Seabreeze: aprender sobre destorcedores (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "British Sea Fishing: destorcedores",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    },
+    {
+     "titulo": "The Tackle Room: tipos e tamanhos de destorcedores",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-rodamiento",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Destorcedor de rolamentos (esferas)",
+   "otros_nombres": [
+    "Ball bearing swivel"
+   ],
+   "para": "Destorcedor com esferas de aço lá dentro.",
+   "resumen": "Roda livre mesmo muito carregado. É o que evita a sério as torções quando algo dá voltas sem parar. É bastante mais caro.",
+   "como_es": [
+    "Rolamento de esferas de aço inoxidável.",
+    "Roda mesmo com muita tensão e velocidade.",
+    "Costuma ter argolas soldadas: mais resistente."
+   ],
+   "medidas": [
+    "Como o rolling: escolhe pelos quilos.",
+    "No corrico, pelo menos 1,5 vezes a resistência da linha."
+   ],
+   "medidas_titulo": "📏 Tamanho e resistência",
+   "usos_costa": [
+    "Spinning com colherinhas rotativas ou amostras que tendem a rodar.",
+    "Lançamentos com iscos grandes que rodam ao recolher."
+   ],
+   "usos_embarcacion": [
+    "Corrico: o lugar natural deste destorcedor.",
+    "Pesca com isco morto à deriva que roda."
+   ],
+   "ojo": "Para montagens de fundo simples é deitar dinheiro fora: um rolling chega.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tipos e tamanhos de destorcedores",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre destorcedores (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "boats.com: escolher o destorcedor",
+     "url": "https://www.boats.com/on-the-water/how-to-fish-choosing-the-right-swivel/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-mosqueton",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Mosquetão e clip (com ou sem destorcedor)",
+   "otros_nombres": [
+    "Snap",
+    "Clip",
+    "Snap swivel"
+   ],
+   "para": "Um fecho que abre e fecha para trocar amostras, chumbos ou baixadas sem cortar a linha.",
+   "resumen": "Poupa muito tempo, mas é preciso escolher bem: com amostras que nadam, melhor só o mosquetão; com o que roda, com destorcedor.",
+   "como_es": [
+    "Só mosquetão: um fecho sem rotação. Quase não afeta o nado da amostra.",
+    "Mosquetão com destorcedor (snap swivel): para trocar depressa e evitar torções.",
+    "Clip do chumbo: fecho para prender o chumbo no surfcasting.",
+    "Fecho de segurança (insurance / cross-lock): não abre com os esticões."
+   ],
+   "medidas": [
+    "Do tamanho mais pequeno que aguente a baixada.",
+    "Com amostras pequenas, mosquetão pequeno: um grande muda-lhes o nado."
+   ],
+   "medidas_titulo": "📏 Tamanho e resistência",
+   "usos_costa": [
+    "Spinning: só mosquetão com minnows, amostras de superfície e vinis; com destorcedor com colherinhas.",
+    "Surfcasting: clip com destorcedor para o chumbo."
+   ],
+   "usos_embarcacion": [
+    "Corrico: mosquetão de segurança com destorcedor de rolamentos.",
+    "Jigging: argola sólida e argola partida melhor que mosquetão (mais resistente)."
+   ],
+   "ojo": "Um mosquetão com destorcedor e ainda argola partida faz uma dupla articulação e a amostra pode nadar aos solavancos: com amostras de nado usa só o mosquetão. E verifica que está fechado antes de cada lançamento.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tamanhos de destorcedores com mosquetão",
+     "url": "https://thetackleroom.com/blogs/news/snap-swivel-sizes-explained-which-one-goes-on-which-setup"
+    },
+    {
+     "titulo": "Wikipedia: Fishing swivel",
+     "url": "https://en.wikipedia.org/wiki/Fishing_swivel"
+    },
+    {
+     "titulo": "Bass Resource: mosquetão com ou sem destorcedor? (fórum)",
+     "url": "https://www.bassresource.com/bass-fishing-forums/topic/12064-swivel-snaps-on-crankbaits/"
+    },
+    {
+     "titulo": "Decathlon: destorcedores e clips de surfcasting",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/emerillones-y-grapas"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-triple",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Destorcedor triplo (em T)",
+   "otros_nombres": [
+    "Three-way swivel",
+    "Emerillón triple"
+   ],
+   "para": "Um destorcedor com três argolas: duas em linha e uma de lado.",
+   "resumen": "Para tirar um estralho do corpo da baixada sem que se enrole.",
+   "como_es": [
+    "Três argolas que rodam em separado.",
+    "A de lado leva o estralho com o anzol; as outras duas, a linha madre e o chumbo (ou o resto da baixada)."
+   ],
+   "medidas": [
+    "Pelos quilos, como os outros; que não seja mais fraco que o corpo da baixada."
+   ],
+   "medidas_titulo": "📏 Tamanho e resistência",
+   "usos_costa": [
+    "Baixadas de paternoster de surfcasting e de fundo na rocha."
+   ],
+   "usos_embarcacion": [
+    "Baixadas de estralhos para pesca fundeada e à deriva.",
+    "Montagens de deriva com o chumbo numa saída e o isco noutra."
+   ],
+   "ojo": "Faz volume e vê-se: em água muito limpa, melhor estralhos atados com nó de alça e missangas.",
+   "fuentes": [
+    {
+     "titulo": "Outdoor Canada: destorcedores triplos",
+     "url": "https://outdoorcanada.ca/?p=3631"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre destorcedores (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "Decathlon: destorcedores e clips de surfcasting",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/emerillones-y-grapas"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "perlas",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Missangas",
+   "otros_nombres": [
+    "Contas",
+    "Beads"
+   ],
+   "para": "Bolinhas de plástico ou vidro que se enfiam na linha.",
+   "resumen": "Protegem o nó da pancada do chumbo, servem de batente e algumas atraem o peixe pela cor ou pela luz.",
+   "como_es": [
+    "Moles ou duras; de cores, fluorescentes ou luminosas.",
+    "Entre o chumbo corrediço e o destorcedor: o chumbo bate na missanga, não no nó.",
+    "Na boia corrediça: entre o stop e a boia, para que o stop não passe pelo furo."
+   ],
+   "medidas": [
+    "Do diâmetro certo para que não passe o stop nem o nó."
+   ],
+   "medidas_titulo": "📏 Tamanho",
+   "usos_costa": [
+    "Baixadas corrediças e de boia.",
+    "Baixadas de surfcasting com missangas luminosas ou de cor à frente do anzol."
+   ],
+   "usos_embarcacion": [
+    "Baixadas de fundo com missangas de cor para atrair."
+   ],
+   "ojo": "As missangas de cor e luminosas chamam a atenção do peixe, mas não há provas de que ajudem sempre: experimenta-as contra uma baixada sem elas.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: como usar uma boia corrediça",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar uma boia corrediça",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: destorcedores",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "topes",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Stops (batentes)",
+   "otros_nombres": [
+    "Stops",
+    "Nó de batente"
+   ],
+   "para": "Pequenas peças ou nós que fixam uma posição na linha.",
+   "resumen": "Marcam até onde desce a boia, onde para um chumbo ou um estralho. Podem mudar-se de sítio sem cortar.",
+   "como_es": [
+    "Nó de batente: fio atado sobre a linha madre; muda-se de sítio apertando-o e desapertando-o.",
+    "Stops de borracha ou silicone: passam-se com um enfiador.",
+    "Deixando as pontas do nó com cerca de 2,5 cm, passa melhor pelos passadores da cana."
+   ],
+   "medidas": [
+    "Que não escorregue com o peso da boia nem com o lançamento."
+   ],
+   "medidas_titulo": "📏 Tamanho",
+   "usos_costa": [
+    "Boia corrediça: o stop marca a profundidade do isco.",
+    "Fixar estralhos no corpo da baixada sem nós."
+   ],
+   "usos_embarcacion": [
+    "Boia corrediça fundeado ou à deriva."
+   ],
+   "ojo": "Com a maré muda a profundidade: sobe ou desce o stop de vez em quando.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: como usar uma boia corrediça",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar uma boia corrediça",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca à boia",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-grapa",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Chumbo de garras (com arames)",
+   "otros_nombres": [
+    "Grip lead",
+    "Plomo de garras"
+   ],
+   "para": "Chumbo com arames que se cravam no fundo.",
+   "resumen": "Segura o isco parado com corrente e mar de fundo. Ao recolher, os arames abrem-se ou dobram-se e saem do fundo.",
+   "como_es": [
+    "Arames fixos: agarram mais; para muita corrente ou mar.",
+    "Desarmável: os arames soltam-se quando o peixe pica ou ao recolher.",
+    "O chumbo mais usado na praia com corrente."
+   ],
+   "medidas": [
+    "O justo para que aguente: começa leve e sobe se te arrastar.",
+    "Com vento ou maré a encher, mais peso."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Surfcasting com corrente, ondulação ou mar de fundo.",
+    "Praias onde um chumbo liso rola e arrasta a baixada."
+   ],
+   "usos_embarcacion": [
+    "Pouco: do barco pesca-se mais na vertical."
+   ],
+   "ojo": "Na pedra prende-se: aí, chumbo liso ou em gota com um troço fraco.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: conhece os teus chumbos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "British Sea Fishing: chumbos",
+     "url": "https://britishseafishing.co.uk/?p=549"
+    },
+    {
+     "titulo": "Salt Strong: 7 tipos de chumbo",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-liso",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Chumbo liso (pera, bala, torpedo)",
+   "otros_nombres": [
+    "Bomb",
+    "Chumbo em pera"
+   ],
+   "para": "Chumbo sem arames, de forma aerodinâmica.",
+   "resumen": "Lança mais longe e deixa o isco rolar devagar com a corrente, à procura do peixe.",
+   "como_es": [
+    "Pera, bala ou torpedo: as formas que mais voam.",
+    "Não se crava: a baixada move-se com a corrente.",
+    "Prende-se menos na pedra."
+   ],
+   "medidas": [
+    "Com mar calmo, leve; se o mar sobe, muda para garras."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Surfcasting com mar calmo e lançamentos longos.",
+    "Fundo de rocha e algas (com um troço fraco para o chumbo)."
+   ],
+   "usos_embarcacion": [
+    "Pesca fundeada e à deriva na vertical."
+   ],
+   "ojo": "Se vês que a linha te foge para o lado em cada onda, já não aguenta: passa a um chumbo de garras.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: conhece os teus chumbos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "Outdoor Life: guia completo de chumbos",
+     "url": "https://www.outdoorlife.com/complete-guide-to-using-fishing-sinkers/"
+    },
+    {
+     "titulo": "British Sea Fishing: chumbos",
+     "url": "https://britishseafishing.co.uk/?p=549"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-piramide",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Chumbo pirâmide e chumbo relógio",
+   "otros_nombres": [
+    "Pyramid",
+    "Watch lead"
+   ],
+   "para": "Chumbos com arestas ou faces planas que se agarram na areia e no lodo sem arames.",
+   "resumen": "Descem depressa e ficam parados em fundos moles com corrente moderada.",
+   "como_es": [
+    "Pirâmide: crava-se na areia.",
+    "Relógio (plano e redondo): assenta no fundo e não rola."
+   ],
+   "medidas": [
+    "O justo para que aguente no fundo."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Praias de areia com pouca ou média corrente."
+   ],
+   "usos_embarcacion": [
+    "Pesca fundeada sobre areia ou lodo."
+   ],
+   "ojo": "Com muita corrente são arrastados: passa a garras.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: conhece os teus chumbos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "Salt Strong: 7 tipos de chumbo",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-corredizo",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Chumbo corrediço (oliva, bala com furo)",
+   "otros_nombres": [
+    "Egg sinker",
+    "Chumbo passante"
+   ],
+   "para": "Chumbo com um furo por onde passa a linha madre.",
+   "resumen": "O peixe pega no isco sem sentir o peso: é o chumbo da baixada corrediça e da carolina.",
+   "como_es": [
+    "Corre livre pela linha madre até ao destorcedor.",
+    "Põe uma missanga entre o chumbo e o destorcedor para proteger o nó."
+   ],
+   "medidas": [
+    "O mais leve que mantenha o isco no fundo."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Baixadas corrediças para robalo, dourada ou safio.",
+    "Carolina com vinil sobre areia."
+   ],
+   "usos_embarcacion": [
+    "Pesca fundeada com um só isco grande."
+   ],
+   "ojo": "Se for muito leve, a corrente arrasta-o e a baixada enrola-se na linha madre.",
+   "fuentes": [
+    {
+     "titulo": "Outdoor Life: guia completo de chumbos",
+     "url": "https://www.outdoorlife.com/complete-guide-to-using-fishing-sinkers/"
+    },
+    {
+     "titulo": "Salt Strong: 7 tipos de chumbo",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-fija-corrediza",
+   "tema": "corchos",
+   "tipo": "material",
+   "nombre": "Boia fixa ou corrediça",
+   "otros_nombres": [
+    "Cortiça",
+    "Flutuador"
+   ],
+   "para": "A boia segura o isco à profundidade que escolheres e avisa da picada.",
+   "resumen": "A fixa funciona bem até 1,5–2 m de fundo; para mais, a corrediça com stop deixa lançar à vontade e pescar a qualquer profundidade.",
+   "como_es": [
+    "Fixa: presa na linha em cima e em baixo; profundidade fixa.",
+    "Corrediça: corre pela linha madre até um stop; lança-se com a baixada recolhida.",
+    "Algumas servem para as duas coisas."
+   ],
+   "medidas": [
+    "No mar costumam ir de cerca de 7 a 40 g.",
+    "Boia maior quanto mais mar, mais profundidade e mais longe for preciso lançar.",
+    "Chumbo por baixo até ficar só a ponta de fora."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Esporões, portos e rochas: robalo, sargo, tainha, bodião, cavala.",
+    "Com água calma, boia pequena e fina."
+   ],
+   "usos_embarcacion": [
+    "Fundeado junto à pedra ou à deriva lenta."
+   ],
+   "ojo": "Uma boia fixa com mais de 2 m de baixada é impossível de lançar: passa a corrediça.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: como usar uma boia corrediça",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca à boia",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar uma boia corrediça",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "Sea Angler: dicas de pesca à boia",
+     "url": "https://www.seaangler.co.uk/fishing-tips/float-fishing-tips-for-sea-angling"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-nocturna",
+   "tema": "corchos",
+   "tipo": "material",
+   "nombre": "Boia noturna (luminosa)",
+   "otros_nombres": [
+    "Starlight",
+    "Boia luminosa"
+   ],
+   "para": "Boia com uma barrinha química ou uma luz na ponta para a ver de noite.",
+   "resumen": "Permite pescar à boia de noite, quando o robalo, o sargo ou o safio se aproximam da margem.",
+   "como_es": [
+    "Antena com encaixe para barrinha química (a mais comum, de 4,5 mm).",
+    "Boias elétricas com pilha: mais luz e duram mais."
+   ],
+   "medidas": [
+    "De 7,5 a 30 g e mais, como as de dia."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Pesca à boia noturna em portos, esporões e rochas."
+   ],
+   "usos_embarcacion": [
+    "Boia com o barco fundeado, de noite."
+   ],
+   "ojo": "Leva barrinhas de reserva e não deites as usadas à água.",
+   "fuentes": [
+    {
+     "titulo": "Caperlan: boia corrediça de mar (10 g, antena para luz química de 4,5 mm)",
+     "url": "https://www.decathlon.ie/p/352537-288864-saltwater-fishing-sliding-float-sw-flt-sld-10-g.html"
+    },
+    {
+     "titulo": "Ragot Sealight: boia fixa ou corrediça com luz química",
+     "url": "https://www.tradeinn.com/waveinn/en/ragot-sealight-float/138402350/p"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca à boia",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-guia",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Amostras de spinning: qual conforme o mar",
+   "otros_nombres": [
+    "Escolher amostra"
+   ],
+   "para": "Que família de amostra pôr conforme o estado do mar.",
+   "resumen": "Quem manda é o estado do mar: com mar calmo e água limpa, superfície e vinis leves; com espuma e mar agitado, amostras que se agarrem à água ou que desçam abaixo da espuma.",
+   "como_es": [
+    "Mar calmo e água limpa: amostra de superfície (stickbait), popper pequeno, minnow flutuante ou vinil sem chumbo.",
+    "Mar agitado com espuma: minnow que «morde» a água, sinking pencil, vinil com cabeça chumbada ou uma amostra de superfície um pouco maior.",
+    "Vento de frente: sinking pencil ou jig de lançamento, que voam e cortam o vento.",
+    "Água turva: vinis brancos ou amostras de silhueta marcada a várias profundidades; as de superfície muito ruidosas costumam render pouco.",
+    "Fundo com muita pedra ou algas, com mar calmo: vinil sem chumbo montado anti-prisão (weedless)."
+   ],
+   "medidas": [
+    "De 9 a 15 cm e de 10 a 30 g cobrem quase toda a pesca ao robalo a partir da costa.",
+    "Mais peso se houver vento ou for preciso chegar longe; menos se o peixe estiver colado à margem."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Robalo na rocha e na praia: a caixa básica é uma amostra de superfície, um minnow, um sinking pencil e um par de vinis com cabeças de pesos diferentes.",
+    "Cavala, anchova e bonito: jig de lançamento ou colherinha."
+   ],
+   "usos_embarcacion": [
+    "Spinning às aves a trabalhar (cavala, bonito, anchova): jig de lançamento ou sinking pencil.",
+    "Lançar à pedra a partir da embarcação: as mesmas que da costa."
+   ],
+   "ojo": "Nenhuma amostra funciona sempre: se em meia hora não houver nada, muda de família antes de mudar de cor.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: ler o mar e o tempo para o robalo à amostra",
+     "url": "https://www.seaangler.co.uk/fishing-news/lure-fishing-bass-cracking-code-watercraft-weather/"
+    },
+    {
+     "titulo": "Sea Angler: pescar com mar agitado (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: perguntas sobre pesca à amostra (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    },
+    {
+     "titulo": "Angling Times: as melhores amostras para robalo a partir da costa",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    },
+    {
+     "titulo": "Leurre de la Pêche: que amostra escolher para o robalo",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-paseante",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Amostra de superfície (stickbait)",
+   "otros_nombres": [
+    "Stickbait",
+    "Walk the dog"
+   ],
+   "para": "Uma amostra dura sem palheta que flutua e se move em ziguezague à superfície.",
+   "resumen": "Imita um peixe ferido à superfície: os ataques veem-se e são espetaculares. É a clássica do robalo com pouca luz.",
+   "como_es": [
+    "Sem palheta: o ziguezague dás tu com toques curtos de ponteira e recolhendo a linha solta («walk the dog»).",
+    "Flutua: se parares, fica parada à superfície."
+   ],
+   "medidas": [
+    "De 9 a 14 cm; as mais pesadas (20–30 g) lançam melhor com vento e veem-se melhor com mar."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Robalo ao amanhecer e ao anoitecer, com mar calmo ou com algum mar.",
+    "Sobre pedras e baixios onde uma amostra que desce ficaria presa."
+   ],
+   "usos_embarcacion": [
+    "Lançar à pedra e a cardumes à superfície."
+   ],
+   "ojo": "Perante um ataque, não ferres até sentires o peso: muitos falham por ferrar ao ver o salpico.",
+   "fuentes": [
+    {
+     "titulo": "Minnesota DNR: amostras de superfície",
+     "url": "https://dnr.state.mn.us/minnaqua/et/surface-lures.html"
+    },
+    {
+     "titulo": "Bass Resource: amostras de superfície",
+     "url": "https://www.bassresource.com/fishing/topwater_baits.html"
+    },
+    {
+     "titulo": "Sea Angler: pescar com mar agitado (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Angling Times: as melhores amostras para robalo a partir da costa",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-popper",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Popper",
+   "otros_nombres": [
+    "Chugger"
+   ],
+   "para": "Amostra de superfície com a boca côncava que salpica e faz barulho ao puxar.",
+   "resumen": "Chama o peixe de longe com o chapinhar. Funciona bem com pouca luz e para levantar peixes ativos.",
+   "como_es": [
+    "Boca côncava: a cada esticão faz «pop» e salpica.",
+    "Pesca-se aos esticões com pausas."
+   ],
+   "medidas": [
+    "De 7 a 12 cm na costa; maiores para aves a trabalhar e tunídeos."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Robalo com pouca luz, com mar calmo ou com alguma onda.",
+    "Anchova e outros predadores perto da superfície."
+   ],
+   "usos_embarcacion": [
+    "Aves a trabalhar e cardumes à superfície (bonito, anchova)."
+   ],
+   "ojo": "Com água muito turva e muita espuma costuma render pouco: aí, melhor uma amostra que desça.",
+   "fuentes": [
+    {
+     "titulo": "Minnesota DNR: amostras de superfície",
+     "url": "https://dnr.state.mn.us/minnaqua/et/surface-lures.html"
+    },
+    {
+     "titulo": "Bass Resource: amostras de superfície",
+     "url": "https://www.bassresource.com/fishing/topwater_baits.html"
+    },
+    {
+     "titulo": "Sea Angler: perguntas sobre pesca à amostra (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-minnow",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Minnow (peixe com palheta)",
+   "otros_nombres": [
+    "Jerkbait",
+    "Peixinho"
+   ],
+   "para": "Amostra dura com forma de peixe e uma palheta que a faz nadar e descer.",
+   "resumen": "A amostra mais versátil: nada sozinha com recolha linear e a palheta define a que profundidade trabalha.",
+   "como_es": [
+    "Flutuante: desce ao recolher e sobe ao parar.",
+    "Suspending: fica parada a meia água ao parar.",
+    "Afundante: desce sozinha; para procurar mais fundo ou com vento.",
+    "Palheta maior, mais profundidade."
+   ],
+   "medidas": [
+    "De 9 a 14 cm; 12–20 g as habituais na costa."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Robalo na praia e na rocha com mar agitado: «morde» a água e continua a nadar com a onda.",
+    "Recolha linear com alguma pausa."
+   ],
+   "usos_embarcacion": [
+    "Spinning à pedra.",
+    "Corrico lento com minnows de palheta grande."
+   ],
+   "ojo": "Com ondas grandes, as flutuantes muito leves saltam fora de água: usa uma mais pesada ou afundante.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: guia de amostras para principiantes",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    },
+    {
+     "titulo": "Sea Angler: pescar com mar agitado (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Leurre de la Pêche: que amostra escolher para o robalo",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    },
+    {
+     "titulo": "Angling Times: as melhores amostras para robalo a partir da costa",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-lapiz-hundido",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Sinking pencil (lápis afundante)",
+   "otros_nombres": [
+    "Lápiz hundido",
+    "Needlefish"
+   ],
+   "para": "Amostra dura, alongada e sem palheta, que afunda.",
+   "resumen": "Lança imenso, corta o vento e trabalha abaixo da espuma. Imita a galeota e peixes finos.",
+   "como_es": [
+    "Sem palheta e pesada para o seu tamanho.",
+    "Deixa-se descer e recolhe-se devagar, com um nado suave."
+   ],
+   "medidas": [
+    "De 9 a 15 cm; 15–30 g."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Robalo com vento de frente ou mar de fundo.",
+    "Praias com espuma: fazê-la descer abaixo da rebentação.",
+    "Anchova e cavala longe da margem."
+   ],
+   "usos_embarcacion": [
+    "Aves a trabalhar e peixes à superfície longe da embarcação."
+   ],
+   "ojo": "Recolhida depressa sobe à superfície; recolhida devagar em pouco fundo prende-se: ajusta o ritmo à profundidade.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: pescar com mar agitado (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: ler o mar e o tempo para o robalo à amostra",
+     "url": "https://www.seaangler.co.uk/fishing-news/lure-fishing-bass-cracking-code-watercraft-weather/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-vinilo",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Vinil (amostra mole)",
+   "otros_nombres": [
+    "Shad",
+    "Paddletail",
+    "Slug"
+   ],
+   "para": "Amostra de borracha mole, com cauda de pá (shad) ou sem ela (slug), montada em cabeça chumbada ou sem chumbo.",
+   "resumen": "Provavelmente a mais usada para o robalo: serve todo o ano, com mar calmo e com mar, e montada anti-prisão passa sobre algas e pedra.",
+   "como_es": [
+    "Shad ou cauda de pá: vibra ao recolher; com cabeça chumbada desce e pesca-se a várias alturas.",
+    "Slug ou vinil sem cauda: nada em ziguezague perto da superfície, sem chumbo.",
+    "Anti-prisão (weedless): a ponta do anzol vai escondida na borracha."
+   ],
+   "medidas": [
+    "De 9 a 15 cm; cabeça de 5 a 30 g conforme o fundo, a corrente e o vento."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Robalo na rocha com algas (sem chumbo, anti-prisão, com mar calmo).",
+    "Com mar agitado ou água turva: shad com cabeça chumbada, em branco.",
+    "Peixes chatos e outros de fundo, arrastando devagar."
+   ],
+   "usos_embarcacion": [
+    "Pesca vertical e à deriva com cabeças pesadas.",
+    "Lançar à pedra."
+   ],
+   "ojo": "Os peixes arrancam a cauda: leva peças de reserva. Muda o peso da cabeça antes de mudar o vinil.",
+   "fuentes": [
+    {
+     "titulo": "Leurre de la Pêche: que amostra escolher para o robalo",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    },
+    {
+     "titulo": "Sea Angler: pescar com mar agitado (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: perguntas sobre pesca à amostra (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    },
+    {
+     "titulo": "Wired2Fish: guia de amostras para principiantes",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-jig-lance",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Jig de lançamento (casting jig)",
+   "otros_nombres": [
+    "Casting jig",
+    "Jig metálico"
+   ],
+   "para": "Uma peça de metal que voa longe e desce depressa.",
+   "resumen": "A amostra para chegar longe e depressa: cavala, bonito, anchova e robalo quando estão longe ou há vento.",
+   "como_es": [
+    "Metal compacto: lança longe e afunda depressa.",
+    "Recolhe-se depressa ou aos esticões; também se deixa cair e se sobe."
+   ],
+   "medidas": [
+    "Na costa, de 20 a 60 g: 20–30 g para trabalhos rápidos à superfície (bonito); 30–60 g o habitual para cavala e em geral."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Cavala, bonito e anchova a partir da rocha e do esporão (shore jigging).",
+    "Robalo com vento forte ou longe."
+   ],
+   "usos_embarcacion": [
+    "Aves a trabalhar e cardumes à superfície.",
+    "Jigging ligeiro vertical."
+   ],
+   "ojo": "Com fundo de pedra, conta os segundos de queda e começa a recolher antes de tocar: prende-se com facilidade.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: o jig metálico, do barco ou da praia",
+     "url": "https://www.thefisherman.com/article/by-boat-or-beach-the-versatile-metal-jig/"
+    },
+    {
+     "titulo": "FishingBooker: guia de shore jigging",
+     "url": "https://fishingbooker.com/blog/?p=422"
+    },
+    {
+     "titulo": "On The Water: cavala a partir da costa com jig",
+     "url": "https://onthewater.com/how-to-catch-spanish-mackerel-from-shore"
+    },
+    {
+     "titulo": "Sea Angler: pescar com mar agitado (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-cucharilla",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Colherinha e colher ondulante",
+   "otros_nombres": [
+    "Spinner",
+    "Spoon"
+   ],
+   "para": "A colherinha tem uma pá que roda à volta de um eixo; a colher ondulante é uma chapa curva que balança.",
+   "resumen": "Amostras simples e baratas que brilham e vibram: boas para começar e para peixes ativos.",
+   "como_es": [
+    "Colherinha: a pá roda e vibra; torce a linha, usa destorcedor.",
+    "Colher ondulante: chapa curva que balança ao recolher; lança longe."
+   ],
+   "medidas": [
+    "Colherinhas de 5 a 20 g; colheres de 10 a 40 g."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Cavala, carapau e robalo pequeno a partir de esporões e portos.",
+    "Para começar a pescar à amostra."
+   ],
+   "usos_embarcacion": [
+    "Corrico ligeiro e pesca a cardumes de cavala."
+   ],
+   "ojo": "Torcem a linha: põe um destorcedor de rolamentos à frente.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: a colher Johnson Silver Minnow",
+     "url": "https://www.wired2fish.com/tackle-tips/20-most-influential-fishing-lures-no-17-johnson-silver-minnow"
+    },
+    {
+     "titulo": "Missouri Dept. of Conservation: The Lure of Lures",
+     "url": "https://mdc.mo.gov/node/297484"
+    },
+    {
+     "titulo": "Wired2Fish: guia de amostras para principiantes",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-colores",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Cores da amostra: qual escolher",
+   "otros_nombres": [
+    "Cor da amostra"
+   ],
+   "para": "Que cor escolher conforme a luz e a transparência da água.",
+   "resumen": "Regra simples: natural com água limpa e luz; branco ou cores vivas com água turva; escuro de noite, que se vê melhor recortado contra a superfície.",
+   "como_es": [
+    "Com água turva ou a grande profundidade, o tamanho, a forma, o movimento e o contraste importam mais que a cor.",
+    "Muda de família de amostra antes de mudar de cor."
+   ],
+   "medidas": [
+    "O mesmo tamanho que o peixe-pasto que houver na zona."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "Água limpa de verão: prateados, sardinha, transparentes.",
+    "Água turva depois de um temporal: branco ou cores vivas.",
+    "De noite a partir da rocha: preto ou muito escuro."
+   ],
+   "usos_embarcacion": [
+    "Aves a trabalhar: prateado e azul, como o peixe-pasto."
+   ],
+   "ojo": "Quase todos os guias são de água doce ou de achigã: toma-os como orientação, não como regra.",
+   "fuentes": [
+    {
+     "titulo": "Bass Pro: escolher a cor da amostra",
+     "url": "https://1source.basspro.com/news-tips/fishing-tackle/7368/simple-guide-choosing-lure-colors-bass"
+    },
+    {
+     "titulo": "BCF: as cores certas da amostra",
+     "url": "https://www.bcf.com.au/be-a-bcfing-expert/fishing/buyers-guide/right-lure-colours.html"
+    },
+    {
+     "titulo": "Minnesota DNR: cores de amostra",
+     "url": "https://dnr.state.mn.us/minnaqua/et/lure-colors.html"
+    },
+    {
+     "titulo": "Sea Angler: perguntas sobre pesca à amostra (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "colores": [
+    {
+     "color": "Natural (prata, sardinha, transparente)",
+     "para": "Água limpa e muita luz."
+    },
+    {
+     "color": "Branco ou cores vivas",
+     "para": "Água turva: mais contraste."
+    },
+    {
+     "color": "Preto ou muito escuro",
+     "para": "De noite e com pouca luz: a silhueta vê-se melhor contra a superfície."
+    }
+   ]
+  },
+  {
+   "id": "cana-partes",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "A cana: partes e como ler os seus dados",
+   "otros_nombres": [
+    "Partes da cana"
+   ],
+   "para": "O que é cada parte de uma cana e o que significam os números que traz impressos.",
+   "resumen": "Todas as canas têm o mesmo: o tubo (blank), os passadores, o porta-carreto e o punho. O que muda entre uma de surfcasting e uma de jigging é o comprimento, a potência, a ação e o peso de lançamento.",
+   "como_es": [
+    "Blank: o tubo da cana (carbono, fibra de vidro ou mistura). O carbono é mais leve e sensível; a fibra, mais resistente a pancadas.",
+    "Passadores (guias): conduzem a linha; o anel interior tem de estar liso, sem fissuras.",
+    "Porta-carreto: onde se aperta o carreto; diferente para carreto frontal ou de tambor rotativo.",
+    "Punho: cortiça ou EVA; comprido nas canas de lançamento para fazer alavanca.",
+    "Ponteira: o último troço; marca a picada.",
+    "Potência: a força necessária para a dobrar (ligeira, média, pesada): é ditada pelo tamanho do peixe e da linha.",
+    "Ação: onde dobra. Rápida: só a ponta (sensível, ferra depressa). Moderada ou lenta: dobra até baixo (perdoa mais, amortece).",
+    "Peso de lançamento (p. ex. 10–40 g ou 100–200 g): o peso da amostra ou do chumbo que lança bem. Fora dessa gama lança mal ou pode partir.",
+    "Troços: de encaixe (melhor ação) ou telescópica (cómoda para transportar)."
+   ],
+   "medidas": [
+    "Cana comprida: lança mais longe. Curta: mais precisa e mais força para lutar.",
+    "O peso de lançamento da cana tem de cobrir o das tuas amostras ou chumbos."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Surfcasting: compridas e potentes.",
+    "Spinning: médias e sensíveis."
+   ],
+   "usos_embarcacion": [
+    "Barco: mais curtas e mais potentes."
+   ],
+   "ojo": "Não lances acima do peso de lançamento que a cana indica: é a forma mais comum de a partir.",
+   "fuentes": [
+    {
+     "titulo": "Academy: partes de uma cana de pesca",
+     "url": "https://www.academy.com/expert-advice/parts-of-a-fishing-rod"
+    },
+    {
+     "titulo": "Okuma: anatomia de uma cana",
+     "url": "https://okumafishingusa.com/blogs/news/anatomy-of-a-fishing-rod-okuma-tune-up-tuesday"
+    },
+    {
+     "titulo": "West Marine: escolher uma cana",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    },
+    {
+     "titulo": "Salt Water Sportsman: como escolher a cana de mar",
+     "url": "https://www.saltwatersportsman.com/find-right-fishing-rod/"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "carrete-partes",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "O carreto: tipos e partes",
+   "otros_nombres": [
+    "Partes do carreto"
+   ],
+   "para": "Os tipos de carreto e o que significa cada dado: tamanho, relação de recuperação e travão.",
+   "resumen": "No mar usam-se sobretudo dois: o carreto frontal (spinning), fácil e universal, e o de tambor rotativo (multiplicador), mais forte para barco e corrico.",
+   "como_es": [
+    "Frontal (spinning): a bobina não roda; a linha sai pela frente. O mais fácil e o que se usa no surfcasting e no spinning.",
+    "Tambor rotativo (multiplicador, «de barco»): a bobina roda; mais potência e resistência para barco, jigging pesado e corrico.",
+    "Bobina: onde vai a linha; as de surfcasting são compridas e cónicas para lançar longe.",
+    "Travão: deixa sair linha quando o peixe puxa mais do que a linha aguenta. Dianteiro (mais fino e forte) ou traseiro.",
+    "Relação de recuperação (p. ex. 5,7:1): voltas do rotor por cada volta da manivela. Mas a linha que recolhes depende também do diâmetro da bobina.",
+    "Aro (pick-up): o arco que recolhe a linha no carreto frontal."
+   ],
+   "medidas": [
+    "O tamanho (1000, 2500, 4000, 10000…) não é igual entre marcas; dentro de uma marca, número maior é carreto maior.",
+    "Nos dados vê o travão máximo e a capacidade de linha."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Spinning: frontal de tamanho médio.",
+    "Surfcasting: frontal grande de bobina comprida."
+   ],
+   "usos_embarcacion": [
+    "Jigging pesado, fundo profundo e corrico: tambor rotativo ou frontal grande de mar."
+   ],
+   "ojo": "No mar, que seja um carreto preparado para água salgada: os de água doce oxidam logo.",
+   "fuentes": [
+    {
+     "titulo": "West Marine: escolher um carreto de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "FishingBooker: carretos de spinning de mar",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "Bass Resource: guia de carretos de spinning",
+     "url": "https://bassresource.com/fishing/spinning-reels-buyers-guide.html"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "carrete-tamanos",
+   "tema": "canas-costa",
+   "tambien_en": [
+    "canas-barco"
+   ],
+   "tipo": "material",
+   "nombre": "Tamanho do carreto: quando um 2500, um 3000, um 5000…",
+   "otros_nombres": [
+    "Tamanhos de carreto"
+   ],
+   "para": "Que tamanho de carreto frontal escolher conforme a pesca.",
+   "resumen": "O número do carreto indica o seu tamanho e a quantidade de linha que leva. Regra prática: mais pequeno quanto mais fina a linha e mais leves as amostras; maior para lançar longe, linhas grossas e peixes que puxam muito.",
+   "como_es": [
+    "Dentro de uma marca, número maior = carreto maior, mais linha e mais travão.",
+    "Entre marcas não é igual: um 4000 de uma pode ser bastante mais pequeno que o 4000 de outra. Compara a capacidade de linha e o travão máximo.",
+    "A Daiwa normalizou os seus tamanhos LT (diâmetro da bobina) em 1000, 2000, 2500, 3000, 4000, 5000 e 6000.",
+    "O carreto tem de equilibrar a cana: um muito grande numa cana ligeira cansa o pulso."
+   ],
+   "por_especie_titulo": "🎣 Que tamanho para cada pesca",
+   "por_especie": [
+    {
+     "pez": "Pesca ligeira no porto (LRF), peixes pequenos",
+     "tam": "1000–2000",
+     "nota": "linhas muito finas"
+    },
+    {
+     "pez": "Spinning ligeiro ao robalo, pesca à boia",
+     "tam": "2500–3000",
+     "nota": "o mais versátil para começar"
+    },
+    {
+     "pez": "Spinning ao robalo grande, anchova, amostras mais pesadas",
+     "tam": "4000",
+     "nota": "mais linha e mais travão"
+    },
+    {
+     "pez": "Shore jigging, spinning pesado, fundo ligeiro a partir do barco",
+     "tam": "5000–6000",
+     "nota": ""
+    },
+    {
+     "pez": "Surf e jigging pesado a partir do barco",
+     "tam": "6000–10000",
+     "nota": ""
+    },
+    {
+     "pez": "Surfcasting à distância",
+     "tam": "10000–14000 de bobina comprida (long cast)",
+     "nota": "há canas de surfcasting que recomendam 5000–10000"
+    }
+   ],
+   "medidas": [
+    "Vê sempre a capacidade (metros de linha de um diâmetro dado) e o travão máximo do modelo concreto.",
+    "Com multifilamento cabe muito mais linha do que com nylon no mesmo carreto."
+   ],
+   "medidas_titulo": "📏 O que ver ao comprar",
+   "usos_costa": [
+    "Spinning: 2500–4000.",
+    "Surfcasting: 5000–14000 de bobina comprida."
+   ],
+   "usos_embarcacion": [
+    "Fundo e spinning a partir do barco: 4000–6000.",
+    "Jigging pesado: 6000–10000 ou carretos de tambor rotativo."
+   ],
+   "ojo": "O número é orientativo: dois «4000» de marcas diferentes podem ter capacidades muito diferentes. As tabelas dos guias são de pesca nos EUA, toma-as como ponto de partida.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tamanhos de carreto de spinning (com tabelas)",
+     "url": "https://tacklevillage.com/?p=1010135"
+    },
+    {
+     "titulo": "FishingBooker: carretos de spinning de mar",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "West Marine: escolher um carreto de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "Daiwa: tamanhos LT (diâmetros de bobina normalizados)",
+     "url": "https://daiwafishing.com.au/light-tough/"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: cana de surfcasting com carreto 5000–10000",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: carretos 14000",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "carrete-freno",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "O travão do carreto: como o regular",
+   "otros_nombres": [
+    "Regular o travão"
+   ],
+   "para": "Quanto apertar o travão para não partir a linha nem deixar fugir o peixe.",
+   "resumen": "A regra geral é regulá-lo para cerca de um quarto do que a linha aguenta (ou a baixada, se for mais fraca). Com multifilamento, um pouco menos.",
+   "como_es": [
+    "Mede-se com um dinamómetro (ou uma balança de bagagem) puxando a linha passada pelos passadores, com a cana dobrada.",
+    "Com nylon: cerca de 20 % da linha em linhas finas e 25–30 % em linhas grossas.",
+    "Com multifilamento: menos (de 15 a 25 %), porque não estica e a pancada chega inteira.",
+    "Calcula-se sobre o elo mais fraco: a baixada, o nó ou a cana."
+   ],
+   "medidas": [
+    "Exemplo: baixada de 10 kg → travão em cerca de 2–2,5 kg."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Spinning com multifilamento fino: travão suave, quem manda é a baixada.",
+    "Surfcasting: um pouco mais apertado para ferrar à distância, sem exagerar."
+   ],
+   "usos_embarcacion": [
+    "Jigging e corrico: regula-se antes de começar e não se mexe às cegas com o peixe ferrado."
+   ],
+   "ojo": "Não apertes o travão à mão enquanto o peixe puxa: é quando mais linhas se partem. As fontes não estão de acordo sobre se se deve aliviá-lo ao guardar o carreto.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: como usar o travão do carreto",
+     "url": "https://www.saltwatersportsman.com/how-to-manage-your-drag"
+    },
+    {
+     "titulo": "Salt Water Sportsman: quanto travão usar?",
+     "url": "https://www.saltwatersportsman.com/?p=58503"
+    },
+    {
+     "titulo": "George Poveromo: como gerir o travão",
+     "url": "https://georgepoveromo.com/how_to_manage_your_drag.html"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "cana-carrete-mantenimiento",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Manutenção de canas e carretos",
+   "otros_nombres": [
+    "Limpeza do material"
+   ],
+   "para": "Como cuidar do material depois de pescar no mar para que dure anos.",
+   "resumen": "O sal é o inimigo: um enxaguamento suave com água doce depois de cada saída, secar bem e uma gota de lubrificante evitam quase todas as avarias.",
+   "como_es": [
+    "Depois de cada saída: enxagua a cana e o carreto com água doce suave, em chuveiro ou com um pano. Nunca à pressão nem submerso: mete o sal para dentro.",
+    "Seca tudo bem antes de guardar; não o guardes na bolsa molhada.",
+    "Verifica os passadores: passa um cotonete; se prender, há uma fissura que vai cortar a linha.",
+    "Limpa o porta-carreto, onde o sal se acumula.",
+    "De vez em quando, uma camada fina de protetor anticorrosão ou lubrificante nas partes metálicas exteriores (nunca no travão).",
+    "Uma vez por ano, revisão do carreto numa loja ou desmontando-o, se souberes."
+   ],
+   "medidas": [
+    "Enxaguamento: em cada saída. Revisão completa: uma vez por ano (ou antes, se fizer barulho ou rodar preso)."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Depois de pescar na praia, a areia: enxagua também o aro e o rotor do carreto."
+   ],
+   "usos_embarcacion": [
+    "No barco a água salpica tudo o dia inteiro: enxagua sempre ao voltar."
+   ],
+   "ojo": "Não uses sabão forte nem solventes no carreto: tiram a massa lubrificante de dentro. E não metas óleo no travão.",
+   "fuentes": [
+    {
+     "titulo": "Mercury Marine: como limpar os carretos",
+     "url": "https://mercurymarine.com/ch/fr/dockline/how-to-clean-fishing-reels"
+    },
+    {
+     "titulo": "Texas Parks and Wildlife: manutenção do material de pesca (PDF)",
+     "url": "https://tpwd.texas.gov/education/angler-education/fishing-gear-maintenance-and-repair.pdf"
+    },
+    {
+     "titulo": "Pure Fishing: limpar e guardar o material de mar",
+     "url": "https://www.purefishing.com/dock-talk-April-2023-cleaning-and-storing-saltwater-fishing-gear"
+    },
+    {
+     "titulo": "BoatUS: cuidados com as canas",
+     "url": "https://boatus.geico.com/expert-advice/expert-advice-archive/2015/april/fishing-rod-care"
+    },
+    {
+     "titulo": "Marlin: manutenção de carretos",
+     "url": "https://www.marlinmag.com/howto/fishing-reel-maintenance-aftermarket-performance-tweaks/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: como limpar os carretos",
+     "url": "https://www.saltwatersportsman.com/spinning-reels-maintenance/"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "equipo-surfcasting",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Material de surfcasting",
+   "otros_nombres": [
+    "Cana de surfcasting"
+   ],
+   "para": "Cana e carreto para lançar longe a partir da praia com chumbo e isco.",
+   "resumen": "Canas compridas (cerca de 4,20–4,50 m) e potentes, com carretos grandes de bobina comprida para lançar longe.",
+   "como_es": [
+    "Cana comprida com ação para lançar forte; punho comprido.",
+    "Carreto frontal grande de bobina comprida e cónica (long cast).",
+    "Linha madre fina para voar mais e um shock leader (ponta de lançamento) que aguente a pancada do lançamento.",
+    "Secções: três secções de encaixe (melhor ação e lançamento) ou telescópica (cómoda de transportar e montar)."
+   ],
+   "medidas": [
+    "Cana: 4,20–4,50 m; peso de lançamento habitual 100–200 g (ótimo por volta de 130 g em alguns modelos).",
+    "Carreto: tamanhos 5000–14000 de bobina comprida.",
+    "Linha madre por volta de 0,14–0,35 mm conforme a cana e a modalidade, com shock leader mais grosso."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Praias: pesca ao fundo de sargo, dourada, robalo, ferreira, peixes chatos.",
+    "Com corrente ou mar de fundo, chumbo de garras do peso que a cana aguente."
+   ],
+   "usos_embarcacion": [
+    "Não se usa a partir do barco."
+   ],
+   "ojo": "Lançar um chumbo mais pesado do que a cana indica pode parti-la; e sem shock leader, a pancada do lançamento rebenta a linha madre fina.",
+   "fuentes": [
+    {
+     "titulo": "Caperlan Symbios 500: cana de surfcasting 4,20 m 100–200 g e carreto 5000–10000",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: 4,50 m 100–200 g",
+     "url": "https://www.decathlon.ie/p/338548-281436-surfcasting-fishing-rod-symbios-500-450-100-200-gr.html"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: 4,20 m, 150–200 g, carretos 14000",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-spinning-costa",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Material de spinning a partir da costa",
+   "otros_nombres": [
+    "Cana de spinning"
+   ],
+   "para": "Cana e carreto para lançar amostras a partir da rocha e da praia.",
+   "resumen": "Cana leve e sensível com carreto frontal médio e multifilamento: é preciso lançar milhares de vezes, por isso o peso conta.",
+   "como_es": [
+    "Cana de ação rápida ou semirrápida: sensível e que ferre bem à distância.",
+    "Carreto frontal médio com bom travão.",
+    "Multifilamento fino com baixada de fluorocarbono.",
+    "Secções: o normal são duas secções de encaixe; as de viagem têm três ou quatro. As telescópicas lançam pior."
+   ],
+   "medidas": [
+    "Peso de lançamento que cubra as tuas amostras (por exemplo 10–40 g para amostras de 10–30 g).",
+    "Carreto de tamanho 3000–4000 (4000 para amostras e peixes maiores).",
+    "Na rocha e na praia usam-se canas mais compridas do que as de água doce: lançam mais e controlam a amostra sobre ondas e pedras."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Robalo, anchova, cavala a partir da rocha e da praia.",
+    "Shore jigging com jigs de 20–60 g: cana mais potente."
+   ],
+   "usos_embarcacion": [
+    "A mesma cana serve para lançar do barco à pedra."
+   ],
+   "ojo": "Uma cana muito dura com amostras leves não carrega e lança pouco: ajusta o peso de lançamento ao que mais usares.",
+   "fuentes": [
+    {
+     "titulo": "Bass Resource: conjuntos de spinning",
+     "url": "https://www.bassresource.com/fishing/spinning-outfits.html"
+    },
+    {
+     "titulo": "Outdoor Life: canas de spinning de mar",
+     "url": "https://www.outdoorlife.com/gear/best-inshore-spinning-rods.md"
+    },
+    {
+     "titulo": "West Marine: escolher um carreto de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-jigging",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Material de jigging (barco)",
+   "otros_nombres": [
+    "Cana de jigging",
+    "Slow pitch"
+   ],
+   "para": "Cana e carreto para pescar com jigs metálicos na vertical a partir do barco.",
+   "resumen": "Canas curtas, potentes e leves. No jigging rápido, ponteira rápida; no slow pitch, canas mais parabólicas que fazem dançar o jig na queda.",
+   "como_es": [
+    "Cana curta e com espinha para levantar o peixe do fundo.",
+    "Jigging rápido: ação rápida.",
+    "Slow pitch: cana um pouco mais comprida e macia que dá movimento ao jig.",
+    "Carreto de tambor rotativo ou frontal de mar com travão forte; multifilamento multicolor.",
+    "Secções: uma secção, ou uma secção com punho desmontável; quanto menos encaixes, mais potência."
+   ],
+   "medidas": [
+    "Canas curtas (por volta de 1,8–2,1 m) para trabalhar na vertical.",
+    "Peso do jig conforme a profundidade e a corrente."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Shore jigging: ver «Material de spinning a partir da costa» (cana mais comprida)."
+   ],
+   "usos_embarcacion": [
+    "Jigging vertical e slow pitch sobre pedra e naufrágios."
+   ],
+   "ojo": "Um jig mais pesado do que a cana indica sobrecarrega-a: muda de cana antes de mudar de jig.",
+   "fuentes": [
+    {
+     "titulo": "FishingBooker: canas de pesca de alto mar",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    },
+    {
+     "titulo": "Salt Water Sportsman: escolher a cana certa",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "Mustad: slow pitch jigging",
+     "url": "https://mustad-fishing.com/us/article/get-in-on-the-slow-pitch-jig-craze"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-currican",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Material de corrico",
+   "otros_nombres": [
+    "Cana de corrico",
+    "Curricán"
+   ],
+   "para": "Cana e carreto para arrastrar amostras ou iscos a partir do barco em andamento.",
+   "resumen": "Canas curtas e robustas, de ação mais lenta, e carretos de tambor rotativo com muita linha.",
+   "como_es": [
+    "Cana curta e forte; ação lenta ou moderada para que o peixe pegue na amostra antes de sentir a cana.",
+    "Carreto de tambor rotativo com grande capacidade e travão de alavanca ou de estrela.",
+    "Porta-canas no barco: a cana trabalha sozinha até à picada.",
+    "Secções: uma secção ou uma secção com punho desmontável, para aguentar a tensão."
+   ],
+   "medidas": [
+    "Canas mais curtas do que as de lançamento: aqui manda a força, não a distância."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Não se usa a partir da costa."
+   ],
+   "usos_embarcacion": [
+    "Corrico de superfície (bonito, cavala, anchova) e de fundo com linha de chumbo."
+   ],
+   "ojo": "Regula o travão antes de largar: com o barco em andamento a picada é um esticão brusco.",
+   "fuentes": [
+    {
+     "titulo": "West Marine: escolher uma cana",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    },
+    {
+     "titulo": "Salt Water Sportsman: escolher a cana certa",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "FishingBooker: canas de pesca de alto mar",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-fondo-barco",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Material de fundo a partir do barco",
+   "otros_nombres": [
+    "Cana de barco"
+   ],
+   "para": "Cana e carreto para pescar com isco fundeado ou à deriva.",
+   "resumen": "Cana de comprimento médio com ponteira sensível para ver a picada e espinha para tirar o peixe do fundo.",
+   "como_es": [
+    "Ponteira sensível para sentir a picada em profundidade.",
+    "Espinha potente para descolar o peixe da pedra.",
+    "Carreto frontal de mar ou de tambor rotativo, conforme a profundidade e o chumbo.",
+    "Secções: duas secções de encaixe ou telescópica; em barcos pequenos, a telescópica arruma-se melhor."
+   ],
+   "medidas": [
+    "Comprimento médio; em barcos pequenos, mais curta para a manejar bem."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Não se usa a partir da costa (da costa, ver surfcasting)."
+   ],
+   "usos_embarcacion": [
+    "Pesca fundeada e à deriva com baixadas de estralhos: besugo, bica, carapau, safio, badejo."
+   ],
+   "ojo": "Em profundidade, o multifilamento transmite a picada muito melhor do que o nylon.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: escolher a cana certa",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "FishingBooker: canas de pesca de alto mar",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    },
+    {
+     "titulo": "West Marine: escolher uma cana",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jibionera-egi",
+   "tema": "cefalopodos",
+   "tipo": "material",
+   "nombre": "Toneira (egi)",
+   "otros_nombres": [
+    "Egi",
+    "Squid jig",
+    "Jibionera (espanhol)"
+   ],
+   "para": "Amostra em forma de camarão com uma coroa de agulhas sem barbela na cauda, para lula e choco.",
+   "resumen": "Lança-se, deixa-se afundar e faz-se saltar com puxões secos: a lula ataca-a quando cai. É a pesca da lula a partir de portos e rochas.",
+   "como_es": [
+    "Corpo de camarão, muitas vezes forrado a tecido; coroa de agulhas sem barbela atrás.",
+    "Há afundantes (as normais), flutuantes e «shallow» de afundamento lento para pouco fundo.",
+    "O tamanho dá-se em números (2.5, 3.0, 3.5…): uma 2.5 mede cerca de 7,5 cm e uma 3.5 cerca de 10,5 cm.",
+    "Velocidade de afundamento em segundos por metro (as normais, cerca de 3–3,5 s/m)."
+   ],
+   "medidas": [
+    "2.5: lulas pequenas, pouco fundo e mar calmo.",
+    "3.0: a mais usada para tudo.",
+    "3.5: mais fundo, corrente ou lula grande.",
+    "Veja na embalagem o peso e o tempo de afundamento: variam muito entre modelos."
+   ],
+   "medidas_titulo": "📏 Tamanho",
+   "usos_costa": [
+    "De noite sob os candeeiros de portos e molhes, ou ao amanhecer e ao entardecer.",
+    "Lançar, contar enquanto afunda, dois ou três puxões secos e deixá-la cair outra vez com a linha frouxa."
+   ],
+   "usos_embarcacion": [
+    "À deriva lenta ou fundeado sobre fundos de areia e algas.",
+    "Com luz à noite, onde for permitido."
+   ],
+   "ojo": "A cana tem de aguentar o peso da toneira. Leve cores diferentes: a que funciona muda de um dia para o outro.",
+   "fuentes": [
+    {
+     "titulo": "Daiwa: o básico da pesca com egi (toneira)",
+     "url": "https://daiwafishing.com.au/blogs/news/inky-business-the-basics-of-egi-squid-fishing"
+    },
+    {
+     "titulo": "Fishing Mad: as melhores toneiras (tamanhos 2.5–3.5)",
+     "url": "https://fishingmad.com.au/review/best-squid-jigs-2025/"
+    },
+    {
+     "titulo": "Yamashita Egi Oh Live 3.0: peso e velocidade de afundamento",
+     "url": "https://compleatangler.com.au/products/yamashita-egi-oh-live-3-0-squid-jig"
+    },
+    {
+     "titulo": "Decathlon: toneiras (afundantes, flutuantes e shallow)",
+     "url": "https://www.decathlon.es/es/deportes/pesca/jibioneras-pesca"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "colores": [
+    {
+     "color": "Luminescente (glow)",
+     "para": "De noite, com pouca luz ou com água turva."
+    },
+    {
+     "color": "UV e cores naturais",
+     "para": "Água limpa e sol."
+    },
+    {
+     "color": "Várias cores",
+     "para": "Não há regra fixa: leve várias e mude se não pegarem."
+    }
+   ]
+  },
+  {
+   "id": "potera",
+   "tema": "cefalopodos",
+   "tipo": "material",
+   "nombre": "Zagaia (potera)",
+   "otros_nombres": [
+    "Potera (espanhol)",
+    "Zagaia de lula"
+   ],
+   "para": "Amostra vertical com uma ou várias coroas de agulhas sem barbela, que se move para cima e para baixo para a lula.",
+   "resumen": "É a forma tradicional de pescar lula a partir do barco: a zagaia sobe e desce na vertical, muitas vezes com luz à noite. Em Espanha, «calamar de potera» é a lula pescada assim, à unidade.",
+   "como_es": [
+    "Corpo alongado (muitas vezes luminescente) com coroas de agulhas sem barbela.",
+    "As agulhas sem barbela não estragam a lula e mantêm-na inteira.",
+    "Podem montar-se várias na mesma linha, separadas."
+   ],
+   "medidas": [
+    "Peso conforme a profundidade e a corrente."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "A partir de portos e molhes com fundo, na vertical."
+   ],
+   "usos_embarcacion": [
+    "A pesca da lula a partir do barco, fundeado ou à deriva, movendo a zagaia para cima e para baixo.",
+    "De noite com luz para atrair o peixe miúdo e a lula, onde for permitido."
+   ],
+   "ojo": "Confirme a regulamentação da sua zona sobre o uso de luzes e sobre as capturas de lula.",
+   "fuentes": [
+    {
+     "titulo": "Directo al Paladar: o que significa «calamar de potera»",
+     "url": "https://www.directoalpaladar.com/ingredientes-y-alimentos/no-senora-pueblo-especie-que-significa-calamar-potera-que-importa-palabra"
+    },
+    {
+     "titulo": "IMARPE: pesca artesanal com zagaia e luz (PDF)",
+     "url": "https://repositorio.imarpe.gob.pe/server/api/core/bitstreams/4dd6d88c-1ccf-4ea4-b1e0-5bad0c2d4ccc/content"
+    },
+    {
+     "titulo": "Decathlon: toneiras (afundantes, flutuantes e shallow)",
+     "url": "https://www.decathlon.es/es/deportes/pesca/jibioneras-pesca"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plumas-caballa",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Penas para cavala e carapau",
+   "otros_nombres": [
+    "Penas",
+    "Feathers",
+    "Txitxarro",
+    "Sabiki"
+   ],
+   "para": "Uma baixada com vários anzóis vestidos com penas ou tiras brilhantes, com um chumbo ou um jig no fim.",
+   "resumen": "A forma clássica de pescar cavala e carapau quando entram em cardume: imita um pequeno cardume de peixes. O sabiki é a versão com anzóis mais pequenos.",
+   "como_es": [
+    "Penas: de 3 a 6 anzóis vestidos, separados cerca de 30 cm.",
+    "Sabiki: de 6 a 10 anzóis pequenos, para carapau pequeno, sardinha ou boga.",
+    "No fim, um chumbo ou, melhor, um jig pequeno de cor brilhante.",
+    "Uma luz química na baixada ajuda a partir do molhe à noite."
+   ],
+   "medidas": [
+    "Chumbo ou jig de cerca de 28 a 113 g conforme a profundidade e a corrente.",
+    "Com penas grandes, cavala; com sabiki, carapau e peixe miúdo."
+   ],
+   "medidas_titulo": "📏 Tamanho e peso",
+   "usos_costa": [
+    "A partir do molhe ou do porto: lançar e recolher com puxões para cima e para baixo, como um cardume.",
+    "Ou na vertical: descer até tocar no fundo e subir aos puxões, a uns 2–3 m da superfície se estiverem em cima."
+   ],
+   "usos_embarcacion": [
+    "Descer até ao fundo controlando a linha com o polegar e subir aos puxões.",
+    "Cana de barco e carreto com chumbo de cerca de 110 g."
+   ],
+   "ojo": "Muitos anzóis juntos enrolam-se e prendem-se no muro do molhe. Respeite os tamanhos mínimos e não leve mais do que vai usar.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: três métodos para a cavala",
+     "url": "https://www.seaangler.co.uk/fishing-tips/advanced/fishing-for-mackerel-three-great-methods/"
+    },
+    {
+     "titulo": "British Sea Fishing: penas e «daylights»",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/fishing-with-feathers-and-daylights/"
+    },
+    {
+     "titulo": "Advnture: como pescar cavala (montagens e dicas)",
+     "url": "https://www.advnture.com/how-to/mackerel-fishing-tips"
+    },
+    {
+     "titulo": "Wikipedia: Sabiki",
+     "url": "https://en.wikipedia.org/wiki/Sabiki"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "currican"
+   ]
+  },
+  {
+   "id": "currican-senuelos",
+   "tema": "currican",
+   "tipo": "material",
+   "nombre": "Amostras de corrico",
+   "otros_nombres": [
+    "Pena",
+    "Polvo",
+    "Saia",
+    "Señuelos de curricán (espanhol)"
+   ],
+   "para": "As amostras que se arrastam a partir do barco em andamento: penas, polvos de saia e amostras de cabeça dura.",
+   "resumen": "Para bonito, cavala grande, judeu e atuns. Cada tipo trabalha a uma velocidade: as penas e os tacos de madeira mais devagar; as saias um pouco mais depressa.",
+   "como_es": [
+    "Pena: cabeça pesada com saia de penas; a amostra clássica do bonito.",
+    "Polvo ou saia (skirt): cabeça de plástico ou metal com saia de vinil.",
+    "Taco de madeira (cedar plug): corpo duro que vibra à velocidade.",
+    "Minnows de pala grande para corrico mais lento e mais fundo."
+   ],
+   "medidas": [
+    "Penas e tacos: cerca de 5–8 nós.",
+    "Saias: cerca de 6–9 nós; alguns modelos para bonito aguentam até cerca de 9 nós.",
+    "O que manda é como nada cada amostra: veja se não salta nem gira."
+   ],
+   "medidas_titulo": "📏 Velocidade",
+   "usos_costa": [
+    "Não se usa a partir de costa."
+   ],
+   "usos_embarcacion": [
+    "Corrico de superfície para bonito, cavala grande e anchova.",
+    "Várias canas a distâncias diferentes atrás do barco."
+   ],
+   "ojo": "As velocidades são orientativas e as fontes não coincidem no máximo: ajuste vendo como nada a amostra.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: corrico com pena",
+     "url": "https://www.thefisherman.com/article/old-school-offshore-troll-a-feather/"
+    },
+    {
+     "titulo": "Pakula: a arte do corrico com amostras de saia",
+     "url": "https://pakula.com.au/index.php/2014-09-23-04-02-2/trolling-articles/the-art-of-lure-trolling"
+    },
+    {
+     "titulo": "TackleDirect: velocidades de corrico",
+     "url": "https://www.tackledirect.com/blog/trolling-speedsters"
+    },
+    {
+     "titulo": "Williamson Tuna Catcher: amostra de corrico para bonito e atuns",
+     "url": "https://www.rapala.com/williamson/trolling-lures/light-trolling-lures/tuna-catcher-rigged/Tuna+Catcher+Rigged.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  }
+ ]
+}

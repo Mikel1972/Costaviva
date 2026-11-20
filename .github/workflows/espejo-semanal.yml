@@ -1,0 +1,32 @@
+name: Espejo de idiomas (cada lunes)
+
+# 2026-11-20, Mikel: «y que revise cada lunes si son espejos 100 %». Sin IA:
+# scripts/seo/espejo-produccion.mjs lee el sitemap publicado, calcula el % de
+# páginas con versión en español, inglés y portugués, abre todas y falla en
+# rojo si hay un hueco nuevo o una página rota. El % y los huecos que quedan
+# salen en el resumen del job (aviso amarillo mientras no sea 100 %).
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: espejo-semanal
+  cancel-in-progress: true
+
+jobs:
+  espejo:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Revisar el espejo en producción
+        run: node scripts/seo/espejo-produccion.mjs
