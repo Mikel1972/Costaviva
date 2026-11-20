@@ -107,10 +107,24 @@ async function rendimiento(sitio, cabecera) {
     const busquedas = await consulta(["query"], 25);
     // Día a día, con los datos más recientes (aún provisionales).
     const porDia = await consulta(["date"], 40, { fresco: true, desde: 28, hasta: 0 }).catch(() => []);
+    // Total desde que la web sale en Google (2026-11-20, Mikel): Search
+    // Console guarda 16 meses; se piden 480 días, con lo más reciente.
+    const [acumulado] = await consulta([], 1, { fresco: true, desde: 480, hasta: 0 }).catch(() => []);
+    const porMes = await consulta(["date"], 500, { fresco: true, desde: 480, hasta: 0 }).catch(() => []);
     const fila = (r) => `${r.clicks} | ${r.impressions} | ${(r.ctr * 100).toFixed(1)}% | ${r.position.toFixed(1)}`;
     const ruta = (u) => u.replace(/^https?:\/\/[^/]+/, "") || "/";
     const l = ["", "## Rendimiento en Google (últimos 28 días)", ""];
     l.push(total ? `Total: ${total.clicks} clics, ${total.impressions} impresiones, CTR ${(total.ctr * 100).toFixed(1)}%, posición media ${total.position.toFixed(1)}.` : "Sin datos de búsqueda en estos 28 días.");
+    if (acumulado) {
+      const primero = porMes.map((r) => r.keys[0]).sort()[0];
+      l.push("", `Total desde el principio${primero ? ` (primer día con datos: ${primero})` : ""}: ${acumulado.clicks} clics y ${acumulado.impressions} impresiones.`);
+      const meses = new Map();
+      for (const r of porMes) { const m = r.keys[0].slice(0, 7); const x = meses.get(m) || { c: 0, i: 0 }; x.c += r.clicks; x.i += r.impressions; meses.set(m, x); }
+      if (meses.size) {
+        l.push("", "| Mes | Clics | Impresiones |", "|---|---|---|");
+        for (const [m, x] of [...meses].sort()) l.push(`| ${m} | ${x.c} | ${x.i} |`);
+      }
+    }
     if (porDia.length) {
       const final = dia(3);
       l.push("", "### Día a día (lo más reciente que da Google)", "", "| Día | Clics | Impresiones | Posición |", "|---|---|---|---|");
