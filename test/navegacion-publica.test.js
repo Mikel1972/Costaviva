@@ -22,3 +22,18 @@ test("mareas, empieza, clubes, privacidad y términos: con enlace para volver", 
     assert.match(readFileSync(f, "utf8"), /href="\/"|>Volver /, f);
   }
 });
+
+test("sedales: fichas de material con apartados desplegables y usos de costa y embarcación", async () => {
+  const { paginaFicha } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  const sedales = datos.fichas.filter((f) => f.tema === "sedales");
+  assert.ok(sedales.length >= 6);
+  for (const f of sedales) {
+    const { html } = paginaFicha(datos, f);
+    assert.match(html, /<details class="tema bloque tarjeta" id="colores">/, f.id);
+    assert.match(html, /🪨 Desde costa/, f.id);
+    assert.match(html, /🚤 Desde embarcación/, f.id);
+    assert.doesNotMatch(html, /Paso a paso/, f.id);
+    assert.ok(f.fuentes.length >= 2, `${f.id}: al menos dos fuentes`);
+  }
+});

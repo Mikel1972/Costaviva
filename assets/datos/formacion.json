@@ -446,6 +446,409 @@
     ],
     "consultada": "2026-11-20"
    }
+  },
+  {
+   "id": "sedal-nylon",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Nylon (monofilamento)",
+   "otros_nombres": [
+    "Mono",
+    "Nailon",
+    "Monofilament"
+   ],
+   "para": "El sedal de toda la vida: un solo filamento de poliamida.",
+   "resumen": "Barato, fácil de anudar y elástico. Es el más versátil y con el que empieza casi todo el mundo.",
+   "como_es": [
+    "Estira bastante: amortigua los cabezazos del pez y perdona errores al clavar, pero transmite peor la picada.",
+    "Casi flota (densidad cercana a la del agua): se queda en superficie o baja muy despacio.",
+    "Absorbe algo de agua y la luz del sol lo degrada: con el tiempo pierde resistencia. Conviene cambiarlo cada temporada.",
+    "Tiene memoria: si pasa mucho tiempo en la bobina sale en espirales.",
+    "Resiste razonablemente el roce, pero menos que el fluorocarbono del mismo grosor."
+   ],
+   "colores": [
+    {
+     "color": "Transparente o cristal",
+     "para": "El más discreto en agua clara."
+    },
+    {
+     "color": "Verde, gris o azulado",
+     "para": "Se confunde con el fondo y el agua; discreto y algo más fácil de ver para el pescador."
+    },
+    {
+     "color": "Amarillo o naranja fluorescente",
+     "para": "Se ve bien desde fuera para seguir la línea y notar la picada, pero también lo ve más el pez: mejor con un bajo transparente."
+    }
+   ],
+   "usos_costa": [
+    "Línea madre de surfcasting y de pesca a fondo desde playa.",
+    "Corcheo y pesca con boya: flota y ayuda a mantener el corcho.",
+    "Bajos de uso general cuando el agua está algo turbia.",
+    "Puntas de lanza (shock leader) y líneas cónicas para lances fuertes."
+   ],
+   "usos_embarcacion": [
+    "Línea madre barata para fondeo y deriva con cebo.",
+    "Curricán de superficie, donde el estiramiento amortigua las arrancadas.",
+    "Bajos de uso general."
+   ],
+   "ojo": "Revísalo cada salida: si al pasar los dedos notas el sedal áspero o con pelusa, corta ese tramo. El sol y la sal lo envejecen aunque no se use.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    },
+    {
+     "titulo": "Rapala: Mono, Fluorocarbon or Braid?",
+     "url": "https://www.rapala.eu/eu_en/blog/mono-fluorocarbon-or-braid-how-to-choose-the-right-fishing-line"
+    },
+    {
+     "titulo": "Leurre de la Pêche: la mejor trenza para surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/121-cual-es-la-mejor-trenza-para-surfcasting.html"
+    },
+    {
+     "titulo": "A. Álvarez: líneas cónicas de surfcasting",
+     "url": "https://www.a-alvarez.com/en/2058-tapered-surf-casting-lines"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-copolimero",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Copolímero",
+   "otros_nombres": [
+    "Copolymer"
+   ],
+   "para": "Un nylon mejorado: mezcla de dos o más tipos de nylon en un solo filamento.",
+   "resumen": "Se maneja como el nylon pero estira menos y aguanta mejor el roce. Cuesta algo más.",
+   "como_es": [
+    "Estira menos que el nylon normal: algo más de sensibilidad sin perder la amortiguación.",
+    "Mejor resistencia a la abrasión y a los tirones bruscos que un nylon del mismo grosor.",
+    "Se anuda igual de fácil que el nylon.",
+    "Flota o baja despacio, como el nylon."
+   ],
+   "colores": [
+    {
+     "color": "Transparente",
+     "para": "Discreto en agua clara."
+    },
+    {
+     "color": "Verde o gris",
+     "para": "Discreto y algo más visible para el pescador."
+    },
+    {
+     "color": "Fluorescente",
+     "para": "Para seguir la línea; conviene un bajo transparente."
+    }
+   ],
+   "usos_costa": [
+    "Línea madre de spinning ligero y corcheo cuando se quiere algo más de sensibilidad que con nylon.",
+    "Bajos y puntas de lanza en zonas de roca."
+   ],
+   "usos_embarcacion": [
+    "Línea madre de fondeo y deriva en zonas con fondo duro.",
+    "Bajos de uso general."
+   ],
+   "ojo": "Es más caro que el nylon y, como él, se degrada con el sol: guárdalo a la sombra.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: los 4 tipos de sedal (mono, fluoro, trenzado y copolímero)",
+     "url": "https://tacklevillage.com/gear/line/"
+    },
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-fluorocarbono",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Fluorocarbono",
+   "otros_nombres": [
+    "Fluoro",
+    "FC",
+    "Fluorocarbon"
+   ],
+   "para": "Un filamento de fluoropolímero (PVDF) pensado sobre todo para los bajos.",
+   "resumen": "Es el sedal que menos se ve bajo el agua, se hunde y aguanta muy bien el roce de rocas y conchas. Su sitio natural es el bajo de línea.",
+   "como_es": [
+    "Desvía la luz casi como el agua (índice de refracción ~1,42 frente a 1,33 del agua y ~1,5–1,6 del nylon): por eso se ve menos. Ayuda, pero no lo hace invisible.",
+    "Se hunde (es bastante más denso que el agua): baja el cebo y el bajo hacia el fondo.",
+    "Es el que mejor aguanta el roce a igual grosor.",
+    "No absorbe agua y aguanta bien el sol: dura más que el nylon.",
+    "Es más rígido y cuesta más anudar: moja siempre el nudo antes de apretar."
+   ],
+   "colores": [
+    {
+     "color": "Transparente",
+     "para": "Casi siempre se usa así: es lo que busca quien compra fluorocarbono."
+    },
+    {
+     "color": "Teñido (rosa, verde)",
+     "para": "Algunas marcas lo tiñen para fondos o aguas concretas; la ventaja es discutida."
+    }
+   ],
+   "usos_costa": [
+    "Bajos para lubina, sargo, dorada y otros peces desconfiados en agua clara.",
+    "Bajos en zonas de roca, mejillón o conchas, donde el nylon se raja.",
+    "Punta de lanza en surfcasting sobre fondos duros."
+   ],
+   "usos_embarcacion": [
+    "Bajos de jigging, spinning y fondeo en agua clara.",
+    "Bajos para especies desconfiadas y para pescar en piedra.",
+    "Bajos gruesos contra dientes no muy afilados cuando no se quiere usar acero."
+   ],
+   "ojo": "Como línea madre en carrete pesa, se hunde y tiene memoria: se usa casi siempre solo como bajo. Es caro; compra bobinas de bajo, no de línea madre.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Fluorocarbon vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/fluorocarbon-vs-monofilament-fishing-lines"
+    },
+    {
+     "titulo": "FlyLife: fluorocarbono frente a monofilamento",
+     "url": "https://flylifemagazine.com/wednesday-fish-facts-fluorocarbon-versus-monofilament/"
+    },
+    {
+     "titulo": "Varivas: cómo elegir el sedal",
+     "url": "https://www.varivas.fishing/how-to-select-fishing-line/"
+    },
+    {
+     "titulo": "Shimano: guía de hilos para depredadores",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-trenzado",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Trenzado (PE)",
+   "otros_nombres": [
+    "Multifilamento",
+    "Braid",
+    "PE"
+   ],
+   "para": "Varias fibras de polietileno trenzadas (4, 8 o más) en un solo hilo.",
+   "resumen": "Muy fino y muy fuerte para su grosor, casi no estira: notas todo. Necesita un bajo de nylon o fluorocarbono.",
+   "como_es": [
+    "Casi no estira: transmite la picada y el fondo al momento y clava mejor a distancia.",
+    "Mucho más fino que un nylon de la misma resistencia: lanza más lejos y el viento y la corriente lo arrastran menos.",
+    "Flota.",
+    "Se mide por número PE (más alto, más grueso) además de por kilos.",
+    "X4 (4 fibras): más áspero pero aguanta mejor el roce. X8 (8 fibras): más redondo y liso, lanza más lejos pero se raja antes en la roca.",
+    "No le afecta el sol como al nylon, pero se deshilacha con el roce lateral."
+   ],
+   "colores": [
+    {
+     "color": "Verde musgo o gris",
+     "para": "Discreto: el más usado en spinning."
+    },
+    {
+     "color": "Amarillo, naranja o rosa fluorescente",
+     "para": "Se ve desde lejos: para seguir la línea, ver toques en la punta del sedal y lanzar de noche con linterna."
+    },
+    {
+     "color": "Multicolor (un color cada 10 m)",
+     "para": "Para saber cuánto sedal ha salido: cada color son 10 m. Algunos llevan además una marca cada metro. Pensado para pesca vertical."
+    }
+   ],
+   "usos_costa": [
+    "Spinning con señuelo: línea madre casi siempre trenzada.",
+    "Surfcasting a distancia, con una punta de lanza de nylon o fluorocarbono.",
+    "Pesca a fondo donde importa notar el toque."
+   ],
+   "usos_embarcacion": [
+    "Jigging y slow jigging, con trenzado multicolor para saber la profundidad.",
+    "Pesca vertical a fondo y deriva en profundidad: la línea fina se arquea menos con la corriente.",
+    "Spinning y popping desde barco."
+   ],
+   "ojo": "Siempre con bajo: es muy visible y el roce lateral contra piedras lo corta. No anudes trenzado con nudos de nylon (resbala): usa palomar o FG. Corta los dedos si lo agarras con el pez tirando.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: Braid vs Monofilament",
+     "url": "https://www.wired2fish.com/tackle-tips/braid-vs-monofilament-fishing-lines-and-when-to-use-each"
+    },
+    {
+     "titulo": "On The Water: cómo elegir un trenzado",
+     "url": "https://onthewater.com/how-to-choose-a-braided-line"
+    },
+    {
+     "titulo": "Leurre de la Pêche: la mejor trenza para surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/121-cual-es-la-mejor-trenza-para-surfcasting.html"
+    },
+    {
+     "titulo": "Daiwa J-Braid X8 multicolor (cambio de color cada 10 m)",
+     "url": "https://www.leurredelapeche.fr/es/5709-braid-daiwa-j-braid-x8-multicolor.html"
+    },
+    {
+     "titulo": "Varivas 4 Marking (color cada 10 m y marca cada metro)",
+     "url": "https://www.leurredelapeche.fr/es/20484-hilo-trenzado-varivas-4-marcando-150m.html"
+    },
+    {
+     "titulo": "Shimano: guía de hilos de mar",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/saltwater-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-acero",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Acero (cable)",
+   "otros_nombres": [
+    "Bajo de acero",
+    "Wire leader",
+    "Cable"
+   ],
+   "para": "Bajos de cable de acero, simple o trenzado, a veces forrado de plástico.",
+   "resumen": "Para peces con dientes que cortan cualquier sedal: anjova, barracuda, espetón, lucio o tiburón.",
+   "como_es": [
+    "Ningún pez con dientes lo corta.",
+    "Es rígido y visible: algunos peces desconfían y el señuelo pierde algo de movimiento.",
+    "El trenzado de acero forrado es más flexible; el monofilamento de acero, más rígido y más fino.",
+    "Se dobla y se deshilacha: revísalo tras cada pez."
+   ],
+   "colores": [
+    {
+     "color": "Plateado",
+     "para": "El clásico; brilla bajo el agua."
+    },
+    {
+     "color": "Negro mate o marrón",
+     "para": "Más discreto; el que se recomienda en agua clara."
+    }
+   ],
+   "usos_costa": [
+    "Spinning y fondo cuando entra anjova u otros peces con dientes.",
+    "Un tramo corto (unos 15–30 cm) delante del señuelo o del anzuelo."
+   ],
+   "usos_embarcacion": [
+    "Curricán y spinning de depredadores con dientes (barracuda, espetón, túnidos pequeños dentados, tiburón).",
+    "Bajos cortos sobre el señuelo, unidos con quitavueltas o mosquetón."
+   ],
+   "ojo": "Úsalo solo cuando haya dientes: en el resto de casos espanta y resta picadas. Si no quieres acero, un fluorocarbono muy grueso aguanta algunos dientes pequeños.",
+   "fuentes": [
+    {
+     "titulo": "On The Water: cómo elegir el material del bajo",
+     "url": "https://onthewater.com/how-to-choose-the-right-leader-material"
+    },
+    {
+     "titulo": "FishUSA: acero, cobre y lead core",
+     "url": "https://www.fishusa.com/Wire-Lead-Core-Fishing-Line"
+    },
+    {
+     "titulo": "Shimano: guía de hilos para depredadores",
+     "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sedal-lead-core",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Línea de plomo (lead core)",
+   "otros_nombres": [
+    "Lead core",
+    "Línea con alma de plomo"
+   ],
+   "para": "Un trenzado con un alma de plomo dentro que hace que la línea se hunda sola.",
+   "resumen": "Para curricán a media agua o cerca del fondo sin usar plomos ni planeadoras.",
+   "como_es": [
+    "Cambia de color cada 10 yardas (unos 9 m): se cuenta cuántos colores hay fuera.",
+    "Regla orientativa: cada color baja unos 1,5 m a velocidad de curricán lenta (unos 4 km/h); cambia mucho con la velocidad y el señuelo.",
+    "Es grueso y muy visible: necesita un bajo largo de nylon o fluorocarbono."
+   ],
+   "colores": [
+    {
+     "color": "Multicolor (un color cada 10 yardas)",
+     "para": "Para calcular la profundidad a la que va el señuelo."
+    }
+   ],
+   "usos_costa": [
+    "No se usa desde costa."
+   ],
+   "usos_embarcacion": [
+    "Curricán de fondo y de media agua desde barco.",
+    "Siempre con un bajo largo (varios metros) de nylon o fluorocarbono."
+   ],
+   "ojo": "Los colores son una guía, no una medida: con corriente o más velocidad el señuelo sube. Comprueba con la sonda si tocas fondo.",
+   "fuentes": [
+    {
+     "titulo": "FishUSA: acero, cobre y lead core",
+     "url": "https://www.fishusa.com/Wire-Lead-Core-Fishing-Line"
+    },
+    {
+     "titulo": "Bass Pro: guía de lead core",
+     "url": "https://1source.basspro.com/news-tips/fishing-tackle/23378/lead-core-line-buyers-guide"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "colores-del-sedal",
+   "tema": "sedales",
+   "tipo": "material",
+   "nombre": "Colores del sedal: cuál elegir",
+   "otros_nombres": [
+    "Visibilidad del sedal"
+   ],
+   "para": "Qué color de sedal usar según el agua y lo que quieras ver tú.",
+   "resumen": "El color es un equilibrio entre que tú veas la línea y que el pez no la vea. La solución habitual: línea madre visible y bajo transparente.",
+   "como_es": [
+    "El pez ve sobre todo el tramo cercano al cebo: por eso el bajo importa más que la línea madre.",
+    "En agua clara, el fluorocarbono transparente es lo menos visible.",
+    "Con agua turbia o de noche, el color importa mucho menos.",
+    "Lo de que el rojo desaparece bajo el agua es discutido: hay buceadores que dicen que se ve negro."
+   ],
+   "colores": [
+    {
+     "color": "Transparente",
+     "para": "Bajos en agua clara y peces desconfiados."
+    },
+    {
+     "color": "Verde, gris o azul",
+     "para": "Línea madre discreta para agua clara."
+    },
+    {
+     "color": "Fluorescente (amarillo, naranja, rosa)",
+     "para": "Línea madre para ver picadas y seguir la línea; siempre con bajo transparente."
+    },
+    {
+     "color": "Multicolor",
+     "para": "Saber cuánta línea ha salido (pesca vertical y curricán)."
+    }
+   ],
+   "usos_costa": [
+    "Surfcasting: madre de color visible para ver la línea y bajo transparente.",
+    "Spinning en agua clara: trenzado verde o gris con bajo de fluorocarbono."
+   ],
+   "usos_embarcacion": [
+    "Jigging: trenzado multicolor con bajo de fluorocarbono.",
+    "Curricán: el bajo largo transparente es lo que ve el pez."
+   ],
+   "ojo": "No hay estudios concluyentes sobre qué color ve cada especie: tómalo como guía práctica, no como regla.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: ¿ven los peces el sedal?",
+     "url": "https://britishseafishing.co.uk/?p=15620"
+    },
+    {
+     "titulo": "Pure Fishing (Spiderwire): qué ven los peces",
+     "url": "https://www.purefishing.com/spiderwire-pro-tips-what-do-fish-see"
+    },
+    {
+     "titulo": "Fix.com: Do Fish See Line?",
+     "url": "https://www.fix.com/blog/do-fish-see-line/"
+    }
+   ],
+   "consultada": "2026-11-20"
   }
  ],
  "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."

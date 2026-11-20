@@ -152,3 +152,7 @@ body.publica { margin: 0; background: var(--fondo); color: var(--tinta); font-fa
 /* Temas desplegables del centro de formación (2026-11-20). */
 details.tema summary { cursor: pointer; padding: 6px 0; }
 details.tema[open] summary { margin-bottom: 6px; }
+details.bloque { margin: 10px 0; }
+details.bloque summary { font-size: 17px; list-style-position: inside; }
+details.bloque ul { margin: 4px 0 6px; padding-left: 20px; }
+details.bloque li { margin: 4px 0; }

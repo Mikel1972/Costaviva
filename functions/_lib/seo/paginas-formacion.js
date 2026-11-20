@@ -36,7 +36,40 @@ ${cta()}
   return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("especies"), imagenAlt: "Aprende a pescar con Costaviva" }) };
 }
 
+// Fichas de materiales (sedales…): sin «paso a paso»; cada apartado es un
+// desplegable (2026-11-20, Mikel: «recuerda que tienen que ser
+// desplegables») y los usos van separados para costa y embarcación.
+function paginaMaterial(datos, f) {
+  const ruta = `/aprende/${f.id}`;
+  const titulo = `${f.nombre}: características, colores y usos en costa y embarcación | Costaviva`;
+  const descripcion = `${f.nombre}: ${f.para} ${f.resumen}`.slice(0, 300);
+  const nombreTema = datos.temas[f.tema] || f.tema;
+  const migas = [{ nombre: "Aprende", ruta: "/aprende" }, { nombre: f.nombre, ruta }];
+  const ld = [
+    { "@context": "https://schema.org", "@type": "Article", headline: f.nombre, description: f.resumen, inLanguage: "es", url: `${DOMINIO}${ruta}`, publisher: ORG_LD, author: ORG_LD },
+    migasJsonLd(migas),
+  ];
+  const lista = (xs) => `<ul>${xs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  const bloque = (id, titulo, html) => `<details class="tema bloque tarjeta" id="${id}"><summary><strong>${titulo}</strong></summary>${html}</details>`;
+  const hermanas = fichasDeTema(datos, f.tema).filter((x) => x.id !== f.id);
+  const cuerpo = `${migasHtml(migas)}
+<h1>${esc(f.nombre)}</h1>
+${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.map(esc).join(" · ")}</p>` : ""}
+<p class="intro"><strong>Qué es:</strong> ${esc(f.para)} ${esc(f.resumen)}</p>
+${f.como_es?.length ? bloque("como-es", "Cómo es", lista(f.como_es)) : ""}
+${f.colores?.length ? bloque("colores", "🎨 Colores", `<ul>${f.colores.map((c) => `<li><strong>${esc(c.color)}:</strong> ${esc(c.para)}</li>`).join("")}</ul>`) : ""}
+${f.usos_costa?.length ? bloque("costa", "🪨 Desde costa", lista(f.usos_costa)) : ""}
+${f.usos_embarcacion?.length ? bloque("embarcacion", "🚤 Desde embarcación", lista(f.usos_embarcacion)) : ""}
+${f.ojo ? bloque("ojo", "⚠️ Ojo", `<p>${esc(f.ojo)}</p>`) : ""}
+${bloque("fuentes", "Fuentes", `<ul>${f.fuentes.map((x) => `<li><a href="${esc(x.url)}" rel="noopener nofollow" target="_blank">${esc(x.titulo)}</a></li>`).join("")}</ul><p class="nota">Consultadas el ${esc(f.consultada)}. Texto propio de Costaviva.</p>`)}
+${hermanas.length ? `<section aria-labelledby="t-mas"><h2 id="t-mas">Más ${esc(nombreTema.split(":")[0].toLowerCase())}</h2><ul class="chips">${hermanas.map((x) => `<li><a href="/aprende/${esc(x.id)}">${esc(x.nombre)}</a></li>`).join("")}</ul></section>` : ""}
+${cta()}
+<p><a href="/aprende">Todo el centro de formación →</a></p>`;
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article", imagen: imagenOg("especies"), imagenAlt: f.nombre }) };
+}
+
 export function paginaFicha(datos, f) {
+  if (f.tipo === "material") return paginaMaterial(datos, f);
   const ruta = `/aprende/${f.id}`;
   const capitulos = datos.capitulos.filter((c) => c.temas.includes(f.tema));
   const titulo = `${f.nombre}: cómo se hace paso a paso y para qué sirve | Costaviva`;
