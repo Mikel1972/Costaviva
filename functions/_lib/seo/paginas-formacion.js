@@ -48,6 +48,7 @@ export function paginaFicha(datos, f) {
       name: f.nombre,
       description: f.resumen,
       inLanguage: "es",
+      ...(f.imagen ? { image: `${DOMINIO}${f.imagen.src}` } : {}),
       step: f.pasos.map((p, i) => ({ "@type": "HowToStep", position: i + 1, text: p })),
       publisher: ORG_LD,
     },
@@ -58,6 +59,7 @@ export function paginaFicha(datos, f) {
 <h1>${esc(f.nombre)}</h1>
 ${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.map(esc).join(" · ")}</p>` : ""}
 <p class="intro"><strong>Para qué:</strong> ${esc(f.para)} ${esc(f.resumen)}</p>
+${f.imagen ? `<figure class="tarjeta"><img src="${esc(f.imagen.src)}" alt="${esc(f.imagen.alt)}" loading="lazy" style="width:100%;height:auto;border-radius:10px"><figcaption class="nota">${esc(f.imagen.alt)}. Imagen: ${esc(f.imagen.autor)}, ${f.imagen.licencia_url ? `<a href="${esc(f.imagen.licencia_url)}" rel="noopener nofollow" target="_blank">${esc(f.imagen.licencia)}</a>` : esc(f.imagen.licencia)}, vía <a href="${esc(f.imagen.fuente_url)}" rel="noopener nofollow" target="_blank">Wikimedia Commons</a>.</figcaption></figure>` : ""}
 <section class="tarjeta" aria-labelledby="t-pasos"><h2 id="t-pasos">Paso a paso</h2>
 <ol>${f.pasos.map((p) => `<li>${esc(p)}</li>`).join("")}</ol>
 <p class="nota">Para verlo en movimiento: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">animación en ${esc(f.fuente.titulo.split(":")[0])}</a>.</p></section>
