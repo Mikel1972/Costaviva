@@ -45,6 +45,32 @@ export const REGIONES = [
   { slug: "canarias", nombre: "Canarias", spots: CANARIAS },
 ];
 
+// Títulos para buscadores (2026-11-19, Mikel: «cambia todos»). La gente
+// busca por pueblo ("mareas bilbao", "mareas cádiz hoy", "mareas
+// cantabria"), y el título solo decía la región. Cada región lleva:
+//   - lugar: cómo se busca la región ("Euskadi", "Cádiz"...);
+//   - pueblos: 3-4 pueblos con spot, los más buscados (título de mareas);
+//   - zonas: comarcas o provincias (título de pesca).
+// Solo pueblos y zonas donde HAY spots de la región (ver los Set de arriba).
+export const TITULOS_REGION = {
+  "pais-vasco": { lugar: "Euskadi", lugarPesca: "Euskadi", pueblos: "Getxo, Bakio, Mundaka y Donostia", zonas: "Bizkaia y Gipuzkoa" },
+  cantabria: { lugar: "Cantabria", lugarPesca: "Cantabria", pueblos: "Santander, Laredo y Castro Urdiales", zonas: "Santander, Laredo y Castro" },
+  asturias: { lugar: "Asturias", lugarPesca: "Asturias", pueblos: "Llanes y Ribadesella", zonas: "Llanes y Ribadesella" },
+  galicia: { lugar: "Galicia", lugarPesca: "Galicia", pueblos: "A Coruña, Baiona, Sanxenxo y Cangas", zonas: "Rías Baixas, Costa da Morte y A Coruña" },
+  portugal: { lugar: "Portugal", lugarPesca: "Portugal", pueblos: "Peniche, Ericeira, Cascais y Nazaré", zonas: "Algarve, Lisboa, Peniche y el Norte" },
+  mediterraneo: { lugar: "el Mediterráneo", lugarPesca: "el Mediterráneo", pueblos: "Dénia, Valencia, Alicante y Málaga", zonas: "Cataluña, Levante, Andalucía y Baleares" },
+  "golfo-de-cadiz": { lugar: "Cádiz", lugarPesca: "el Golfo de Cádiz", pueblos: "Cádiz, Conil, Chipiona y Punta Umbría", zonas: "Cádiz y Huelva" },
+  canarias: { lugar: "Canarias", lugarPesca: "Canarias", pueblos: "Las Palmas, Tenerife y Corralejo", zonas: "Gran Canaria, Tenerife y Fuerteventura" },
+};
+export const tituloMareasRegion = (r) => {
+  const t = TITULOS_REGION[r.slug];
+  return t ? `Mareas hoy en ${t.lugar}: ${t.pueblos} | Costaviva` : `Mareas hoy en ${r.nombre}: pleamar, bajamar y oleaje | Costaviva`;
+};
+export const tituloPescaRegion = (r, n) => {
+  const t = TITULOS_REGION[r.slug];
+  return t ? `Pesca en ${t.lugarPesca}: ${n} spots en ${t.zonas} | Costaviva` : null;
+};
+
 export function regionDeSlug(slugSpot) {
   return REGIONES.find((r) => r.spots.has(slugSpot)) || null;
 }

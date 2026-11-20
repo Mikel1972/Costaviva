@@ -107,7 +107,10 @@ function renderizarPagina(spot, todos) {
     `Mareas en ${spot.nombre} hoy: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
     `oleaje ${oleajeTexto}, viento ${vientoTexto}${tempAgua != null ? `, agua a ${tempAgua} °C` : ""}. ` +
     `Datos reales actualizados cada hora, gratis y sin cuenta.`;
-  const titulo = `Mareas en ${spot.nombre} hoy: pleamar, bajamar y oleaje | Costaviva`;
+  // "tabla de mareas X", "mareas X hoy" y "pleamar X" son las búsquedas que
+  // traen gente (2026-11-19, Search Console: "mareas denia" pos. 10,
+  // "tabla de mareas mundaka" pos. 6, sin clics).
+  const titulo = `Tabla de mareas de ${spot.nombre} hoy y mañana: pleamar y bajamar | Costaviva`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
   // Enlaces a otros spots de la misma región (más allá de los 4 más
   // cercanos): cada página de spot enlaza a más páginas hermanas, para que
