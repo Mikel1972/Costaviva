@@ -15,6 +15,7 @@
     "quitavueltas-perlas-topes",
     "corchos",
     "senuelos-spinning",
+    "cefalopodos",
     "canas-costa",
     "montajes-costa"
    ]
@@ -30,6 +31,7 @@
     "anzuelos",
     "quitavueltas-perlas-topes",
     "senuelos-spinning",
+    "cefalopodos",
     "jigs-vinilos",
     "currican",
     "fondeo-deriva",
@@ -70,7 +72,8 @@
   "traje-plomos-aletas": "Traje, plomos y aletas",
   "boya-seguridad": "Boya de señalización y seguridad",
   "apnea-segura": "Apnea segura",
-  "normas-submarina": "Normas de la pesca submarina"
+  "normas-submarina": "Normas de la pesca submarina",
+  "cefalopodos": "Calamar, chipirón y sepia: jibioneras y poteras"
  },
  "fichas": [
   {
@@ -3073,7 +3076,8 @@
    "como_es": [
     "Caña larga de acción para lanzar fuerte; empuñadura larga.",
     "Carrete frontal grande de bobina larga y cónica (long cast).",
-    "Línea madre fina para volar más y una punta de lanza (shock leader) que aguante el golpe del lance."
+    "Línea madre fina para volar más y una punta de lanza (shock leader) que aguante el golpe del lance.",
+    "Tramos: de tres tramos de enchufe (mejor acción y lance) o telescópica (cómoda de llevar y montar)."
    ],
    "medidas": [
     "Caña: 4,20–4,50 m; peso de lance habitual 100–200 g (óptimo en torno a 130 g en algunos modelos).",
@@ -3118,7 +3122,8 @@
    "como_es": [
     "Caña de acción rápida o semirrápida: sensible y que clave bien a distancia.",
     "Carrete frontal mediano con buen freno.",
-    "Trenzado fino con bajo de fluorocarbono."
+    "Trenzado fino con bajo de fluorocarbono.",
+    "Tramos: lo normal son dos tramos de enchufe; hay de viaje en tres o cuatro. Las telescópicas lanzan peor."
    ],
    "medidas": [
     "Peso de lance que cubra tus señuelos (por ejemplo 10–40 g para señuelos de 10–30 g).",
@@ -3165,7 +3170,8 @@
     "Caña corta y con espina para levantar al pez del fondo.",
     "Jigging rápido: acción rápida.",
     "Slow pitch: caña algo más larga y blanda que da movimiento al jig.",
-    "Carrete de tambor giratorio o frontal de mar con freno fuerte; trenzado multicolor."
+    "Carrete de tambor giratorio o frontal de mar con freno fuerte; trenzado multicolor.",
+    "Tramos: de un tramo, o un tramo y la empuñadura desmontable; cuantas menos uniones, más potencia."
    ],
    "medidas": [
     "Cañas cortas (en torno a 1,8–2,1 m) para trabajar en vertical.",
@@ -3209,7 +3215,8 @@
    "como_es": [
     "Caña corta y fuerte; acción lenta o moderada para que el pez coja el señuelo antes de notar la caña.",
     "Carrete de tambor giratorio con gran capacidad y freno de palanca o de estrella.",
-    "Portacañas en el barco: la caña trabaja sola hasta la picada."
+    "Portacañas en el barco: la caña trabaja sola hasta la picada.",
+    "Tramos: de un tramo o un tramo con empuñadura desmontable, para que aguante la tensión."
    ],
    "medidas": [
     "Cañas más cortas que las de lance: aquí manda la fuerza, no la distancia."
@@ -3251,7 +3258,8 @@
    "como_es": [
     "Puntera sensible para notar la picada en profundidad.",
     "Espina potente para despegar el pez de la piedra.",
-    "Carrete frontal de mar o de tambor giratorio, según profundidad y plomo."
+    "Carrete frontal de mar o de tambor giratorio, según profundidad y plomo.",
+    "Tramos: de dos tramos de enchufe o telescópica; en barcos pequeños, la telescópica se guarda mejor."
    ],
    "medidas": [
     "Longitud media; en barcos pequeños, más corta para manejarla bien."
@@ -3276,6 +3284,226 @@
     {
      "titulo": "West Marine: elegir una caña",
      "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jibionera-egi",
+   "tema": "cefalopodos",
+   "tipo": "material",
+   "nombre": "Jibionera (egi)",
+   "otros_nombres": [
+    "Egi",
+    "Squid jig",
+    "Txipironera"
+   ],
+   "para": "Señuelo con forma de gamba y una corona de agujas sin muerte en la cola, para calamar, chipirón (txipirón) y sepia.",
+   "resumen": "Se lanza, se deja bajar y se hace saltar con tirones secos: el calamar la ataca al caer. Es la pesca del calamar desde puerto y roca.",
+   "como_es": [
+    "Cuerpo de gamba, a menudo forrado de tela; corona de agujas sin muerte detrás.",
+    "Hay sumergibles (las normales), flotantes y «shallow» de hundimiento lento para poco fondo.",
+    "El tamaño se da en números (2.5, 3.0, 3.5…): un 2.5 mide unos 7,5 cm y un 3.5 unos 10,5 cm.",
+    "Velocidad de hundimiento en segundos por metro (las normales, unos 3–3,5 s/m)."
+   ],
+   "medidas": [
+    "2.5: chipirón, poco fondo y calma.",
+    "3.0: la más usada para todo.",
+    "3.5: más fondo, corriente o calamar grande.",
+    "Mira en el envase el peso y lo que tarda en bajar: varía mucho entre modelos."
+   ],
+   "medidas_titulo": "📏 Tamaño",
+   "usos_costa": [
+    "De noche bajo las farolas de puertos y espigones, o al amanecer y al atardecer.",
+    "Lanzar, contar mientras baja, dos o tres tirones secos y dejarla caer otra vez con el hilo flojo."
+   ],
+   "usos_embarcacion": [
+    "A la deriva lenta o fondeado sobre fondos de arena y algas.",
+    "Con luz por la noche, donde esté permitido."
+   ],
+   "ojo": "La caña tiene que aguantar el peso de la jibionera. Lleva colores distintos: el que funciona cambia de un día a otro.",
+   "fuentes": [
+    {
+     "titulo": "Daiwa: lo básico de la pesca con egi (jibionera)",
+     "url": "https://daiwafishing.com.au/blogs/news/inky-business-the-basics-of-egi-squid-fishing"
+    },
+    {
+     "titulo": "Fishing Mad: las mejores jibioneras (tamaños 2.5–3.5)",
+     "url": "https://fishingmad.com.au/review/best-squid-jigs-2025/"
+    },
+    {
+     "titulo": "Yamashita Egi Oh Live 3.0: peso y velocidad de hundimiento",
+     "url": "https://compleatangler.com.au/products/yamashita-egi-oh-live-3-0-squid-jig"
+    },
+    {
+     "titulo": "Decathlon: jibioneras (sumergibles, flotantes y shallow)",
+     "url": "https://www.decathlon.es/es/deportes/pesca/jibioneras-pesca"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "colores": [
+    {
+     "color": "Luminiscente (glow)",
+     "para": "De noche, con poca luz o con agua turbia."
+    },
+    {
+     "color": "UV y colores naturales",
+     "para": "Agua clara y sol."
+    },
+    {
+     "color": "Varios colores",
+     "para": "No hay regla fija: lleva varios y cambia si no entran."
+    }
+   ]
+  },
+  {
+   "id": "potera",
+   "tema": "cefalopodos",
+   "tipo": "material",
+   "nombre": "Potera",
+   "otros_nombres": [
+    "Potera de calamar"
+   ],
+   "para": "Señuelo vertical con una o varias coronas de agujas sin muerte, que se mueve arriba y abajo para el calamar.",
+   "resumen": "Es la forma tradicional de pescar calamar desde barco: la potera se sube y baja en vertical, a menudo con luz por la noche. El «calamar de potera» es el pescado así, a anzuelo y uno a uno.",
+   "como_es": [
+    "Cuerpo alargado (a menudo luminiscente) con coronas de agujas sin muerte.",
+    "Las agujas sin muerte no dañan al calamar y lo mantienen entero.",
+    "Se pueden montar varias en la misma línea, separadas."
+   ],
+   "medidas": [
+    "Peso según profundidad y corriente."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Desde puertos y espigones con fondo, en vertical."
+   ],
+   "usos_embarcacion": [
+    "La pesca de calamar desde barco, al ancla o a la deriva, moviendo la potera arriba y abajo.",
+    "De noche con luz para atraer el pasto y el calamar, donde esté permitido."
+   ],
+   "ojo": "Comprueba la normativa de tu zona sobre el uso de luces y sobre las capturas de calamar.",
+   "fuentes": [
+    {
+     "titulo": "Directo al Paladar: qué significa «calamar de potera»",
+     "url": "https://www.directoalpaladar.com/ingredientes-y-alimentos/no-senora-pueblo-especie-que-significa-calamar-potera-que-importa-palabra"
+    },
+    {
+     "titulo": "IMARPE: pesca artesanal con potera y luz (PDF)",
+     "url": "https://repositorio.imarpe.gob.pe/server/api/core/bitstreams/4dd6d88c-1ccf-4ea4-b1e0-5bad0c2d4ccc/content"
+    },
+    {
+     "titulo": "Decathlon: jibioneras (sumergibles, flotantes y shallow)",
+     "url": "https://www.decathlon.es/es/deportes/pesca/jibioneras-pesca"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plumas-caballa",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Plumas para caballa y chicharro",
+   "otros_nombres": [
+    "Plumas",
+    "Feathers",
+    "Txitxarro",
+    "Sabiki"
+   ],
+   "para": "Un bajo con varios anzuelos vestidos con plumas o tiras brillantes, con un plomo o un jig al final.",
+   "resumen": "La forma clásica de pescar caballa y chicharro (txitxarro) cuando entran en bancos: imita un pequeño banco de peces. El sabiki es la versión con anzuelos más pequeños.",
+   "como_es": [
+    "Plumas: de 3 a 6 anzuelos vestidos, separados unos 30 cm.",
+    "Sabiki: de 6 a 10 anzuelos pequeños, para chicharro pequeño, sardina o boga.",
+    "Al final, un plomo o, mejor, un jig pequeño de color brillante.",
+    "Una barrita luminosa en el bajo ayuda desde el espigón de noche."
+   ],
+   "medidas": [
+    "Plomo o jig de unos 28 a 113 g según profundidad y corriente.",
+    "Con plumas grandes, caballa; con sabiki, chicharro y pasto pequeño."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Desde espigón o puerto: lanzar y recoger con tirones arriba y abajo, como un banco de peces.",
+    "O en vertical: bajar hasta tocar fondo y subir a tirones, a unos 2–3 m de la superficie si están arriba."
+   ],
+   "usos_embarcacion": [
+    "Bajar hasta el fondo controlando el hilo con el pulgar y subir a tirones.",
+    "Caña de barco y carrete con plomo de unos 110 g."
+   ],
+   "ojo": "Muchos anzuelos juntos se enredan y se enganchan en el muro del espigón. Respeta las tallas mínimas y no saques más de lo que vayas a usar.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: tres métodos para la caballa",
+     "url": "https://www.seaangler.co.uk/fishing-tips/advanced/fishing-for-mackerel-three-great-methods/"
+    },
+    {
+     "titulo": "British Sea Fishing: plumas y «daylights»",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/fishing-with-feathers-and-daylights/"
+    },
+    {
+     "titulo": "Advnture: cómo pescar caballa (aparejos y consejos)",
+     "url": "https://www.advnture.com/how-to/mackerel-fishing-tips"
+    },
+    {
+     "titulo": "Wikipedia: Sabiki",
+     "url": "https://en.wikipedia.org/wiki/Sabiki"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "currican"
+   ]
+  },
+  {
+   "id": "currican-senuelos",
+   "tema": "currican",
+   "tipo": "material",
+   "nombre": "Señuelos de curricán",
+   "otros_nombres": [
+    "Pluma",
+    "Pulpito",
+    "Faldón",
+    "Trolling lures"
+   ],
+   "para": "Los señuelos que se arrastran desde el barco en marcha: plumas, pulpitos de faldón y señuelos de cabeza dura.",
+   "resumen": "Para bonito, caballa grande, melva y túnidos. Cada tipo trabaja a una velocidad: las plumas y los tacos de madera más despacio; los faldones algo más rápido.",
+   "como_es": [
+    "Pluma: cabeza pesada con faldón de plumas; el señuelo clásico del bonito.",
+    "Pulpito o faldón (skirt): cabeza de plástico o metal con faldón de vinilo.",
+    "Taco de madera (cedar plug): cuerpo duro que vibra a velocidad.",
+    "Minnows de babero grande para curricán más lento y más profundo."
+   ],
+   "medidas": [
+    "Plumas y tacos: en torno a 5–8 nudos.",
+    "Faldones: en torno a 6–9 nudos; algunos modelos para bonito aguantan hasta unos 9 nudos.",
+    "Lo que manda es cómo nada cada señuelo: mira que no salte ni gire."
+   ],
+   "medidas_titulo": "📏 Velocidad",
+   "usos_costa": [
+    "No se usa desde costa."
+   ],
+   "usos_embarcacion": [
+    "Curricán de superficie para bonito, caballa grande y anjova.",
+    "Varias cañas a distintas distancias detrás del barco."
+   ],
+   "ojo": "Las velocidades son orientativas y las fuentes no coinciden en el máximo: ajusta mirando cómo nada el señuelo.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: curricán con pluma",
+     "url": "https://www.thefisherman.com/article/old-school-offshore-troll-a-feather/"
+    },
+    {
+     "titulo": "Pakula: el arte del curricán con señuelos de faldón",
+     "url": "https://pakula.com.au/index.php/2014-09-23-04-02-2/trolling-articles/the-art-of-lure-trolling"
+    },
+    {
+     "titulo": "TackleDirect: velocidades de curricán",
+     "url": "https://www.tackledirect.com/blog/trolling-speedsters"
+    },
+    {
+     "titulo": "Williamson Tuna Catcher: señuelo de curricán para bonito y túnidos",
+     "url": "https://www.rapala.com/williamson/trolling-lures/light-trolling-lures/tuna-catcher-rigged/Tuna+Catcher+Rigged.html"
     }
    ],
    "consultada": "2026-11-20"
