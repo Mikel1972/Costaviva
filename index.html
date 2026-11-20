@@ -1315,6 +1315,7 @@
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
         <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar">🎁 Invita a un amigo: 1 mes gratis</button>
         <button type="button" id="btnGuia" data-i18n="comun.menu.guia">📖 Cómo funciona</button>
+        <a class="menu-enlace" href="/spots" data-i18n="comun.menu.guias">🧭 Spots, especies y mareas por zona</a>
         <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
         <div data-i18n-selector></div>
@@ -3131,6 +3132,26 @@ function montarGFW(G) {
       return filas;
     },
   });
+  montarBotonGuias();
+}
+// Botón a las guías públicas por zona (2026-11-20, Mikel: «si no tenemos un
+// link a esas regiones, nunca llegaremos a ellas»; encima de «Pesca
+// comercial», en la misma esquina, para dejar la cabecera limpia). Se monta
+// justo después del control de GFW para quedar encima en esa esquina.
+// Solo en pantalla ancha: en el móvil esa esquina tapa el mapa (está en el
+// menú 👤, «Spots, especies y mareas por zona»).
+function montarBotonGuias() {
+  if (window.innerWidth <= 720) return;
+  const ctl = L.control({ position: "bottomleft" });
+  ctl.onAdd = () => {
+    const a = L.DomUtil.create("a", "guias-chip");
+    a.href = "/spots";
+    a.id = "btnGuiasZona";
+    a.textContent = I18n.t("mapa.guias_zona");
+    L.DomEvent.disableClickPropagation(a);
+    return a;
+  };
+  ctl.addTo(map);
 }
 if (window.CapaGFW) montarGFW(window.CapaGFW);
 else window.addEventListener("gfw-lista", () => montarGFW(window.CapaGFW), { once: true });
