@@ -107,6 +107,15 @@
     "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
     "fuente_url": "https://commons.wikimedia.org/wiki/File:PalomarKnotSequence.jpg",
     "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 75,
+    "fuentes": [
+     "https://www.fieldandstream.com/fishing/tie-the-strongest-fishing-knots",
+     "https://www.sportfishingmag.com/best-fishing-knots-main-line-to-terminal-gear/",
+     "https://braidknotsolutions.blogspot.com/2020/05/072-palomar-test.html"
+    ],
+    "consultada": "2026-11-20"
    }
   },
   {
@@ -143,6 +152,14 @@
     "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "fuente_url": "https://commons.wikimedia.org/wiki/File:Barb._01_Clinchknoten.jpg",
     "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 86,
+    "fuentes": [
+     "https://www.fieldandstream.com/fishing/tie-the-strongest-fishing-knots",
+     "https://www.ofah.org/oodonline/fishing/testing-knots"
+    ],
+    "consultada": "2026-11-20"
    }
   },
   {
@@ -173,6 +190,15 @@
     "titulo": "Animated Knots: Uni Knot",
     "url": "https://www.animatedknots.com/uni-knot",
     "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 83,
+    "fuentes": [
+     "https://www.sportfishingmag.com/best-fishing-knots-main-line-to-terminal-gear/",
+     "https://odajournal.com/wp-content/uploads/2019/01/v2a9.pdf",
+     "https://braidknotsolutions.blogspot.com/2020/05/072-palomar-test.html"
+    ],
+    "consultada": "2026-11-20"
    }
   },
   {
@@ -198,6 +224,13 @@
    "fuente": {
     "titulo": "Animated Knots: FG Knot",
     "url": "https://www.animatedknots.com/fg-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 73,
+    "fuentes": [
+     "https://www.sportfishingmag.com/?p=45256"
+    ],
     "consultada": "2026-11-20"
    }
   },
@@ -236,6 +269,14 @@
     "licencia_url": "https://creativecommons.org/licenses/by-sa/2.0/de/deed.en",
     "fuente_url": "https://commons.wikimedia.org/wiki/File:AlbrightKnotenFertig.jpg",
     "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 82,
+    "fuentes": [
+     "https://www.saltstrong.com/?p=4063",
+     "https://www.saltstrong.com/?p=5445"
+    ],
+    "consultada": "2026-11-20"
    }
   },
   {
@@ -272,6 +313,14 @@
     "licencia_url": null,
     "fuente_url": "https://commons.wikimedia.org/wiki/File:Anglers_loop_how_to.jpg",
     "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 80,
+    "fuentes": [
+     "https://macbrownflyfish.com/tippet-study/comprehensive-university-tippet-study",
+     "https://www.sexyloops.com/index.php/ps/tippet-knotshow-weak"
+    ],
+    "consultada": "2026-11-20"
    }
   },
   {
@@ -308,6 +357,14 @@
     "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
     "fuente_url": "https://commons.wikimedia.org/wiki/File:Snell_Knot.jpg",
     "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 91,
+    "fuentes": [
+     "https://allfishinggear.com/fishing-knot-strength-chart",
+     "https://huntfishsport.com/tools/knot-strength-calculator"
+    ],
+    "consultada": "2026-11-20"
    }
   },
   {
@@ -337,6 +394,13 @@
    "fuente": {
     "titulo": "Animated Knots: San Diego Jam Knot",
     "url": "https://www.animatedknots.com/san-diego-jam-knot",
+    "consultada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 88,
+    "fuentes": [
+     "https://odajournal.com/wp-content/uploads/2019/01/v2a9.pdf"
+    ],
     "consultada": "2026-11-20"
    }
   },
@@ -374,7 +438,15 @@
     "licencia_url": null,
     "fuente_url": "https://commons.wikimedia.org/wiki/File:Dropper_loop_knot.jpg",
     "comprobada": "2026-11-20"
+   },
+   "resistencia": {
+    "media_pct": 64,
+    "fuentes": [
+     "https://www.delaware-surf-fishing.com/drop-loop-strength-tests"
+    ],
+    "consultada": "2026-11-20"
    }
   }
- ]
+ ],
+ "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."
 }

@@ -65,6 +65,7 @@ ${f.imagen ? `<figure class="tarjeta"><img src="${esc(f.imagen.src)}" alt="${esc
 <section class="tarjeta" aria-labelledby="t-pasos"><h2 id="t-pasos">Paso a paso</h2>
 <ol>${f.pasos.map((p) => `<li>${esc(p)}</li>`).join("")}</ol>
 <p class="nota">Para verlo en movimiento: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">animación en ${esc(f.fuente.titulo.split(":")[0])}</a>.</p></section>
+${f.resistencia ? `<p><strong>Resistencia:</strong> ~${esc(f.resistencia.media_pct)} % de la del sedal <span class="nota">(media de ${f.resistencia.fuentes.length === 1 ? "una prueba publicada" : `${f.resistencia.fuentes.length} pruebas publicadas`}: ${f.resistencia.fuentes.map((u, i) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank">${i + 1}</a>`).join(", ")}; depende mucho del estado del sedal y de cómo se ate)</span></p>` : ""}
 ${f.bien_con?.length ? `<p><strong>Va bien con:</strong> ${f.bien_con.map((s) => esc(NOMBRE_SEDAL[s] || s)).join(", ")}.</p>` : ""}
 ${f.ojo ? `<section class="tarjeta aviso" aria-labelledby="t-ojo"><h2 id="t-ojo">Ojo</h2><p>${esc(f.ojo)}</p></section>` : ""}
 <p class="nota">Fuente: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">${esc(f.fuente.titulo)}</a> (consultada el ${esc(f.fuente.consultada)}). Texto propio de Costaviva.</p>
