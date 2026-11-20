@@ -174,7 +174,7 @@ export function lonjasSinCoordenadas(filas, catalogo) {
 
 // ---------- red ----------
 
-async function sesion() {
+export async function sesion() {
   const r = await fetch(URL_FUENTE, { headers: { "user-agent": UA } });
   if (!r.ok) throw new Error(`pescadegalicia GET ${r.status}`);
   const html = await r.text();

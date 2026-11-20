@@ -141,6 +141,19 @@ Sin IA. No toca los ficheros de la flota.
   domina no está, null: nunca la segunda. El mapa enseña «Probablemente
   <nombre en el idioma>» y la cita de la Xunta en la atribución. Probado con
   3 semanas reales: 6 de 39 zonas tenían lonja cerca y 2 salieron (jurel).
+- **Histórico para patrones (fase 1, 2026-11-20, sí de Mikel):**
+  `scripts/lonjas/historico-galicia.mjs` (`lonjas-historico.yml`, cada noche
+  a las 02:41 UTC, sin IA) baja día a día desde 2002 (julio de 2001 sale
+  vacío) y guarda `datos/lonjas/galicia/<año>.csv.gz`: por día, **zona de
+  bajura** (campo `zona` de `lonjas-galicia.json`: miño-vigo, pontevedra,
+  arousa, muros-noia, costa-da-morte, artabro, rias-altas, marina) y especie,
+  kg y € de peces y cefalópodos. Fuera altura (zona null) y el mercado de
+  Pontevedra. Lonjas que solo salen en ventas antiguas: `antigua: true`, ids
+  9xxx (Caión, San Cibrao). Una petición cada 1,2 s, 800 días por noche;
+  `estado.json` dice qué años están completos y qué días reintentar.
+  Fase 2: condiciones por zona y día (SST de Copernicus, horas de luz, luna,
+  ola y viento ERA5); fase 3: patrones por especie y subir la puntuación
+  cuando una especie se vende por encima de lo normal (enseñar a Mikel antes).
 - **Otras regiones (búsqueda 2026-11-20):** ninguna publica como Galicia
   (diario, lonja × especie, abierto). Docapesca (PT): diario por lota y
   especie, solo precio, sin licencia de reutilización (pedir permiso).
