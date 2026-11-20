@@ -252,12 +252,13 @@ const listaSpotsEn = (spots, base) => `<ul class="lista-spots">${spots.slice().s
 export function paginaIndiceSpotsNZ(todos) {
   const nz = spotsNZ(todos);
   const ruta = "/spots";
-  const titulo = `Fishing spots in New Zealand: ${nz.length} places | Costaviva`;
+  // 2026-11-20, GSC: «top fishing spots in new zealand» 39 impresiones en 28 días, sin clics.
+  const titulo = `Best fishing spots in New Zealand: ${nz.length} top places to fish | Costaviva`;
   const descripcion = `${nz.length} fishing spots around New Zealand: what to catch at each one and when, LINZ tide times, today's waves and wind, and the MPI fishing rules for its area.`;
   const migas = [{ nombre: "Spots", ruta: "/en/spots" }];
   const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
   const cuerpo = `${migasHtml(migas, "en")}
-<h1>Fishing spots in New Zealand</h1>
+<h1>Best fishing spots in New Zealand</h1>
 <p class="intro">Pick a spot to see what you can catch there from the shore, from a boat or spearfishing, in which months, the tide times and today's conditions. You can also browse <a href="/en/species">by species</a> or check <a href="/en/tides">tides today</a>.</p>
 ${ZONAS_NZ.map((z) => {
     const del = nz.filter((s) => s.zona === z.zona);

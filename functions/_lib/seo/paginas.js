@@ -14,7 +14,7 @@ import {
   nombreCortoSpot, regionDeSlug, REGIONES_MAREAS, fichaEspecie, introEspecie, slugEspecie, mesLargo,
   NOMBRE_REGION_ESPECIES, regionEspeciesDeSpot, especiesDestacadas,
 } from "./datos.js";
-import { NOMBRE_MODALIDAD, MODALIDADES } from "../../../assets/js/ventana-actividad.js";
+import { NOMBRE_MODALIDAD, MODALIDADES, textoMeses } from "../../../assets/js/ventana-actividad.js";
 import { zonaDeSpot } from "../../../assets/js/regiones.js";
 import { tituloPescaRegion } from "../../mareas/_regiones.js";
 
@@ -177,10 +177,21 @@ export function paginaRegionSpots(region, spots, especiesDatos, mes) {
     .filter((e) => regionesEsp.some((r) => e.presencia?.[r]?.meses?.includes(mes)))
     .map((e) => ({ slug: slugEspecie(e.id), nombre: e.nombres?.es || e.id }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  // Todas las especies de la zona con sus meses (2026-11-20, GSC: «peces de
+  // galicia» 38 impresiones y «pescados de galicia» 15 en 28 días, sin clics:
+  // la página solo listaba spots). Meses = unión de las regiones de especies
+  // de los spots de la zona.
+  const peces = especiesDatos.especies
+    .map((e) => {
+      const meses = [...new Set(regionesEsp.flatMap((r) => e.presencia?.[r]?.meses || []))].sort((a, b) => a - b);
+      return meses.length ? { slug: slugEspecie(e.id), nombre: e.nombres?.es || e.id, meses: textoMeses(meses), ahora: meses.includes(mes) } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   // Con las zonas donde están los spots (2026-11-19): "golfo de cadiz pesca"
   // pos. 8,7 y "pesca en portugal" pos. 17,7, sin clics.
   const titulo = tituloPescaRegion(region, del.length) || `Pesca en ${nombre}: ${del.length} spots, especies y temporada | Costaviva`;
-  const descripcion = `Spots de pesca en ${nombre} (${del.length}) y especies de temporada en ${mesLargo(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fondo, profundidad y condiciones de hoy.`;
+  const descripcion = `Spots de pesca en ${nombre} (${del.length}) y los peces de ${nombre} con su temporada. En ${mesLargo(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fondo, profundidad y condiciones de hoy.`;
   const migas = [{ nombre: "Spots", ruta: "/spots" }, { nombre, ruta }];
   const ld = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${ruta}`, inLanguage: "es", about: { "@type": "Place", name: nombre } },
@@ -192,6 +203,9 @@ export function paginaRegionSpots(region, spots, especiesDatos, mes) {
 ${listaSpots(del)}
 <section aria-labelledby="t-temp"><h2 id="t-temp">De temporada en ${esc(mesLargo(mes))}</h2>
 <ul class="chips">${deTemporada.map((e) => `<li><a href="/especies/${esc(e.slug)}">${esc(e.nombre)}</a></li>`).join("")}</ul></section>
+${peces.length ? `<section aria-labelledby="t-peces"><h2 id="t-peces">Peces de ${esc(nombre)}: qué se pesca y cuándo</h2>
+<p class="nota">${peces.length} especies que se pescan en ${esc(nombre)}, con los meses en que se dan. Resaltadas, las de temporada ahora.</p>
+<ul class="especies">${peces.map((e) => `<li${e.ahora ? ' class="temporada"' : ""}><a href="/especies/${esc(e.slug)}">${esc(e.nombre)}</a> <span class="meses">${esc(e.meses)}</span></li>`).join("")}</ul></section>` : ""}
 ${cta()}
 <p><a href="/spots">Todas las regiones →</a></p>`;
   const alternos = region.slug === "portugal" ? ["es", "pt"] : ["es"];
