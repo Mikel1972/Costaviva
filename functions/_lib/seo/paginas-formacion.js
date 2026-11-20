@@ -44,7 +44,7 @@ ${cta()}
 // desplegables») y los usos van separados para costa y embarcación.
 function paginaMaterial(datos, f) {
   const ruta = `/aprende/${f.id}`;
-  const titulo = `${f.nombre}: ${f.colores?.length ? "características, colores" : "cómo es, grosor, largo"} y usos en costa y embarcación | Costaviva`;
+  const titulo = `${f.nombre}: ${f.colores?.length ? "características, colores" : f.tema === "anzuelos" ? "cómo es, tamaños" : "cómo es, grosor, largo"} y usos en costa y embarcación | Costaviva`;
   const descripcion = `${f.nombre}: ${f.para} ${f.resumen}`.slice(0, 300);
   const nombreTema = datos.temas[f.tema] || f.tema;
   const migas = [{ nombre: "Aprende", ruta: "/aprende" }, { nombre: f.nombre, ruta }];
@@ -61,7 +61,9 @@ ${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.m
 <p class="intro"><strong>Qué es:</strong> ${esc(f.para)} ${esc(f.resumen)}</p>
 ${f.como_es?.length ? bloque("como-es", "Cómo es", lista(f.como_es)) : ""}
 ${f.colores?.length ? bloque("colores", "🎨 Colores", `<ul>${f.colores.map((c) => `<li><strong>${esc(c.color)}:</strong> ${esc(c.para)}</li>`).join("")}</ul>`) : ""}
-${f.medidas?.length ? bloque("medidas", "📏 Grosor y largo", lista(f.medidas)) : ""}
+${f.pasarse?.length ? bloque("pasarse", "🎯 El tamaño justo: no te pases", f.pasarse.map((x) => `<p>${esc(x)}</p>`).join("")) : ""}
+${f.por_especie?.length ? bloque("por-especie", "🐟 Qué tamaño para cada pez", `<table class="tabla-especies"><thead><tr><th>Pez</th><th>Anzuelo</th></tr></thead><tbody>${f.por_especie.map((e) => `<tr><td>${esc(e.pez)}</td><td><strong>${esc(e.tam)}</strong>${e.nota ? `<br><span class="nota">${esc(e.nota)}</span>` : ""}</td></tr>`).join("")}</tbody></table><p class="nota">Orientativo: cada marca numera a su manera. Empieza por aquí y ajusta con el cebo.</p>`) : ""}
+${f.medidas?.length ? bloque("medidas", esc(f.medidas_titulo || "📏 Grosor y largo"), lista(f.medidas)) : ""}
 ${f.usos_costa?.length ? bloque("costa", "🪨 Desde costa", lista(f.usos_costa)) : ""}
 ${f.usos_embarcacion?.length ? bloque("embarcacion", "🚤 Desde embarcación", lista(f.usos_embarcacion)) : ""}
 ${f.ojo ? bloque("ojo", "⚠️ Ojo", `<p>${esc(f.ojo)}</p>`) : ""}

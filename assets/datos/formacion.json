@@ -1235,6 +1235,449 @@
     }
    ],
    "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-tamanos",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Tamaños de anzuelo: cómo se numeran",
+   "otros_nombres": [
+    "Numeración de anzuelos"
+   ],
+   "para": "Cómo leer el número de un anzuelo y por qué un 2 no es igual en todas las marcas.",
+   "resumen": "Hasta el n.º 1, cuanto más alto el número, más pequeño el anzuelo. A partir de ahí van los «barra cero» (1/0, 2/0…), donde cuanto más alto, más grande. Y casi todos pescamos con anzuelos demasiado grandes.",
+   "como_es": [
+    "Orden de pequeño a grande: … 10, 8, 6, 4, 2, 1, 1/0, 2/0, 3/0, 4/0…",
+    "El 1/0 es el siguiente al 1; el 4/0 es bastante más grande que el 1/0.",
+    "El grosor del alambre se marca con «X»: un 2X es más grueso y fuerte que el normal de su número.",
+    "No hay un estándar entre marcas: un 2 de una marca puede ser distinto del 2 de otra. Si no hay número, mira la abertura (la distancia entre la punta y la pata)."
+   ],
+   "medidas": [
+    "Elige el tamaño por la boca del pez y el tamaño del cebo, no por el tamaño del pez.",
+    "El cebo debe dejar libre la punta: si la tapa, el anzuelo es pequeño para ese cebo."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Cebos pequeños (gusana fina, trocitos de gamba): números altos (6–8).",
+    "Cebos medianos para sargo, dorada o lubina: en torno al 2 al 1/0 en los montajes comerciales.",
+    "Cebos grandes (sardina entera, calamar): 1/0 o más."
+   ],
+   "usos_embarcacion": [
+    "Pesca a fondo variada: números medios.",
+    "Peces grandes y cebos grandes: barra cero."
+   ],
+   "ojo": "Compara siempre dentro de la misma marca y modelo. Y respeta las tallas mínimas: un anzuelo más grande ayuda a no clavar peces pequeños.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tabla de tamaños de anzuelo de mar",
+     "url": "https://thetackleroom.com/blogs/news/hook-size-chart"
+    },
+    {
+     "titulo": "Academy: tabla de tamaños de anzuelo",
+     "url": "https://www.academy.com/expert-advice/fishing-hook-size-chart"
+    },
+    {
+     "titulo": "Salt Strong: la verdad sobre los tamaños de anzuelo",
+     "url": "https://www.saltstrong.com/?p=38583"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "Sea Angler: la guía completa de anzuelos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tips/tackle/the-complete-guide-to-sea-fishing-hooks/"
+    },
+    {
+     "titulo": "Sea Angler: por qué importa el tamaño del anzuelo",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/clothing/why-fishing-hook-size-is-so-important/"
+    },
+    {
+     "titulo": "British Sea Fishing: anzuelos",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/hooks/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: tamaños de anzuelo por especie (pescadores)",
+     "url": "https://sea-angling-ireland.org/forum/viewtopic.php?p=98773"
+    },
+    {
+     "titulo": "The Tackle Room: el anzuelo según el cebo, no según el pez",
+     "url": "https://thetackleroom.com/blogs/news/saltwater-fishing-hook-sizes-explained"
+    },
+    {
+     "titulo": "BoatUS: anzuelos demasiado grandes con cebo vivo",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Montajes de surfcasting por especie (Caperlan: dorada n.º 1–6, herrera 4–8, lubina 2–1/0)",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/bajos-de-linea-surfcasting"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "pasarse": [
+    "El tamaño se elige por la boca del pez y por el cebo, no por lo que pesa el pez. Una dorada de 2 kg tiene la boca pequeña y se pesca con un anzuelo pequeño; lo que cambia con el peso es el grosor del alambre (un anzuelo «fuerte» o 2X del mismo número), no el número.",
+    "Un anzuelo demasiado grande no entra entero en la boca del pez: pica, nota el hierro y lo suelta, o ni siquiera lo coge. Con cebo vivo es peor: el peso del anzuelo no le deja nadar y el agujero lo mata antes.",
+    "Pasarse un poco por abajo tiene arreglo (más picadas, alguna se escapa); pasarse por arriba deja el bajo sin picadas. Ante la duda, un número más pequeño.",
+    "Regla rápida: el cebo tiene que tapar el anzuelo dejando libre la punta. Si para tapar el anzuelo necesitas un cebo enorme, el anzuelo es grande."
+   ],
+   "por_especie": [
+    {
+     "pez": "Herrera, mojarra, sargo pequeño",
+     "tam": "6 a 8",
+     "nota": "boca pequeña: el error más común es ponerles un 2"
+    },
+    {
+     "pez": "Mújol, lenguado, platija y otros peces planos pequeños",
+     "tam": "4 a 6",
+     "nota": ""
+    },
+    {
+     "pez": "Sargo, chopa, besugo",
+     "tam": "4 a 6 (2 para los muy grandes)",
+     "nota": "aunque pese más de un kilo, la boca sigue siendo pequeña"
+    },
+    {
+     "pez": "Dorada",
+     "tam": "2 a 6 (1 con cebos duros grandes)",
+     "nota": "con cangrejo o navaja grandes, 1–1/0 de alambre fuerte"
+    },
+    {
+     "pez": "Caballa, chicharro",
+     "tam": "2 a 4",
+     "nota": ""
+    },
+    {
+     "pez": "Lubina",
+     "tam": "2 a 1/0 con gusana o gamba; 1/0 a 3/0 con cebo grande o vivo",
+     "nota": "manda el cebo, no el pez"
+    },
+    {
+     "pez": "Maragota",
+     "tam": "1 a 2/0",
+     "nota": ""
+    },
+    {
+     "pez": "Abadejo",
+     "tam": "1/0 a 3/0",
+     "nota": ""
+    },
+    {
+     "pez": "Congrio",
+     "tam": "4/0 a 6/0",
+     "nota": "con calamar entero o caballa; alambre grueso"
+    }
+   ]
+  },
+  {
+   "id": "anzuelo-j",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Anzuelo normal (en J)",
+   "otros_nombres": [
+    "J hook",
+    "Anzuelo de pata recta"
+   ],
+   "para": "El anzuelo clásico: pata recta y la punta mirando hacia la pata, con forma de J.",
+   "resumen": "El más versátil: sirve para casi cualquier pesca con cebo. Necesita que claves tú.",
+   "como_es": [
+    "Pata recta, curva y punta paralela a la pata.",
+    "Con muerte (lengüeta) para que no se salga el cebo ni el pez.",
+    "Hay versiones de pata corta, normal y larga, y de alambre fino o grueso."
+   ],
+   "medidas": [
+    "De 8 a 4/0 según el cebo y el pez.",
+    "Alambre fino para cebos delicados; grueso para peces que tiran fuerte."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Surfcasting y pesca a fondo con todo tipo de cebos.",
+    "Corcheo con gamba, gusana o mejillón."
+   ],
+   "usos_embarcacion": [
+    "Fondeo y deriva con cebo.",
+    "Curricán con cebo natural."
+   ],
+   "ojo": "Clava en cuanto notes la picada: si esperas, el pez se lo traga y el anzuelo se clava muy dentro. Si vas a soltar el pez, mejor circular.",
+   "fuentes": [
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    },
+    {
+     "titulo": "BoatUS: anzuelos de pesca",
+     "url": "https://www.boatus.com/expert-advice/expert-advice-archive/2016/january/fishing-hooks"
+    },
+    {
+     "titulo": "Tackle Village: tipos de anzuelo",
+     "url": "https://tacklevillage.com/?p=1012774"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-aberdeen",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Aberdeen (pata larga, alambre fino)",
+   "otros_nombres": [
+    "Aberdeen"
+   ],
+   "para": "Anzuelo de pata larga y alambre fino.",
+   "resumen": "El clásico del surfcasting para gusana: el cebo se enhebra recto a lo largo de la pata y el anzuelo daña poco el cebo.",
+   "como_es": [
+    "Pata larga y recta: el cebo se coloca estirado y se ve natural.",
+    "Alambre fino: entra fácil y daña poco el cebo vivo.",
+    "Si se engancha en el fondo, se abre y se recupera el bajo."
+   ],
+   "medidas": [
+    "En surfcasting suele ir del n.º 1 al 8.",
+    "Números altos (6–8) para gusana fina y peces pequeños; 1–2 para gusanas grandes."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Surfcasting con gusana, coreano, americano o tita.",
+    "Pesca de herrera, sargo pequeño y peces planos."
+   ],
+   "usos_embarcacion": [
+    "Pesca a fondo con gusana en arena."
+   ],
+   "ojo": "Al ser fino, un pez grande lo puede abrir: no lo uses para lubinas grandes ni para congrio.",
+   "fuentes": [
+    {
+     "titulo": "Daiwa Tournament Surf SaqSas Aberdeen (n.º 1 a 8)",
+     "url": "https://www.leurredelapeche.fr/es/11050-anzuelo-daiwa-torneo-anzuelo-surf-saqsas-aberdeen.html"
+    },
+    {
+     "titulo": "Tackle Village: tipos de anzuelo",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-baitholder",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Con púas en la pata (baitholder)",
+   "otros_nombres": [
+    "Baitholder",
+    "Anzuelo portacebos"
+   ],
+   "para": "Anzuelo con una o dos púas en la pata para sujetar el cebo.",
+   "resumen": "El cebo no se escurre al lanzar ni cuando el pez da tirones pequeños.",
+   "como_es": [
+    "Una o dos púas o cortes en la pata.",
+    "El cebo queda trabado y no baja hacia la curva."
+   ],
+   "medidas": [
+    "Del 6 al 1/0 en mar, según el cebo."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Surfcasting con gusana, gamba, calamar o trozos de pescado en lances fuertes."
+   ],
+   "usos_embarcacion": [
+    "Fondo con calamar o tiras de pescado."
+   ],
+   "ojo": "Las púas también dañan el cebo vivo: para cebo vivo, mejor un anzuelo liso.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: todo sobre anzuelos",
+     "url": "https://www.thefisherman.com/article/inshore-all-about-hooks/"
+    },
+    {
+     "titulo": "Tackle Village: tipos de anzuelo",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-circular",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Circular (circle)",
+   "otros_nombres": [
+    "Circle hook",
+    "Anzuelo circular"
+   ],
+   "para": "Anzuelo con la punta muy girada hacia la pata, casi formando un círculo.",
+   "resumen": "Se clava solo en la comisura de la boca. Traga menos y es el mejor para soltar el pez: en un estudio del Mediterráneo redujo a menos de la mitad los peces anzuelados por dentro (raspallón, doncella), sin pescar menos.",
+   "como_es": [
+    "La punta mira hacia la pata: al tirar el pez, el anzuelo resbala hasta la comisura y se clava allí.",
+    "No se clava de golpe: basta con tensar y recoger.",
+    "Con anzuelos circulares con la punta torcida (offset) se pierde parte de la ventaja."
+   ],
+   "medidas": [
+    "Suelen marcarse algo más grandes que el J equivalente: compara dentro de la misma marca."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Pesca a fondo con cebo cuando vas a soltar peces.",
+    "Con cebos grandes para lubina o dorada, dejando correr la picada."
+   ],
+   "usos_embarcacion": [
+    "Fondeo y deriva con cebo natural.",
+    "Curricán y pesca con cebo vivo de peces grandes."
+   ],
+   "ojo": "No claves de golpe: tensa y recoge. Con peces planos (lenguado y similares) los estudios no ven ventaja.",
+   "fuentes": [
+    {
+     "titulo": "Florida FWC: reducir la mortalidad en captura y suelta",
+     "url": "https://myfwc.com/research/saltwater/fish/snook/reduce-catch-release-mortality/"
+    },
+    {
+     "titulo": "Estudio en una pesquería recreativa mixta del Mediterráneo (FAO AGRIS)",
+     "url": "https://agris.fao.org/search/en/records/65df7d1bb766d82b1801f80e"
+    },
+    {
+     "titulo": "SCDNR: anzuelos circulares en la corvina roja",
+     "url": "https://dnr.sc.gov/marine/mrri/insh_fish/reddrum/hooks.html"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-pulpo",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Pata corta (octopus / beak)",
+   "otros_nombres": [
+    "Octopus",
+    "Beak",
+    "Anzuelo de cebo vivo"
+   ],
+   "para": "Anzuelo de pata corta, compacto y ligero, con el ojo a menudo inclinado.",
+   "resumen": "Pesa poco y abulta poco: el cebo, sobre todo el vivo, nada natural.",
+   "como_es": [
+    "Pata corta y curva amplia para su tamaño.",
+    "Ligero: no frena al cebo vivo.",
+    "El ojo inclinado hace buen ángulo con nudos como el snell o el palomar."
+   ],
+   "medidas": [
+    "Del 4 al 4/0 en mar, según el cebo vivo (gamba, quisquilla, chicharro…)."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Lubina con cebo vivo bajo boya.",
+    "Pesca a fondo fina con gamba o quisquilla."
+   ],
+   "usos_embarcacion": [
+    "Cebo vivo a la deriva o al ancla (chicharro, caballa, calamar).",
+    "Bajos finos para peces desconfiados."
+   ],
+   "ojo": "Por ser ligero, con peces grandes elige su versión de alambre grueso.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tipos de anzuelo",
+     "url": "https://tacklevillage.com/?p=1012774"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-triple",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Triple (poteta)",
+   "otros_nombres": [
+    "Treble",
+    "Anzuelo triple"
+   ],
+   "para": "Tres anzuelos unidos por la pata: los que llevan casi todos los señuelos duros.",
+   "resumen": "Clava bien al atacar el señuelo, pero hace más daño y engancha más el fondo.",
+   "como_es": [
+    "Tres puntas en una misma pata.",
+    "Se cambian con una arandela partida y un alicate.",
+    "Hay de alambre fino (para señuelos pequeños) y grueso (para peces que tiran)."
+   ],
+   "medidas": [
+    "Del 14 al 1/0; se elige para que no choquen entre sí ni con la línea al nadar el señuelo."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Señuelos de spinning (paseantes, minnows) para lubina, anjova…"
+   ],
+   "usos_embarcacion": [
+    "Señuelos de curricán y spinning desde barco."
+   ],
+   "ojo": "Hace más daño al pez y engancha más: si vas a soltarlo, cámbialo por un anzuelo simple (sin muerte o con la muerte aplastada). En algunas zonas está prohibido: consulta la norma.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tamaños de anzuelo triple",
+     "url": "https://tacklevillage.com/treble-hook-size-chart"
+    },
+    {
+     "titulo": "The Tackle Room: anzuelos triples",
+     "url": "https://thetackleroom.com/blogs/news/treble-hook-sizes-guide-how-to-choose-the-right-treble"
+    },
+    {
+     "titulo": "Discount Tackle: tipos, tamaños y usos de los anzuelos",
+     "url": "https://discounttackle.com/blogs/articles/fishing-hook-basics-types-sizes-uses"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "anzuelo-asistente",
+   "tema": "anzuelos",
+   "tipo": "material",
+   "nombre": "Anzuelo asistente (jigging)",
+   "otros_nombres": [
+    "Assist hook",
+    "Asistente"
+   ],
+   "para": "Anzuelo unido a una cuerda corta que cuelga de la anilla del jig.",
+   "resumen": "Se usa en jigging: el pez suele atacar la cabeza del jig y el asistente está ahí. Y engancha menos el fondo que un triple en la cola.",
+   "como_es": [
+    "Uno o dos anzuelos con una cuerda corta (kevlar o similar) unidos a una anilla.",
+    "Van en la anilla de arriba del jig; en slow pitch también se pone uno abajo.",
+    "Cuerda algo rígida: si es muy blanda, se enreda en la línea al caer el jig."
+   ],
+   "medidas": [
+    "Del 1/0 al 7/0 según el jig y el pez.",
+    "Que la punta no pase de la mitad del jig, para que no se enrede."
+   ],
+   "medidas_titulo": "📏 Tamaños",
+   "usos_costa": [
+    "Jigging ligero desde la roca (shore jigging)."
+   ],
+   "usos_embarcacion": [
+    "Jigging vertical y slow pitch desde barco.",
+    "Jigs de velocidad (con dudas: con el jig siempre subiendo, el asistente de arriba va pegado al jig)."
+   ],
+   "ojo": "Revisa la cuerda tras cada pez: si está pelada, cámbiala. Las fuentes no se ponen de acuerdo en dónde ponerlo en el jigging de velocidad.",
+   "fuentes": [
+    {
+     "titulo": "Ocean's Legacy: configuraciones de anzuelos asistentes",
+     "url": "https://oceanslegacy.co.nz/assist-hooks-for-metal-jigs-understanding-basic-configurations/"
+    },
+    {
+     "titulo": "Mustad: slow pitch jigging",
+     "url": "https://mustad-fishing.com/us/article/get-in-on-the-slow-pitch-jig-craze"
+    },
+    {
+     "titulo": "FishTrack: cómo montar un jig de velocidad",
+     "url": "https://fishtrack.com/article/how-to-rig-a-speed-jig"
+    }
+   ],
+   "consultada": "2026-11-20"
   }
  ],
  "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."

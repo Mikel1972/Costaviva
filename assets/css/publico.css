@@ -161,6 +161,9 @@ details.bloque > summary { cursor: pointer; list-style: none; display: flex; ali
 details.bloque > summary::-webkit-details-marker { display: none; }
 details.bloque > summary::after { content: ""; margin-left: auto; flex: 0 0 auto; width: 9px; height: 9px; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor; transform: rotate(45deg); transition: transform .2s; opacity: .7; margin-right: 4px; margin-top: -4px; }
 details.bloque[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
+table.tabla-especies { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.tabla-especies th, table.tabla-especies td { text-align: left; padding: 7px 6px; border-bottom: 1px solid rgba(0,0,0,.08); vertical-align: top; }
+table.tabla-especies th { font-size: 13px; text-transform: uppercase; letter-spacing: .03em; opacity: .7; }
 .tema-vacio { margin: 8px 0; padding: 10px 16px; border: 1px dashed rgba(0,0,0,.18); border-radius: 14px; color: var(--tinta-2, #555); font-size: 15px; }
 details.bloque summary { font-size: 17px; }
 details.bloque ul { margin: 4px 0 6px; padding-left: 20px; }
