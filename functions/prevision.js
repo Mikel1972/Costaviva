@@ -26,6 +26,7 @@ const OPCIONES_VECINOS = {
   camaraDe: (slug) => (FUENTE_POR_SPOT[slug]?.propia ? FUENTE_POR_SPOT[slug].camara : null),
 };
 import { coefOrillaSpot, tablaOrillaSpot, lecturasContraOrilla } from "./_lib/coef-costa.js";
+import { vertice, sumarMinutos } from "./_lib/marea-extremo.js";
 import COEF_COSTA from "./_lib/coef-costa-datos.js";
 import { marDeFondo, factoresPeriodo, periodoFondoPico } from "../assets/js/mar-de-fondo.js";
 import PERIODO_BOYAS from "./_lib/periodo-boyas-datos.js";
@@ -363,8 +364,13 @@ function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFE
   for (let i = 1; i < alturas.length - 1; i++) {
     const [prev, cur, next] = [alturas[i - 1], alturas[i], alturas[i + 1]];
     if (cur === null || prev === null || next === null) continue;
-    if (cur >= prev && cur >= next) eventosCrudos.push({ tipo: "pleamar", hora: horas[i], altura: cur - minVentana });
-    else if (cur <= prev && cur <= next) eventosCrudos.push({ tipo: "bajamar", hora: horas[i], altura: cur - minVentana });
+    // Hora y altura al minuto con la parábola de los tres puntos
+    // (marea-extremo.js, 2026-11-20): antes salía siempre a la hora en punto.
+    const v = vertice(prev, cur, next);
+    const hora = v ? sumarMinutos(horas[i], v.desfaseMin) : horas[i];
+    const altura = (v ? v.altura : cur) - minVentana;
+    if (cur >= prev && cur >= next) eventosCrudos.push({ tipo: "pleamar", hora, altura });
+    else if (cur <= prev && cur <= next) eventosCrudos.push({ tipo: "bajamar", hora, altura });
   }
   // Bug real encontrado por el robot de experiencia de usuario
   // (2026-09-15): en spots de marea casi nula (Mediterráneo bajo —

@@ -101,14 +101,14 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "16:00",
-      "altura": 2.95,
+      "hora": "15:32",
+      "altura": 2.99,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "22:00",
-      "altura": 0.01,
+      "hora": "21:44",
+      "altura": 0,
       "manana": false
      }
     ],
@@ -160,13 +160,13 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "04:00",
-      "altura": 2.99,
+      "hora": "03:57",
+      "altura": 3,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "10:00",
+      "hora": "10:09",
       "altura": 0,
       "manana": false
      }
@@ -219,14 +219,14 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "15:00",
-      "altura": 2.95,
+      "hora": "14:32",
+      "altura": 2.99,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "21:00",
-      "altura": 0.01,
+      "hora": "20:44",
+      "altura": 0,
       "manana": false
      }
     ],
@@ -278,13 +278,13 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "03:00",
-      "altura": 2.99,
+      "hora": "02:57",
+      "altura": 3,
       "manana": true
      },
      {
       "tipo": "bajamar",
-      "hora": "09:00",
+      "hora": "09:09",
       "altura": 0,
       "manana": true
      }
@@ -337,14 +337,14 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "16:00",
-      "altura": 2.95,
+      "hora": "15:32",
+      "altura": 2.99,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "22:00",
-      "altura": 0.01,
+      "hora": "21:44",
+      "altura": 0,
       "manana": false
      }
     ],
@@ -396,13 +396,13 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "04:00",
-      "altura": 2.99,
+      "hora": "03:57",
+      "altura": 3,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "10:00",
+      "hora": "10:09",
       "altura": 0,
       "manana": false
      }
@@ -455,14 +455,14 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "16:00",
-      "altura": 2.95,
+      "hora": "15:32",
+      "altura": 2.99,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "22:00",
-      "altura": 0.01,
+      "hora": "21:44",
+      "altura": 0,
       "manana": false
      }
     ],
@@ -514,13 +514,13 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "04:00",
-      "altura": 2.99,
+      "hora": "03:57",
+      "altura": 3,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "10:00",
+      "hora": "10:09",
       "altura": 0,
       "manana": false
      }
@@ -573,14 +573,14 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "16:00",
-      "altura": 2.95,
+      "hora": "15:32",
+      "altura": 2.99,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "22:00",
-      "altura": 0.01,
+      "hora": "21:44",
+      "altura": 0,
       "manana": false
      }
     ],
@@ -632,13 +632,13 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "04:00",
-      "altura": 2.99,
+      "hora": "03:57",
+      "altura": 3,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "10:00",
+      "hora": "10:09",
       "altura": 0,
       "manana": false
      }

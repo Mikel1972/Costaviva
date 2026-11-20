@@ -147,8 +147,10 @@ test("Peniche: /prevision da las mareas en hora de Lisboa (una hora menos que an
     globalThis.Date = RealDate;
   }
   assert.equal(lisboa.zona, "Europe/Lisbon");
-  assert.deepEqual(madrid.marea.proximas.map((e) => e.hora), ["16:00", "22:00"]);
-  assert.deepEqual(lisboa.marea.proximas.map((e) => e.hora), ["15:00", "21:00"]);
+  // Al minuto desde el 2026-11-20 (marea-extremo.js): la senoide de prueba
+  // tiene la pleamar a las 13:31 UTC y la bajamar a las 19:44 UTC.
+  assert.deepEqual(madrid.marea.proximas.map((e) => e.hora), ["15:32", "21:44"]);
+  assert.deepEqual(lisboa.marea.proximas.map((e) => e.hora), ["14:32", "20:44"]);
   assert.equal(lisboa.marea.altura, madrid.marea.altura); // mismo instante, misma agua
   assert.equal(lisboa.presion.valor, madrid.presion.valor);
 });
