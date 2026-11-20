@@ -151,6 +151,13 @@ header:has(.cuenta-menu-dropdown.visible) { z-index: 1200; }
   color: var(--tinta); font-family: var(--f-texto); font-weight: 600; font-size: 14px; padding: 10px 12px; border-radius: 10px; cursor: pointer;
 }
 .cuenta-menu-dropdown button:hover { background: var(--superficie-2); }
+/* Enlace del menú a las guías públicas (2026-11-20): mismo aspecto que los botones. */
+.cuenta-menu-dropdown a.menu-enlace { display: flex; align-items: center; gap: 8px; color: var(--tinta); text-decoration: none; font-family: var(--f-texto); font-weight: 600; font-size: 14px; padding: 10px 12px; border-radius: 10px; }
+.cuenta-menu-dropdown a.menu-enlace:hover { background: var(--superficie-2); }
+/* Botón del mapa a las guías públicas (2026-11-20, Mikel: encima de
+   «Pesca comercial», para dejar la cabecera limpia). */
+.guias-chip, .leaflet-container a.guias-chip { display: inline-block; background: var(--superficie); color: var(--tinta); text-decoration: none; font-family: var(--f-texto); font-weight: 800; font-size: 12.5px; padding: 7px 12px; border-radius: 999px; box-shadow: 0 2px 8px rgba(11, 30, 63, 0.25); white-space: nowrap; }
+.guias-chip:hover, .guias-chip:focus-visible { background: var(--superficie-2); }
 
 /* ---------- Menú inferior ---------- */
 .tabs-nav {
