@@ -59,6 +59,8 @@ export async function onRequestGet(context) {
 <meta name="twitter:title" content="Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva" />
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
 <style>
+  .nav-cv { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+  .nav-cv a { font: 700 13.5px Arial, sans-serif; text-decoration: none; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid #e3d9c6; color: #0B2532; }
   * { box-sizing: border-box; }
   body { margin: 0; background: ${CREMA}; font-family: Arial, 'Liberation Sans', sans-serif; color: ${NAVY}; }
   .envoltorio { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
@@ -80,6 +82,8 @@ export async function onRequestGet(context) {
   <div class="envoltorio">
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>
+    <!-- «Atrás» y menú (2026-11-20, Mikel: «en mareas tampoco puedo retroceder»). -->
+    <nav class="nav-cv" aria-label="Navegación"><a href="/">← Atrás: Mapa</a><a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/aprende">Aprende</a></nav>
 
     <h1>Mareas y oleaje en España y Portugal</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
