@@ -2313,6 +2313,443 @@
     }
    ],
    "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-guia",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Señuelos de spinning: cuál según el mar",
+   "otros_nombres": [
+    "Elegir señuelo"
+   ],
+   "para": "Qué familia de señuelo poner según cómo esté el mar.",
+   "resumen": "El estado del mar manda: con calma y agua clara, superficie y vinilos ligeros; con espuma y mar movido, señuelos que se agarren al agua o que bajen por debajo de la espuma.",
+   "como_es": [
+    "Mar en calma y agua clara: paseante, popper pequeño, minnow flotante o vinilo sin plomo.",
+    "Mar movido con espuma: minnow que «muerde» el agua, lápiz hundido (sinking pencil), vinilo con cabeza plomada o un paseante algo más grande.",
+    "Viento de cara: lápiz hundido o jig de lance, que vuelan y cortan el viento.",
+    "Agua tomada (turbia): vinilos blancos o señuelos de silueta marcada a distintas profundidades; los muy ruidosos de superficie suelen rendir poco.",
+    "Fondo con mucha piedra o algas en calma: vinilo sin plomo montado antienganche (weedless)."
+   ],
+   "medidas": [
+    "De 9 a 15 cm y de 10 a 30 g cubren casi toda la pesca de lubina desde costa.",
+    "Más peso si hay viento o hay que llegar lejos; menos si el pez está pegado a la orilla."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Lubina en roca y playa: la caja básica es un paseante, un minnow, un lápiz hundido y un par de vinilos con cabezas de distinto peso.",
+    "Caballa, anjova y bonito: jig de lance o cucharilla."
+   ],
+   "usos_embarcacion": [
+    "Spinning a pájaros (caballa, bonito, anjova): jig de lance o lápiz hundido.",
+    "Lanzar a la piedra desde la embarcación: los mismos que desde costa."
+   ],
+   "ojo": "Ningún señuelo funciona siempre: si en media hora no hay nada, cambia de familia antes que de color.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: leer el mar y el tiempo para la lubina a señuelo",
+     "url": "https://www.seaangler.co.uk/fishing-news/lure-fishing-bass-cracking-code-watercraft-weather/"
+    },
+    {
+     "titulo": "Sea Angler: pescar con mar movido (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: preguntas sobre pesca a señuelo (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    },
+    {
+     "titulo": "Angling Times: los mejores señuelos de lubina desde costa",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    },
+    {
+     "titulo": "Leurre de la Pêche: qué señuelo elegir para la lubina",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-paseante",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Paseante (stickbait de superficie)",
+   "otros_nombres": [
+    "Stickbait",
+    "Walk the dog"
+   ],
+   "para": "Un señuelo duro sin babero que flota y se mueve en zigzag por la superficie.",
+   "resumen": "Imita un pez herido en la superficie: los ataques se ven y son espectaculares. Es el clásico de la lubina con poca luz.",
+   "como_es": [
+    "Sin babero: el zigzag lo das tú con toques cortos de puntera y recogiendo el hilo flojo («walk the dog»).",
+    "Flota: si paras, se queda quieto en la superficie."
+   ],
+   "medidas": [
+    "De 9 a 14 cm; los más pesados (20–30 g) lanzan mejor con viento y se ven más con mar."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Lubina al amanecer y al anochecer, en calma o con algo de mar.",
+    "Sobre piedras y bajos donde un señuelo que baja se engancharía."
+   ],
+   "usos_embarcacion": [
+    "Lanzar a la piedra y a bancos de peces en superficie."
+   ],
+   "ojo": "Ante un ataque, no claves hasta notar el peso: muchos fallan por clavar al ver la salpicadura.",
+   "fuentes": [
+    {
+     "titulo": "Minnesota DNR: señuelos de superficie",
+     "url": "https://dnr.state.mn.us/minnaqua/et/surface-lures.html"
+    },
+    {
+     "titulo": "Bass Resource: señuelos de superficie",
+     "url": "https://www.bassresource.com/fishing/topwater_baits.html"
+    },
+    {
+     "titulo": "Sea Angler: pescar con mar movido (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Angling Times: los mejores señuelos de lubina desde costa",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-popper",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Popper",
+   "otros_nombres": [
+    "Chugger"
+   ],
+   "para": "Señuelo de superficie con la boca cóncava que salpica y hace ruido al tirar.",
+   "resumen": "Llama al pez desde lejos con el chapoteo. Va bien con poca luz y para levantar peces activos.",
+   "como_es": [
+    "Boca cóncava: con cada tirón hace «pop» y salpica.",
+    "Se pesca a tirones con pausas."
+   ],
+   "medidas": [
+    "De 7 a 12 cm en costa; mayores para pájaros y túnidos."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Lubina con poca luz, en calma o con algo de ola.",
+    "Anjova y otros depredadores cerca de la superficie."
+   ],
+   "usos_embarcacion": [
+    "Pájaros y bancos en superficie (bonito, anjova)."
+   ],
+   "ojo": "Con agua muy tomada y mucha espuma suele rendir poco: ahí, mejor un señuelo que baje.",
+   "fuentes": [
+    {
+     "titulo": "Minnesota DNR: señuelos de superficie",
+     "url": "https://dnr.state.mn.us/minnaqua/et/surface-lures.html"
+    },
+    {
+     "titulo": "Bass Resource: señuelos de superficie",
+     "url": "https://www.bassresource.com/fishing/topwater_baits.html"
+    },
+    {
+     "titulo": "Sea Angler: preguntas sobre pesca a señuelo (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-minnow",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Minnow (pez con babero)",
+   "otros_nombres": [
+    "Jerkbait",
+    "Pececillo"
+   ],
+   "para": "Señuelo duro con forma de pez y un babero que lo hace nadar y bajar.",
+   "resumen": "El señuelo más versátil: nada solo con recogida lineal y el babero marca a qué profundidad trabaja.",
+   "como_es": [
+    "Flotante: baja al recoger y sube al parar.",
+    "Suspending: se queda quieto a media agua al parar.",
+    "Hundido: baja solo; para buscar más fondo o con viento.",
+    "Babero más grande, más profundidad."
+   ],
+   "medidas": [
+    "De 9 a 14 cm; 12–20 g los habituales en costa."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Lubina en playa y roca con mar movido: «muerde» el agua y sigue nadando con la ola.",
+    "Recogida lineal con alguna pausa."
+   ],
+   "usos_embarcacion": [
+    "Spinning a la piedra.",
+    "Curricán lento con minnows de babero grande."
+   ],
+   "ojo": "Con olas grandes, los flotantes muy ligeros salen del agua: usa uno más pesado o hundido.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: guía de señuelos para principiantes",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    },
+    {
+     "titulo": "Sea Angler: pescar con mar movido (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Leurre de la Pêche: qué señuelo elegir para la lubina",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    },
+    {
+     "titulo": "Angling Times: los mejores señuelos de lubina desde costa",
+     "url": "https://www.anglingtimes.co.uk/tackle-reviews/accessories/the-best-bass-lures-for-shore-fishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-lapiz-hundido",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Lápiz hundido (sinking pencil)",
+   "otros_nombres": [
+    "Sinking pencil",
+    "Needlefish"
+   ],
+   "para": "Señuelo duro, alargado y sin babero, que se hunde.",
+   "resumen": "Lanza muchísimo, corta el viento y trabaja por debajo de la espuma. Imita al lanzón y a peces finos.",
+   "como_es": [
+    "Sin babero y pesado para su tamaño.",
+    "Se deja bajar y se recoge despacio, con un nado suave."
+   ],
+   "medidas": [
+    "De 9 a 15 cm; 15–30 g."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Lubina con viento de cara o mar de fondo.",
+    "Playas con espuma: bajarlo por debajo del rompiente.",
+    "Anjova y caballa lejos de la orilla."
+   ],
+   "usos_embarcacion": [
+    "Pájaros y peces en superficie lejos de la embarcación."
+   ],
+   "ojo": "Recogido rápido sube a la superficie; recogido lento en poco fondo se engancha: ajusta el ritmo a la profundidad.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: pescar con mar movido (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: leer el mar y el tiempo para la lubina a señuelo",
+     "url": "https://www.seaangler.co.uk/fishing-news/lure-fishing-bass-cracking-code-watercraft-weather/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-vinilo",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Vinilo (señuelo blando)",
+   "otros_nombres": [
+    "Shad",
+    "Paddletail",
+    "Slug"
+   ],
+   "para": "Señuelo de goma blanda, con cola de pala (shad) o sin ella (slug), montado en cabeza plomada o sin plomo.",
+   "resumen": "Probablemente el más usado para la lubina: sirve todo el año, en calma y con mar, y montado antienganche pasa sobre algas y piedra.",
+   "como_es": [
+    "Shad o cola de pala: vibra al recoger; con cabeza plomada baja y se pesca a distintas alturas.",
+    "Slug o vinilo sin cola: nada en zigzag cerca de la superficie, sin plomo.",
+    "Antienganche (weedless): la punta del anzuelo va escondida en la goma."
+   ],
+   "medidas": [
+    "De 9 a 15 cm; cabeza de 5 a 30 g según fondo, corriente y viento."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Lubina en roca con algas (sin plomo, antienganche, en calma).",
+    "Con mar movido o agua tomada: shad con cabeza plomada, en blanco.",
+    "Peces planos y otros de fondo arrastrando despacio."
+   ],
+   "usos_embarcacion": [
+    "Pesca vertical y a la deriva con cabezas pesadas.",
+    "Lanzar a la piedra."
+   ],
+   "ojo": "Los peces arrancan la cola: lleva repuestos. Cambia el peso de la cabeza antes que el vinilo.",
+   "fuentes": [
+    {
+     "titulo": "Leurre de la Pêche: qué señuelo elegir para la lubina",
+     "url": "https://www.leurredelapeche.fr/es/articles/48-que-senuelo-elegir-para-la-lubina.html"
+    },
+    {
+     "titulo": "Sea Angler: pescar con mar movido (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    },
+    {
+     "titulo": "Sea Angler: preguntas sobre pesca a señuelo (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    },
+    {
+     "titulo": "Wired2Fish: guía de señuelos para principiantes",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-jig-lance",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Jig de lance (casting jig)",
+   "otros_nombres": [
+    "Casting jig",
+    "Jig metálico"
+   ],
+   "para": "Una pieza de metal que vuela lejos y baja rápido.",
+   "resumen": "El señuelo para llegar lejos y rápido: caballa, bonito, anjova y lubina cuando están lejos o hay viento.",
+   "como_es": [
+    "Metal compacto: lanza lejos y se hunde rápido.",
+    "Se recoge rápido o a tirones; también se deja caer y se sube."
+   ],
+   "medidas": [
+    "En costa, de 20 a 60 g: 20–30 g para trabajos rápidos en superficie (bonito); 30–60 g lo habitual para caballa y en general."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Caballa, bonito y anjova desde roca y espigón (shore jigging).",
+    "Lubina con viento fuerte o lejos."
+   ],
+   "usos_embarcacion": [
+    "Pájaros y bancos en superficie.",
+    "Jigging ligero vertical."
+   ],
+   "ojo": "Con fondo de piedra, cuenta los segundos de caída y empieza a recoger antes de tocar: se engancha fácil.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: el jig metálico, desde barco o playa",
+     "url": "https://www.thefisherman.com/article/by-boat-or-beach-the-versatile-metal-jig/"
+    },
+    {
+     "titulo": "FishingBooker: guía de shore jigging",
+     "url": "https://fishingbooker.com/blog/?p=422"
+    },
+    {
+     "titulo": "On The Water: caballa desde costa con jig",
+     "url": "https://onthewater.com/how-to-catch-spanish-mackerel-from-shore"
+    },
+    {
+     "titulo": "Sea Angler: pescar con mar movido (Fish in rough seas)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/281530816989438"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-cucharilla",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Cucharilla y cuchara ondulante",
+   "otros_nombres": [
+    "Spinner",
+    "Spoon"
+   ],
+   "para": "La cucharilla tiene una pala que gira alrededor de un eje; la cuchara ondulante es una chapa curva que se balancea.",
+   "resumen": "Señuelos sencillos y baratos que brillan y vibran: buenos para empezar y para peces activos.",
+   "como_es": [
+    "Cucharilla: la pala gira y vibra; retuerce el sedal, usa quitavueltas.",
+    "Cuchara ondulante: chapa curva que se balancea al recoger; lanza lejos."
+   ],
+   "medidas": [
+    "Cucharillas de 5 a 20 g; cucharas de 10 a 40 g."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Caballa, chicharro y lubina pequeña desde espigones y puertos.",
+    "Para empezar a pescar a señuelo."
+   ],
+   "usos_embarcacion": [
+    "Curricán ligero y pesca a bancos de caballa."
+   ],
+   "ojo": "Retuercen el sedal: pon un quitavueltas de rodamiento delante.",
+   "fuentes": [
+    {
+     "titulo": "Wired2Fish: la cucharilla Johnson Silver Minnow",
+     "url": "https://www.wired2fish.com/tackle-tips/20-most-influential-fishing-lures-no-17-johnson-silver-minnow"
+    },
+    {
+     "titulo": "Missouri Dept. of Conservation: The Lure of Lures",
+     "url": "https://mdc.mo.gov/node/297484"
+    },
+    {
+     "titulo": "Wired2Fish: guía de señuelos para principiantes",
+     "url": "https://www.wired2fish.com/bass-fishing/a-beginners-guide-to-bass-fishing-lures"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "senuelo-colores",
+   "tema": "senuelos-spinning",
+   "tipo": "material",
+   "nombre": "Colores del señuelo: cuál elegir",
+   "otros_nombres": [
+    "Color del señuelo"
+   ],
+   "para": "Qué color elegir según la luz y lo clara que esté el agua.",
+   "resumen": "Regla simple: natural con agua clara y luz; blanco o colores vivos con agua tomada; oscuro de noche, que se ve mejor recortado contra la superficie.",
+   "como_es": [
+    "Con agua turbia o a mucha profundidad, el tamaño, la forma, el movimiento y el contraste importan más que el color.",
+    "Cambia antes de familia de señuelo que de color."
+   ],
+   "medidas": [
+    "Mismo tamaño que el pez pasto que haya en la zona."
+   ],
+   "medidas_titulo": "📏 Tamaño y peso",
+   "usos_costa": [
+    "Agua clara de verano: plateados, sardina, transparentes.",
+    "Agua tomada tras temporal: blanco o colores vivos.",
+    "De noche desde roca: negro o muy oscuro."
+   ],
+   "usos_embarcacion": [
+    "Pájaros: plateado y azul, como el pez pasto."
+   ],
+   "ojo": "Casi todas las guías son de agua dulce o de lubina americana: tómalo como orientación, no como regla.",
+   "fuentes": [
+    {
+     "titulo": "Bass Pro: elegir el color del señuelo",
+     "url": "https://1source.basspro.com/news-tips/fishing-tackle/7368/simple-guide-choosing-lure-colors-bass"
+    },
+    {
+     "titulo": "BCF: los colores correctos del señuelo",
+     "url": "https://www.bcf.com.au/be-a-bcfing-expert/fishing/buyers-guide/right-lure-colours.html"
+    },
+    {
+     "titulo": "Minnesota DNR: colores de señuelo",
+     "url": "https://dnr.state.mn.us/minnaqua/et/lure-colors.html"
+    },
+    {
+     "titulo": "Sea Angler: preguntas sobre pesca a señuelo (2024)",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20240501/282355454799413"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "colores": [
+    {
+     "color": "Natural (plata, sardina, transparente)",
+     "para": "Agua clara y mucha luz."
+    },
+    {
+     "color": "Blanco o colores vivos",
+     "para": "Agua tomada: más contraste."
+    },
+    {
+     "color": "Negro o muy oscuro",
+     "para": "De noche y con poca luz: la silueta se ve mejor contra la superficie."
+    }
+   ]
   }
  ],
  "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."

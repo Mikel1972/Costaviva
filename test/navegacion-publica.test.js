@@ -101,3 +101,15 @@ test("quitavueltas, plomos y boyas: fichas desplegables con costa y embarcación
   }
   assert.ok(datos.fichas.filter((f) => f.tema === "quitavueltas-perlas-topes").length >= 8);
 });
+
+test("señuelos de spinning: fichas desplegables con tamaño y peso, costa y embarcación", async () => {
+  const { paginaFicha } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  const fs = datos.fichas.filter((f) => f.tema === "senuelos-spinning");
+  assert.ok(fs.length >= 8);
+  for (const f of fs) {
+    const { html } = paginaFicha(datos, f);
+    for (const id of ["como-es", "medidas", "costa", "embarcacion", "ojo", "fuentes"]) assert.match(html, new RegExp(`id="${id}">`), `${f.id} ${id}`);
+    assert.ok(f.fuentes.length >= 2, f.id);
+  }
+});
