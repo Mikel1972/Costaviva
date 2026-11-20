@@ -16,7 +16,7 @@
 import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes.js";
 import { agruparPorZona, horaLocalISO, paramZona, zonaDeSpot, ZONA_POR_DEFECTO } from "../assets/js/regiones.js";
 // Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
-import { oleajeCostero, zonaOleaje, rangoAltura } from "./_lib/oleaje-costero.js";
+import { oleajeCostero, zonaOleaje, rangoAltura, acotarMargenesSpots } from "./_lib/oleaje-costero.js";
 import { revisarVecinos } from "./_lib/coherencia-vecinos.js";
 import RELACIONES_VECINOS from "./_lib/relaciones-vecinos-datos.js";
 // Regla de vecinos: la relación histórica entre cámaras (la aprende el robot
@@ -1410,7 +1410,7 @@ export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), 
   // Regla de vecinos (coherencia-vecinos.js): ningún spot muy por encima de
   // los de al lado; si pasa, se recorta y queda en avisosVecinos.
   const revisadosNZ = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(conMareaSinCamara, lecturasOleaje?.lecturas, ahora), lecturasOleaje?.medidas, ahora), OPCIONES_VECINOS);
-  const conMarea = revisadosNZ.spots
+  const conMarea = acotarMargenesSpots(revisadosNZ.spots)
     .map((r) => {
       const spot = porSlug.get(r.slug);
       const medida = spot ? mareografoDeSpot(spot, waikato?.nivelesMarea) : null;
@@ -1516,7 +1516,7 @@ export async function onRequestGet(context) {
   // por encima de los de al lado; si pasa, se recorta y queda en
   // avisosVecinos, que apunta el robot de las cámaras.
   const revisados = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(resultadosModelo, lecturasOleaje.lecturas), lecturasOleaje.medidas), OPCIONES_VECINOS);
-  const resultados = revisados.spots;
+  const resultados = acotarMargenesSpots(revisados.spots);
   const avisosVecinos = revisados.avisos;
 
   // Fuentes de los datos de los spots, para que la página muestre su

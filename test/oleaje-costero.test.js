@@ -179,3 +179,13 @@ test("umbral de rotura y coeficiente relativo con datos sintéticos", () => {
   assert.ok(c > 0.35 && c < 0.45, String(c));
   assert.equal(umbralRotura(serie(1).slice(0, 5)), null); // pocos datos: null, no un número inventado
 });
+
+import { acotarRango, acotarMargenesSpots } from "../functions/_lib/oleaje-costero.js";
+test("margen de la ola: como mucho 0,3 m alrededor del centro (Mikel, 2026-11-20)", () => {
+  assert.deepEqual(acotarRango([0.6, 2.6]), [1.5, 1.8]);
+  assert.deepEqual(acotarRango([1.3, 1.6]), [1.3, 1.6]);
+  assert.deepEqual(acotarRango(null), null);
+  const [s] = acotarMargenesSpots([{ altura: [2, 3], bloques: [{ altura: [0.5, 1.5], alturaMarAbierto: [3, 4] }] }]);
+  assert.deepEqual(s.altura, [2.4, 2.7]);
+  assert.deepEqual(s.bloques[0].altura, [0.9, 1.2]);
+});
