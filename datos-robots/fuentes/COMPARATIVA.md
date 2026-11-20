@@ -1,6 +1,6 @@
 # Comparativa de fuentes contra boyas de Puertos del Estado
 
-Generado sin IA por `scripts/fuentes/comparar-boyas.mjs` el 2026-11-19T16:00Z.
+Generado sin IA por `scripts/fuentes/comparar-boyas.mjs` el 2026-11-20T15:43Z.
 Ventana: últimos 14 días, 15 pronóstico(s) archivado(s) (cada uno, las 24 h siguientes a su hora).
 
 Cómo leerlo: **sesgo** = previsión − boya (negativo = la fuente se queda corta); **MAE** = error medio absoluto;
@@ -12,56 +12,84 @@ El viento de las boyas se mide a pocos metros sobre el mar y los modelos lo dan 
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 294 | +0.07 | 0.19 | 0.29 |
-| Copernicus IBI | 294 | -0.22 | 0.24 | 0.32 |
+| Open-Meteo | 7372 | -0.09 | 0.32 | 0.44 |
+| Copernicus IBI | 7372 | -0.22 | 0.33 | 0.48 |
 
 ## Periodo de pico (s)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Copernicus IBI | 318 | +0.4 | 1.0 | 1.6 |
+| Copernicus IBI | 8616 | +0.1 | 1.6 | 2.8 |
 
 ## Temperatura del agua (°C)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 294 | +0.07 | 0.65 | 0.71 |
-| Copernicus IBI | 294 | -0.53 | 0.60 | 0.73 |
+| Open-Meteo | 7375 | +0.10 | 0.73 | 1.00 |
+| Copernicus IBI | 7375 | -0.00 | 0.78 | 1.04 |
+
+## Viento (m/s)
+
+| Fuente | n | Sesgo | MAE | RMSE |
+|---|---:|---:|---:|---:|
+| Open-Meteo | 4508 | -1.37 | 2.60 | 3.20 |
+| MET Norway | 4508 | +1.76 | 2.31 | 2.89 |
+
+## Dirección del viento (°)
+
+| Fuente | n | Sesgo | MAE | RMSE |
+|---|---:|---:|---:|---:|
+| Open-Meteo | 4233 | +2 | 26 | 40 |
+| MET Norway | 4233 | +2 | 25 | 39 |
+
+## Presión (hPa)
+
+| Fuente | n | Sesgo | MAE | RMSE |
+|---|---:|---:|---:|---:|
+| Open-Meteo | 3945 | +0.6 | 0.8 | 1.2 |
+| MET Norway | 3945 | +0.6 | 0.8 | 1.1 |
+
+## Temperatura del aire (°C)
+
+| Fuente | n | Sesgo | MAE | RMSE |
+|---|---:|---:|---:|---:|
+| Open-Meteo | 4514 | -0.84 | 1.55 | 2.75 |
+| MET Norway | 4514 | -1.09 | 1.52 | 2.96 |
 
 ## Altura de ola por boya (MAE en m, n entre paréntesis)
 
 | Boya | Open-Meteo | MET Norway | Copernicus IBI |
 |---|---:|---:|---:|
-| 1117 Gijón | 0.19 (294) | — | 0.24 (294) |
+| 1101 Pasaia II | 0.39 (289) | — | 0.18 (289) |
+| 1103 AP Bilbao | 0.18 (287) | — | 0.21 (287) |
+| 1117 Gijón | 0.20 (273) | — | 0.25 (273) |
+| 1239 Langosteira (A Coruña) | 0.40 (289) | — | 0.26 (289) |
+| 1414 Las Palmas Este | 0.28 (286) | — | 0.20 (286) |
+| 1421 Sta. Cruz de Tenerife | 0.15 (289) | — | 0.35 (289) |
+| 1500 Tarifa | 0.61 (289) | — | 0.38 (289) |
+| 1504 Algeciras-Pta. Carnero | 0.48 (289) | — | 0.24 (289) |
+| 1512 Ceuta | 0.29 (285) | — | 0.21 (285) |
+| 1514 Málaga | 0.12 (285) | — | 0.14 (285) |
+| 1712 Tarragona | 0.11 (289) | — | 0.14 (289) |
+| 1731 Barcelona II | 0.15 (286) | — | 0.18 (286) |
+| 2136 Bilbao-Vizcaya | 0.23 (280) | — | 0.19 (280) |
+| 2242 Cabo Peñas | 0.41 (280) | — | 0.25 (280) |
+| 2244 Estaca de Bares | 0.42 (281) | — | 0.77 (281) |
+| 2246 Villano-Sisargas | 0.44 (278) | — | 0.43 (278) |
+| 2248 Cabo Silleiro | 0.55 (280) | — | 0.40 (280) |
+| 2342 Golfo de Cádiz | 0.25 (282) | — | 0.21 (282) |
+| 2442 Gran Canaria | 0.24 (281) | — | 0.35 (281) |
+| 2446 Tenerife Sur | 0.42 (280) | — | 0.10 (280) |
+| 2548 Cabo de Gata | 0.20 (282) | — | 0.31 (282) |
+| 2610 Cabo de Palos | 0.43 (281) | — | 0.97 (281) |
+| 2720 Tarragona (exterior) | 0.23 (281) | — | 0.26 (281) |
+| 2798 Cabo de Begur | 0.48 (282) | — | 0.65 (282) |
+| 2820 Dragonera (Mallorca) | 0.28 (283) | — | 0.32 (283) |
+| 2838 Mahón (Menorca) | 0.30 (285) | — | 0.75 (285) |
 
 ## Avisos de esta pasada
 
 - 2026-11-14 Open-Meteo: Open-Meteo (forecast) sin respuesta: fetch failed
 - 2026-11-19 Open-Meteo: Open-Meteo (forecast) sin respuesta: fetch failed
-- Boya 1101 Pasaia II: boya 1101 HTTP 429
-- Boya 1103 AP Bilbao: boya 1103 HTTP 429
-- Boya 1239 Langosteira (A Coruña): boya 1239 HTTP 429
-- Boya 1414 Las Palmas Este: boya 1414 HTTP 429
-- Boya 1421 Sta. Cruz de Tenerife: boya 1421 HTTP 429
-- Boya 1500 Tarifa: boya 1500 HTTP 429
-- Boya 1504 Algeciras-Pta. Carnero: boya 1504 HTTP 429
-- Boya 1512 Ceuta: boya 1512 HTTP 429
-- Boya 1514 Málaga: boya 1514 HTTP 429
-- Boya 1712 Tarragona: boya 1712 HTTP 429
-- Boya 1731 Barcelona II: boya 1731 HTTP 429
-- Boya 2136 Bilbao-Vizcaya: boya 2136 HTTP 429
-- Boya 2242 Cabo Peñas: boya 2242 HTTP 429
-- Boya 2244 Estaca de Bares: boya 2244 HTTP 429
-- Boya 2246 Villano-Sisargas: boya 2246 HTTP 429
-- Boya 2248 Cabo Silleiro: boya 2248 HTTP 429
-- Boya 2342 Golfo de Cádiz: boya 2342 HTTP 429
-- Boya 2442 Gran Canaria: boya 2442 HTTP 429
-- Boya 2446 Tenerife Sur: boya 2446 HTTP 429
-- Boya 2548 Cabo de Gata: boya 2548 HTTP 429
-- Boya 2610 Cabo de Palos: boya 2610 HTTP 429
-- Boya 2720 Tarragona (exterior): boya 2720 HTTP 429
-- Boya 2798 Cabo de Begur: boya 2798 HTTP 429
-- Boya 2820 Dragonera (Mallorca): boya 2820 HTTP 429
-- Boya 2838 Mahón (Menorca): boya 2838 HTTP 429
 
 Fuentes: boyas de Puertos del Estado (uso interno de validación); Open-Meteo.com (CC BY 4.0); MET Norway (CC BY 4.0); Generated using E.U. Copernicus Marine Service Information (10.48670/moi-00025, 10.48670/moi-00027).
