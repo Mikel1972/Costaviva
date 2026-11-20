@@ -44,7 +44,7 @@ ${cta()}
 // desplegables») y los usos van separados para costa y embarcación.
 function paginaMaterial(datos, f) {
   const ruta = `/aprende/${f.id}`;
-  const titulo = `${f.nombre}: ${f.colores?.length ? "características, colores" : f.tema === "anzuelos" ? "cómo es, tamaños" : "cómo es, grosor, largo"} y usos en costa y embarcación | Costaviva`;
+  const titulo = `${f.nombre}: ${f.colores?.length ? "características, colores" : f.tema === "anzuelos" ? "cómo es, tamaños" : f.tema === "bajos" ? "cómo es, grosor, largo" : "tipos, cuál usar"} y usos en costa y embarcación | Costaviva`;
   const descripcion = `${f.nombre}: ${f.para} ${f.resumen}`.slice(0, 300);
   const nombreTema = datos.temas[f.tema] || f.tema;
   const migas = [{ nombre: "Aprende", ruta: "/aprende" }, { nombre: f.nombre, ruta }];
