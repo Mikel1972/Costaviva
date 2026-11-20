@@ -64,11 +64,14 @@ export const TITULOS_REGION = {
 };
 export const tituloMareasRegion = (r) => {
   const t = TITULOS_REGION[r.slug];
-  return t ? `Mareas hoy en ${t.lugar}: ${t.pueblos} | Costaviva` : `Mareas hoy en ${r.nombre}: pleamar, bajamar y oleaje | Costaviva`;
+  // 2026-11-20 (GSC): «pleamar y bajamar» es de lo más buscado; va en el título.
+  return t ? `Mareas hoy en ${t.lugar}: pleamar y bajamar en ${t.pueblos} | Costaviva` : `Mareas hoy en ${r.nombre}: pleamar, bajamar y oleaje | Costaviva`;
 };
 export const tituloPescaRegion = (r, n) => {
   const t = TITULOS_REGION[r.slug];
-  return t ? `Pesca en ${t.lugarPesca}: ${n} spots en ${t.zonas} | Costaviva` : null;
+  // 2026-11-20 (GSC): País Vasco en posición 6 con 95 impresiones y 1 clic:
+  // «hoy» da un motivo para pulsar (el índice de pesca de hoy).
+  return t ? `Pesca en ${t.lugarPesca} hoy: ${n} spots en ${t.zonas} | Costaviva` : null;
 };
 
 export function regionDeSlug(slugSpot) {
