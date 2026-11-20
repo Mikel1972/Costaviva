@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-20T07:07:21.074Z",
- "lineasHistorial": 11747,
+ "fecha": "2026-11-20T08:08:38.865Z",
+ "lineasHistorial": 11759,
  "etiquetas": 1240,
  "etiquetasClaude": 252,
  "calibracion": {
@@ -390,9 +390,9 @@
    "correlacion": 0.492
   },
   "nz-riverton/principal": {
-   "a": 7.6797,
+   "a": 7.6715,
    "p": 0.5,
-   "n": 1077,
+   "n": 1078,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 70,
    "franjasClaude": [
@@ -623,7 +623,7 @@
    "cerca": null
   },
   "sopelana": {
-   "n": 1,
+   "n": 2,
    "suficiente": false,
    "lineas": null,
    "cerca": null
@@ -647,7 +647,7 @@
    "cerca": null
   },
   "zumaia": {
-   "n": 1,
+   "n": 2,
    "suficiente": false,
    "lineas": null,
    "cerca": null

@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-20T07:07:24.787Z",
+ "actualizado": "2026-11-20T08:10:51.692Z",
  "dias": 7,
  "repetidos": [
   {
@@ -32,6 +32,14 @@
    "bajo": 0,
    "spots": [
     "mundaka"
+   ]
+  },
+  {
+   "clave": "sopelana",
+   "alto": 4,
+   "bajo": 0,
+   "spots": [
+    "sopelana"
    ]
   }
  ],
@@ -350,6 +358,42 @@
    "antes": 0.6,
    "referencia": 0.5,
    "visto": "2026-11-20T06:37:28.098Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-20T09:00",
+   "antes": 4.1,
+   "referencia": 1.7,
+   "visto": "2026-11-20T08:10:51.692Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-20T12:00",
+   "antes": 1.8,
+   "referencia": 1.4,
+   "visto": "2026-11-20T08:10:51.692Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-20T15:00",
+   "antes": 1.7,
+   "referencia": 1.4,
+   "visto": "2026-11-20T08:10:51.692Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-20T18:00",
+   "antes": 1.4,
+   "referencia": 1.3,
+   "visto": "2026-11-20T08:10:51.692Z"
   }
  ]
 }
