@@ -73,14 +73,18 @@ export async function montarVideo({ datos, clip, rutaRelativa }) {
 
 // Deja reel-pendiente.json (lo lee publicar-borrador-instagram.mjs), avanza
 // la rotación del clip y apunta la pieza en el calendario.
-export function apuntarReel({ tipo, caption, rutaRelativa, baseUrl, fecha, hora, campana, clip, estado, clave, rotacionPropia }) {
+// sinRotacionPeces: el clip no es de la rotación de peces (p. ej. el del
+// calamar): no se toca rotacion-reels-peces.json.
+export function apuntarReel({ tipo, caption, rutaRelativa, baseUrl, fecha, hora, campana, clip, estado, clave, rotacionPropia, sinRotacionPeces = false }) {
   writeFileSync(join(__dirname, "reel-pendiente.json"), JSON.stringify({
     tipo, esReel: true, caption, rutaRelativa, publicUrl: `${baseUrl}/${rutaRelativa}`,
     fecha, hora, dia: new Intl.DateTimeFormat("es-ES", { weekday: "long", timeZone: "UTC" }).format(new Date(`${fecha}T12:00:00Z`)),
     campana, mercado: "es", idioma: "es", clip: { carpeta: "stock", fichero: clip.fichero, personaIdentificable: clip.licencia.persona_identificable === false ? false : true },
   }, null, 2));
-  const rot = leerJson(RUTA_ROTACION_PECES);
-  writeFileSync(RUTA_ROTACION_PECES, JSON.stringify({ ...rot, ultimoClip: clip.fichero }, null, 2) + "\n");
+  if (!sinRotacionPeces) {
+    const rot = leerJson(RUTA_ROTACION_PECES);
+    writeFileSync(RUTA_ROTACION_PECES, JSON.stringify({ ...rot, ultimoClip: clip.fichero }, null, 2) + "\n");
+  }
   if (rotacionPropia) writeFileSync(rotacionPropia.ruta, JSON.stringify(rotacionPropia.datos, null, 2) + "\n");
   writeFileSync(RUTA_ESTADO, JSON.stringify(apuntarGenerada(estado, clave, { tipo, campana }), null, 2) + "\n");
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, "generada=true\n");
