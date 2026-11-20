@@ -25,9 +25,13 @@ export const IDIOMAS_SEO = {
 };
 
 // "/spots/bakio" -> "/en/spots/bakio" (y "/" -> "/en/").
+// En inglés, mareas y especies tienen su ruta propia (/en/tides, /en/species):
+// "/mareas/bakio" -> "/en/tides/bakio" (2026-11-20, espejo de idiomas).
+const RUTAS_PROPIAS = { en: [[/^\/mareas(?=\/|$)/, "/tides"], [/^\/especies(?=\/|$)/, "/species"]] };
 export function rutaIdioma(ruta, idioma = "es") {
   const p = IDIOMAS_SEO[idioma]?.prefijo ?? "";
   if (!p) return ruta;
+  for (const [re, nueva] of RUTAS_PROPIAS[idioma] || []) ruta = ruta.replace(re, nueva);
   return ruta === "/" ? `${p}/` : `${p}${ruta}`;
 }
 

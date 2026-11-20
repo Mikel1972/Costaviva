@@ -133,7 +133,7 @@ ${region ? `<p><a href="/spots/region/${esc(region.slug)}">Todos los spots de ${
 </section>`;
 
   // Spots de Portugal: también en portugués (/pt/spots/<slug>, paginas-pt.js).
-  const alternos = region?.slug === "portugal" ? ["es", "pt"] : ["es"];
+  const alternos = ["es", "en", "pt"];
   return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, alternos, imagen: imagenOgRegion(region), imagenAlt: `Pesca en ${region ? nombreRegion(region) : nombre} con Costaviva` }) };
 }
 
@@ -165,7 +165,7 @@ ${REGIONES_MAREAS.map((r) => {
   return `<section aria-labelledby="t-${r.slug}"><h2 id="t-${r.slug}"><a href="/spots/region/${r.slug}">${esc(nombreRegion(r))}</a> <small>(${del.length})</small></h2>${listaSpots(del)}</section>`;
 }).join("\n")}
 ${cta()}`;
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("spots"), imagenAlt: "Spots de pesca de Costaviva" }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, alternos: ["es", "en", "pt"], imagen: imagenOg("spots"), imagenAlt: "Spots de pesca de Costaviva" }) };
 }
 
 export function paginaRegionSpots(region, spots, especiesDatos, mes) {
@@ -209,7 +209,7 @@ ${peces.length ? `<section aria-labelledby="t-peces"><h2 id="t-peces">Peces de $
 <ul class="especies">${peces.map((e) => `<li${e.ahora ? ' class="temporada"' : ""}><a href="/especies/${esc(e.slug)}">${esc(e.nombre)}</a> <span class="meses">${esc(e.meses)}</span></li>`).join("")}</ul></section>` : ""}
 ${cta()}
 <p><a href="/spots">Todas las regiones →</a></p>`;
-  const alternos = region.slug === "portugal" ? ["es", "pt"] : ["es"];
+  const alternos = ["es", "en", "pt"];
   return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, alternos, imagen: imagenOgRegion(region), imagenAlt: `Pesca en ${nombre} con Costaviva` }) };
 }
 
@@ -279,7 +279,7 @@ ${f.porRegion.map((r) => `<h3><a href="/spots/region/${esc(r.slug)}">${esc(r.nom
 </section>` : ""}
 <p><a href="/especies">Todas las especies →</a></p>`;
   // Todas las especies de España y Portugal tienen versión en portugués.
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article", alternos: ["es", "pt"], imagen: imagenOg("especies"), imagenAlt: "Especies de pesca: tallas, vedas y temporada" }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article", alternos: ["es", "en", "pt"], imagen: imagenOg("especies"), imagenAlt: "Especies de pesca: tallas, vedas y temporada" }) };
 }
 
 export function paginaIndiceEspecies(especiesDatos, mes) {
@@ -303,5 +303,5 @@ export function paginaIndiceEspecies(especiesDatos, mes) {
 <section aria-labelledby="t-todas"><h2 id="t-todas">Todas las especies</h2>
 <ul class="lista-especies">${lista.map((e) => `<li><a href="/especies/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a>${e.cientifico ? ` <em class="nota">${esc(e.cientifico)}</em>` : ""}</li>`).join("")}</ul></section>
 ${cta()}`;
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, alternos: ["es", "pt"], imagen: imagenOg("especies"), imagenAlt: "Especies de pesca: tallas, vedas y temporada" }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, alternos: ["es", "en", "pt"], imagen: imagenOg("especies"), imagenAlt: "Especies de pesca: tallas, vedas y temporada" }) };
 }

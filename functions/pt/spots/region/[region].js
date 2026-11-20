@@ -1,13 +1,14 @@
-// functions/pt/spots/region/[region].js — pesqueros de Portugal en portugués
-// (/pt/spots/region/portugal). Las demás regiones no tienen versión en pt.
+// functions/pt/spots/region/[region].js — pesqueiros de uma zona de Portugal
+// ou Espanha (/pt/spots/region/<região>; paginas-ib.js).
 import { conCache, pagina404 } from "../../../_lib/seo/base.js";
-import { paginaRegionSpotsPt } from "../../../_lib/seo/paginas-pt.js";
+import { IB, regionIb } from "../../../_lib/seo/paginas-ib.js";
 import { SPOTS, cargarEspecies, mesMadrid } from "../../../_lib/seo/carga.js";
 
 export async function onRequestGet(context) {
-  if (context.params.region !== "portugal") return pagina404({ que: "página", volver: "/pt/spots/region/portugal", volverTexto: "Ver os pesqueiros de Portugal" });
+  const region = String(context.params.region || "");
+  if (!regionIb(region)) return pagina404({ que: "página", volver: "/pt/spots", volverTexto: "Ver os pesqueiros" });
   return conCache(context, async () => {
     const especiesDatos = await cargarEspecies(context);
-    return { html: paginaRegionSpotsPt(SPOTS, especiesDatos, mesMadrid()).html };
+    return { html: IB.pt.paginaRegionSpots(region, SPOTS, especiesDatos, mesMadrid()).html };
   });
 }

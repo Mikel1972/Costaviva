@@ -1,7 +1,7 @@
 // functions/pt/especies/[slug].js — ficha de una especie en portugués
 // (/pt/especies/<slug>; paginas-pt.js).
 import { conCache, html404 } from "../../_lib/seo/base.js";
-import { paginaEspeciePt } from "../../_lib/seo/paginas-pt.js";
+import { IB } from "../../_lib/seo/paginas-ib.js";
 import { idDeSlugEspecie } from "../../_lib/seo/datos.js";
 import { SPOTS, cargarEspecies, mesMadrid } from "../../_lib/seo/carga.js";
 
@@ -16,6 +16,6 @@ export async function onRequestGet(context) {
     const especiesDatos = await cargarEspecies(context);
     const e = especiesDatos.especies.find((x) => x.id === idDeSlugEspecie(slug));
     if (!e) return html404({ que: "página", volver: "/pt/especies", volverTexto: "Ver todas as espécies" });
-    return { html: paginaEspeciePt(e, especiesDatos, SPOTS, mesMadrid()).html };
+    return { html: IB.pt.paginaEspecie(e, especiesDatos, SPOTS, mesMadrid()).html };
   });
 }

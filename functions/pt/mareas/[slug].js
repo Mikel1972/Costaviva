@@ -1,17 +1,15 @@
-// functions/pt/mareas/[slug].js — marea de hoy de un spot de Portugal, en
-// portugués (/pt/mareas/<slug>; datos de /prevision, como /mareas/<slug>).
+// functions/pt/mareas/[slug].js — maré de hoje de um pesqueiro de Portugal ou
+// Espanha, em português (/pt/mareas/<slug>; datos de /prevision).
 import { conCache, pagina404, pedirConLimite, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "../../_lib/seo/base.js";
-import { paginaMareaPt, esSpotPT } from "../../_lib/seo/paginas-pt.js";
+import { IB, esSpotIberia } from "../../_lib/seo/paginas-ib.js";
 
 export async function onRequestGet(context) {
   const slug = String(context.params.slug || "");
-  if (!esSpotPT(slug)) return pagina404({ que: "página", volver: "/pt/mareas/region/portugal", volverTexto: "Ver as marés de Portugal" });
+  if (!esSpotIberia(slug)) return pagina404({ que: "página", volver: "/pt/mareas", volverTexto: "Ver as marés" });
   return conCache(context, async () => {
     const datos = await pedirConLimite(new URL("/prevision", context.request.url).toString(), 8000, context);
     const sp = datos?.spots?.find((s) => s.slug === slug && !s.error);
-    if (!sp) {
-      return { html: paginaMareaPt({ ...((datos?.spots || []).find((s) => s.slug === slug) || { slug, nombre: slug }), bloques: [], marea: null }, datos?.spots || []).html, ttl: TTL_SIN_DATOS_S };
-    }
-    return { html: paginaMareaPt(sp, datos.spots).html, ttl: TTL_CON_DATOS_S };
+    if (!sp) return { html: IB.pt.paginaMarea({ ...((datos?.spots || []).find((s) => s.slug === slug) || { slug, nombre: slug }), bloques: [], marea: null }, datos?.spots || []).html, ttl: TTL_SIN_DATOS_S };
+    return { html: IB.pt.paginaMarea(sp, datos.spots).html, ttl: TTL_CON_DATOS_S };
   });
 }

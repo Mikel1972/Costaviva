@@ -204,7 +204,10 @@ test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LIN
     assert.match(html, /<html lang="en">/, url);
     assert.ok(html.includes(`<link rel="canonical" href="${url}">`), `${url}: canónica`);
     assert.ok(html.includes(`<link rel="alternate" hreflang="en" href="${url}">`), `${url}: hreflang en`);
-    assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="${url}">`), `${url}: x-default`);
+    // Los índices tienen su versión en español (x-default); las de NZ, solo en inglés.
+    const indice = /\/en\/(spots|tides|species)$/.test(url);
+    const xdef = indice ? url.replace("/en/tides", "/mareas").replace("/en/species", "/especies").replace("/en/spots", "/spots") : url;
+    assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="${xdef}">`), `${url}: x-default`);
     assert.match(html, /<meta property="og:locale" content="en_NZ">/);
     // Atribución de LINZ (fórmula exacta de obra adaptada, con enlace a la
     // licencia CC BY 4.0) y aviso, en el pie de todas.
@@ -226,19 +229,21 @@ test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LIN
   assert.match(especie, /Snapper/);
   assert.match(especie, /Tāmure/, "nombre māori");
   assert.doesNotMatch(especie, /Pargo/, "sin el nombre español");
-  // Un slug de España en /en/ no existe.
-  const no = await rutaSpotEn.onRequestGet(e.ctx("https://costaviva.org/en/spots/bakio", { slug: "bakio" }));
+  // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
+  const no = await rutaSpotEn.onRequestGet(e.ctx("https://costaviva.org/en/spots/no-existe", { slug: "no-existe" }));
   assert.equal(no.status, 404);
   assert.match(await no.text(), /We could not find this page/);
 });
 
-test("páginas en español de España: sin hreflang y con su canónica de siempre", async () => {
+test("páginas en español de España: su canónica de siempre y hreflang a inglés y portugués", async () => {
   const e = entorno();
   const r = await rutaSpotEs.onRequestGet(e.ctx("https://costaviva.org/spots/bakio", { slug: "bakio" }));
   assert.equal(r.status, 200);
   const html = await r.text();
   assert.match(html, /<html lang="es">/);
-  assert.doesNotMatch(html, /hreflang/);
+  // 2026-11-20 (espejo de idiomas): España y Portugal también en inglés y portugués.
+  assert.ok(html.includes('<link rel="alternate" hreflang="en" href="https://costaviva.org/en/spots/bakio">'));
+  assert.ok(html.includes('<link rel="alternate" hreflang="pt-PT" href="https://costaviva.org/pt/spots/bakio">'));
   assert.ok(html.includes('<link rel="canonical" href="https://costaviva.org/spots/bakio">'));
   assert.doesNotMatch(html, /nz-/);
 });

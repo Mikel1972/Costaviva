@@ -19,6 +19,7 @@
 // Information New Zealand data...", enlace a CC BY 4.0) y el aviso de
 // que no son tablas oficiales, y nada interno ("heuristic", "pending"...).
 
+import { rutaIdioma } from "./idiomas.js";
 import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg } from "./base.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
@@ -170,8 +171,8 @@ ${m ? notaMareaLinz(m.puerto) : ""}
 </section>`;
 }
 
-function documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen = imagenOg("spots"), imagenAlt = "Costaviva: live fishing conditions in New Zealand", ogTipo }) {
-  return documento({ titulo, descripcion, ruta, cuerpo, ld, imagen, imagenAlt, ogTipo, idioma: "en", alternos: ["en"], pie: PIE_EN });
+function documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen = imagenOg("spots"), imagenAlt = "Costaviva: live fishing conditions in New Zealand", ogTipo, alternos = ["en"] }) {
+  return documento({ titulo, descripcion, ruta, cuerpo, ld, imagen, imagenAlt, ogTipo, idioma: "en", alternos, pie: PIE_EN });
 }
 
 // ---------------------------------------------------------------------------
@@ -256,7 +257,7 @@ export function paginaIndiceSpotsNZ(todos) {
   const titulo = `Best fishing spots in New Zealand: ${nz.length} top places to fish | Costaviva`;
   const descripcion = `${nz.length} fishing spots around New Zealand: what to catch at each one and when, LINZ tide times, today's waves and wind, and the MPI fishing rules for its area.`;
   const migas = [{ nombre: "Spots", ruta: "/en/spots" }];
-  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
+  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>Best fishing spots in New Zealand</h1>
 <p class="intro">Pick a spot to see what you can catch there from the shore, from a boat or spearfishing, in which months, the tide times and today's conditions. You can also browse <a href="/en/species">by species</a> or check <a href="/en/tides">tides today</a>.</p>
@@ -267,7 +268,7 @@ ${ZONAS_NZ.map((z) => {
   }).join("\n")}
 ${ctaEn()}
 <p class="nota">Fishing in Spain or Portugal? <a href="/spots" hreflang="es">Spots in Spain and Portugal (in Spanish)</a>.</p>`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, alternos: ["es", "en", "pt"] }) };
 }
 
 export function paginaZonaSpotsNZ(zona, todos, especiesDatos, mes) {
@@ -366,11 +367,11 @@ ${zona ? `<p><a href="/en/tides/region/${esc(zona.slug)}">All tides in ${esc(zon
 
 export function paginaIndiceMareasNZ(todos) {
   const nz = spotsNZ(todos);
-  const ruta = "/tides";
+  const ruta = "/mareas";
   const titulo = `Tide times today in New Zealand: ${nz.length} fishing spots | Costaviva`;
   const descripcion = `High and low tide times today for ${nz.length} fishing spots around New Zealand, from LINZ tide predictions, with waves and wind. Free, no account needed.`;
   const migas = [{ nombre: "Tides", ruta: "/en/tides" }];
-  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
+  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>Tide times today in New Zealand</h1>
 <p class="intro">High and low tides today and tomorrow at ${nz.length} fishing spots, from the official LINZ predictions for the nearest standard or secondary port.</p>
@@ -381,7 +382,7 @@ ${ZONAS_NZ.map((z) => {
   }).join("\n")}
 <p class="nota">${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>
 ${ctaEn()}`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: "Tide times in New Zealand" }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: "Tide times in New Zealand", alternos: ["es", "en", "pt"] }) };
 }
 
 export function paginaZonaMareasNZ(zona, todos) {
@@ -459,14 +460,14 @@ ${f.porZona.map((z) => `<h3><a href="/en/spots/region/${esc(z.slug)}">${esc(z.no
 }
 
 export function paginaIndiceEspeciesNZ(especiesDatos, mes) {
-  const ruta = "/species";
+  const ruta = "/especies";
   const lista = especiesNZ(especiesDatos)
     .map((e) => ({ slug: slugEspecie(e.id), nombre: nombreEn(e), maori: e.nombres?.mi || null, cientifico: nombreCientifico(e), emoji: e.emoji || "🐟", ahora: Object.values(e.presencia || {}).some((p) => p?.meses?.includes(mes) && p.meses.length < 12) }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "en"));
   const titulo = `New Zealand fishing species: season, where to fish and MPI rules | Costaviva`;
   const descripcion = `${lista.length} recreational fishing species in New Zealand: English and Māori names, season by MPI fishing area, how they are fished and where, with links to the official MPI rules.`;
   const migas = [{ nombre: "Species", ruta: "/en/species" }];
-  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/en${ruta}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
+  const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rutaIdioma(ruta, "en")}`, inLanguage: "en", publisher: ORG_LD }, migasJsonLd(migas)];
   const ahora = lista.filter((e) => e.ahora);
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>New Zealand fishing species</h1>
@@ -476,7 +477,7 @@ ${ahora.length ? `<section aria-labelledby="t-ahora"><h2 id="t-ahora">In season 
 <section aria-labelledby="t-todas"><h2 id="t-todas">All species</h2>
 <ul class="lista-especies">${lista.map((e) => `<li><a href="/en/species/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a>${e.maori ? ` <span class="nota">${esc(e.maori)}</span>` : ""}${e.cientifico ? ` <em class="nota">${esc(e.cientifico)}</em>` : ""}</li>`).join("")}</ul></section>
 ${ctaEn()}`;
-  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("especies"), imagenAlt: "New Zealand fishing species" }) };
+  return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("especies"), imagenAlt: "New Zealand fishing species", alternos: ["es", "en", "pt"] }) };
 }
 
 // ---------------------------------------------------------------------------

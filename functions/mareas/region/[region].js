@@ -78,7 +78,7 @@ export async function onRequestGet(context) {
 <title>${escaparHtml(tituloMareasRegion(region))}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
-${region.slug === "portugal" ? `${enlacesHreflang("/mareas/region/portugal", "https://costaviva.org", ["es", "pt"])}\n` : ""}
+${enlacesHreflang(`/mareas/region/${region.slug}`, "https://costaviva.org", ["es", "en", "pt"])}\n
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="Mareas y oleaje en ${nombre} | Costaviva" />

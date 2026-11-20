@@ -92,8 +92,8 @@ test("IndexNow: de ficheros cambiados a URLs públicas afectadas", () => {
 
 test("IndexNow: a diario solo las páginas de cada spot (pesca y marea)", () => {
   const hoy = urlsCondicionesHoy(sitemap).map((u) => new URL(u).pathname);
-  // España (pesca y marea) y Nueva Zelanda en inglés (/en/spots y /en/tides).
-  assert.equal(hoy.length, (SPOTS.length + SPOTS_NZ.length) * 2);
+  // España (pesca y marea, en español y en inglés) y Nueva Zelanda en inglés.
+  assert.equal(hoy.length, (2 * SPOTS.length + SPOTS_NZ.length) * 2);
   assert.ok(hoy.includes("/spots/bakio") && hoy.includes("/mareas/bakio"));
   assert.ok(hoy.includes("/en/spots/nz-leigh") && hoy.includes("/en/tides/nz-leigh"));
   assert.ok(!hoy.some((p) => p.includes("/region/") || p.startsWith("/especies") || p === "/spots" || p === "/mareas"));

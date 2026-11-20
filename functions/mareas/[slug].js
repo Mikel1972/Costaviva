@@ -165,7 +165,7 @@ function renderizarPagina(spot, todos) {
 <title>${escaparHtml(titulo)}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
-${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "pt"])}\n` : ""}<meta property="og:type" content="website" />
+${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "en", "pt"])}\n` : ""}<meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="${escaparHtml(titulo)}" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />

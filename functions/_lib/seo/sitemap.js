@@ -5,7 +5,7 @@ import { DOMINIO } from "./base.js";
 import { REGIONES_MAREAS, slugEspecie, fechaDatos } from "./datos.js";
 import { especiesDePais } from "../regiones-activas.js";
 import { urlsEn } from "./paginas-en.js";
-import { urlsPt } from "./paginas-pt.js";
+import { IB } from "./paginas-ib.js";
 
 // Fecha de la última revisión de la portada, privacidad y las páginas de
 // mareas (su contenido de datos cambia cada hora, la plantilla no).
@@ -44,7 +44,9 @@ export function urlsSitemap({ spots, especies, tipoFondo, profundidad, formacion
     ...[["/en", formacionEn], ["/pt", formacionPt]].flatMap(([p, fo]) => (fo ? [u(`${p}/aprende`, fo.version, "weekly", "0.7"), ...fo.fichas.map((f) => u(`${p}/aprende/${f.id}`, fo.version, "monthly", "0.5"))] : [])),
     u("/privacidad", FECHA_PAGINAS_FIJAS, "yearly", "0.2"),
     ...urlsEn({ spots, especies, fecha: fechaDatos(especies?.version, FECHA_EN) || FECHA_EN }),
-    ...urlsPt({ spots: spots.filter((x) => x.pais !== "nz"), especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),
+    // España y Portugal en portugués e inglés (2026-11-20, espejo de idiomas).
+    ...IB.pt.urls({ spots, especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),
+    ...IB.en.urls({ spots, especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),
   ];
 }
 

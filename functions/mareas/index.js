@@ -8,6 +8,7 @@
 // enlaces, los datos reales viven en la página de cada spot.
 
 import { REGIONES } from "./_regiones.js";
+import { enlacesHreflang } from "../_lib/seo/idiomas.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -44,6 +45,7 @@ export async function onRequestGet(context) {
 <title>Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
+${enlacesHreflang("/mareas", "https://costaviva.org", ["es", "en", "pt"])}
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva" />
