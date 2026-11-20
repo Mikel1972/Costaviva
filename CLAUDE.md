@@ -134,7 +134,8 @@ Sin IA. No toca los ficheros de la flota.
   `flota-ais.mjs` (`especieProbable`, `conEspecie`) rellena `especie_probable`
   de `flota_zonas` y `flota_zonas_dia` con un **id de especies.json**: suma
   los kg de peces y cefalópodos vendidos en las lonxas a ≤ 30 km del centro
-  de la celda el día de la zona (o el anterior si la Xunta aún no lo ha
+  de la celda (solo lonjas de bajura: fuera Vigo, Lonja Coruña S.A., Burela,
+  Celeiro y Marín, `LONJAS_ALTURA`) el día de la zona (o el anterior si la Xunta aún no lo ha
   subido); solo si una especie llega al 50 % con ≥ 300 kg en total y está en
   `ESPECIE_DE_LONJA` (equivalencias seguras por nombre científico). Si la que
   domina no está, null: nunca la segunda. El mapa enseña «Probablemente

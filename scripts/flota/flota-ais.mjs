@@ -350,9 +350,16 @@ export const ESPECIE_DE_LONJA = Object.freeze({
   "Atún vermello": "atun_rojo", "Raia cravuda": "raya", Melgacho: "pintarroja",
 });
 
+// Solo lonjas de BAJURA (Mikel: «los de bajura pescan en la zona»). Fuera
+// las de la flota de altura y gran altura, que venden lo pescado lejos (Gran
+// Sol, caladeros internacionales): Vigo (la de altura; «Vigo (Canido)» es la
+// cofradía y sí cuenta), A Coruña (Lonja Coruña, S.A.; la «Confraría» sí),
+// Burela, Celeiro y Marín.
+export const LONJAS_ALTURA = Object.freeze(["Vigo", "A Coruña (Lonja Coruña, S.A.)", "Burela", "Celeiro", "Marín"]);
+
 export function cargarLonjas() {
   return JSON.parse(readFileSync(new URL("../lonjas/lonjas-galicia.json", import.meta.url), "utf8")).lonjas
-    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon));
+    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon) && !LONJAS_ALTURA.includes(l.nombre));
 }
 
 // Centro de una celda de PASO_CELDA (celda() da la esquina de abajo a la izquierda).

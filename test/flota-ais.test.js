@@ -398,7 +398,10 @@ test("especie probable: cada nombre de la fuente lleva a un id que existe en esp
   // Equivalencias dudosas, fuera a propósito.
   for (const n of ["Xarda pintada", "Bonito do atlántico", "Pota común"]) assert.equal(M.ESPECIE_DE_LONJA[n], undefined, n);
   // Todas las lonxas del catálogo con coordenadas se cargan.
-  assert.ok(M.cargarLonjas().length >= 50);
+  assert.ok(M.cargarLonjas().length >= 45);
+  // Las de altura no cuentan (venden lo pescado lejos).
+  for (const n of M.LONJAS_ALTURA) assert.ok(!M.cargarLonjas().some((l) => l.nombre === n), n);
+  assert.ok(M.cargarLonjas().some((l) => l.nombre === "Vigo (Canido)"));
 });
 
 test("conEspecie: 24h usa el día de hoy (o ayer), «ayer» el de ayer y el histórico su propio día", async () => {
