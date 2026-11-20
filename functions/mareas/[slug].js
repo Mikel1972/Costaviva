@@ -181,6 +181,8 @@ ${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "http
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
 <script type="application/ld+json">${jsonLd}</script>
 <style>
+  .nav-cv { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+  .nav-cv a { font: 700 13.5px Arial, sans-serif; text-decoration: none; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid #e3d9c6; color: #0B2532; }
   * { box-sizing: border-box; }
   body { margin: 0; background: ${CREMA}; font-family: Arial, 'Liberation Sans', sans-serif; color: ${NAVY}; }
   .envoltorio { max-width: 640px; margin: 0 auto; padding: 32px 20px 64px; }
@@ -217,6 +219,8 @@ ${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "http
   <div class="envoltorio">
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>
+    <!-- «Atrás» y menú (2026-11-20, Mikel: «en mareas tampoco puedo retroceder»). -->
+    <nav class="nav-cv" aria-label="Navegación"><a href="${region ? `/mareas/region/${region.slug}` : "/mareas"}">← Atrás: ${region ? escaparHtml(region.nombre) : "Mareas"}</a><a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/aprende">Aprende</a></nav>
 
     <div class="migas"><a href="/mareas">Todos los spots</a>${region ? ` → <a href="/mareas/region/${region.slug}">${escaparHtml(region.nombre)}</a>` : ""} → ${nombre}</div>
     <h1>Mareas hoy en ${nombre}: pleamar y bajamar</h1>

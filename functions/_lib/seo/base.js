@@ -60,7 +60,11 @@ export function migasJsonLd(migas) {
 
 export function migasHtml(migas, idioma = "es") {
   const etiqueta = { en: "Breadcrumb", pt: "Navegação estrutural" }[idioma] || "Migas de pan";
-  return `<nav class="migas" aria-label="${etiqueta}"><ol>${migas
+  // «Atrás» siempre (2026-11-20, Mikel: «siempre tiene que haber una de
+  // atrás»): a la página de arriba en las migas; en la primera, al mapa.
+  const arriba = migas.length > 1 ? migas[migas.length - 2] : { nombre: { en: "Map", pt: "Mapa" }[idioma] || "Mapa", ruta: "/" };
+  const atras = { en: "Back", pt: "Voltar" }[idioma] || "Atrás";
+  return `<p class="volver"><a href="${esc(arriba.ruta)}">← ${atras}: ${esc(arriba.nombre)}</a></p><nav class="migas" aria-label="${etiqueta}"><ol>${migas
     .map((m, i) => (i === migas.length - 1 ? `<li aria-current="page">${esc(m.nombre)}</li>` : `<li><a href="${esc(m.ruta)}">${esc(m.nombre)}</a></li>`))
     .join("")}</ol></nav>`;
 }
@@ -108,7 +112,7 @@ function CABECERA_PIE_EN(cuerpo, pie) {
   return `<header class="cabecera-publica">
   <a class="enlace-marca" href="/en/spots" aria-label="Costaviva, home">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Sections">
-    <a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a>
+    <a href="/">🗺️ Map</a><a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a>
   </nav>
 </header>
 <main class="contenido">
@@ -125,7 +129,7 @@ function CABECERA_PIE_PT(cuerpo) {
   return `<header class="cabecera-publica">
   <a class="enlace-marca" href="/pt/spots/region/portugal" aria-label="Costaviva, início">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secções">
-    <a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a>
+    <a href="/">🗺️ Mapa</a><a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a>
   </nav>
 </header>
 <main class="contenido">
@@ -179,7 +183,7 @@ ${ld.map(jsonLd).join("\n")}
 ${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : idioma === "pt" ? CABECERA_PIE_PT(cuerpo) : `<header class="cabecera-publica">
   <a class="enlace-marca" href="/" aria-label="Costaviva, inicio">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secciones">
-    <a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a><a href="/aprende">Aprende</a>
+    <a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a><a href="/aprende">Aprende</a>
   </nav>
 </header>
 <main class="contenido">

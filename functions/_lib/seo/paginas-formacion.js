@@ -23,7 +23,9 @@ export function paginaIndiceFormacion(datos) {
     const fs = fichasDeTema(datos, id);
     const nombre = datos.temas[id] || id;
     if (!fs.length) return `<li><span class="nota">${esc(nombre)} · en preparación</span></li>`;
-    return `<li><strong>${esc(nombre)}</strong><ul class="chips">${fs.map((f) => `<li><a href="/aprende/${esc(f.id)}">${esc(f.nombre)}</a></li>`).join("")}</ul></li>`;
+    // Desplegable (2026-11-20, Mikel: «como en cada línea va a haber muchos
+    // campos, deben ser desplegables»): <details>, sin JavaScript.
+    return `<li><details class="tema"><summary><strong>${esc(nombre)}</strong> <span class="nota">(${fs.length})</span></summary><ul class="chips">${fs.map((f) => `<li><a href="/aprende/${esc(f.id)}">${esc(f.nombre)}</a></li>`).join("")}</ul></details></li>`;
   };
   const cuerpo = `${migasHtml(migas)}
 <h1>Aprende a pescar</h1>
@@ -48,6 +50,7 @@ export function paginaFicha(datos, f) {
       name: f.nombre,
       description: f.resumen,
       inLanguage: "es",
+      ...(f.imagen ? { image: `${DOMINIO}${f.imagen.src}` } : {}),
       step: f.pasos.map((p, i) => ({ "@type": "HowToStep", position: i + 1, text: p })),
       publisher: ORG_LD,
     },
@@ -58,9 +61,11 @@ export function paginaFicha(datos, f) {
 <h1>${esc(f.nombre)}</h1>
 ${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.map(esc).join(" · ")}</p>` : ""}
 <p class="intro"><strong>Para qué:</strong> ${esc(f.para)} ${esc(f.resumen)}</p>
+${f.imagen ? `<figure class="tarjeta"><img src="${esc(f.imagen.src)}" alt="${esc(f.imagen.alt)}" loading="lazy" style="width:100%;height:auto;border-radius:10px"><figcaption class="nota">${esc(f.imagen.alt)}. Imagen: ${esc(f.imagen.autor)}, ${f.imagen.licencia_url ? `<a href="${esc(f.imagen.licencia_url)}" rel="noopener nofollow" target="_blank">${esc(f.imagen.licencia)}</a>` : esc(f.imagen.licencia)}, vía <a href="${esc(f.imagen.fuente_url)}" rel="noopener nofollow" target="_blank">Wikimedia Commons</a>.</figcaption></figure>` : ""}
 <section class="tarjeta" aria-labelledby="t-pasos"><h2 id="t-pasos">Paso a paso</h2>
 <ol>${f.pasos.map((p) => `<li>${esc(p)}</li>`).join("")}</ol>
 <p class="nota">Para verlo en movimiento: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">animación en ${esc(f.fuente.titulo.split(":")[0])}</a>.</p></section>
+${f.resistencia ? `<p><strong>Resistencia:</strong> ~${esc(f.resistencia.media_pct)} % de la del sedal <span class="nota">(media de ${f.resistencia.fuentes.length === 1 ? "una prueba publicada" : `${f.resistencia.fuentes.length} pruebas publicadas`}: ${f.resistencia.fuentes.map((u, i) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank">${i + 1}</a>`).join(", ")}; depende mucho del estado del sedal y de cómo se ate)</span></p>` : ""}
 ${f.bien_con?.length ? `<p><strong>Va bien con:</strong> ${f.bien_con.map((s) => esc(NOMBRE_SEDAL[s] || s)).join(", ")}.</p>` : ""}
 ${f.ojo ? `<section class="tarjeta aviso" aria-labelledby="t-ojo"><h2 id="t-ojo">Ojo</h2><p>${esc(f.ojo)}</p></section>` : ""}
 <p class="nota">Fuente: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">${esc(f.fuente.titulo)}</a> (consultada el ${esc(f.fuente.consultada)}). Texto propio de Costaviva.</p>
