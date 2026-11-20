@@ -89,8 +89,9 @@ export function paginaSpot(spot, todos, d) {
   const ruta = `/spots/${spot.slug}`;
   const deTemporada = especiesDestacadas(especies, ["costa"]).slice(0, 3).map((x) => x.toLowerCase());
 
-  const titulo = `Pesca en ${nombre}: especies, temporada, fondo y condiciones de hoy | Costaviva`;
-  const descripcion = `Pesca en ${nombre}${region ? ` (${nombreRegion(region)})` : ""}: ${deTemporada.length ? `ahora ${deTemporada.join(", ")}; ` : ""}qué se pesca desde costa, en embarcación y en submarina, tipo de fondo, profundidad y el índice de pesca de hoy.`;
+  // 2026-11-20 (GSC): Bakio en posición 9 con 39 impresiones y 1 clic.
+  const titulo = `Pesca en ${nombre} hoy: qué se pesca, temporada, fondo y condiciones | Costaviva`;
+  const descripcion = `¿Merece la pena pescar hoy en ${nombre}${region ? ` (${nombreRegion(region)})` : ""}? Índice de pesca de hoy, ${deTemporada.length ? `especies de temporada (${deTemporada.join(", ")}), ` : ""}qué se pesca desde costa, en embarcación y en submarina, fondo y profundidad.`;
   const migas = [{ nombre: "Spots", ruta: "/spots" }, ...(region ? [{ nombre: nombreRegion(region), ruta: `/spots/region/${region.slug}` }] : []), { nombre, ruta }];
 
   const ld = [
@@ -191,7 +192,7 @@ export function paginaRegionSpots(region, spots, especiesDatos, mes) {
   // Con las zonas donde están los spots (2026-11-19): "golfo de cadiz pesca"
   // pos. 8,7 y "pesca en portugal" pos. 17,7, sin clics.
   const titulo = tituloPescaRegion(region, del.length) || `Pesca en ${nombre}: ${del.length} spots, especies y temporada | Costaviva`;
-  const descripcion = `Spots de pesca en ${nombre} (${del.length}) y los peces de ${nombre} con su temporada. En ${mesLargo(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fondo, profundidad y condiciones de hoy.`;
+  const descripcion = `Dónde pescar hoy en ${nombre}: índice de pesca de hoy en ${del.length} spots y los peces de ${nombre} con su temporada. En ${mesLargo(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fondo, profundidad y condiciones en tiempo real.`;
   const migas = [{ nombre: "Spots", ruta: "/spots" }, { nombre, ruta }];
   const ld = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${ruta}`, inLanguage: "es", about: { "@type": "Place", name: nombre } },

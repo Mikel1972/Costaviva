@@ -268,8 +268,9 @@ export function paginaRegionSpotsPt(spots, especiesDatos, mes) {
     .filter((e) => regiones.some((r) => e.presencia?.[r]?.meses?.includes(mes)))
     .map((e) => ({ slug: slugEspecie(e.id), nombre: nombrePt(e) }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "pt"));
-  const titulo = `Pesca em Portugal: ${del.length} pesqueiros, espécies e época | Costaviva`;
-  const descripcion = `Pesqueiros em Portugal (${del.length}) e espécies da época em ${mesLargoPt(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fundo, profundidade e condições de hoje.`;
+  // 2026-11-20 (GSC): «pesqueiros» e «pesqueiros portugal» em posição 8-9, sem cliques.
+  const titulo = `Pesqueiros em Portugal: ${del.length} locais de pesca, espécies e época | Costaviva`;
+  const descripcion = `Onde pescar hoje em Portugal: ${del.length} pesqueiros com o índice de pesca de hoje e as espécies da época em ${mesLargoPt(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fundo, profundidade e condições em tempo real.`;
   const migas = [{ nombre: "Pesqueiros", ruta: `/pt${ruta}` }];
   const ld = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}/pt${ruta}`, inLanguage: "pt-PT", about: { "@type": "Place", name: "Portugal" }, publisher: ORG_LD },
