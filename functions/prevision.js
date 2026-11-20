@@ -409,7 +409,9 @@ function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFE
   const proximas = eventos
     .filter((e) => e.hora > horas[idxAhora])
     .slice(0, 2)
-    .map((e) => ({ ...e, manana: e.hora.slice(0, 10) !== hoyISO, hora: e.hora.slice(11, 16), altura: +e.altura.toFixed(2) }));
+    // La bajamar interpolada puede quedar unos milímetros bajo el mínimo
+    // horario de la ventana: nunca negativa (ni -0).
+    .map((e) => ({ ...e, manana: e.hora.slice(0, 10) !== hoyISO, hora: e.hora.slice(11, 16), altura: +Math.max(0, e.altura).toFixed(2) }));
 
   const actualRaw = alturas[idxAhora];
   const siguienteRaw = alturas[idxAhora + 1];
