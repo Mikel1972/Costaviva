@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-20T08:38:07.234Z",
- "lineasHistorial": 11770,
+ "fecha": "2026-11-20T09:07:27.283Z",
+ "lineasHistorial": 11781,
  "etiquetas": 1240,
  "etiquetasClaude": 252,
  "calibracion": {
@@ -109,9 +109,9 @@
    "correlacion": -0.559
   },
   "zumaia/a": {
-   "a": 4.0138,
+   "a": 4.0078,
    "p": 0.5,
-   "n": 94,
+   "n": 95,
    "nEtiquetas": 12,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -129,9 +129,9 @@
    "correlacion": 0.217
   },
   "deba/rompiente": {
-   "a": 3.5996,
+   "a": 3.5985,
    "p": 0.5,
-   "n": 298,
+   "n": 299,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -146,7 +146,7 @@
     "2026-11-01T16",
     "2026-11-04T16"
    ],
-   "dias": 40,
+   "dias": 41,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -266,9 +266,9 @@
    "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.9208,
+   "a": 2.9214,
    "p": 0.5,
-   "n": 465,
+   "n": 466,
    "nEtiquetas": 102,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -282,7 +282,7 @@
     "2026-11-04T16",
     "2026-11-06T16"
    ],
-   "dias": 42,
+   "dias": 43,
    "hMin": 0.27,
    "hMax": 4.73,
    "errorRel": 1,
@@ -530,16 +530,16 @@
    "sustituye": true,
    "motivo": "13 etiquetas",
    "ruido": {
-    "ruido": 0.659,
-    "pares": 38
+    "ruido": 0.635,
+    "pares": 39
    }
   },
   "deba": {
    "sustituye": true,
    "motivo": "53 etiquetas",
    "ruido": {
-    "ruido": 1.009,
-    "pares": 115
+    "ruido": 1.019,
+    "pares": 116
    }
   },
   "mutriku": {
@@ -617,16 +617,16 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 3,
+   "n": 4,
    "suficiente": false,
-   "lineas": 0,
-   "cerca": 0
+   "lineas": 0.105,
+   "cerca": -0.105
   },
   "sopelana": {
-   "n": 2,
+   "n": 3,
    "suficiente": false,
-   "lineas": null,
-   "cerca": null
+   "lineas": -0.866,
+   "cerca": 0.866
   },
   "castrourdiales": {
    "n": 1,
@@ -647,10 +647,10 @@
    "cerca": null
   },
   "zumaia": {
-   "n": 3,
+   "n": 4,
    "suficiente": false,
-   "lineas": -0.866,
-   "cerca": -0.866
+   "lineas": -0.632,
+   "cerca": -0.316
   },
   "nz-napier": {
    "n": 2,
