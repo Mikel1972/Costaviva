@@ -163,7 +163,9 @@ test("sitemap.xml: generado de los datos, válido y solo con URLs públicas", ()
     ...especies.especies.map((e) => `/especies/${slugEspecie(e.id)}`),
   ];
   for (const r of esperadas) assert.ok(locs.includes(`https://costaviva.org${r}`), `falta ${r}`);
-  assert.equal(urlsSitemap({ spots: SPOTS_TODOS, especies: json("assets/datos/especies.json"), tipoFondo: null, profundidad: null }).length, locs.length);
+  const formacion = json("assets/datos/formacion.json");
+  for (const r of ["/aprende", ...formacion.fichas.map((f) => `/aprende/${f.id}`)]) assert.ok(locs.includes(`https://costaviva.org${r}`), `falta ${r}`);
+  assert.equal(urlsSitemap({ spots: SPOTS_TODOS, especies: json("assets/datos/especies.json"), tipoFondo: null, profundidad: null, formacion }).length, locs.length);
 });
 
 test("robots.txt: permite lo público, bloquea la app y apunta al sitemap", () => {

@@ -1,0 +1,195 @@
+{
+  "version": "2026-11-20",
+  "nota": "Centro de formación (2026-11-20, pedido de Mikel). Fichas propias, en palabras nuestras, cada una con su fuente comprobada ese día. Nada sin fuente. Los temas comunes (nudos, sedales…) se escriben una vez y se enlazan desde los capítulos que los usan.",
+  "capitulos": [
+    { "id": "costa", "nombre": "Pesca desde costa", "emoji": "🪨", "temas": ["nudos", "sedales", "bajos", "anzuelos", "plomos", "quitavueltas-perlas-topes", "corchos", "senuelos-spinning", "canas-costa", "montajes-costa"] },
+    { "id": "embarcacion", "nombre": "Pesca desde embarcación", "emoji": "🚤", "temas": ["nudos", "sedales", "bajos", "anzuelos", "quitavueltas-perlas-topes", "jigs-vinilos", "currican", "fondeo-deriva", "canas-barco", "montajes-fondo"] },
+    { "id": "submarina", "nombre": "Pesca submarina", "emoji": "🤿", "temas": ["fusil-varilla-punta", "traje-plomos-aletas", "boya-seguridad", "apnea-segura", "normas-submarina"] }
+  ],
+  "temas": {
+    "nudos": "Nudos",
+    "sedales": "Sedales: nylon, fluorocarbono y trenzado",
+    "bajos": "Bajos de línea: tipos, grosor y largo",
+    "anzuelos": "Anzuelos: tipos y tamaños",
+    "plomos": "Plomos",
+    "quitavueltas-perlas-topes": "Quitavueltas, perlas y topes",
+    "corchos": "Corchos y boyas",
+    "senuelos-spinning": "Señuelos de spinning",
+    "canas-costa": "Cañas y carretes de costa",
+    "montajes-costa": "Montajes de surfcasting y corcheo",
+    "jigs-vinilos": "Jigs y vinilos",
+    "currican": "Curricán (cacea)",
+    "fondeo-deriva": "Fondeo y deriva",
+    "canas-barco": "Cañas y carretes de barco",
+    "montajes-fondo": "Montajes de fondo",
+    "fusil-varilla-punta": "Fusil, varilla y punta",
+    "traje-plomos-aletas": "Traje, plomos y aletas",
+    "boya-seguridad": "Boya de señalización y seguridad",
+    "apnea-segura": "Apnea segura",
+    "normas-submarina": "Normas de la pesca submarina"
+  },
+  "fichas": [
+    {
+      "id": "nudo-palomar",
+      "tema": "nudos",
+      "nombre": "Nudo palomar",
+      "otros_nombres": ["Palomar knot"],
+      "para": "Atar el sedal a un anzuelo, un señuelo o un quitavueltas.",
+      "resumen": "Uno de los nudos de unión al anzuelo más fáciles y fiables. Va especialmente bien con trenzado, que en otros nudos tiende a resbalar.",
+      "pasos": [
+        "Dobla unos 15 cm del extremo del sedal y pasa esa doble por el ojo del anzuelo.",
+        "Con la doble, haz un nudo simple sin apretar, dejando el anzuelo colgando del bucle.",
+        "Pasa el anzuelo entero por el bucle que queda.",
+        "Moja el nudo y tira a la vez del sedal principal y del extremo hasta que asiente sobre el ojo.",
+        "Corta el sobrante dejando unos milímetros."
+      ],
+      "bien_con": ["trenzado", "nylon", "fluorocarbono"],
+      "ojo": "El anzuelo o el señuelo tiene que pasar por el bucle: con señuelos grandes o con anzuelos triples hace falta dejar un bucle largo y es incómodo.",
+      "fuente": { "titulo": "Animated Knots: Palomar Knot", "url": "https://www.animatedknots.com/palomar-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-clinch-mejorado",
+      "tema": "nudos",
+      "nombre": "Nudo clinch mejorado",
+      "otros_nombres": ["Improved clinch knot"],
+      "para": "Atar el sedal a un anzuelo, un señuelo o un quitavueltas.",
+      "resumen": "El nudo de anzuelo clásico con nylon fino y medio. Rápido de hacer sin mirar.",
+      "pasos": [
+        "Pasa el extremo del sedal por el ojo del anzuelo.",
+        "Da cinco o más vueltas con el extremo alrededor del sedal principal.",
+        "Pasa el extremo por el pequeño bucle que ha quedado junto al ojo.",
+        "Vuelve a pasarlo por el bucle grande que acaba de formarse.",
+        "Moja y aprieta tirando del sedal principal; corta el sobrante."
+      ],
+      "bien_con": ["nylon", "fluorocarbono"],
+      "ojo": "No se recomienda con sedales gruesos (más de unos 30 libras de resistencia): cuesta apretarlo bien. Con sedal grueso pueden bastar cuatro vueltas.",
+      "fuente": { "titulo": "Animated Knots: Improved Clinch Knot", "url": "https://www.animatedknots.com/improved-clinch-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-uni",
+      "tema": "nudos",
+      "nombre": "Nudo uni (o Grinner, o Duncan)",
+      "otros_nombres": ["Uni knot", "Grinner", "Duncan"],
+      "para": "Atar a anzuelos y emerillones, hacer lazos y, doble (uno en cada sedal), empalmar dos sedales.",
+      "resumen": "Un nudo para casi todo: con él se puede atar el anzuelo, hacer un lazo corredizo o, haciendo uno en cada extremo, unir dos sedales (el «doble uni»). Funciona con trenzado y con nylon.",
+      "pasos": [
+        "Pasa el extremo por el ojo y llévalo de vuelta en paralelo al sedal principal, formando un bucle.",
+        "Da entre cuatro y seis vueltas con el extremo alrededor de los dos sedales, por dentro del bucle.",
+        "Moja y tira del extremo para cerrar las vueltas.",
+        "Desliza el nudo hasta el ojo tirando del sedal principal; corta el sobrante.",
+        "Para empalmar dos sedales (doble uni): solapa los extremos, haz un uni con cada uno alrededor del otro y tira de los dos sedales para que se junten."
+      ],
+      "bien_con": ["trenzado", "nylon", "fluorocarbono"],
+      "ojo": "Como empalme de dos sedales es algo más débil que el mismo nudo atado a un ojo grande; para unir trenzado a un bajo de fluorocarbono, el FG queda más fino y pasa mejor por las anillas.",
+      "fuente": { "titulo": "Animated Knots: Uni Knot", "url": "https://www.animatedknots.com/uni-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-fg",
+      "tema": "nudos",
+      "nombre": "Nudo FG",
+      "otros_nombres": ["FG knot"],
+      "para": "Unir el trenzado de la línea madre a un bajo de fluorocarbono o de nylon.",
+      "resumen": "El empalme más usado entre trenzado y bajo en spinning y jigging: muy fino y resistente, y pasa sin engancharse por las anillas al lanzar.",
+      "pasos": [
+        "Mantén el trenzado tenso (por ejemplo, sujeto con la boca o en la caña con el freno cerrado).",
+        "Cruza el bajo sobre el trenzado y ve enrollando el trenzado alrededor del bajo, alternando por encima y por debajo, unas veinte veces.",
+        "Sin soltar la tensión, remata con varias medias llaves del trenzado alrededor del bajo.",
+        "Moja y aprieta con fuerza tirando de los dos sedales; corta el extremo del bajo.",
+        "Termina con unas medias llaves del trenzado sobre sí mismo y corta."
+      ],
+      "bien_con": ["trenzado"],
+      "ojo": "Cuesta aprenderlo: los detalles importan y hay que mantener el trenzado tenso todo el rato. Mejor practicarlo en casa antes de salir.",
+      "fuente": { "titulo": "Animated Knots: FG Knot", "url": "https://www.animatedknots.com/fg-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-albright",
+      "tema": "nudos",
+      "nombre": "Nudo Albright",
+      "otros_nombres": ["Albright knot"],
+      "para": "Unir sedales de tipo o grosor distintos: nylon a trenzado, o trenzado a cable.",
+      "resumen": "Alternativa más sencilla al FG para empalmar dos sedales distintos.",
+      "pasos": [
+        "Dobla el extremo del sedal más grueso formando un lazo.",
+        "Pasa el sedal fino por dentro del lazo.",
+        "Enróllalo diez o doce vueltas alrededor de las dos ramas del lazo, avanzando hacia la punta.",
+        "Saca el extremo por el lazo, por el mismo lado por el que entró.",
+        "Moja, aprieta tirando de los dos sedales y corta los sobrantes."
+      ],
+      "bien_con": ["trenzado", "nylon", "fluorocarbono"],
+      "ojo": "Solo moderadamente fácil de hacer; las vueltas deben quedar ordenadas, sin montarse.",
+      "fuente": { "titulo": "Animated Knots: Albright Knot", "url": "https://www.animatedknots.com/albright-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-lazo-perfeccion",
+      "tema": "nudos",
+      "nombre": "Lazo de perfección",
+      "otros_nombres": ["Perfection loop"],
+      "para": "Hacer un lazo pequeño al final del bajo, para cambiar bajos lazo con lazo.",
+      "resumen": "Un lazo pequeño que queda en línea con el sedal: sirve para enganchar y cambiar bajos o montajes sin cortar.",
+      "pasos": [
+        "Haz un primer bucle con el extremo, pasándolo por detrás del sedal principal.",
+        "Haz un segundo bucle delante del primero.",
+        "Pasa el extremo entre los dos bucles.",
+        "Mete el segundo bucle por dentro del primero.",
+        "Aprieta tirando del segundo bucle y del sedal principal; corta el sobrante."
+      ],
+      "bien_con": ["nylon", "fluorocarbono"],
+      "ojo": "Es más fácil hacerlo en la mano que con el anzuelo ya puesto.",
+      "fuente": { "titulo": "Animated Knots: Perfection Loop", "url": "https://www.animatedknots.com/perfection-loop-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-pala",
+      "tema": "nudos",
+      "nombre": "Nudo de pala (snell)",
+      "otros_nombres": ["Snell knot"],
+      "para": "Atar el bajo directamente al vástago del anzuelo, para cebo natural.",
+      "resumen": "El sedal sale en línea con la caña del anzuelo, lo que ayuda a clavar. Nació para anzuelos de pala (sin ojo) y se sigue usando mucho con cebo.",
+      "pasos": [
+        "Pasa el extremo del bajo por el ojo (o apóyalo en la pala) dejando un buen trozo sobrante a lo largo del vástago.",
+        "Forma un bucle a lo largo del vástago.",
+        "Da cinco a siete vueltas apretadas alrededor del vástago y del sedal, desde el ojo hacia la curva.",
+        "Sujeta las vueltas y tira del sedal principal para cerrarlas.",
+        "Aprieta tirando del sedal y del extremo; corta el sobrante."
+      ],
+      "bien_con": ["nylon", "fluorocarbono"],
+      "ojo": "Las vueltas deben quedar juntas y sin cruzarse sobre el vástago.",
+      "fuente": { "titulo": "Animated Knots: Snell Knot", "url": "https://www.animatedknots.com/snell-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-san-diego-jam",
+      "tema": "nudos",
+      "nombre": "Nudo San Diego Jam",
+      "otros_nombres": ["San Diego jam knot", "Reverse clinch", "Heiliger"],
+      "para": "Atar el sedal a un anzuelo o señuelo.",
+      "resumen": "Nudo de anzuelo que conserva muy bien la resistencia del sedal. Sirve con nylon, trenzado y fluorocarbono.",
+      "pasos": [
+        "Pasa el extremo por el ojo y deja bastante sobrante.",
+        "Enrolla el extremo alrededor de los dos sedales (el principal y el propio extremo) hacia el ojo.",
+        "Pasa el extremo por el primer bucle, junto al ojo.",
+        "Pásalo después por el bucle que acaba de formarse arriba.",
+        "Moja y aprieta tirando del sedal principal; corta el sobrante."
+      ],
+      "bien_con": ["nylon", "trenzado", "fluorocarbono"],
+      "ojo": "Cuantas menos vueltas cuanto más grueso el sedal: unas siete u ocho con sedal fino y unas tres con sedal grueso. Que las vueltas no se monten.",
+      "fuente": { "titulo": "Animated Knots: San Diego Jam Knot", "url": "https://www.animatedknots.com/san-diego-jam-knot", "consultada": "2026-11-20" }
+    },
+    {
+      "id": "nudo-lazo-bajo",
+      "tema": "nudos",
+      "nombre": "Lazo de bajo (dropper loop)",
+      "otros_nombres": ["Dropper loop"],
+      "para": "Hacer un lazo en mitad del sedal, que sale en ángulo recto, para colgar un anzuelo más (paternóster, montajes de fondo).",
+      "resumen": "La base de los montajes con varios anzuelos: cada lazo se separa del sedal y el anzuelo no se enreda con la línea principal.",
+      "pasos": [
+        "Haz un bucle grande en el punto del sedal donde quieras el lazo.",
+        "Enrolla un lado del bucle sobre el otro varias veces (cinco a siete), dejando un hueco en el centro.",
+        "Mete el centro del bucle grande por ese hueco.",
+        "Sujeta el lazo que sale y tira de los dos extremos del sedal para cerrar.",
+        "Ajusta el tamaño del lazo antes de apretar del todo."
+      ],
+      "bien_con": ["nylon", "fluorocarbono"],
+      "ojo": "El lazo no debe ser muy largo: se enreda y gira más. Con nylon, al apretar el nudo cambia de forma; es normal.",
+      "fuente": { "titulo": "Animated Knots: Dropper Loop", "url": "https://www.animatedknots.com/dropper-loop-knot", "consultada": "2026-11-20" }
+    }
+  ]
+}

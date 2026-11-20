@@ -41,7 +41,7 @@ const tipoFondo = leer("assets/datos/tipo-fondo.json");
 const profundidad = leer("assets/datos/profundidad-spots.json");
 
 const ficheros = [
-  ["sitemap.xml", xmlSitemap(urlsSitemap({ spots: SPOTS, especies, tipoFondo, profundidad }))],
+  ["sitemap.xml", xmlSitemap(urlsSitemap({ spots: SPOTS, especies, tipoFondo, profundidad, formacion: leer("assets/datos/formacion.json") }))],
   // 404.html (2026-10-08): la misma página que da el middleware.
   ["404.html", `${htmlNoEncontradaGeneral()}\n`],
 ];
