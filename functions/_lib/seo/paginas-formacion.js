@@ -23,7 +23,9 @@ export function paginaIndiceFormacion(datos) {
     const fs = fichasDeTema(datos, id);
     const nombre = datos.temas[id] || id;
     if (!fs.length) return `<li><span class="nota">${esc(nombre)} · en preparación</span></li>`;
-    return `<li><strong>${esc(nombre)}</strong><ul class="chips">${fs.map((f) => `<li><a href="/aprende/${esc(f.id)}">${esc(f.nombre)}</a></li>`).join("")}</ul></li>`;
+    // Desplegable (2026-11-20, Mikel: «como en cada línea va a haber muchos
+    // campos, deben ser desplegables»): <details>, sin JavaScript.
+    return `<li><details class="tema"><summary><strong>${esc(nombre)}</strong> <span class="nota">(${fs.length})</span></summary><ul class="chips">${fs.map((f) => `<li><a href="/aprende/${esc(f.id)}">${esc(f.nombre)}</a></li>`).join("")}</ul></details></li>`;
   };
   const cuerpo = `${migasHtml(migas)}
 <h1>Aprende a pescar</h1>

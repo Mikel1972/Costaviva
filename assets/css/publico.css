@@ -145,3 +145,10 @@ body.publica { margin: 0; background: var(--fondo); color: var(--tinta); font-fa
   .modalidades { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
   .especies li { flex-direction: column; gap: 0; }
 }
+
+/* «Atrás» de las páginas públicas (2026-11-20). */
+.volver { margin: 12px 0 0; }
+.volver a { display: inline-block; font-weight: 800; font-size: 14px; text-decoration: none; padding: 6px 12px; border-radius: 999px; background: var(--superficie); border: 1px solid var(--linea); color: var(--tinta); }
+/* Temas desplegables del centro de formación (2026-11-20). */
+details.tema summary { cursor: pointer; padding: 6px 0; }
+details.tema[open] summary { margin-bottom: 6px; }
