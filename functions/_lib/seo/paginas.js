@@ -149,8 +149,9 @@ function listaSpots(spots) {
 
 export function paginaIndiceSpots(spots) {
   const ruta = "/spots";
-  const titulo = `Spots de pesca en España y Portugal: ${spots.length} lugares | Costaviva`;
-  const descripcion = `${spots.length} spots de pesca de la costa de España y Portugal: qué especies se pescan en cada uno y cuándo, tipo de fondo, profundidad y el índice de pesca de hoy.`;
+  // 2026-11-20 (SEO): se busca "sitios de pesca", "dónde se pesca", "punto de pesca" (pos. 40-95).
+  const titulo = `Sitios de pesca en España y Portugal: ${spots.length} spots y puntos de pesca | Costaviva`;
+  const descripcion = `Dónde se pesca en España y Portugal: ${spots.length} sitios y puntos de pesca de la costa, qué especies se pescan en cada uno y cuándo, tipo de fondo, profundidad y el índice de pesca de hoy.`;
   const migas = [{ nombre: "Spots", ruta }];
   const ld = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${ruta}`, inLanguage: "es", publisher: ORG_LD },
