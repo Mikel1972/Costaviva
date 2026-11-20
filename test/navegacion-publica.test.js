@@ -59,3 +59,16 @@ test("nudos: apartados desplegables (paso a paso abierto)", async () => {
     for (const id of ["resistencia", "bien-con", "ojo", "fuentes"]) assert.match(html, new RegExp(`id="${id}">`), `${f.id} ${id}`);
   }
 });
+
+test("anzuelos: fichas desplegables con tamaños, costa y embarcación", async () => {
+  const { paginaFicha } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  const an = datos.fichas.filter((f) => f.tema === "anzuelos");
+  assert.ok(an.length >= 8);
+  for (const f of an) {
+    const { html } = paginaFicha(datos, f);
+    assert.match(html, /📏 Tamaños/, f.id);
+    for (const id of ["como-es", "medidas", "costa", "embarcacion", "ojo", "fuentes"]) assert.match(html, new RegExp(`id="${id}">`), `${f.id} ${id}`);
+    assert.ok(f.fuentes.length >= 2, f.id);
+  }
+});
