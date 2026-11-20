@@ -782,7 +782,7 @@
   "flota.especie_probable": "Probablemente {especie}",
   "flota.vacio_24h": "Sin flota faenando registrada en las últimas 24 h",
   "flota.vacio_ayer": "Sin flota faenando registrada ayer",
-  "flota.atribucion": "Datos AIS: <a href=\"https://aisstream.io\" target=\"_blank\" rel=\"noopener\">aisstream.io</a>",
+  "flota.atribucion": "Datos AIS: <a href=\"https://aisstream.io\" target=\"_blank\" rel=\"noopener\">aisstream.io</a> · Ventas en lonja: Fonte: Xunta de Galicia – <a href=\"https://www.pescadegalicia.gal\" target=\"_blank\" rel=\"noopener\">pescadegalicia.gal</a>",
   "fondo.atribucion": "Sustrato: <a href=\"https://emodnet.ec.europa.eu/en/seabed-habitats\" target=\"_blank\" rel=\"noopener\">EMODnet Seabed Habitats</a> (EUSeaMap 2025), <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>, financiado por la Comisión Europea. Orientativo, no sirve para navegar.",
   "fondo.ley.roca": "Roca",
   "fondo.ley.arena": "Arena",

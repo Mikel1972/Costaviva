@@ -360,3 +360,57 @@ test("curvaMinutos: cuenta con las posiciones de los primeros minutos (2026-11-0
   const contar = (bs) => Object.values(bs).filter((b) => b.posiciones.length >= 3).length;
   assert.deepEqual(curvaMinutos(barcos, [10, 20, 30], contar), [[10, 1], [20, 1], [30, 2]]);
 });
+
+// ---------------------------------------------------------------------------
+// Especie probable: cruce con las ventas en las lonjas de Galicia (2026-11-20)
+// ---------------------------------------------------------------------------
+test("especie probable: solo si una especie de la app domina (>= 50 %) en las lonjas a menos de 30 km", async () => {
+  const M = await import("../scripts/flota/flota-ais.mjs");
+  const lonjas = [{ nombre: "Ribeira.", lat: 42.555, lon: -8.99 }, { nombre: "Lejos", lat: 43.5, lon: -8.2 }];
+  const v = (fecha, lonja, especie, kg, grupo = "Peixes") => ({ fecha, lonja, especie, grupo, kg });
+  const [lat, lon] = M.celda(42.5, -9.1); // ~11 km de Ribeira
+  // Jurel domina: id de la app.
+  assert.equal(M.especieProbable(lat, lon, "2026-11-10", [v("2026-11-10", "Ribeira.", "Xurelo", 7700), v("2026-11-10", "Ribeira.", "Xarda pintada", 2300)], lonjas), "jurel");
+  // Empate (ninguna llega al 50 %): nada.
+  assert.equal(M.especieProbable(lat, lon, "2026-11-05", [v("2026-11-05", "Ribeira.", "Xurelo", 440), v("2026-11-05", "Ribeira.", "Xarda pintada", 430), v("2026-11-05", "Ribeira.", "Sardiña", 130)], lonjas), null);
+  // Domina una especie que no es de la app: nada (nunca se salta a la segunda).
+  assert.equal(M.especieProbable(lat, lon, "2026-11-09", [v("2026-11-09", "Ribeira.", "Lirio", 6000), v("2026-11-09", "Ribeira.", "Xurelo", 4000)], lonjas), null);
+  // Poco volumen: nada.
+  assert.equal(M.especieProbable(lat, lon, "2026-11-10", [v("2026-11-10", "Ribeira.", "Xurelo", 200)], lonjas), null);
+  // Marisco y algas no cuentan; cefalópodos sí.
+  assert.equal(M.especieProbable(lat, lon, "2026-11-10", [v("2026-11-10", "Ribeira.", "Polbo", 900, "Cefalópodos"), v("2026-11-10", "Ribeira.", "Mexillón", 50000, "Bivalvos")], lonjas), "pulpo");
+  // Ese día aún sin publicar: el anterior; dos días atrás, ya no.
+  const ayer = [v("2026-11-09", "Ribeira.", "Xurelo", 5000)];
+  assert.equal(M.especieProbable(lat, lon, "2026-11-10", ayer, lonjas), "jurel");
+  assert.equal(M.especieProbable(lat, lon, "2026-11-11", ayer, lonjas), null);
+  // Lonja a más de 30 km: no cuenta.
+  assert.equal(M.especieProbable(lat, lon, "2026-11-10", [v("2026-11-10", "Lejos", "Xurelo", 9000)], lonjas), null);
+  // Ninguna lonja cerca (Cantábrico): nada.
+  const [la2, lo2] = M.celda(43.6, -3.1);
+  assert.equal(M.especieProbable(la2, lo2, "2026-11-10", [v("2026-11-10", "Ribeira.", "Xurelo", 9000)], lonjas), null);
+});
+
+test("especie probable: cada nombre de la fuente lleva a un id que existe en especies.json", async () => {
+  const M = await import("../scripts/flota/flota-ais.mjs");
+  const { readFileSync } = await import("node:fs");
+  const ids = new Set(JSON.parse(readFileSync(new URL("../assets/datos/especies.json", import.meta.url), "utf8")).especies.map((e) => e.id));
+  for (const [gal, id] of Object.entries(M.ESPECIE_DE_LONJA)) assert.ok(ids.has(id), `${gal} -> ${id}`);
+  // Equivalencias dudosas, fuera a propósito.
+  for (const n of ["Xarda pintada", "Bonito do atlántico", "Pota común"]) assert.equal(M.ESPECIE_DE_LONJA[n], undefined, n);
+  // Todas las lonxas del catálogo con coordenadas se cargan.
+  assert.ok(M.cargarLonjas().length >= 45);
+  // Las de altura no cuentan (venden lo pescado lejos).
+  for (const n of M.LONJAS_ALTURA) assert.ok(!M.cargarLonjas().some((l) => l.nombre === n), n);
+  assert.ok(M.cargarLonjas().some((l) => l.nombre === "Vigo (Canido)"));
+});
+
+test("conEspecie: 24h usa el día de hoy (o ayer), «ayer» el de ayer y el histórico su propio día", async () => {
+  const M = await import("../scripts/flota/flota-ais.mjs");
+  const lonjas = [{ nombre: "Ribeira.", lat: 42.555, lon: -8.99 }];
+  const [lat, lon] = M.celda(42.5, -9.1);
+  const ahora = new Date("2026-11-20T12:00:00Z");
+  const ventas = [{ fecha: "2026-11-19", lonja: "Ribeira.", especie: "Polbo", grupo: "Cefalópodos", kg: 900 }, { fecha: "2026-11-18", lonja: "Ribeira.", especie: "Xurelo", grupo: "Peixes", kg: 9000 }];
+  const z = (o) => ({ celda_lat: lat, celda_lon: lon, clase: "todas", n_barcos: 3, especie_probable: null, ...o });
+  const r = M.conEspecie([z({ periodo: "24h" }), z({ periodo: "ayer" }), z({ dia: "2026-11-18" })], ventas, lonjas, ahora);
+  assert.deepEqual(r.map((x) => x.especie_probable), ["pulpo", "pulpo", "jurel"]);
+});
