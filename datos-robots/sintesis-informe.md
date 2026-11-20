@@ -1,21 +1,17 @@
-<!-- SINTESIS fecha=2026-11-19 hasta_commit=d8da294da1c16c7fb3e3af075e64bb02d8676410 -->
+<!-- SINTESIS fecha=2026-11-20 hasta_commit=731c6ac2f32240ac2023ad0c053b64a800df83f1 -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-
-Solo dejó entrada el robot de cámaras caídas (pasada del 2026-11-19, con el estado de las 03:04 UTC). En rojo: Pasaia (`frame_plano`, foto diaria de detectia.net que de noche sale plana), Zumaia (`sin_respuesta`; el stream `GIP_zumaia2` da 404 desde la red de la rutina y no se pudo verificar si es avería o cierre nocturno), Comillas, Suances y San Vicente (`origen_522`, dominio de cantabria.es bloqueado desde la rutina: ni caídas ni arregladas confirmadas), Canet de Berenguer (el 404 fue puntual, ya responde 200) y Cambrils por Windy (`windy_inactiva`, pendiente de buscar otra cámara desde fuera de la rutina). Bakio y Mundaka salen congeladas a las 03:00 UTC, de noche: no es avería. No se cambió código. Para la próxima pasada quedan Zumaia y Cambrils.
+El robot de cámaras caídas pasó el 20-nov con datos frescos (03:05 UTC). Siguen en rojo: Pasaia (foto diaria de detectia.net, de noche sale plana; la fuente no se ha movido) y Cambrils (cámara de Windy inactiva; hay que buscarle otra cámara de otro dueño desde fuera de la rutina, porque la red de la rutina no llega a buscadores de webcams). Bakio y Mundaka salen "congeladas" a las 03:00 UTC, pero es de noche, no una avería. No se cambió código. De la calibración nocturna y de las pasadas de corrientes, presión y caudal no hay entrada nueva.
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** el texto nuevo no menciona términos de webcams probados ni tipos de dueño nuevos.
+**Términos de búsqueda:** el texto no menciona términos de webcams probados ni ningún tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (no hay entrada suya).
-**Robot de patrones de uso:** no le tocaba pasar esta semana.
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes); no hay entrada suya.
+**Robot de patrones de uso:** no le tocaba pasar esta semana (corre los sábados).
 
 ## 🔎 Trabajo externo (investigación de contenido)
-
-Sin entradas nuevas de buenas prácticas de otras apps ni de estudios institucionales.
-**Robot de especies:** no le tocaba pasar hoy.
+Pasada de los viernes sobre estudios de factores: marea, mareas vivas/muertas y fase lunar frente a capturas desde costa (lubina, sargos, doradas) en España y Portugal. Resultado: sin novedades. No apareció ningún estudio revisado por pares que mida ese efecto en nuestras especies y zonas. Solo hubo prensa y foros, y estudios de otras pesquerías (palangre en Turquía, cerco en el Egeo, torneos en Australia) que no son comparables. No se propone ninguna regla y no se tocó nada. No se revisaron concursos de pesca.
+**Robot de especies:** no le tocaba pasar hoy (corre los jueves).
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
-
-Ninguna fuente nueva desde la última síntesis.
+Ninguna fuente nueva desde la última síntesis. Solo una pista sin verificar: una tesis de la Universidad del Algarve (2012) sobre pesca desde costa en el sur de Portugal (sargo blanco, lubina). No se leyó el texto y no se sabe si analiza la marea, así que de momento no puedo opinar sobre su solidez.
