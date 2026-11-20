@@ -1519,7 +1519,7 @@
     <button type="button" class="boton-hoja" id="btnHojaPrevision" data-i18n="hoja.boton">📋 Previsión hora a hora</button>
     <div class="grid2">
       <div class="tarjeta">
-        <div class="etq" data-i18n="mapa.panel.oleaje12">OLEAJE (12h)</div>
+        <div class="etq" id="panelOlaEtq" data-i18n="mapa.panel.oleaje12">OLEAJE (12h)</div>
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
@@ -5600,6 +5600,8 @@ function pintarOleajePanel(s) {
   pintarReferenciaCamara(s);
   const val = document.getElementById("panelOla");
   const nota = document.getElementById("panelOlaNota");
+  const etq = document.getElementById("panelOlaEtq");
+  etq.textContent = I18n.t("mapa.panel.oleaje12");
   const z = s.zonaOleaje;
   const km = z?.celdaModelo?.distanciaKm;
   const dondeModelo = km != null && km >= 1 ? I18n.t("mapa.ola.modelo_a", { km: I18n.distancia(Math.round(km), 0) }) : I18n.t("mapa.ola.modelo");
@@ -5628,9 +5630,31 @@ function pintarOleajePanel(s) {
     nota.title = z.criterio || "";
   } else {
     val.textContent = textoRangoOla(s.altura);
-    nota.textContent = (s.esUsuario || !z ? I18n.t("mapa.ola.abierto_simple") : I18n.t("mapa.ola.abierto_modelo", { donde: dondeModelo })) + ajuste;
-    nota.title = "";
+    // Sin medida de la orilla (2026-11-20, Mikel en A Coruña: «3,4-4,1 m» con
+    // el dique a ~1 m): el recuadro dice MAR ABIERTO y, debajo, la orilla
+    // ESTIMADA con lo típico de todas las cámaras para ese tamaño de mar
+    // (coef-costa globalTamanos). Siempre "estimado", nunca medido.
+    const est = orillaTipicaEstimada(z?.orillaTipica, s.altura);
+    if (est) {
+      etq.textContent = I18n.t("mapa.panel.mar_abierto12");
+      nota.textContent = I18n.t("mapa.ola.orilla_tipica", { orilla: textoRangoOla(est), donde: dondeModelo }) + ajuste;
+      nota.title = I18n.t("mapa.ola.orilla_tipica_title");
+    } else {
+      nota.textContent = (s.esUsuario || !z ? I18n.t("mapa.ola.abierto_simple") : I18n.t("mapa.ola.abierto_modelo", { donde: dondeModelo })) + ajuste;
+      nota.title = "";
+    }
   }
+}
+// Ola en la orilla estimada con lo típico de las cámaras: [min, max] × el
+// coeficiente del tamaño de mar (por la media del rango). null sin datos.
+function orillaTipicaEstimada(tipica, rango) {
+  if (!tipica || !Array.isArray(rango)) return null;
+  const a = Number(rango[0]), b = Number(rango[1]);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || b <= 0) return null;
+  const hs = (a + b) / 2;
+  const c = tipica[hs < 1.5 ? "pequeno" : hs < 3 ? "medio" : "grande"];
+  if (!Number.isFinite(c)) return null;
+  return [+(a * c).toFixed(1), +(b * c).toFixed(1)];
 }
 
 // Botón "ola real que veo" (2026-10-08): solo con sesión y en spots del
