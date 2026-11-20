@@ -124,6 +124,16 @@ jobs:
         continue-on-error: true
         run: node scripts/oleaje-camaras/avisos-vecinos.mjs
 
+      # Examen diario de la ola (2026-11-20): foto de lo que enseña la app,
+      # comparada con las etiquetas de las fotos; suspensos > 0,3 m en
+      # ::warning:: y cámaras con 3 suspensos seguidos fuera de /prevision.
+      - name: Examen de la ola
+        if: steps.luz.outputs.hay == 'true'
+        continue-on-error: true
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/oleaje-camaras/examen-olas.mjs
+
       - name: Guardar en el repo
         if: steps.luz.outputs.hay == 'true'
         run: |
@@ -132,6 +142,8 @@ jobs:
           git config user.email "noreply@anthropic.com"
           git add "$D/espuma.jsonl" "$D/calibracion.json"
           if [ -f "$D/avisos-vecinos.json" ]; then git add "$D/avisos-vecinos.json"; fi
+          if [ -f "$D/examen.json" ]; then git add "$D/examen.json"; fi
+          if [ -d "$D/mostrado" ]; then git add -A "$D/mostrado"; fi
           # Previsión del día archivada (lo que dijimos; sesgo-plazo.mjs).
           if [ -d "$D/pronosticos" ]; then git add -A "$D/pronosticos"; fi
           HAY=0
@@ -139,7 +151,7 @@ jobs:
           # Coeficiente de costa reaprendido (solo cambia si algún valor se
           # mueve > 3 %): commit aparte SIN [skip ci], para que Cloudflare
           # Pages vuelva a desplegar y /prevision use el nuevo.
-          git add functions/_lib/coef-costa-datos.js functions/_lib/sesgo-plazo-datos.js functions/_lib/relaciones-vecinos-datos.js
+          git add functions/_lib/coef-costa-datos.js functions/_lib/sesgo-plazo-datos.js functions/_lib/relaciones-vecinos-datos.js functions/_lib/examen-olas-datos.js
           if ! git diff --cached --quiet; then git commit -qm "Oleaje: coeficiente de costa y sesgo por plazo reaprendidos"; HAY=1; fi
           if [ "$HAY" = 0 ]; then echo "Sin cambios."; exit 0; fi
           # Si otra rama tocó calibracion.json a la vez (la rutina de
