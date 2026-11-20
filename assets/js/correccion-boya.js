@@ -24,6 +24,12 @@
 (function (raiz) {
   var MAX_KM = 40, MAX_EDAD_H = 4, DECAIMIENTO_H = 12, MIN_MODELO_M = 0.3;
   var COCIENTE_MIN = 0.5, COCIENTE_MAX = 2;
+  // Más allá de x3 (o de 1/3) no se compara (2026-11-20, Mikel con un punto
+  // dentro de la ría de Camariñas: la boya Villano-Sisargas medía 5,2 m, el
+  // modelo en el punto 0,35 m y el cociente topado a 2 dejaba «Mar abierto
+  // 0,7 m»): la celda del modelo está abrigada (ría, bahía) y la boya mide el
+  // mar de fuera; no son la misma ola.
+  var NO_COMPARABLE = 3;
 
   function num(v) { return typeof v === "number" && isFinite(v); }
 
@@ -53,6 +59,7 @@
     var modelo = o.modeloEnHora(mejor.b.actualizado);
     if (!num(modelo) || modelo < MIN_MODELO_M) return null;
     var crudo = mejor.b.alturaSignificativa / modelo;
+    if (crudo > NO_COMPARABLE || crudo < 1 / NO_COMPARABLE) return null;
     var cociente = Math.min(COCIENTE_MAX, Math.max(COCIENTE_MIN, crudo));
     return {
       nombre: mejor.b.nombre,
@@ -74,7 +81,7 @@
 
   raiz.CorreccionBoya = {
     MAX_KM: MAX_KM, MAX_EDAD_H: MAX_EDAD_H, DECAIMIENTO_H: DECAIMIENTO_H, MIN_MODELO_M: MIN_MODELO_M,
-    COCIENTE_MIN: COCIENTE_MIN, COCIENTE_MAX: COCIENTE_MAX,
+    COCIENTE_MIN: COCIENTE_MIN, COCIENTE_MAX: COCIENTE_MAX, NO_COMPARABLE: NO_COMPARABLE,
     distanciaKm: distanciaKm, correccionBoya: correccionBoya, factorBoya: factorBoya,
   };
 })(typeof window !== "undefined" ? window : globalThis);

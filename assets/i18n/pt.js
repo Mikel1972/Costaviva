@@ -457,7 +457,7 @@
   "hoja.f.resaca": "Ondulação de fundo · ressaca",
   "hoja.f.viento": "Vento",
   "hoja.f.marea": "Maré",
-  "hoja.f.mar_abierto": "Mar aberto",
+  "hoja.f.mar_abierto": "Onda do modelo aqui",
   "hoja.f.periodo": "Período e direção",
   "hoja.f.presion": "Pressão",
   "hoja.f.lluvia": "Chuva",

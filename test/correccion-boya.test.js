@@ -33,7 +33,15 @@ test("sin corrección: boya vieja, lejana, sin medida u olas pequeñas", () => {
 });
 
 test("el cociente se limita: una boya rara no dispara la previsión", () => {
-  const c = correccionBoya({ ...SOPELANA, ahoraMs: AHORA, boyas: [{ ...BILBAO, alturaSignificativa: 9, actualizado: hace(1) }], modeloEnHora: () => 1 });
+  const c = correccionBoya({ ...SOPELANA, ahoraMs: AHORA, boyas: [{ ...BILBAO, alturaSignificativa: 2.6, actualizado: hace(1) }], modeloEnHora: () => 1 });
   assert.equal(c.cociente, 2);
   assert.ok(MAX_KM >= 30);
+});
+
+// Caso real (2026-11-20): punto dentro de la ría de Camariñas, boya
+// Villano-Sisargas 5,2 m y modelo 0,35 m en la celda abrigada. No es la misma
+// ola: no se corrige (antes: x2 y «Mar abierto 0,7 m» junto a la boya).
+test("boya y modelo que no son la misma ola (ría, bahía): no se corrige", () => {
+  assert.equal(correccionBoya({ ...SOPELANA, ahoraMs: AHORA, boyas: [{ ...BILBAO, alturaSignificativa: 5.2, actualizado: hace(1) }], modeloEnHora: () => 0.35 }), null);
+  assert.equal(correccionBoya({ ...SOPELANA, ahoraMs: AHORA, boyas: [{ ...BILBAO, alturaSignificativa: 0.4, actualizado: hace(1) }], modeloEnHora: () => 2 }), null);
 });
