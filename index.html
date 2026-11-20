@@ -3138,8 +3138,11 @@ function montarGFW(G) {
 // link a esas regiones, nunca llegaremos a ellas»; encima de «Pesca
 // comercial», en la misma esquina, para dejar la cabecera limpia). Se monta
 // justo después del control de GFW para quedar encima en esa esquina.
+// Solo en pantalla ancha: en el móvil esa esquina tapa el mapa (está en el
+// menú 👤, «Spots, especies y mareas por zona»).
 function montarBotonGuias() {
-  const ctl = L.control({ position: window.innerWidth <= 720 ? "topleft" : "bottomleft" });
+  if (window.innerWidth <= 720) return;
+  const ctl = L.control({ position: "bottomleft" });
   ctl.onAdd = () => {
     const a = L.DomUtil.create("a", "guias-chip");
     a.href = "/spots";
