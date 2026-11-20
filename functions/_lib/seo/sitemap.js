@@ -21,7 +21,7 @@ export const FECHA_EN = "2026-10-11";
 // Lanzamiento de las páginas en portugués (Portugal y especies).
 export const FECHA_PT = "2026-10-11";
 
-export function urlsSitemap({ spots, especies, tipoFondo, profundidad }) {
+export function urlsSitemap({ spots, especies, tipoFondo, profundidad, formacion = null }) {
   const fEsp = fechaDatos(especies?.version) || FECHA_PAGINAS_FIJAS;
   const fIndices = fechaDatos(especies?.version, tipoFondo?.generado, profundidad?.generado, FECHA_PAGINAS_FIJAS);
   const fSpot = fechaDatos(fIndices, FECHA_PLANTILLA_SPOT);
@@ -39,6 +39,7 @@ export function urlsSitemap({ spots, especies, tipoFondo, profundidad }) {
     ...ordenados.map((s) => u(`/spots/${s.slug}`, fSpot, "daily", "0.7")),
     ...ordenados.map((s) => u(`/mareas/${s.slug}`, FECHA_PAGINAS_FIJAS, "hourly", "0.7")),
     ...[...especiesDePais(especies.especies, "es")].sort((a, b) => a.id.localeCompare(b.id)).map((e) => u(`/especies/${slugEspecie(e.id)}`, fEsp, "monthly", "0.7")),
+    ...(formacion ? [u("/aprende", formacion.version, "weekly", "0.8"), ...formacion.fichas.map((f) => u(`/aprende/${f.id}`, formacion.version, "monthly", "0.6"))] : []),
     u("/privacidad", FECHA_PAGINAS_FIJAS, "yearly", "0.2"),
     ...urlsEn({ spots, especies, fecha: fechaDatos(especies?.version, FECHA_EN) || FECHA_EN }),
     ...urlsPt({ spots: spots.filter((x) => x.pais !== "nz"), especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),

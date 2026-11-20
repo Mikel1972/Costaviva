@@ -118,6 +118,8 @@ const ARCHIVOS_PUBLICOS = new Set([
   // "/especies/" entran por el prefijo y redirigen a la forma sin barra.
   "/spots",
   "/especies",
+  // Centro de formación (2026-11-20, functions/aprende/).
+  "/aprende",
   // Nueva Zelanda en inglés (functions/en/index.js redirige a /en/spots).
   "/en",
   // Portugués (functions/pt/index.js redirige a /pt/spots/region/portugal).
@@ -146,7 +148,8 @@ const ARCHIVOS_PUBLICOS = new Set([
 //               a secas redirige a /en/spots.
 //   /pt/      — páginas públicas en portugués (2026-10-11): spots y mareas de
 //               Portugal y especies (functions/pt/...). /pt a secas redirige.
-const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/", "/en/", "/pt/"];
+//   /aprende/ — centro de formación (2026-11-20, functions/aprende/).
+const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/", "/aprende/", "/en/", "/pt/"];
 
 export function esRutaPermitida(pathname) {
   if (ARCHIVOS_PUBLICOS.has(pathname)) return true;

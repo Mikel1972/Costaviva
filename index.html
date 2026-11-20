@@ -1316,6 +1316,7 @@
         <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar">🎁 Invita a un amigo: 1 mes gratis</button>
         <button type="button" id="btnGuia" data-i18n="comun.menu.guia">📖 Cómo funciona</button>
         <a class="menu-enlace" href="/spots" data-i18n="comun.menu.guias">🧭 Spots, especies y mareas por zona</a>
+        <a class="menu-enlace" href="/aprende" data-i18n="comun.menu.aprende">📚 Aprende a pescar</a>
         <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
         <div data-i18n-selector></div>
@@ -3148,8 +3149,15 @@ function montarBotonGuias() {
     a.href = "/spots";
     a.id = "btnGuiasZona";
     a.textContent = I18n.t("mapa.guias_zona");
-    L.DomEvent.disableClickPropagation(a);
-    return a;
+    // Centro de formación (2026-11-20): segundo botón, a la derecha del 🧭.
+    const caja = L.DomUtil.create("div", "guias-caja");
+    caja.appendChild(a);
+    const b = L.DomUtil.create("a", "guias-chip", caja);
+    b.href = "/aprende";
+    b.id = "btnAprende";
+    b.textContent = I18n.t("mapa.aprende");
+    L.DomEvent.disableClickPropagation(caja);
+    return caja;
   };
   ctl.addTo(map);
 }

@@ -158,6 +158,7 @@ header:has(.cuenta-menu-dropdown.visible) { z-index: 1200; }
    «Pesca comercial», para dejar la cabecera limpia). */
 .guias-chip, .leaflet-container a.guias-chip { display: inline-block; background: var(--superficie); color: var(--tinta); text-decoration: none; font-family: var(--f-texto); font-weight: 800; font-size: 12.5px; padding: 7px 12px; border-radius: 999px; box-shadow: 0 2px 8px rgba(11, 30, 63, 0.25); white-space: nowrap; }
 .guias-chip:hover, .guias-chip:focus-visible { background: var(--superficie-2); }
+.guias-caja { display: flex; gap: 6px; }
 
 /* ---------- Menú inferior ---------- */
 .tabs-nav {

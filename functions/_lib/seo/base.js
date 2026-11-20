@@ -179,14 +179,14 @@ ${ld.map(jsonLd).join("\n")}
 ${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : idioma === "pt" ? CABECERA_PIE_PT(cuerpo) : `<header class="cabecera-publica">
   <a class="enlace-marca" href="/" aria-label="Costaviva, inicio">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secciones">
-    <a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a>
+    <a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a><a href="/aprende">Aprende</a>
   </nav>
 </header>
 <main class="contenido">
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/en/spots" lang="en">New Zealand (English)</a> · <a href="/pt/spots/region/portugal" lang="pt-PT">Portugal (português)</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
+  <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/aprende">Aprende a pescar</a> · <a href="/en/spots" lang="en">New Zealand (English)</a> · <a href="/pt/spots/region/portugal" lang="pt-PT">Portugal (português)</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Datos de mar y tiempo: Open-Meteo (CC BY 4.0). Profundidad: EMODnet Bathymetry (CC BY 4.0). Tipo de fondo: EMODnet Seabed Habitats (CC BY 4.0) y © colaboradores de OpenStreetMap (ODbL). Orientativo: no sirve para navegar. Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial.</p>
 </footer>`}
 </body>
