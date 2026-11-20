@@ -76,7 +76,7 @@ test("/prevision (lo de España) y las páginas en español: los 105 de siempre,
   assert.equal(SPOTS.length, 105 + SPOTS_NZ.length);
   assert.equal(SPOTS_SEO.filter(esNZ).length, 0);
   assert.equal(SPOTS_SEO.length, 105);
-  assert.match(paginaIndiceSpots(SPOTS_SEO).titulo, /^Spots de pesca en España y Portugal: 105 lugares/);
+  assert.match(paginaIndiceSpots(SPOTS_SEO).titulo, /^Sitios de pesca en España y Portugal: 105 spots/);
 });
 
 test("spots NZ: 68 activos (59 del lanzamiento + 9 de islas), Dusky Sound fuera", () => {
