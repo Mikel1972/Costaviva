@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-20T13:07:48.357Z",
- "lineasHistorial": 11867,
+ "fecha": "2026-11-20T13:37:44.138Z",
+ "lineasHistorial": 11878,
  "etiquetas": 1240,
  "etiquetasClaude": 252,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.106
   },
   "zarautz/dinamico": {
-   "a": 2.9643,
+   "a": 2.9638,
    "p": 0.5,
-   "n": 944,
+   "n": 945,
    "nEtiquetas": 196,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -129,9 +129,9 @@
    "correlacion": 0.217
   },
   "deba/rompiente": {
-   "a": 3.5883,
+   "a": 3.5834,
    "p": 0.5,
-   "n": 303,
+   "n": 304,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.3
+   "correlacion": 0.299
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -206,9 +206,9 @@
    "correlacion": 0.065
   },
   "sopelana/principal": {
-   "a": 3.1177,
+   "a": 3.1113,
    "p": 0.5,
-   "n": 186,
+   "n": 187,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -226,9 +226,9 @@
    "dias": 29,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.996,
+   "errorRel": 0.995,
    "pocosDatos": false,
-   "correlacion": 0.373
+   "correlacion": 0.372
   },
   "berria/principal": {
    "a": 74.2857,
@@ -266,9 +266,9 @@
    "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.918,
+   "a": 2.9172,
    "p": 0.5,
-   "n": 474,
+   "n": 475,
    "nEtiquetas": 102,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -514,8 +514,8 @@
    "sustituye": true,
    "motivo": "204 etiquetas",
    "ruido": {
-    "ruido": 0.575,
-    "pares": 645
+    "ruido": 0.583,
+    "pares": 646
    }
   },
   "getaria": {
@@ -538,8 +538,8 @@
    "sustituye": true,
    "motivo": "53 etiquetas",
    "ruido": {
-    "ruido": 1.009,
-    "pares": 119
+    "ruido": 0.985,
+    "pares": 120
    }
   },
   "mutriku": {
@@ -578,8 +578,8 @@
    "sustituye": true,
    "motivo": "102 etiquetas",
    "ruido": {
-    "ruido": 0.828,
-    "pares": 205
+    "ruido": 0.813,
+    "pares": 206
    }
   },
   "castrourdiales": {
@@ -617,10 +617,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 8,
+   "n": 9,
    "suficiente": false,
-   "lineas": -0.3,
-   "cerca": -0.247
+   "lineas": -0.208,
+   "cerca": -0.164
   },
   "sopelana": {
    "n": 6,
