@@ -31,3 +31,10 @@ test("espejo: la lista de pendientes solo encoge (quita lo que ya está cubierto
 test("espejo: el centro de formación está completo en los tres idiomas", () => {
   assert.deepEqual(FALTAN.filter((h) => / aprende/.test(h)), []);
 });
+
+test("espejo: revisión semanal en producción cada lunes, sin IA", () => {
+  const wf = readFileSync(".github/workflows/espejo-semanal.yml", "utf8");
+  assert.match(wf, /cron: "\d+ \d+ \* \* 1"/);
+  assert.match(wf, /espejo-produccion\.mjs/);
+  assert.doesNotMatch(wf, /ANTHROPIC|claude -p/i);
+});

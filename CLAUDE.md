@@ -6120,3 +6120,5 @@ aún falta está en `datos-robots/seo/espejo-pendientes.json` y solo puede
 encoger (`node scripts/seo/espejo.mjs --escribir` al cubrir huecos). Aprende
 lleva sus traducciones en `assets/datos/formacion.en.json` y
 `formacion.pt.json` (mismos id; glosario `i18n/glosario-pt.json`).
+Cada lunes `espejo-semanal.yml` (sin IA) revisa la web publicada: % de
+espejo, huecos que quedan y páginas que no responden 200.
