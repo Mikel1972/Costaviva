@@ -38,13 +38,49 @@ export function vaciarMemoriaInstantaneas() {
 // Devuelve el JSON, o null si no existe (404). Lanza si está caducada o si
 // el almacén falla. `maxEdadHoras`: Infinity para datos del pasado (ERA5),
 // que no caducan; `cacheTtl`: segundos en la caché del edge.
+// Caché propia en el edge (2026-11-20, aviso de Supabase: la cuota de
+// "cached egress" del plan gratis, 5,5 GB/mes, superada). El `cf.cacheTtl`
+// del fetch NO sirve aquí: supabase.co también está en Cloudflare y la
+// petición va a SU caché, que Supabase cobra como egress. mar/spots.json
+// (2,5 MB) se bajaba ~370 veces al día (~0,9 GB/día). Ahora cada copia de la
+// web lo guarda con la Cache API de Cloudflare (gratis) y solo vuelve a
+// Supabase cuando caduca. mar/ se regenera una vez al día (04:47 UTC): 6 h
+// de caché la dejan siempre muy por debajo de MAX_EDAD_HORAS.
+export function ttlEdge(ruta, cacheTtl = 900) {
+  if (String(ruta).startsWith("mar/")) return Math.max(cacheTtl, 6 * 3600);
+  return cacheTtl;
+}
+
+async function deCacheEdge(url) {
+  try {
+    const r = await globalThis.caches?.default?.match(new Request(url));
+    return r ? await r.json() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function aCacheEdge(url, texto, ttl) {
+  try {
+    await globalThis.caches?.default?.put(new Request(url), new Response(texto, { headers: { "content-type": "application/json", "cache-control": `public, max-age=${ttl}` } }));
+  } catch {
+    // Sin Cache API (tests, local): solo la memoria del isolate.
+  }
+}
+
 export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora = Date.now(), maxEdadHoras = MAX_EDAD_HORAS, cacheTtl = 900 } = {}) {
   const url = `${baseInstantaneas(env)}/${ruta}`;
   const m = memoria.get(url);
   if (m && ahora - m.t < MEMORIA_MS) return comprobarEdad(m.datos, ruta, ahora, maxEdadHoras);
+  const ttl = ttlEdge(ruta, cacheTtl);
+  const enEdge = await deCacheEdge(url);
+  if (enEdge !== undefined) {
+    memoria.set(url, { t: ahora, datos: enEdge });
+    return comprobarEdad(enEdge, ruta, ahora, maxEdadHoras);
+  }
   let resp;
   try {
-    resp = await fetchImpl(url, { cf: { cacheTtl, cacheEverything: true } });
+    resp = await fetchImpl(url, { cf: { cacheTtl: ttl, cacheEverything: true } });
   } catch (e) {
     throw new Error(`instantánea ${ruta} sin respuesta: ${String(e?.message || e)}`);
   }
@@ -57,8 +93,10 @@ export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora
     err.status = resp.status;
     throw err;
   }
-  const datos = await resp.json();
+  const texto = await resp.text();
+  const datos = JSON.parse(texto);
   memoria.set(url, { t: ahora, datos });
+  await aCacheEdge(url, texto, ttl);
   return comprobarEdad(datos, ruta, ahora, maxEdadHoras);
 }
 

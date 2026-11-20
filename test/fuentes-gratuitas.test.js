@@ -24,7 +24,7 @@ import {
   serieDesdeMet, serieAOpenMeteo, pedirMetNorway, userAgentMetNorway, urlMetNorway, interpolarSerie,
 } from "../functions/_lib/met-norway.js";
 import { puntoAOpenMeteo, pedirCopernicusMar, claveCaja } from "../functions/_lib/copernicus-mar.js";
-import { vaciarMemoriaInstantaneas, leerInstantanea } from "../functions/_lib/instantaneas.js";
+import { vaciarMemoriaInstantaneas, leerInstantanea, ttlEdge } from "../functions/_lib/instantaneas.js";
 import { pedirDatosMeteo, fuenteDeVariable, firmaFuentes, ATRIBUCIONES_HTML } from "../functions/_lib/fuentes.js";
 import { onRequestGet } from "../functions/meteo/[api].js";
 import { puntosInstantanea, pedirPunto } from "../scripts/fuentes/instantanea-met.mjs";
@@ -423,5 +423,33 @@ test("instantánea MET: reintenta cortes de red y JSON truncado", async () => {
     assert.ok(r.serie);
   } finally {
     globalThis.fetch = original;
+  }
+});
+
+// Aviso de Supabase (2026-11-20): cuota de "cached egress" superada por
+// mar/spots.json (2,5 MB, ~370 veces al día). La Cache API de Cloudflare
+// guarda la instantánea: otra petición (otro isolate) no vuelve a Supabase.
+test("instantáneas: la Cache API del edge evita volver a Supabase; mar/ 6 h", async () => {
+  const original = globalThis.caches;
+  const guardado = new Map();
+  globalThis.caches = { default: { match: async (k) => guardado.get(k.url)?.clone(), put: async (k, r) => { guardado.set(k.url, r); } } };
+  try {
+    vaciarMemoriaInstantaneas();
+    let llamadas = 0;
+    const ahora = Date.parse("2026-11-20T12:00:00Z");
+    const fetchImpl = async () => { llamadas++; return new Response(JSON.stringify({ generado_en: "2026-11-20T05:00:00Z", puntos: [] }), { status: 200 }); };
+    const a = await leerInstantanea("mar/spots.json", { fetchImpl, ahora });
+    vaciarMemoriaInstantaneas(); // otro isolate: sin memoria, con la caché del edge
+    const b = await leerInstantanea("mar/spots.json", { fetchImpl, ahora });
+    assert.equal(llamadas, 1);
+    assert.deepEqual(a, b);
+    const r = [...guardado.values()][0];
+    assert.equal(r.headers.get("cache-control"), "public, max-age=21600");
+    assert.equal(ttlEdge("mar/celdas/77_0.json"), 21600);
+    assert.equal(ttlEdge("atmosfera/todos.json"), 900);
+    assert.equal(ttlEdge("pasado/2026-11-01/43_-9.json", 86400), 86400);
+  } finally {
+    vaciarMemoriaInstantaneas();
+    if (original === undefined) delete globalThis.caches; else globalThis.caches = original;
   }
 });
