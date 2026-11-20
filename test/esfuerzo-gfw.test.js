@@ -1,7 +1,7 @@
 // Actividad pesquera de Global Fishing Watch (scripts/gfw/esfuerzo-gfw.mjs).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ventana, celdasDeRespuesta, poligono, DIAS_RETRASO, DIAS_VENTANA, grupoArte, ventanasHabituales, juntarRespuestas, LISTA_ARTES, esCaidaTemporal } from "../scripts/gfw/esfuerzo-gfw.mjs";
+import { ventana, celdasDeRespuesta, poligono, DIAS_RETRASO, DIAS_VENTANA, grupoArte, ventanasHabituales, juntarRespuestas, LISTA_ARTES, esCaidaTemporal, filasSinArte } from "../scripts/gfw/esfuerzo-gfw.mjs";
 import { readFileSync } from "node:fs";
 
 test("ventana: 7 días que acaban hace 4 (los datos de GFW llegan con 96 h de retraso)", () => {
@@ -61,4 +61,12 @@ test("GFW: reconoce una caída temporal suya (2026-11-04)", () => {
   assert.equal(esCaidaTemporal(429, ""), true);
   assert.equal(esCaidaTemporal(401, '{"error":"Unauthorized"}'), false);
   assert.equal(esCaidaTemporal(404, '{"error":"Not Found"}'), false);
+});
+
+test("GFW: se pide por arte y, si las filas llegan sin arte, el robot no lo guarda", async () => {
+  const { readFileSync } = await import("node:fs");
+  assert.match(readFileSync("scripts/gfw/esfuerzo-gfw.mjs", "utf8"), /"group-by": "GEARTYPE"/);
+  assert.equal(filasSinArte({ entries: [{ d: [{ lat: 43.4, lon: -2.1, hours: 3 }] }] }), true);
+  assert.equal(filasSinArte({ entries: [{ d: [{ lat: 43.4, lon: -2.1, hours: 3, geartype: "trawlers" }] }] }), false);
+  assert.equal(filasSinArte({ entries: [] }), false);
 });
