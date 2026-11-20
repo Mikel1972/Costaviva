@@ -457,7 +457,7 @@
   "hoja.f.resaca": "Mar de fondo · resaca",
   "hoja.f.viento": "Viento",
   "hoja.f.marea": "Marea",
-  "hoja.f.mar_abierto": "Mar abierto",
+  "hoja.f.mar_abierto": "Ola del modelo aquí",
   "hoja.f.periodo": "Periodo y dirección",
   "hoja.f.presion": "Presión",
   "hoja.f.lluvia": "Lluvia",

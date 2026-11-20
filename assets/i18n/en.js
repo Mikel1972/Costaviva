@@ -457,7 +457,7 @@
   "hoja.f.resaca": "Ground swell · pull",
   "hoja.f.viento": "Wind",
   "hoja.f.marea": "Tide",
-  "hoja.f.mar_abierto": "Open sea",
+  "hoja.f.mar_abierto": "Model wave here",
   "hoja.f.periodo": "Period and direction",
   "hoja.f.presion": "Pressure",
   "hoja.f.lluvia": "Rain",
