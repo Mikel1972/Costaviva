@@ -1,33 +1,27 @@
 # SEO_ESTADO.md — estado real en Google de costaviva.org
 
-Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC. Se reescribe entero en cada pasada: no es historial.
+Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 20:45 UTC. Se reescribe entero en cada pasada: no es historial.
 
 ## Indexación
 
-  - Indexadas en Google: 44 de 468 URLs del sitemap (9%)
+  - Indexadas en Google: 39 de 500 URLs del sitemap (8%)
   - Sitemap https://costaviva.org/sitemap.xml: 558 URLs, leído por última vez 2026-11-17
-  - Páginas indexadas: /, /en/species, /en/species/nz-snapper, /en/spots, /en/tides, /en/tides/nz-cape-reinga, /en/tides/nz-halfmoon-bay, /en/tides/nz-jackson-bay, /en/tides/nz-tolaga-bay-wharf, /especies, /especies/calamar, /especies/corvina, /especies/gallo, /especies/lisa, /especies/lubina, /especies/pulpo, /mareas, /mareas/denia, /mareas/malaga, /mareas/mundaka, /mareas/region/canarias, /mareas/region/cantabria, /mareas/region/galicia, /mareas/region/golfo-de-cadiz, /mareas/region/mediterraneo, /mareas/region/pais-vasco, /mareas/region/portugal, /pt/spots/region/portugal, /spots, /spots/acoruna y 14 más (lista completa en el workflow "Comprobar indexación en Google")
+  - Páginas indexadas: /, /en/species, /en/spots, /en/tides, /especies, /especies/calamar, /especies/corvina, /especies/gallo, /especies/lisa, /especies/lubina, /especies/pulpo, /mareas, /mareas/denia, /mareas/malaga, /mareas/mundaka, /mareas/region/asturias, /mareas/region/canarias, /mareas/region/cantabria, /mareas/region/galicia, /mareas/region/golfo-de-cadiz, /mareas/region/mediterraneo, /mareas/region/pais-vasco, /mareas/region/portugal, /spots, /spots/acoruna, /spots/bakio, /spots/cadiz, /spots/laspalmas, /spots/malaga, /spots/nazare y 9 más (lista completa en el workflow "Comprobar indexación en Google")
   - No indexadas, por motivo:
-    - Descubierta: actualmente sin indexar: 316
-    - Google no reconoce esta URL: 108
-  - Ejemplos sin indexar: /spots/aguarda, /spots/aguilas, /spots/alboraya, /spots/alcossebre, /spots/alicante, /spots/almeria, /spots/altea, /spots/aveiro, /spots/baiona, /spots/benidorm y 414 más
-  - Rastreadas alguna vez por Google: 44 de 468. Sin rastrear nunca: 424 (si son casi todas las no indexadas, el freno es la autoridad o el presupuesto de rastreo, no la calidad).
-  - Por tipo (indexadas / rastreadas / total): /spots/* 7/7/97 · /mareas/* 3/3/97 · /en/spots/* 0/0/64 · /en/tides/* 4/4/63 · /especies/* 6/6/51 · /pt/* 1/1/22 · /en/species/* 1/1/17 · /en/tides/region 0/0/13 · /en/spots/region 0/0/11 · /aprende/* 0/0/9 · /spots/region 8/8/8 · /mareas/region 7/7/7 · / 1/1/1 · /especies 1/1/1 · /mareas 1/1/1 · /spots 1/1/1 · /aprende 0/0/1 · /privacidad 0/0/1 · /en/spots 1/1/1 · /en/species 1/1/1 · /en/tides 1/1/1
-  - Google las conoce por el sitemap: 349; con enlaces que Google ha visto: 79; por ninguna de las dos: 116.
-  - ⚠️ 32 URLs no se pudieron inspeccionar (primer motivo: The service is currently unavailable.)
-  - El sitemap tiene 568 URLs; solo se inspeccionan las 500 primeras (límite de cuota).
+    - Google no reconoce esta URL: 261
+    - Descubierta: actualmente sin indexar: 200
+  - Ejemplos sin indexar: /spots/aguilas, /spots/aguarda, /spots/alboraya, /spots/alcossebre, /spots/alicante, /spots/almeria, /spots/altea, /spots/aveiro, /spots/baiona, /spots/benicassim y 451 más
+  - Rastreadas alguna vez por Google: 39 de 500. Sin rastrear nunca: 461 (si son casi todas las no indexadas, el freno es la autoridad o el presupuesto de rastreo, no la calidad).
+  - Por tipo (indexadas / rastreadas / total): /spots/* 7/7/105 · /mareas/* 3/3/105 · /pt/* 0/0/71 · /aprende/* 0/0/69 · /en/aprende/* 0/0/69 · /especies/* 6/6/53 · /spots/region 8/8/8 · /mareas/region 8/8/8 · / 1/1/1 · /especies 1/1/1 · /mareas 1/1/1 · /spots 1/1/1 · /aprende 0/0/1 · /en/aprende 0/0/1 · /privacidad 0/0/1 · /en/privacidad 0/0/1 · /en/spots 1/1/1 · /en/species 1/1/1 · /en/tides 1/1/1 · /en/spots/region 0/0/1
+  - Google las conoce por el sitemap: 229; con enlaces que Google ha visto: 33; por ninguna de las dos: 267.
+  - El sitemap tiene 1603 URLs; solo se inspeccionan las 500 primeras (límite de cuota).
 
 | | URL | Estado en Google | Último rastreo | Nota |
 |---|---|---|---|---|
-| ✅ | / | Enviada e indexada | 2026-09-25 |  |
+| ✅ | / | Enviada e indexada | 2026-11-20 |  |
 | ✅ | /en/species | Enviada e indexada | 2026-10-29 |  |
-| ✅ | /en/species/nz-snapper | Enviada e indexada | 2026-10-29 |  |
 | ✅ | /en/spots | Enviada e indexada | 2026-10-18 |  |
 | ✅ | /en/tides | Enviada e indexada | 2026-10-18 |  |
-| ✅ | /en/tides/nz-cape-reinga | Enviada e indexada | 2026-11-04 |  |
-| ✅ | /en/tides/nz-halfmoon-bay | Enviada e indexada | 2026-10-15 |  |
-| ✅ | /en/tides/nz-jackson-bay | Enviada e indexada | 2026-10-15 |  |
-| ✅ | /en/tides/nz-tolaga-bay-wharf | Enviada e indexada | 2026-10-21 |  |
 | ✅ | /especies | Enviada e indexada | 2026-10-08 |  |
 | ✅ | /especies/calamar | Enviada e indexada | 2026-10-10 |  |
 | ✅ | /especies/corvina | Enviada e indexada | 2026-11-20 |  |
@@ -39,6 +33,7 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 | ✅ | /mareas/denia | Enviada e indexada | 2026-10-15 |  |
 | ✅ | /mareas/malaga | Enviada e indexada | 2026-11-19 |  |
 | ✅ | /mareas/mundaka | Enviada e indexada | 2026-09-25 |  |
+| ✅ | /mareas/region/asturias | Enviada e indexada | 2026-11-19 |  |
 | ✅ | /mareas/region/canarias | Enviada e indexada | 2026-10-18 |  |
 | ✅ | /mareas/region/cantabria | Enviada e indexada | 2026-10-18 |  |
 | ✅ | /mareas/region/galicia | Enviada e indexada | 2026-10-18 |  |
@@ -46,7 +41,6 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 | ✅ | /mareas/region/mediterraneo | Enviada e indexada | 2026-10-15 |  |
 | ✅ | /mareas/region/pais-vasco | Enviada e indexada | 2026-09-25 |  |
 | ✅ | /mareas/region/portugal | Enviada e indexada | 2026-10-18 |  |
-| ✅ | /pt/spots/region/portugal | Enviada e indexada | 2026-10-20 |  |
 | ✅ | /spots | Enviada e indexada | 2026-10-08 |  |
 | ✅ | /spots/acoruna | Enviada e indexada | 2026-11-20 |  |
 | ✅ | /spots/bakio | Enviada e indexada | 2026-10-08 |  |
@@ -64,6 +58,37 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 | ✅ | /spots/region/pais-vasco | Enviada e indexada | 2026-10-29 |  |
 | ✅ | /spots/region/portugal | Enviada e indexada | 2026-10-18 |  |
 | — | /aprende | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-aberdeen | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-asistente | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-baitholder | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-circular | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-j | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-pulpo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-tamanos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/anzuelo-triple | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-boya | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-brazoladas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-carolina | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-corredizo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-grosor-largo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-polea | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-sabiki | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/bajo-spinning | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/boya-fija-corrediza | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/boya-nocturna | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/cana-carrete-mantenimiento | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/cana-partes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/carrete-freno | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/carrete-partes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/carrete-tamanos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/colores-del-sedal | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/currican-senuelos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/equipo-currican | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/equipo-fondo-barco | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/equipo-jigging | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/equipo-spinning-costa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/equipo-surfcasting | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/jibionera-egi | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /aprende/nudo-albright | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /aprende/nudo-clinch-mejorado | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /aprende/nudo-fg | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
@@ -73,235 +98,178 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 | — | /aprende/nudo-palomar | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /aprende/nudo-san-diego-jam | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /aprende/nudo-uni | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/species/nz-arrow-squid | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-blue-cod | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-blue-moki | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-butterfish | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-hapuku | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/species/nz-john-dory | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/species/nz-kahawai | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-kingfish | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-paua | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-red-cod | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-red-gurnard | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-rock-lobster | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-sand-flounder | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/species/nz-tarakihi | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/species/nz-trevally | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/species/nz-yellowbelly-flounder | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-akaroa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-aramoana | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-bluff | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-cape-reinga | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-castlepoint | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-collingwood | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-coromandel-town | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-deep-cove | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-durville-island | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-french-pass | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-gulf-harbour | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-half-moon-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-halfmoon-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-hokitika-beach | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-houhora-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-jackson-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-kaikoura | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-kaipara-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-kaiteriteri | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-kaka-point | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-karitane | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-kawakawa-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-kawhia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-leigh | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-lyttelton | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-mana | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-mangawhai-heads | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-manukau-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-matiatia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-medlands | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-milford-sound | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-moeraki | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-motunau-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-muriwai | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-napier | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-new-plymouth | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-ninety-mile-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-oamaru | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-okupu | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-opunake | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-paihia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-palliser-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-picton | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-port-fitzroy | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-raglan | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-rangitoto-wharf | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-riverton | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-russell | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-tairua | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-tauranga | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-te-kaha | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-timaru | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-tolaga-bay-wharf | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-tryphena | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-tutukaka | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-waihi-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-wellington-harbour | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/nz-westport | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-whangamata | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-whangaparapara | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-whangapoua | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-whangarei-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-whangaroa-harbour | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/nz-whitianga | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/auckland-hauraki-gulf | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/canterbury | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/coromandel | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/fiordland | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/gisborne-hawkes-bay | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/region/nelson-marlborough | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/region/northland | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/spots/region/southland | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/taranaki | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/wellington | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/spots/region/west-coast | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-akaroa | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-aramoana | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-bluff | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-castlepoint | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-collingwood | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-coromandel-town | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-deep-cove | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-durville-island | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-gisborne | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-gulf-harbour | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-half-moon-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-hokitika-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-houhora-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-kaikoura | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-kaipara-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-kaiteriteri | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-kaka-point | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-karitane | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-kawakawa-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-kawhia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-leigh | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-lyttelton | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-mana | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-mangawhai-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-manukau-heads | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-matiatia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-medlands | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-milford-sound | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-motunau-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-napier | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-nelson | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-new-plymouth | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-ninety-mile-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-oamaru | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-okupu | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-opunake | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-paihia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-palliser-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-picton | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-port-fitzroy | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-raglan | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-rangitoto-wharf | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-riverton | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-russell | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-tairua | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/nz-tauranga | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-te-kaha | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-te-waewae-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-tutukaka | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-waihi-beach | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-wellington-harbour | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-westport | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whakatane | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whangamata | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whangaparapara | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whangapoua | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whangarei-heads | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whangaroa-harbour | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/nz-whitianga | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/auckland-hauraki-gulf | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/bay-of-plenty | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/canterbury | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/coromandel | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/fiordland | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/gisborne-hawkes-bay | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/northland | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/otago | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /en/tides/region/southland | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/taranaki | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/waikato-west-coast | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/wellington | Descubierta: actualmente sin indexar | nunca |  |
-| — | /en/tides/region/west-coast | Descubierta: actualmente sin indexar | nunca |  |
+| — | /aprende/perlas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/plomo-corredizo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/plomo-grapa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/plomo-liso | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/plomo-piramide | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/plumas-caballa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/potera | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/quitavueltas-barril | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/quitavueltas-guia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/quitavueltas-mosqueton | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/quitavueltas-rodamiento | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/quitavueltas-rolling | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/quitavueltas-triple | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/sedal-acero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/sedal-copolimero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/sedal-fluorocarbono | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/sedal-lead-core | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/sedal-nylon | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/sedal-trenzado | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-colores | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-cucharilla | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-guia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-jig-lance | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-lapiz-hundido | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-minnow | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-paseante | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-popper | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/senuelo-vinilo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /aprende/topes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-aberdeen | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-asistente | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-baitholder | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-circular | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-j | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-pulpo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-tamanos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/anzuelo-triple | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-boya | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-brazoladas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-carolina | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-corredizo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-grosor-largo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-polea | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-sabiki | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/bajo-spinning | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/boya-fija-corrediza | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/boya-nocturna | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/cana-carrete-mantenimiento | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/cana-partes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/carrete-freno | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/carrete-partes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/carrete-tamanos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/colores-del-sedal | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/currican-senuelos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/equipo-currican | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/equipo-fondo-barco | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/equipo-jigging | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/equipo-spinning-costa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/equipo-surfcasting | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/jibionera-egi | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-albright | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-clinch-mejorado | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-fg | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-lazo-bajo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-lazo-perfeccion | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-pala | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-palomar | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-san-diego-jam | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/nudo-uni | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/perlas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/plomo-corredizo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/plomo-grapa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/plomo-liso | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/plomo-piramide | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/plumas-caballa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/potera | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/quitavueltas-barril | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/quitavueltas-guia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/quitavueltas-mosqueton | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/quitavueltas-rodamiento | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/quitavueltas-rolling | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/quitavueltas-triple | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/sedal-acero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/sedal-copolimero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/sedal-fluorocarbono | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/sedal-lead-core | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/sedal-nylon | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/sedal-trenzado | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-colores | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-cucharilla | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-guia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-jig-lance | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-lapiz-hundido | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-minnow | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-paseante | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-popper | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/senuelo-vinilo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/aprende/topes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/privacidad | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /en/spots/region/northland | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/abade | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/abadejo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /especies/abadejo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/aligote | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/anjova | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/atun-rojo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /especies/bacoreta | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /especies/anjova | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /especies/atun-rojo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/bacoreta | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/besugo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/bicuda | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/bocinegro | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/bonito-norte | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/breca | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/caballa | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/cabracho | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /especies/cabrilla | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/cabracho | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/cabrilla | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /especies/chicharro-canario | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/chopa | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/congrio | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/denton | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/dorada | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/faneca | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/herrera | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/jurel | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/lenguado | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/llampuga | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/maragota | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /especies/maragota | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/medregal | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/merluza | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /especies/mero | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/merluza | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/mero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /especies/mojarra | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/oblada | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/palometa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /especies/pez-limon | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/palometa | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/pez-limon | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /especies/pintarroja | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/rape | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/rascacio | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/raspallon | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/raya | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/remol | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/rodaballo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /especies/rodaballo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /especies/salema | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/salmonete | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/sama | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/sargo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /especies/sargo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/sargo-picudo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/sepia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /especies/urta | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /especies/urta | Descubierta: actualmente sin indexar | nunca |  |
 | — | /especies/vieja | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/acoruna | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/acoruna | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/aguarda | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/aguilas | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/alboraya | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/alcossebre | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/alicante | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/alicante | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/almeria | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/altea | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/aveiro | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/baiona | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/benicassim | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/benidorm | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/burriana | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/bakio | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/benicassim | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/benidorm | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/blanes | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/burriana | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/cabodepalos | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/cadiz | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/calamillor | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/calpe | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/calamillor | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/calpe | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/camarinas | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/cambrils | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/cambrils | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/canetdeberenguer | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/cangas | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/cangas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/cartagena | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/cascais | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/castellon | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/castrourdiales | Descubierta: actualmente sin indexar | nunca |  |
@@ -311,163 +279,226 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 | — | /mareas/comillas | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/conil | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/corralejo | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/corrubedo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/costadacaparica | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/corrubedo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/costadacaparica | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/cullera | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/deba | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/donostia | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/donostia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/elmedano | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/ericeira | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/faro | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/figueiradafoz | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/formentera | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/gandia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/ericeira | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/faro | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/figueiradafoz | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/formentera | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/gandia | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/getaria | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/getxo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/guardamardelsegura | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/hondarribia | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/javea | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/lagos | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/laredo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/laspalmas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/laredo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/laspalmas | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/lekeitio | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/llanes | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/matosinhos | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/milfontes | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/llanes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/matosinhos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/milfontes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/moledo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/muro | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/mutriku | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/nazare | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/nerja | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/oliva | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/ondarroa | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/oliva | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/ondarroa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/ons | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/orihuelacosta | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/orihuelacosta | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/orio | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/oropesa | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/palma | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/pasaia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/peniche | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/peniscola | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/pilardelahoradada | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/peniche | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/peniscola | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/pilardelahoradada | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/piles | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/plentzia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/pobladefarnals | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/portosin | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/pobladefarnals | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/portosin | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/povoadevarzim | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/puntaumbria | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/ribadeo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/ribadesella | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/roquetas | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/roquetas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/roses | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/santacruztenerife | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/sagres | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/santacruztenerife | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/santander | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/santapola | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/santona | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/santona | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/sanvicente | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/sanxenxo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/sines | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/sines | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /mareas/sonbou | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/sopelana | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/suances | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/troia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/valencia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/vianadocastelo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/torreblanca | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/troia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/valencia | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/vianadocastelo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/vilajoiosa | Descubierta: actualmente sin indexar | nunca |  |
-| — | /mareas/vinaros | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /mareas/xilxes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /mareas/vinaros | Descubierta: actualmente sin indexar | nunca |  |
+| — | /mareas/xilxes | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/zarautz | Descubierta: actualmente sin indexar | nunca |  |
 | — | /mareas/zumaia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /privacidad | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /pt/especies | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/mareas/aveiro | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /pt/mareas/cascais | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/mareas/region/portugal | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/aveiro | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /pt/spots/cascais | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/costadacaparica | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/ericeira | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/faro | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/figueiradafoz | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/lagos | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/matosinhos | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/milfontes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /pt/spots/moledo | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/nazare | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/peniche | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /pt/spots/povoadevarzim | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/sagres | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/sines | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /pt/spots/troia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /pt/spots/vianadocastelo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /privacidad | Descubierta: actualmente sin indexar | nunca |  |
+| — | /pt/aprende | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-aberdeen | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-asistente | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-baitholder | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-circular | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-j | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-pulpo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-tamanos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/anzuelo-triple | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-boya | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-brazoladas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-carolina | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-corredizo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-grosor-largo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-polea | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-sabiki | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/bajo-spinning | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/boya-fija-corrediza | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/boya-nocturna | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/cana-carrete-mantenimiento | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/cana-partes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/carrete-freno | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/carrete-partes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/carrete-tamanos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/colores-del-sedal | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/currican-senuelos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/equipo-currican | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/equipo-fondo-barco | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/equipo-jigging | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/equipo-spinning-costa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/equipo-surfcasting | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/jibionera-egi | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-albright | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-clinch-mejorado | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-fg | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-lazo-bajo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-lazo-perfeccion | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-pala | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-palomar | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-san-diego-jam | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/nudo-uni | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/perlas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/plomo-corredizo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/plomo-grapa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/plomo-liso | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/plomo-piramide | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/plumas-caballa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/potera | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/quitavueltas-barril | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/quitavueltas-guia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/quitavueltas-mosqueton | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/quitavueltas-rodamiento | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/quitavueltas-rolling | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/quitavueltas-triple | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/sedal-acero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/sedal-copolimero | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/sedal-fluorocarbono | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/sedal-lead-core | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/sedal-nylon | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/sedal-trenzado | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-colores | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-cucharilla | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-guia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-jig-lance | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-lapiz-hundido | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-minnow | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-paseante | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-popper | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/senuelo-vinilo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/aprende/topes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /pt/privacidad | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/aguarda | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/aguilas | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/alboraya | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/alcossebre | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/alicante | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/alcossebre | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/alicante | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/almeria | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/altea | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/aveiro | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/aveiro | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/baiona | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/benicassim | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/benicassim | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/benidorm | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/blanes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/cabodepalos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/blanes | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/burriana | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/cabodepalos | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/calamillor | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/calpe | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/calpe | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/camarinas | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/cambrils | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/canetdeberenguer | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/canetdeberenguer | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/cangas | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/cartagena | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/cascais | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/castellon | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/castrourdiales | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/chipiona | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/ciutadella | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/chipiona | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/cies | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/ciutadella | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/comillas | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/conil | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/corralejo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/corrubedo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/costadacaparica | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/cullera | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/cullera | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/deba | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/denia | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/donostia | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/elmedano | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/ericeira | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/faro | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/figueiradafoz | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/formentera | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/formentera | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/gandia | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/getaria | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/getxo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/guardamardelsegura | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/hondarribia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/javea | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/lagos | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/hondarribia | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/javea | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/lagos | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/laredo | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/lekeitio | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/lekeitio | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/llanes | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/matosinhos | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/milfontes | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/moledo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/mundaka | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/muro | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/mutriku | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/nerja | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/ondarroa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/ons | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/oliva | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/ondarroa | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/ons | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/orihuelacosta | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/orio | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/oropesa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/pasaia | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/orio | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/oropesa | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/pasaia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/peniche | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/peniscola | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/peniscola | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/pilardelahoradada | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/piles | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/piles | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/plentzia | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/pobladefarnals | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/portosin | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/povoadevarzim | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/puntaumbria | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/ribadeo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/ribadeo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/ribadesella | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/roquetas | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/roquetas | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/roses | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/sagres | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/sagres | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/santacruztenerife | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/santander | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/santapola | Descubierta: actualmente sin indexar | nunca |  |
@@ -475,14 +506,14 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 | — | /spots/sanvicente | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/sanxenxo | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/sines | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/sonbou | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/sopelana | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/sonbou | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/sopelana | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/suances | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/torreblanca | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/torreblanca | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/troia | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/valencia | Descubierta: actualmente sin indexar | nunca |  |
-| — | /spots/vianadocastelo | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
-| — | /spots/vilajoiosa | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
+| — | /spots/vianadocastelo | Descubierta: actualmente sin indexar | nunca |  |
+| — | /spots/vilajoiosa | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/vinaros | Google no reconoce esta URL | nunca | ni sitemap ni enlaces vistos |
 | — | /spots/xilxes | Descubierta: actualmente sin indexar | nunca |  |
 | — | /spots/zarautz | Descubierta: actualmente sin indexar | nunca |  |
@@ -492,6 +523,27 @@ Generado por scripts/seo/indexacion-google.mjs (sin IA) el 2026-11-20 12:28 UTC.
 ## Rendimiento en Google (últimos 28 días)
 
 Total: 23 clics, 1978 impresiones, CTR 1.2%, posición media 30.1.
+
+### Día a día (lo más reciente que da Google)
+
+| Día | Clics | Impresiones | Posición |
+|---|---|---|---|
+| 2026-11-20 (provisional) | 0 | 37 | 36.2 |
+| 2026-11-19 (provisional) | 1 | 73 | 23.5 |
+| 2026-11-18 (provisional) | 0 | 83 | 27.4 |
+| 2026-11-17 | 0 | 94 | 30.4 |
+| 2026-11-16 | 1 | 95 | 34.0 |
+| 2026-11-15 | 0 | 105 | 27.0 |
+| 2026-11-14 | 0 | 133 | 31.4 |
+| 2026-11-13 | 1 | 74 | 26.2 |
+| 2026-11-12 | 0 | 57 | 30.2 |
+| 2026-11-11 | 0 | 68 | 24.9 |
+| 2026-11-10 | 0 | 84 | 27.4 |
+| 2026-11-09 | 2 | 65 | 25.8 |
+| 2026-11-08 | 3 | 73 | 17.3 |
+| 2026-11-07 | 0 | 68 | 34.9 |
+
+Últimos 7 días: 2 clics y 620 impresiones (los 7 anteriores: 6 y 489).
 
 | Página | Clics | Impresiones | CTR | Posición |
 |---|---|---|---|---|
