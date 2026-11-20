@@ -17,6 +17,7 @@
 // espuma en GitHub Actions (ver CLAUDE.md, "Oleaje por cámara").
 
 import { isoLocal, zonaDeSpot, ZONA_POR_DEFECTO } from "../../assets/js/regiones.js";
+import CAMARAS_SUSPENDIDAS from "./examen-olas-datos.js";
 
 // Bandas de altura que se enseñan y que etiqueta Mikel (página
 // etiquetar-olas.html y botón "ola real que veo" del panel). `centro` es el
@@ -194,9 +195,12 @@ function rango(h) {
 //     coeficiente × factorCamara.
 //   - vecina: todos los bloques, modelo × coeficiente × factorCamara(peso).
 // Sin lectura vigente, el spot sale tal cual (modelo × coeficiente).
-export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now()) {
+// suspendidas: cámaras con 3 suspensos seguidos en el examen diario
+// (scripts/oleaje-camaras/examen-olas.mjs): no se usan hasta que aprueben.
+export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now(), suspendidas = CAMARAS_SUSPENDIDAS) {
   return (spots || []).map((s) => {
     const fuente = FUENTE_POR_SPOT[s?.slug];
+    if (fuente && suspendidas?.includes(fuente.camara)) return s;
     const lectura = fuente ? lecturas?.[fuente.camara] : null;
     if (!fuente || !s.bloques?.length || !lecturaVigente(lectura, ahoraMs)) return s;
     const cociente = cocienteCamaraModelo(lectura.estimacion, lectura.modeloCamara, lectura.errorRel);
