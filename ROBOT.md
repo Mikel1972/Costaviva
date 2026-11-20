@@ -10383,3 +10383,11 @@ Datos: `camaras-estado.json` de 2026-11-20T03:05Z (fresco). En rojo: pasaia (`fr
 - **Cambrils (Windy)**: cámara inactiva en Windy; sigue pendiente buscar otra cámara de otro dueño desde fuera de la rutina (la red de esta sesión no alcanza buscadores de webcams).
 - No se cambió código. Quedan para la próxima pasada: Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-20 05:55 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (marea / fase lunar y capturabilidad)
+- Factor mirado: estado de la marea, mareas vivas/muertas y fase lunar frente a capturas de pesca desde costa (lubina, sargos, doradas) en España y Portugal. Concursos: no se revisó ninguna federación (sin margen).
+- Resultado: sin novedades. Tres búsquedas no dieron ningún estudio revisado por pares que mida el efecto de la marea o la luna sobre la captura desde costa de nuestras especies en Iberia. Solo salió prensa y foros de pesca (anecdótico, no sirve como fuente) y estudios de otras pesquerías: palangre de pez espada en Turquía (sin diferencias significativas por fase lunar), cerco de sardina en el Egeo (sí diferencias), torneos de pesca deportiva en Australia (más capturas entre luna nueva y cuarto creciente). Ninguno es de especie, arte o zona comparable, así que no se propone regla.
+- Pista no verificada para la próxima vez: tesis de la Universidad del Algarve (sapientia.ualg.pt, 2012) sobre pesca desde costa en el sur de Portugal (sargo blanco, lubina); no se leyó el texto, no se sabe si analiza la marea.
+- Reglas existentes (`coeficientes_altos`, `congrio_luna_llena`, `rodaballo_mareas_vivas_otono`): sin contraste nuevo; no se tocó nada.
+- Sin cambios en código ni en `especies.json`; no se creó rama.
+Firmado: robot buscador de fuentes (rutina), 2026-11-20 05:55 UTC.
