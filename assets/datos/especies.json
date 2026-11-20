@@ -4430,12 +4430,12 @@
    "preguntas": [
     {
      "pregunta": "¿Chipirón y calamar son lo mismo?",
-     "respuesta": "Sí: es el mismo animal, el calamar común (Loligo vulgaris). Lo que cambia es el nombre según la zona: en la mayor parte de España se dice calamar o chipirón, y en Euskadi, txipirón.",
+     "respuesta": "Sí: es el mismo animal, el calamar común (Loligo vulgaris). Lo que cambia es el nombre según la zona: en la mayor parte de España se dice calamar o chipirón; en Euskadi se le llama popularmente txipirón, y en euskera, txipiroi.",
      "fuentes": ["eeh_upv_ehu"]
     },
     {
      "pregunta": "¿Cómo se dice calamar en euskera?",
-     "respuesta": "Txipiroi (también xipiroi o xipiron). En el castellano del País Vasco se dice txipirón, como en los txipirones en su tinta.",
+     "respuesta": "Txipiroi (también xipiroi o xipiron). En el habla popular del País Vasco se dice txipirón, como en los txipirones en su tinta.",
      "fuentes": ["eeh_upv_ehu"]
     }
    ],
