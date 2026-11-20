@@ -1678,6 +1678,641 @@
     }
    ],
    "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-guia",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Quitavueltas: cuál usar en cada caso",
+   "otros_nombres": [
+    "Emerillones",
+    "Destorcedores"
+   ],
+   "para": "Guía rápida para elegir entre los tipos de quitavueltas.",
+   "resumen": "El quitavueltas une dos tramos y deja que giren por separado, para que el sedal no se retuerza. Hay cinco familias y cada una tiene su sitio: no hace falta el más caro para todo.",
+   "como_es": [
+    "Barril: lo básico. Une madre y bajo o sujeta el plomo. Gira poco bajo carga.",
+    "Rolling (de anillas): el más usado en mar. Gira mejor que el barril y aguanta más en poco tamaño.",
+    "De rodamiento (bolas): gira libre aunque vaya muy cargado. Para lo que da muchas vueltas: cucharillas, curricán, cebos que giran.",
+    "Con mosquetón o grapa: cualquiera de los anteriores con un cierre para cambiar señuelo, plomo o bajo sin cortar.",
+    "Triple (en T): tres salidas; para brazoladas y montajes de varios anzuelos."
+   ],
+   "medidas": [
+    "Elige el más pequeño que aguante la resistencia del bajo (o un poco más).",
+    "El número no es igual entre marcas: mira los kilos que pone el envase, no el número.",
+    "En curricán, que aguante al menos 1,5 veces lo que el sedal."
+   ],
+   "medidas_titulo": "📏 Tamaño y resistencia",
+   "usos_costa": [
+    "Surfcasting: rolling con mosquetón para el plomo y rolling o triple para las brazoladas.",
+    "Spinning: mosquetón solo (sin quitavueltas) con señuelos que nadan; rolling o de rodamiento con cucharillas que giran.",
+    "Corcheo: rolling pequeño entre la madre y el bajo, que sirve además de tope para los plomos."
+   ],
+   "usos_embarcacion": [
+    "Fondeo y deriva: triples o rolling en los bajos de brazoladas.",
+    "Curricán: rodamiento con mosquetón; es donde más vueltas da el sedal."
+   ],
+   "ojo": "El quitavueltas también es un punto débil y un brillo que ve el pez: ponlo solo donde haga falta y del tamaño justo.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tipos y tamaños de quitavueltas",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre quitavueltas (1)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-1"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre quitavueltas (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "British Sea Fishing: quitavueltas",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    },
+    {
+     "titulo": "boats.com: elegir el quitavueltas",
+     "url": "https://www.boats.com/on-the-water/how-to-fish-choosing-the-right-swivel/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-barril",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Quitavueltas de barril",
+   "otros_nombres": [
+    "Barrilete",
+    "Barrel swivel"
+   ],
+   "para": "Un cuerpo en forma de barril con una anilla a cada lado.",
+   "resumen": "El más sencillo y barato. Cumple para unir tramos y poner plomos, pero gira poco cuando el sedal va tenso.",
+   "como_es": [
+    "Dos anillas que giran dentro de un barril.",
+    "Bajo carga fuerte deja de girar bien.",
+    "Latón o acero; en mar, mejor acabado negro o inoxidable."
+   ],
+   "medidas": [
+    "Del 14 (pequeño) al 1/0 o más; mira los kilos."
+   ],
+   "medidas_titulo": "📏 Tamaño y resistencia",
+   "usos_costa": [
+    "Montajes básicos de fondo y de boya sin mucha tensión.",
+    "Tope de plomos corredizos."
+   ],
+   "usos_embarcacion": [
+    "Bajos sencillos de fondo."
+   ],
+   "ojo": "No lo uses donde el sedal gire mucho (cucharillas, curricán): ahí se queda corto.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tipos y tamaños de quitavueltas",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre quitavueltas (1)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-1"
+    },
+    {
+     "titulo": "Wikipedia: Fishing swivel",
+     "url": "https://en.wikipedia.org/wiki/Fishing_swivel"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-rolling",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Quitavueltas rolling (de anillas)",
+   "otros_nombres": [
+    "Rolling swivel",
+    "Crane swivel"
+   ],
+   "para": "Quitavueltas de anillas dobles, sin barril cerrado: el estándar en la pesca de mar.",
+   "resumen": "Gira mejor que el de barril y aguanta mucho para su tamaño. Es el que conviene tener siempre en la caja.",
+   "como_es": [
+    "Anillas cruzadas que giran sobre un eje.",
+    "A medio camino entre el barril y el de rodamiento en giro y en precio.",
+    "Aguanta mejor la carga fuerte que el barril del mismo tamaño."
+   ],
+   "medidas": [
+    "Ejemplo de una marca: n.º 10 ≈ 14 kg; n.º 7 ≈ 22 kg; n.º 5 ≈ 32 kg; n.º 1 ≈ 47 kg.",
+    "Para un bajo de 0,35–0,40 mm suele bastar un n.º 8–10."
+   ],
+   "medidas_titulo": "📏 Tamaño y resistencia",
+   "usos_costa": [
+    "Unión de la madre con el bajo en surfcasting y fondo.",
+    "Brazoladas de los bajos de paternoster.",
+    "Bajos de corcheo, como tope de plomos."
+   ],
+   "usos_embarcacion": [
+    "Bajos de fondeo y deriva.",
+    "Unión de la madre con bajos de cebo vivo."
+   ],
+   "ojo": "Revisa que no tenga óxido: con sal se agarrota y deja de girar.",
+   "fuentes": [
+    {
+     "titulo": "Seabreeze: aprender sobre quitavueltas (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "British Sea Fishing: quitavueltas",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    },
+    {
+     "titulo": "The Tackle Room: tipos y tamaños de quitavueltas",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-rodamiento",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Quitavueltas de rodamiento (bolas)",
+   "otros_nombres": [
+    "Ball bearing swivel"
+   ],
+   "para": "Quitavueltas con bolas de acero dentro.",
+   "resumen": "Gira libre aunque vaya muy cargado. Es el que evita de verdad las cocas cuando algo da vueltas sin parar. Es bastante más caro.",
+   "como_es": [
+    "Rodamiento de bolas de acero inoxidable.",
+    "Gira incluso con mucha tensión y velocidad.",
+    "Suele llevar anillas soldadas: más resistente."
+   ],
+   "medidas": [
+    "Como el rolling: elige por kilos.",
+    "En curricán, al menos 1,5 veces la resistencia del sedal."
+   ],
+   "medidas_titulo": "📏 Tamaño y resistencia",
+   "usos_costa": [
+    "Spinning con cucharillas giratorias o señuelos que tienden a girar.",
+    "Lances con cebos grandes que giran al recoger."
+   ],
+   "usos_embarcacion": [
+    "Curricán: el sitio natural de este quitavueltas.",
+    "Pesca con cebo muerto a la deriva que gira."
+   ],
+   "ojo": "Para montajes de fondo sencillos es tirar el dinero: un rolling basta.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tipos y tamaños de quitavueltas",
+     "url": "https://thetackleroom.com/blogs/news/fishing-swivels-explained"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre quitavueltas (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "boats.com: elegir el quitavueltas",
+     "url": "https://www.boats.com/on-the-water/how-to-fish-choosing-the-right-swivel/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-mosqueton",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Mosquetón y grapa (con o sin quitavueltas)",
+   "otros_nombres": [
+    "Snap",
+    "Grapa",
+    "Snap swivel"
+   ],
+   "para": "Un cierre que se abre y se cierra para cambiar señuelos, plomos o bajos sin cortar el sedal.",
+   "resumen": "Ahorra mucho tiempo, pero hay que elegir bien: con señuelos que nadan, mejor el mosquetón solo; con lo que gira, con quitavueltas.",
+   "como_es": [
+    "Mosquetón solo: un cierre sin giro. No afecta casi al nado del señuelo.",
+    "Mosquetón con quitavueltas (snap swivel): para cambiar rápido y evitar cocas.",
+    "Grapa de plomo: cierre para enganchar el plomo en surfcasting.",
+    "Cierre de seguridad (insurance / cross-lock): no se abre con los tirones."
+   ],
+   "medidas": [
+    "Del tamaño más pequeño que aguante el bajo.",
+    "Con señuelos pequeños, mosquetón pequeño: uno grande les cambia el nado."
+   ],
+   "medidas_titulo": "📏 Tamaño y resistencia",
+   "usos_costa": [
+    "Spinning: mosquetón solo con minnows, paseantes y vinilos; con quitavueltas con cucharillas.",
+    "Surfcasting: grapa con quitavueltas para el plomo."
+   ],
+   "usos_embarcacion": [
+    "Curricán: mosquetón de seguridad con rodamiento.",
+    "Jigging: anilla sólida y anilla partida mejor que mosquetón (más resistente)."
+   ],
+   "ojo": "Un mosquetón con quitavueltas y además anilla partida hace una doble articulación y el señuelo puede nadar a tirones: con señuelos de nado usa solo el mosquetón. Y comprueba que está cerrado antes de cada lance.",
+   "fuentes": [
+    {
+     "titulo": "The Tackle Room: tamaños de quitavueltas con mosquetón",
+     "url": "https://thetackleroom.com/blogs/news/snap-swivel-sizes-explained-which-one-goes-on-which-setup"
+    },
+    {
+     "titulo": "Wikipedia: Fishing swivel",
+     "url": "https://en.wikipedia.org/wiki/Fishing_swivel"
+    },
+    {
+     "titulo": "Bass Resource: ¿mosquetón con o sin quitavueltas? (foro)",
+     "url": "https://www.bassresource.com/bass-fishing-forums/topic/12064-swivel-snaps-on-crankbaits/"
+    },
+    {
+     "titulo": "Decathlon: emerillones y grapas de surfcasting",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/emerillones-y-grapas"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "quitavueltas-triple",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Quitavueltas triple (en T)",
+   "otros_nombres": [
+    "Three-way swivel",
+    "Emerillón triple"
+   ],
+   "para": "Un quitavueltas con tres anillas: dos en línea y una de lado.",
+   "resumen": "Para sacar una brazolada del cuerpo del bajo sin que se enrolle.",
+   "como_es": [
+    "Tres anillas que giran por separado.",
+    "La de lado lleva la brazolada con el anzuelo; las otras dos, la madre y el plomo (o el resto del bajo)."
+   ],
+   "medidas": [
+    "Por kilos, como los demás; que no sea más débil que el cuerpo del bajo."
+   ],
+   "medidas_titulo": "📏 Tamaño y resistencia",
+   "usos_costa": [
+    "Bajos de paternoster de surfcasting y de fondo en roca."
+   ],
+   "usos_embarcacion": [
+    "Bajos de brazoladas para fondeo y deriva.",
+    "Montajes de deriva con el plomo en una salida y el cebo en otra."
+   ],
+   "ojo": "Abulta y se ve: en agua muy clara, mejor brazoladas atadas con nudo de lazo y perlas.",
+   "fuentes": [
+    {
+     "titulo": "Outdoor Canada: quitavueltas triples",
+     "url": "https://outdoorcanada.ca/?p=3631"
+    },
+    {
+     "titulo": "Seabreeze: aprender sobre quitavueltas (2)",
+     "url": "https://www.seabreeze.com.au/Articles/Fishing/Learning-more-about-swivels-Part-2"
+    },
+    {
+     "titulo": "Decathlon: emerillones y grapas de surfcasting",
+     "url": "https://www.decathlon.es/es/deportes/surfcasting/emerillones-y-grapas"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "perlas",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Perlas",
+   "otros_nombres": [
+    "Cuentas",
+    "Beads"
+   ],
+   "para": "Bolitas de plástico o cristal que se ensartan en el sedal.",
+   "resumen": "Protegen el nudo del golpe del plomo, hacen de tope y algunas atraen al pez por color o luz.",
+   "como_es": [
+    "Blandas o duras; de colores, fluorescentes o luminosas.",
+    "Entre el plomo corredizo y el quitavueltas: el plomo golpea la perla, no el nudo.",
+    "En la boya corrediza: entre el tope y la boya, para que el tope no se cuele por el agujero."
+   ],
+   "medidas": [
+    "Del diámetro justo para que no pase el tope ni el nudo."
+   ],
+   "medidas_titulo": "📏 Tamaño",
+   "usos_costa": [
+    "Bajos corredizos y de boya.",
+    "Bajos de surfcasting con perlas luminosas o de color delante del anzuelo."
+   ],
+   "usos_embarcacion": [
+    "Bajos de fondo con perlas de color para atraer."
+   ],
+   "ojo": "Las perlas de color y luminosas llaman la atención del pez, pero no hay pruebas de que siempre ayuden: pruébalas frente a un bajo sin ellas.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: cómo usar una boya corrediza",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar una boya corrediza",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: quitavueltas",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/swivels/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "topes",
+   "tema": "quitavueltas-perlas-topes",
+   "tipo": "material",
+   "nombre": "Topes",
+   "otros_nombres": [
+    "Stops",
+    "Nudo de tope"
+   ],
+   "para": "Pequeñas piezas o nudos que fijan una posición en el sedal.",
+   "resumen": "Marcan hasta dónde baja la boya, dónde se para un plomo o una brazolada. Se pueden mover sin cortar.",
+   "como_es": [
+    "Nudo de tope: hilo atado sobre la madre; se mueve apretándolo y aflojándolo.",
+    "Topes de goma o silicona: se pasan con un enhebrador.",
+    "Dejando las puntas del nudo de unos 2,5 cm, pasa mejor por las anillas de la caña."
+   ],
+   "medidas": [
+    "Que no se deslice con el peso de la boya ni con el lance."
+   ],
+   "medidas_titulo": "📏 Tamaño",
+   "usos_costa": [
+    "Boya corrediza: el tope marca la profundidad del cebo.",
+    "Fijar brazoladas en el cuerpo del bajo sin nudos."
+   ],
+   "usos_embarcacion": [
+    "Boya corrediza al ancla o a la deriva."
+   ],
+   "ojo": "Con la marea cambia la profundidad: sube o baja el tope cada rato.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: cómo usar una boya corrediza",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar una boya corrediza",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca con boya",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-grapa",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Plomo de grapa (con alambres)",
+   "otros_nombres": [
+    "Grip lead",
+    "Plomo de garras"
+   ],
+   "para": "Plomo con alambres que se clavan en el fondo.",
+   "resumen": "Aguanta el cebo quieto con corriente y mar de fondo. Al recoger, los alambres se abren o se doblan y salen del fondo.",
+   "como_es": [
+    "Alambres fijos: agarran más; para mucha corriente o mar.",
+    "Desembragable: los alambres se sueltan al picar el pez o al recoger.",
+    "El plomo más usado en playa con corriente."
+   ],
+   "medidas": [
+    "El justo para que aguante: empieza ligero y sube si te arrastra.",
+    "Con viento o marea que crece, más peso."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Surfcasting con corriente, oleaje o mar de fondo.",
+    "Playas donde un plomo liso rueda y arrastra el bajo."
+   ],
+   "usos_embarcacion": [
+    "Poco: desde barco se pesca más en vertical."
+   ],
+   "ojo": "En piedra se engancha: allí, plomo liso o de goteo con un tramo débil.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: conoce tus plomos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "British Sea Fishing: plomos",
+     "url": "https://britishseafishing.co.uk/?p=549"
+    },
+    {
+     "titulo": "Salt Strong: 7 tipos de plomo",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-liso",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Plomo liso (pera, bala, torpedo)",
+   "otros_nombres": [
+    "Bomb",
+    "Plomo de pera"
+   ],
+   "para": "Plomo sin alambres, de forma aerodinámica.",
+   "resumen": "Lanza más lejos y deja que el cebo ruede despacio con la corriente, buscando al pez.",
+   "como_es": [
+    "Pera, bala o torpedo: las formas que más vuelan.",
+    "No se clava: el bajo se mueve con la corriente.",
+    "Se engancha menos en la piedra."
+   ],
+   "medidas": [
+    "Con mar en calma, ligero; si el mar sube, cambia a grapa."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Surfcasting en calma y lances largos.",
+    "Fondo de roca y algas (con un tramo débil para el plomo)."
+   ],
+   "usos_embarcacion": [
+    "Fondeo y deriva en vertical."
+   ],
+   "ojo": "Si ves que la línea se te va de lado en cada ola, ya no aguanta: pasa a un plomo de grapa.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: conoce tus plomos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "Outdoor Life: guía completa de plomos",
+     "url": "https://www.outdoorlife.com/complete-guide-to-using-fishing-sinkers/"
+    },
+    {
+     "titulo": "British Sea Fishing: plomos",
+     "url": "https://britishseafishing.co.uk/?p=549"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-piramide",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Plomo de pirámide y de reloj",
+   "otros_nombres": [
+    "Pyramid",
+    "Watch lead"
+   ],
+   "para": "Plomos con aristas o planos que se agarran en arena y fango sin alambres.",
+   "resumen": "Bajan rápido y se quedan quietos en fondos blandos con corriente moderada.",
+   "como_es": [
+    "Pirámide: se clava en la arena.",
+    "Reloj (plano y redondo): se asienta en el fondo y no rueda."
+   ],
+   "medidas": [
+    "El justo para que aguante el fondo."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Playas de arena con poca o media corriente."
+   ],
+   "usos_embarcacion": [
+    "Fondeo sobre arena o fango."
+   ],
+   "ojo": "Con mucha corriente se arrastran: pasa a grapa.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: conoce tus plomos de mar",
+     "url": "https://www.seaangler.co.uk/fishing-tackle/know-your-sea-fishing-leads-and-sinkers/"
+    },
+    {
+     "titulo": "Salt Strong: 7 tipos de plomo",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "plomo-corredizo",
+   "tema": "plomos",
+   "tipo": "material",
+   "nombre": "Plomo corredizo (oliva, bala con agujero)",
+   "otros_nombres": [
+    "Egg sinker",
+    "Plomo pasante"
+   ],
+   "para": "Plomo con un agujero por el que pasa la línea madre.",
+   "resumen": "El pez coge el cebo sin notar el peso: es el plomo del bajo corredizo y del carolina.",
+   "como_es": [
+    "Corre libre por la madre hasta el quitavueltas.",
+    "Pon una perla entre plomo y quitavueltas para proteger el nudo."
+   ],
+   "medidas": [
+    "El menor que mantenga el cebo en el fondo."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Bajos corredizos para lubina, dorada o congrio.",
+    "Carolina con vinilo sobre arena."
+   ],
+   "usos_embarcacion": [
+    "Fondeo con un solo cebo grande."
+   ],
+   "ojo": "Si es muy ligero, la corriente lo arrastra y el bajo se enrolla en la madre.",
+   "fuentes": [
+    {
+     "titulo": "Outdoor Life: guía completa de plomos",
+     "url": "https://www.outdoorlife.com/complete-guide-to-using-fishing-sinkers/"
+    },
+    {
+     "titulo": "Salt Strong: 7 tipos de plomo",
+     "url": "https://saltstrong.com/?p=32652"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-fija-corrediza",
+   "tema": "corchos",
+   "tipo": "material",
+   "nombre": "Boya fija o corrediza",
+   "otros_nombres": [
+    "Corcho",
+    "Flotador"
+   ],
+   "para": "La boya sostiene el cebo a la profundidad que elijas y avisa de la picada.",
+   "resumen": "La fija va bien hasta 1,5–2 m de fondo; para más, la corrediza con tope deja lanzar cómodo y pescar a cualquier profundidad.",
+   "como_es": [
+    "Fija: sujeta en el sedal por arriba y abajo; profundidad fija.",
+    "Corrediza: corre por la madre hasta un tope; se lanza con el bajo recogido.",
+    "Algunas sirven para las dos cosas."
+   ],
+   "medidas": [
+    "En mar suelen ir de unos 7 a 40 g.",
+    "Boya más grande cuanto más mar, más profundidad y más lejos haya que lanzar.",
+    "Plomo debajo hasta que asome solo la punta."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Espigones, puertos y rocas: lubina, sargo, mújol, maragota, caballa.",
+    "Con agua tranquila, boya pequeña y fina."
+   ],
+   "usos_embarcacion": [
+    "Al ancla junto a la piedra o a la deriva lenta."
+   ],
+   "ojo": "Una boya fija de más de 2 m de bajo es imposible de lanzar: pasa a corrediza.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: cómo usar una boya corrediza",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca con boya",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar una boya corrediza",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    },
+    {
+     "titulo": "Sea Angler: consejos de pesca con boya",
+     "url": "https://www.seaangler.co.uk/fishing-tips/float-fishing-tips-for-sea-angling"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-nocturna",
+   "tema": "corchos",
+   "tipo": "material",
+   "nombre": "Boya nocturna (luminosa)",
+   "otros_nombres": [
+    "Starlight",
+    "Boya luminosa"
+   ],
+   "para": "Boya con una barrita química o una luz en la punta para verla de noche.",
+   "resumen": "Permite corchear de noche, cuando lubina, sargo o congrio se acercan a la orilla.",
+   "como_es": [
+    "Antena con hueco para barrita química (la más común, de 4,5 mm).",
+    "Boyas eléctricas con pila: más luz y duran más."
+   ],
+   "medidas": [
+    "De 7,5 a 30 g y más, como las de día."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "usos_costa": [
+    "Corcheo nocturno en puertos, espigones y rocas."
+   ],
+   "usos_embarcacion": [
+    "Boya al ancla de noche."
+   ],
+   "ojo": "Lleva barritas de repuesto y no tires las usadas al agua.",
+   "fuentes": [
+    {
+     "titulo": "Caperlan: boya corrediza de mar (10 g, antena para luz química de 4,5 mm)",
+     "url": "https://www.decathlon.ie/p/352537-288864-saltwater-fishing-sliding-float-sw-flt-sld-10-g.html"
+    },
+    {
+     "titulo": "Ragot Sealight: boya fija o corrediza con luz química",
+     "url": "https://www.tradeinn.com/waveinn/en/ragot-sealight-float/138402350/p"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca con boya",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    }
+   ],
+   "consultada": "2026-11-20"
   }
  ],
  "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."

@@ -87,3 +87,17 @@ test("caché de /aprende: la clave cambia con los datos (no se queda la versión
   assert.equal(huella({ a: 1 }), huella({ a: 1 }));
   for (const f of ["functions/aprende/index.js", "functions/aprende/[slug].js"]) assert.match(readFileSync(f, "utf8"), /huella\(\[datos, ESTILOS\]\)/, f);
 });
+
+test("quitavueltas, plomos y boyas: fichas desplegables con costa y embarcación", async () => {
+  const { paginaFicha } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  for (const tema of ["quitavueltas-perlas-topes", "plomos", "corchos"]) {
+    const fs = datos.fichas.filter((f) => f.tema === tema);
+    assert.ok(fs.length >= 2, tema);
+    for (const f of fs) {
+      const { html } = paginaFicha(datos, f);
+      for (const id of ["como-es", "medidas", "costa", "embarcacion", "ojo", "fuentes"]) assert.match(html, new RegExp(`id="${id}">`), `${f.id} ${id}`);
+    }
+  }
+  assert.ok(datos.fichas.filter((f) => f.tema === "quitavueltas-perlas-topes").length >= 8);
+});
