@@ -156,6 +156,27 @@ export function rangoAltura(h) {
   return [Math.max(0, +(h * 0.9).toFixed(1)), +(h * 1.1).toFixed(1)];
 }
 
+// Margen máximo de la ola que se enseña (2026-11-20, Mikel: «podemos dar un
+// margen de 0,3 pero no más»; «~0,6–2,6 m… ese dato no me vale para nada»).
+// Un rango más ancho que MARGEN_MAX_OLA_M se estrecha alrededor de su centro.
+export const MARGEN_MAX_OLA_M = 0.3;
+export function acotarRango(r, margen = MARGEN_MAX_OLA_M) {
+  if (!Array.isArray(r) || !Number.isFinite(r[0]) || !Number.isFinite(r[1]) || r[1] - r[0] <= margen + 1e-9) return r;
+  const c = (r[0] + r[1]) / 2;
+  const lo = Math.max(0, Math.round((c - margen / 2) * 10) / 10);
+  return [lo, Math.round((lo + margen) * 10) / 10];
+}
+// A todos los bloques (altura en la orilla y mar abierto) y al resumen del spot.
+export function acotarMargenesSpots(spots, margen = MARGEN_MAX_OLA_M) {
+  return (spots || []).map((s) => {
+    if (!s) return s;
+    const out = { ...s };
+    for (const k of ["altura", "alturaMarAbierto"]) if (Array.isArray(s[k])) out[k] = acotarRango(s[k], margen);
+    if (Array.isArray(s.bloques)) out.bloques = s.bloques.map((b) => b && { ...b, altura: acotarRango(b.altura, margen), alturaMarAbierto: acotarRango(b.alturaMarAbierto, margen) });
+    return out;
+  });
+}
+
 // Distancia aproximada en km (equirectangular, suficiente a estas escalas).
 export function distanciaKm(lat1, lon1, lat2, lon2) {
   if (![lat1, lon1, lat2, lon2].every((v) => Number.isFinite(Number(v)))) return null;

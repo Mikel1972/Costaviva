@@ -94,7 +94,8 @@ test("aplicarCamarasASpots: cámara propia manda en el bloque de la lectura y co
   assert.equal(s.oleajeCamara.propia, true);
   assert.equal(s.oleajeCamara.horaLocal, "12:30");
   assert.equal(s.oleajeCamara.cociente, 0.5);
-  assert.deepEqual(s.bloques[0].altura, [1, 2.3]);
+  // La estimación con ±10 %, no el margen de la lectura (2026-11-20).
+  assert.deepEqual(s.bloques[0].altura, [1.4, 1.7]);
   assert.equal(s.bloques[0].fuenteAltura, "camara");
   assert.deepEqual(s.bloques[0].alturaModelo, [2.7, 3.3]);
   // 15:00 está a 2,5 h de la lectura: factor 1 + (0,5 - 1)·(1 - 2,5/18).
@@ -712,4 +713,17 @@ test("correlación de la estructura con la parte de mar de fondo del modelo", ()
   assert.equal(r.a.suficiente, true);
   assert.equal(r.a.lineas, 1);
   assert.ok(r.a.cerca > 0.9);
+});
+
+// Caso real (Sopelana, 2026-11-20): lectura 1,65 m con margen 0,8–3,3 (x4) y
+// modelo × coeficiente ~1,09: la ola enseñada queda a medio camino (~1,3 m)
+// con ±10 %, y el cociente para las horas siguientes se suaviza.
+test("lectura poco segura (margen x3 o más): vale la mitad y no enseña su margen", async () => {
+  const { aplicarCamarasASpots, lecturaPocoSegura } = await import("../functions/_lib/oleaje-camaras.js");
+  const lec = { fecha: "2026-10-08T10:30:00Z", estado: "ok", estimacion: 1.65, rangoMin: 0.8, rangoMax: 3.3, modeloCamara: 1.09 };
+  assert.equal(lecturaPocoSegura(lec), true);
+  const [s] = aplicarCamarasASpots([{ slug: "sopelana", bloques: [{ horaISO: "2026-10-08T12:00", altura: [1, 1.2] }] }], { sopelana: lec }, Date.parse("2026-10-08T11:00:00Z"));
+  const [a, b] = s.bloques[0].altura;
+  assert.ok(b - a <= 0.3 + 1e-9 && a >= 1.1 && b <= 1.5, `${a}-${b}`);
+  assert.ok(s.oleajeCamara.cociente < 1.3);
 });
