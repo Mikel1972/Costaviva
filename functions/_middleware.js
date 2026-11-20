@@ -24,7 +24,7 @@
 import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
-import { visitaAContar, contarVisita, conOrigenEnCta } from "./_lib/visitas.js";
+import { visitaAContar, conOrigenEnCta, conScriptVisita } from "./_lib/visitas.js";
 import { ORIGENES_IFRAME_NZ } from "../assets/js/camaras-nz.js";
 import { ORIGEN_IFRAME_WINDY } from "../assets/js/camaras-externas.js";
 import { conClaveLinz } from "./_lib/linz-basemaps.js";
@@ -43,9 +43,11 @@ export async function onRequest(context) {
   // agregado por día/página/fuente, en segundo plano y sin datos de la
   // persona (ver _lib/visitas.js). Nunca retrasa ni rompe la respuesta.
   try {
+    // Desde el 2026-11-20 no se cuenta aquí: se añade el script que la cuenta
+    // al cargarse en un navegador (functions/contar-visita.js), para que no
+    // cuenten los robots que se hacen pasar por navegadores.
     const visita = visitaAContar(request, original);
-    if (visita && context.waitUntil) context.waitUntil(contarVisita(visita, { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY }));
-    if (visita) original = conOrigenEnCta(original, visita, HTMLRewriter);
+    if (visita) original = conScriptVisita(conOrigenEnCta(original, visita, HTMLRewriter), HTMLRewriter);
   } catch { /* el contador nunca rompe la página */ }
   // Clave de LINZ Basemaps (satélite en NZ) desde la variable de Cloudflare
   // Pages, nunca desde el repo (_lib/linz-basemaps.js). Si falla, sin clave.
@@ -98,10 +100,10 @@ export function conNoindex(respuesta) {
 // cadenas que se metan con innerHTML), URLs javascript: y eval(). Usa
 // addEventListener.
 
-const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+export const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 // Clave anon: pública por diseño (va en todas las páginas). Solo puede
 // llamar a contar_visita_publica(), que suma 1 a un recuento agregado.
-const SUPABASE_ANON_KEY =
+export const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
 export function generarNonce() {

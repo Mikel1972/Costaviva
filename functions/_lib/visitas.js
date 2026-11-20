@@ -152,3 +152,38 @@ export function conOrigenEnCta(respuesta, visita, Rewriter) {
   if (cc) headers.set("cache-control", cc.replace(/\bpublic\b/, "private"));
   return new Response(reescrita.body, { status: reescrita.status, statusText: reescrita.statusText, headers });
 }
+
+// ---------------------------------------------------------------------------
+// Solo navegadores de verdad (2026-11-20, Mikel: «sí» a no contar robots).
+// Antes se contaba cada GET en el servidor y los robots que se hacen pasar
+// por un navegador normal inflaban "directo" (picos de 500-1.100 «visitas»
+// el día que se publican páginas nuevas). Ahora el middleware solo añade a
+// la página un <script> propio (assets/js/visita.js) y la visita se cuenta
+// cuando ese script se ejecuta en un navegador (los robots que no ejecutan
+// JavaScript no cuentan; los navegadores automatizados tampoco:
+// navigator.webdriver). El script manda solo la ruta y el document.referrer
+// a /contar-visita, que los pasa por EXACTAMENTE la misma decisión de
+// siempre (visitaAContar): mismas listas cerradas, nada de la persona.
+export const SCRIPT_VISITA = '<script src="/assets/js/visita.js" defer></script>';
+
+export function conScriptVisita(respuesta, Rewriter) {
+  return new Rewriter()
+    .on("body", { element(el) { el.append(SCRIPT_VISITA, { html: true }); } })
+    .transform(respuesta);
+}
+
+// Cuerpo de la baliza ({ ruta, referer }) -> datos a contar, o null.
+// Solo desde nuestra propia web (cabecera Origin) y con la misma lógica que
+// una visita servida.
+export function visitaDeBaliza(cuerpo, request) {
+  const url = new URL(request.url);
+  if ((request.headers.get("origin") || "") !== url.origin) return null;
+  const ruta = String(cuerpo?.ruta || "");
+  if (!ruta.startsWith("/") || ruta.startsWith("//") || ruta.length > 600) return null;
+  const referer = String(cuerpo?.referer || "").slice(0, 600);
+  const cabeceras = { "user-agent": request.headers.get("user-agent") || "", cookie: request.headers.get("cookie") || "" };
+  if (referer) cabeceras.referer = referer;
+  let pedida;
+  try { pedida = new Request(new URL(ruta, url.origin), { headers: cabeceras }); } catch { return null; }
+  return visitaAContar(pedida, { status: 200, headers: new Headers({ "content-type": "text/html" }) });
+}

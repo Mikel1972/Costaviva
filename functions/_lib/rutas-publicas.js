@@ -132,6 +132,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   // listado de tomas y teselas de una toma. Rutas exactas.
   "/lluvia/tomas",
   "/lluvia/toma",
+  "/contar-visita", // baliza del contador de visitas (2026-11-20)
 ]);
 
 // Prefijos públicos:
