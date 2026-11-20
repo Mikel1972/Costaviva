@@ -37,3 +37,25 @@ test("sedales: fichas de material con apartados desplegables y usos de costa y e
     assert.ok(f.fuentes.length >= 2, `${f.id}: al menos dos fuentes`);
   }
 });
+
+test("bajos: fichas desplegables con grosor y largo, costa y embarcación; el congrio en el acero", async () => {
+  const { paginaFicha } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  const bajos = datos.fichas.filter((f) => f.tema === "bajos");
+  assert.ok(bajos.length >= 7);
+  for (const f of bajos) {
+    const { html } = paginaFicha(datos, f);
+    for (const id of ["como-es", "medidas", "costa", "embarcacion", "ojo", "fuentes"]) assert.match(html, new RegExp(`<details class="tema bloque tarjeta" id="${id}">`), `${f.id} ${id}`);
+  }
+  assert.match(datos.fichas.find((f) => f.id === "sedal-acero").resumen, /congrio/);
+});
+
+test("nudos: apartados desplegables (paso a paso abierto)", async () => {
+  const { paginaFicha } = await import("../functions/_lib/seo/paginas-formacion.js");
+  const datos = JSON.parse(readFileSync("assets/datos/formacion.json", "utf8"));
+  for (const f of datos.fichas.filter((x) => x.tema === "nudos")) {
+    const { html } = paginaFicha(datos, f);
+    assert.match(html, /<details class="tema bloque tarjeta" id="pasos" open>/, f.id);
+    for (const id of ["resistencia", "bien-con", "ojo", "fuentes"]) assert.match(html, new RegExp(`id="${id}">`), `${f.id} ${id}`);
+  }
+});

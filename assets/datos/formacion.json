@@ -707,7 +707,7 @@
     "Cable"
    ],
    "para": "Bajos de cable de acero, simple o trenzado, a veces forrado de plástico.",
-   "resumen": "Para peces con dientes que cortan cualquier sedal: anjova, barracuda, espetón, lucio o tiburón.",
+   "resumen": "Para peces con dientes que cortan cualquier sedal: congrio, anjova, barracuda, espetón o tiburón.",
    "como_es": [
     "Ningún pez con dientes lo corta.",
     "Es rígido y visible: algunos peces desconfían y el señuelo pierde algo de movimiento.",
@@ -725,14 +725,16 @@
     }
    ],
    "usos_costa": [
+    "Pesca a fondo de congrio desde rocas, puertos y espigones: bajo de acero, o de nylon muy grueso si prefieres que el pez no lo note tanto.",
     "Spinning y fondo cuando entra anjova u otros peces con dientes.",
     "Un tramo corto (unos 15–30 cm) delante del señuelo o del anzuelo."
    ],
    "usos_embarcacion": [
-    "Curricán y spinning de depredadores con dientes (barracuda, espetón, túnidos pequeños dentados, tiburón).",
+    "Congrio sobre piedra y pecios, con bajo de acero o nylon muy grueso.",
+    "Curricán y spinning de depredadores con dientes (barracuda, espetón, tiburón).",
     "Bajos cortos sobre el señuelo, unidos con quitavueltas o mosquetón."
    ],
-   "ojo": "Úsalo solo cuando haya dientes: en el resto de casos espanta y resta picadas. Si no quieres acero, un fluorocarbono muy grueso aguanta algunos dientes pequeños.",
+   "ojo": "Úsalo solo cuando haya dientes: en el resto de casos espanta y resta picadas. Con congrio, muchos pescadores usan nylon muy grueso (de 130 lb para arriba) en vez de acero: el acero no lo cortan, pero si el pez se traga el anzuelo le hace más daño; con nylon revisa el roce tras cada pez.",
    "fuentes": [
     {
      "titulo": "On The Water: cómo elegir el material del bajo",
@@ -745,6 +747,14 @@
     {
      "titulo": "Shimano: guía de hilos para depredadores",
      "url": "https://fish.shimano.com/es-ES/content/c/fishing-line-guide/predator-lines.html"
+    },
+    {
+     "titulo": "Sea Angling Ireland: bajo para congrio (acero o nylon)",
+     "url": "https://www.sea-angling-ireland.org/forum/viewtopic.php?p=11386"
+    },
+    {
+     "titulo": "Sea Angler: congrio desde costa",
+     "url": "https://www.pressreader.com/uk/sea-angler-uk/20181018/282754882668798"
     }
    ],
    "consultada": "2026-11-20"
@@ -846,6 +856,382 @@
     {
      "titulo": "Fix.com: Do Fish See Line?",
      "url": "https://www.fix.com/blog/do-fish-see-line/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-brazoladas",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Bajo de brazoladas (paternoster)",
+   "otros_nombres": [
+    "Paternoster",
+    "Bajo de 2 o 3 anzuelos"
+   ],
+   "para": "Los anzuelos van en brazoladas cortas por encima del plomo, que queda abajo del todo.",
+   "resumen": "El bajo más usado a fondo: lleva varios cebos a la vez y los mantiene separados del fondo.",
+   "como_es": [
+    "El plomo va al final; las brazoladas salen del cuerpo del bajo con quitavueltas, perlas o nudos.",
+    "Lleva uno, dos o tres anzuelos: más cebos, más olor en el agua.",
+    "Al picar, el pez nota el peso del plomo y a menudo se clava solo.",
+    "Variante corrediza (running paternoster): el cuerpo corre por la línea madre y el pez nota menos."
+   ],
+   "medidas": [
+    "Los de surfcasting de dos brazoladas suelen medir unos 170–180 cm en total, con brazoladas de unos 70 cm.",
+    "Brazoladas cortas enredan menos al lanzar; largas mueven más el cebo con la corriente.",
+    "Brazoladas algo más finas que el cuerpo del bajo: si te enganchas, se rompe solo una."
+   ],
+   "usos_costa": [
+    "Surfcasting en playa: el bajo de playa por excelencia.",
+    "Fondo limpio o mixto para sargo, dorada, herrera, pez plano y similares.",
+    "En roca con mucha piedra, mejor con un tramo flojo para el plomo (que se rompa el plomo y no todo el bajo)."
+   ],
+   "usos_embarcacion": [
+    "Fondeo y deriva: varios anzuelos a distintas alturas del fondo.",
+    "Pesca de fondo variada (besugo, pageles, chicharros…)."
+   ],
+   "ojo": "Con mucho viento y lances largos, las brazoladas largas se enredan: usa clips para sujetarlas durante el lance.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: bajos para el bacalao (paternoster, polea, corredizo)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "Tackle Tactics: running paternoster",
+     "url": "https://tackletactics.com.au/blogs/learn-to-fish/running-paternoster-rig"
+    },
+    {
+     "titulo": "British Sea Fishing: cómo montar bajos de mar",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    },
+    {
+     "titulo": "Leurre de la Pêche: cómo se monta el surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    },
+    {
+     "titulo": "Bajo de surfcasting de dos brazoladas (ejemplo comercial)",
+     "url": "https://www.leurredelapeche.fr/es/14840-bajo-de-linea-surfcasting-sunset-rs-competition-multi-especies-fluoro.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-corredizo",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Bajo corredizo (plomo corredizo)",
+   "otros_nombres": [
+    "Running ledger",
+    "Montaje corredizo"
+   ],
+   "para": "El plomo corre libre por la línea madre, por encima de un quitavueltas; debajo va el bajo con el anzuelo.",
+   "resumen": "El pez coge el cebo y se lo lleva sin notar el peso del plomo: para peces grandes y desconfiados.",
+   "como_es": [
+    "Un plomo corredizo (o una grapa con plomo) pasa por la madre; una perla protege el nudo del quitavueltas.",
+    "Del quitavueltas sale el bajo, normalmente de un solo anzuelo.",
+    "Picada franca: el sedal corre por el plomo y se nota en la puntera."
+   ],
+   "medidas": [
+    "Bajo de 1 a 1,5 m para empezar en playa.",
+    "Más corriente, bajo más largo: el cebo se mueve más natural.",
+    "Plomo justo para que aguante el fondo con la corriente que haya."
+   ],
+   "usos_costa": [
+    "Lubina, dorada y peces grandes desde playa o roca.",
+    "Pesca a fondo nocturna con cebos grandes.",
+    "Congrio desde puerto o roca (con bajo resistente al corte)."
+   ],
+   "usos_embarcacion": [
+    "Fondeo en profundidad para peces grandes de fondo (congrio, abadejo, rayas).",
+    "Deriva lenta con un solo cebo grande."
+   ],
+   "ojo": "Si el plomo es muy ligero, la corriente lo arrastra y el bajo se enrolla en la madre: sube de plomo antes que alargar el bajo.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: bajos para el bacalao (paternoster, polea, corredizo)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "Sea Angling Ireland: paternoster o corredizo",
+     "url": "https://www.sea-angling-ireland.org/forum/viewtopic.php?p=30067"
+    },
+    {
+     "titulo": "British Sea Fishing: cómo montar bajos de mar",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    },
+    {
+     "titulo": "Leurre de la Pêche: cómo se monta el surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-polea",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Bajo de polea (pulley rig)",
+   "otros_nombres": [
+    "Pulley rig",
+    "Montaje polea"
+   ],
+   "para": "Un bajo en el que el plomo y el anzuelo van juntos al lanzar y, al picar el pez, el plomo sube por encima de él.",
+   "resumen": "Lanza lejos y protege el cebo al lanzar; al clavar, el plomo se aparta del pez y se engancha menos en la piedra.",
+   "como_es": [
+    "El cuerpo del bajo pasa por un quitavueltas (la «polea») unido a la madre.",
+    "Al lanzar, el anzuelo va pegado al plomo con un clip: más distancia y el cebo no se rompe.",
+    "Al pelear el pez, el plomo queda arriba y sube por encima de las piedras."
+   ],
+   "medidas": [
+    "Del orden de una caña de largo en total; el bajo hasta el anzuelo, de 60 cm a 1 m.",
+    "Cuerpo del bajo grueso (resistente al roce) y brazolada algo más fina."
+   ],
+   "usos_costa": [
+    "Surfcasting a distancia en playa limpia.",
+    "Fondos con piedra o algas para peces grandes: el plomo se engancha menos al recoger."
+   ],
+   "usos_embarcacion": [
+    "Poco habitual desde barco: en vertical no hace falta."
+   ],
+   "ojo": "El bajo trabaja doblado: revisa el roce del cuerpo en el quitavueltas cada pocas capturas.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: bajos para el bacalao (paternoster, polea, corredizo)",
+     "url": "https://www.seaangler.co.uk/fishing-tips/rigs/sea-fishing-rigs-best-cod-fishing-rigs/"
+    },
+    {
+     "titulo": "British Sea Fishing: cómo montar bajos de mar",
+     "url": "https://britishseafishing.co.uk/?p=3712"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-boya",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Bajo de boya (corcheo)",
+   "otros_nombres": [
+    "Corcheo",
+    "Boya corrediza",
+    "Float rig"
+   ],
+   "para": "El cebo cuelga de una boya a la profundidad que tú elijas; un tope en la madre marca hasta dónde baja.",
+   "resumen": "Para pescar a media agua o pegado a la piedra sin engancharte: sargo, lubina, mújol, maragota, caballa…",
+   "como_es": [
+    "Boya fija para poco fondo (hasta 1,5–2 m) o corrediza con tope y perla para más profundidad.",
+    "Plomos debajo de la boya hasta que asome solo la punta: así se nota hasta el toque más fino.",
+    "El bajo final suele ser más fino que la madre."
+   ],
+   "medidas": [
+    "Profundidad: empieza a un metro y ve bajando hasta que piquen; para maragota, que el cebo roce el fondo.",
+    "Boya más grande cuanto más mar y más profundidad.",
+    "Bajo final de 50 cm a 1 m."
+   ],
+   "usos_costa": [
+    "Espigones, puertos y rocas: a media agua junto a las algas.",
+    "Mújol y otras especies en agua tranquila, con boya pequeña.",
+    "Lubina con cebo vivo bajo la boya."
+   ],
+   "usos_embarcacion": [
+    "Al ancla o a la deriva lenta junto a la piedra, con boya.",
+    "Caballa y chicharro a media agua."
+   ],
+   "ojo": "La marea cambia la profundidad: reajusta el tope cada rato.",
+   "fuentes": [
+    {
+     "titulo": "Sea Angler: cómo usar una boya corrediza",
+     "url": "https://www.seaangler.co.uk/fishing-tips/how-to-use-a-sliding-float/"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca con boya",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: montar una boya corrediza",
+     "url": "https://planetseafishing.com/rigs-and-traces/sliding-float/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-carolina",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Bajo carolina",
+   "otros_nombres": [
+    "Carolina rig"
+   ],
+   "para": "Un plomo en la madre, un quitavueltas que lo para y un bajo con un anzuelo detrás.",
+   "resumen": "El plomo va arrastrando el fondo y el cebo o el vinilo flotan un poco por encima: muy bueno para peces de fondo que miran hacia arriba.",
+   "como_es": [
+    "Plomo de bala u oliva corriendo en la madre, una perla y el quitavueltas.",
+    "Bajo con un anzuelo; cebo natural o vinilo.",
+    "Se lanza y se recoge muy despacio, arrastrando el plomo."
+   ],
+   "medidas": [
+    "Bajo corto (unos 15–30 cm en las guías consultadas) para tener el cebo cerca del fondo; más largo para que se mueva más.",
+    "Plomo según profundidad y corriente."
+   ],
+   "usos_costa": [
+    "Peces planos (lenguado, rodaballo) y otros de fondo en arena, con recogida lenta.",
+    "Pesca con vinilo desde playa y desde roca con fondo limpio."
+   ],
+   "usos_embarcacion": [
+    "Deriva lenta sobre arena para peces planos."
+   ],
+   "ojo": "En piedra se engancha mucho: es un bajo de fondo limpio.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: el carolina en el mar",
+     "url": "https://www.saltwatersportsman.com/story/howto/carolina-rigs-for-saltwater/"
+    },
+    {
+     "titulo": "The Tackle Room: carolina en agua salada",
+     "url": "https://thetackleroom.com/blogs/news/how-to-fish-a-carolina-rig-in-saltwater"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-sabiki",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Sabiki (bajo de plumillas)",
+   "otros_nombres": [
+    "Sabiki",
+    "Bajo de plumas"
+   ],
+   "para": "Un bajo con muchos anzuelos pequeños vestidos con plumillas o brillos; el plomo va abajo.",
+   "resumen": "Sirve para pescar cebo vivo (caballa, chicharro, sardina, boga…) cuando hay bancos.",
+   "como_es": [
+    "De 6 a 10 anzuelos pequeños en brazoladas cortas.",
+    "No necesita cebo: los brillos bastan; algunos ponen un trocito.",
+    "Se baja hasta el banco y se sube y baja suave."
+   ],
+   "medidas": [
+    "Plomo justo para que baje despacio por el banco: con mucho plomo atraviesa el banco demasiado rápido.",
+    "Más plomo si se enreda: el bajo va más tenso."
+   ],
+   "usos_costa": [
+    "Puertos y espigones cuando entra la caballa o el chicharro.",
+    "Para tener cebo vivo para la lubina o el calamar."
+   ],
+   "usos_embarcacion": [
+    "Sobre bancos marcados en la sonda.",
+    "Antes de salir a pescar con vivo."
+   ],
+   "ojo": "Muchos anzuelos juntos: enreda y pincha. Desengancha con alicate y guárdalo en su tablilla. Respeta las tallas mínimas también con el cebo.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: qué es un sabiki y cómo se usa",
+     "url": "https://tacklevillage.com/sabiki-rigs/"
+    },
+    {
+     "titulo": "Mercury Marine: cebo vivo con sabiki",
+     "url": "https://www.mercurymarine.com/us/en/lifestyle/dockline/how-to-use-a-sabiki-rig-to-catch-bait"
+    },
+    {
+     "titulo": "Florida Sportsman: Sabiki sense",
+     "url": "https://floridasportsman.com/editorial/sabiki-sense/401301"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-spinning",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Bajo de spinning (leader)",
+   "otros_nombres": [
+    "Leader",
+    "Bajo de fluoro"
+   ],
+   "para": "Un tramo de fluorocarbono o nylon entre el trenzado y el señuelo.",
+   "resumen": "Protege del roce, esconde el trenzado y amortigua: el trenzado nunca va directo al señuelo.",
+   "como_es": [
+    "Se une al trenzado con un nudo fino (FG o Albright) y al señuelo con un nudo o un mosquetón.",
+    "Fluorocarbono en agua clara o con roca; nylon si quieres más elasticidad.",
+    "Si hay dientes, un tramo corto de acero al final."
+   ],
+   "medidas": [
+    "Largo: el nudo con el trenzado no debe entrar en las anillas al lanzar (o que pase por ellas con un nudo muy fino).",
+    "Agua clara, bajo más largo; agua turbia, puede ir más corto.",
+    "Grosor: más resistente que el trenzado no sirve de nada; con roca, un poco más grueso."
+   ],
+   "usos_costa": [
+    "Spinning de lubina, anjova y otros depredadores desde costa.",
+    "Pesca con vinilo y paseante en roca: el bajo es lo que roza."
+   ],
+   "usos_embarcacion": [
+    "Spinning y jigging desde barco.",
+    "Popping a túnidos y depredadores grandes con bajo grueso."
+   ],
+   "ojo": "Revisa los últimos centímetros tras cada pez o enganchón: el bajo se raja y es lo primero que rompe.",
+   "fuentes": [
+    {
+     "titulo": "Seaguar: largo del bajo de fluorocarbono",
+     "url": "https://seaguar.com/blogs/pro-tips/setting-the-length-of-your-fluorocarbon-leader-1"
+    },
+    {
+     "titulo": "AFTCO: cómo elegir grosor y resistencia del bajo",
+     "url": "https://www.aftco.com/blogs/saltwater-how-to/how-to-select-a-leader-size"
+    },
+    {
+     "titulo": "AFTCO: cuándo usar bajo de fluorocarbono",
+     "url": "https://www.aftco.com/blogs/tackle-how-to/when-why-you-should-use-a-fluorocarbon-leader"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "bajo-grosor-largo",
+   "tema": "bajos",
+   "tipo": "material",
+   "nombre": "Grosor y largo del bajo: cómo elegirlo",
+   "otros_nombres": [
+    "Grosor del bajo"
+   ],
+   "para": "Reglas prácticas para elegir el diámetro y la longitud del bajo según el agua, el fondo y el pez.",
+   "resumen": "El bajo es lo que ve el pez y lo que roza: más fino pica más, más grueso aguanta más. Se busca el equilibrio.",
+   "como_es": [
+    "Más fino que la línea madre (o las brazoladas más finas que el cuerpo): si se rompe, que sea solo el bajo.",
+    "El fluorocarbono es algo más fino que el nylon de la misma resistencia.",
+    "Con roca, conchas o peces de escamas o espinas duras, más grueso.",
+    "Más corriente, bajo más largo para que el cebo se mueva natural."
+   ],
+   "medidas": [
+    "Surfcasting en playa: puntas finales de fluorocarbono de 0,30–0,35 mm son habituales para peces medianos.",
+    "Agua clara y peces desconfiados: bajo más fino y más largo.",
+    "Agua turbia o de noche: puedes subir de grosor sin perder picadas."
+   ],
+   "usos_costa": [
+    "Playa limpia: bajo fino.",
+    "Roca y mejillón: bajo grueso o fluorocarbono.",
+    "Peces con dientes: acero o nylon muy grueso."
+   ],
+   "usos_embarcacion": [
+    "Fondo con piedra: brazoladas gruesas.",
+    "Agua muy clara en verano: fino y largo."
+   ],
+   "ojo": "Son guías, no reglas: el estado del sedal y el nudo pesan más que el grosor exacto.",
+   "fuentes": [
+    {
+     "titulo": "AFTCO: cómo elegir grosor y resistencia del bajo",
+     "url": "https://www.aftco.com/blogs/saltwater-how-to/how-to-select-a-leader-size"
+    },
+    {
+     "titulo": "Salt Water Sportsman: pescar con bajos largos",
+     "url": "https://saltwatersportsman.com/story/howto/how-to-fish-using-long-leaders"
+    },
+    {
+     "titulo": "Leurre de la Pêche: cómo se monta el surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    },
+    {
+     "titulo": "Seaguar: largo del bajo de fluorocarbono",
+     "url": "https://seaguar.com/blogs/pro-tips/setting-the-length-of-your-fluorocarbon-leader-1"
     }
    ],
    "consultada": "2026-11-20"

@@ -22,15 +22,18 @@ export function paginaIndiceFormacion(datos) {
   const tema = (id) => {
     const fs = fichasDeTema(datos, id);
     const nombre = datos.temas[id] || id;
-    if (!fs.length) return `<li><span class="nota">${esc(nombre)} · en preparación</span></li>`;
+    if (!fs.length) return `<li><div class="tema-vacio">${esc(nombre)} <span class="nota">· en preparación</span></div></li>`;
     // Desplegable (2026-11-20, Mikel: «como en cada línea va a haber muchos
     // campos, deben ser desplegables»): <details>, sin JavaScript.
-    return `<li><details class="tema"><summary><strong>${esc(nombre)}</strong> <span class="nota">(${fs.length})</span></summary><ul class="chips">${fs.map((f) => `<li><a href="/aprende/${esc(f.id)}">${esc(f.nombre)}</a></li>`).join("")}</ul></details></li>`;
+    // Tarjeta grande que se toca para abrir (Mikel: «cada línea del menú
+    // debe ser desplegable y, una vez abierto, ahí mostrar todos los nudos,
+    // anzuelos o lo que sea»).
+    return `<li><details class="tema bloque tarjeta"><summary><strong>${esc(nombre)}</strong> <span class="nota">(${fs.length})</span></summary><ul class="chips">${fs.map((f) => `<li><a href="/aprende/${esc(f.id)}">${esc(f.nombre)}</a></li>`).join("")}</ul></details></li>`;
   };
   const cuerpo = `${migasHtml(migas)}
 <h1>Aprende a pescar</h1>
 <p class="intro">Fichas cortas y prácticas para pescar mejor: qué es cada cosa, para qué sirve, con qué combina y cuándo no usarla. Cada ficha cita su fuente.</p>
-${datos.capitulos.map((c) => `<section aria-labelledby="t-${esc(c.id)}"><h2 id="t-${esc(c.id)}"><span aria-hidden="true">${esc(c.emoji)}</span> ${esc(c.nombre)}</h2><ul class="modos">${c.temas.map(tema).join("")}</ul></section>`).join("\n")}
+${datos.capitulos.map((c) => `<section aria-labelledby="t-${esc(c.id)}"><h2 id="t-${esc(c.id)}"><span aria-hidden="true">${esc(c.emoji)}</span> ${esc(c.nombre)}</h2><ul class="temas-aprende">${c.temas.map(tema).join("")}</ul></section>`).join("\n")}
 ${cta()}
 <p><a href="/especies">Especies →</a> · <a href="/spots">Spots →</a></p>`;
   return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("especies"), imagenAlt: "Aprende a pescar con Costaviva" }) };
@@ -41,7 +44,7 @@ ${cta()}
 // desplegables») y los usos van separados para costa y embarcación.
 function paginaMaterial(datos, f) {
   const ruta = `/aprende/${f.id}`;
-  const titulo = `${f.nombre}: características, colores y usos en costa y embarcación | Costaviva`;
+  const titulo = `${f.nombre}: ${f.colores?.length ? "características, colores" : "cómo es, grosor, largo"} y usos en costa y embarcación | Costaviva`;
   const descripcion = `${f.nombre}: ${f.para} ${f.resumen}`.slice(0, 300);
   const nombreTema = datos.temas[f.tema] || f.tema;
   const migas = [{ nombre: "Aprende", ruta: "/aprende" }, { nombre: f.nombre, ruta }];
@@ -58,6 +61,7 @@ ${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.m
 <p class="intro"><strong>Qué es:</strong> ${esc(f.para)} ${esc(f.resumen)}</p>
 ${f.como_es?.length ? bloque("como-es", "Cómo es", lista(f.como_es)) : ""}
 ${f.colores?.length ? bloque("colores", "🎨 Colores", `<ul>${f.colores.map((c) => `<li><strong>${esc(c.color)}:</strong> ${esc(c.para)}</li>`).join("")}</ul>`) : ""}
+${f.medidas?.length ? bloque("medidas", "📏 Grosor y largo", lista(f.medidas)) : ""}
 ${f.usos_costa?.length ? bloque("costa", "🪨 Desde costa", lista(f.usos_costa)) : ""}
 ${f.usos_embarcacion?.length ? bloque("embarcacion", "🚤 Desde embarcación", lista(f.usos_embarcacion)) : ""}
 ${f.ojo ? bloque("ojo", "⚠️ Ojo", `<p>${esc(f.ojo)}</p>`) : ""}
@@ -95,13 +99,13 @@ export function paginaFicha(datos, f) {
 ${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.map(esc).join(" · ")}</p>` : ""}
 <p class="intro"><strong>Para qué:</strong> ${esc(f.para)} ${esc(f.resumen)}</p>
 ${f.imagen ? `<figure class="tarjeta"><img src="${esc(f.imagen.src)}" alt="${esc(f.imagen.alt)}" loading="lazy" style="width:100%;height:auto;border-radius:10px"><figcaption class="nota">${esc(f.imagen.alt)}. Imagen: ${esc(f.imagen.autor)}, ${f.imagen.licencia_url ? `<a href="${esc(f.imagen.licencia_url)}" rel="noopener nofollow" target="_blank">${esc(f.imagen.licencia)}</a>` : esc(f.imagen.licencia)}, vía <a href="${esc(f.imagen.fuente_url)}" rel="noopener nofollow" target="_blank">Wikimedia Commons</a>.</figcaption></figure>` : ""}
-<section class="tarjeta" aria-labelledby="t-pasos"><h2 id="t-pasos">Paso a paso</h2>
+<details class="tema bloque tarjeta" id="pasos" open><summary><strong>Paso a paso</strong></summary>
 <ol>${f.pasos.map((p) => `<li>${esc(p)}</li>`).join("")}</ol>
-<p class="nota">Para verlo en movimiento: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">animación en ${esc(f.fuente.titulo.split(":")[0])}</a>.</p></section>
-${f.resistencia ? `<p><strong>Resistencia:</strong> ~${esc(f.resistencia.media_pct)} % de la del sedal <span class="nota">(media de ${f.resistencia.fuentes.length === 1 ? "una prueba publicada" : `${f.resistencia.fuentes.length} pruebas publicadas`}: ${f.resistencia.fuentes.map((u, i) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank">${i + 1}</a>`).join(", ")}; depende mucho del estado del sedal y de cómo se ate)</span></p>` : ""}
-${f.bien_con?.length ? `<p><strong>Va bien con:</strong> ${f.bien_con.map((s) => esc(NOMBRE_SEDAL[s] || s)).join(", ")}.</p>` : ""}
-${f.ojo ? `<section class="tarjeta aviso" aria-labelledby="t-ojo"><h2 id="t-ojo">Ojo</h2><p>${esc(f.ojo)}</p></section>` : ""}
-<p class="nota">Fuente: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">${esc(f.fuente.titulo)}</a> (consultada el ${esc(f.fuente.consultada)}). Texto propio de Costaviva.</p>
+<p class="nota">Para verlo en movimiento: <a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">animación en ${esc(f.fuente.titulo.split(":")[0])}</a>.</p></details>
+${f.resistencia ? `<details class="tema bloque tarjeta" id="resistencia"><summary><strong>💪 Resistencia: ~${esc(f.resistencia.media_pct)} %</strong></summary><p>Aguanta en torno al ${esc(f.resistencia.media_pct)} % de la resistencia del sedal <span class="nota">(media de ${f.resistencia.fuentes.length === 1 ? "una prueba publicada" : `${f.resistencia.fuentes.length} pruebas publicadas`}: ${f.resistencia.fuentes.map((u, i) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank">${i + 1}</a>`).join(", ")}; depende mucho del estado del sedal y de cómo se ate)</span></p></details>` : ""}
+${f.bien_con?.length ? `<details class="tema bloque tarjeta" id="bien-con"><summary><strong>🧵 Va bien con</strong></summary><p>${f.bien_con.map((s) => esc(NOMBRE_SEDAL[s] || s)).join(", ")}.</p></details>` : ""}
+${f.ojo ? `<details class="tema bloque tarjeta" id="ojo"><summary><strong>⚠️ Ojo</strong></summary><p>${esc(f.ojo)}</p></details>` : ""}
+<details class="tema bloque tarjeta" id="fuentes"><summary><strong>Fuente</strong></summary><p class="nota"><a href="${esc(f.fuente.url)}" rel="noopener nofollow" target="_blank">${esc(f.fuente.titulo)}</a> (consultada el ${esc(f.fuente.consultada)}). Texto propio de Costaviva.</p></details>
 ${hermanas.length ? `<section aria-labelledby="t-mas"><h2 id="t-mas">Más ${esc(nombreTema.toLowerCase())}</h2><ul class="chips">${hermanas.map((x) => `<li><a href="/aprende/${esc(x.id)}">${esc(x.nombre)}</a></li>`).join("")}</ul></section>` : ""}
 <p class="nota">Sirve para: ${capitulos.map((c) => `${esc(c.emoji)} ${esc(c.nombre.toLowerCase())}`).join(" · ")}</p>
 ${cta()}
