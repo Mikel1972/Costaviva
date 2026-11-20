@@ -89,10 +89,14 @@ function escribirSalida(lineas, indexadas, total, tabla = "", rendimiento = "") 
 // Best-effort: si falla, se dice en el propio texto y se sigue.
 async function rendimiento(sitio, cabecera) {
   const dia = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
-  async function consulta(dimensions, rowLimit) {
+  // fresco: dataState "all" (2026-11-20, Mikel: «¿no hay un dato de
+  // impresiones más reciente?»): incluye los últimos 1-2 días, que Search
+  // Console aún no ha cerrado (provisionales, pueden subir un poco).
+  async function consulta(dimensions, rowLimit, { fresco = false, desde = 28, hasta = 1 } = {}) {
+    const cuerpo = { startDate: dia(desde), endDate: dia(hasta), dimensions, rowLimit, ...(fresco ? { dataState: "all" } : {}) };
     const resp = await fetch(
       `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(sitio)}/searchAnalytics/query`,
-      { method: "POST", headers: cabecera, body: JSON.stringify({ startDate: dia(28), endDate: dia(1), dimensions, rowLimit }) }
+      { method: "POST", headers: cabecera, body: JSON.stringify(cuerpo) }
     );
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return (await resp.json()).rows || [];
@@ -101,10 +105,23 @@ async function rendimiento(sitio, cabecera) {
     const [total] = await consulta([], 1);
     const paginas = await consulta(["page"], 25);
     const busquedas = await consulta(["query"], 25);
+    // Día a día, con los datos más recientes (aún provisionales).
+    const porDia = await consulta(["date"], 40, { fresco: true, desde: 28, hasta: 0 }).catch(() => []);
     const fila = (r) => `${r.clicks} | ${r.impressions} | ${(r.ctr * 100).toFixed(1)}% | ${r.position.toFixed(1)}`;
     const ruta = (u) => u.replace(/^https?:\/\/[^/]+/, "") || "/";
     const l = ["", "## Rendimiento en Google (últimos 28 días)", ""];
     l.push(total ? `Total: ${total.clicks} clics, ${total.impressions} impresiones, CTR ${(total.ctr * 100).toFixed(1)}%, posición media ${total.position.toFixed(1)}.` : "Sin datos de búsqueda en estos 28 días.");
+    if (porDia.length) {
+      const final = dia(3);
+      l.push("", "### Día a día (lo más reciente que da Google)", "", "| Día | Clics | Impresiones | Posición |", "|---|---|---|---|");
+      for (const r of porDia.slice().sort((a, b) => b.keys[0].localeCompare(a.keys[0])).slice(0, 14)) {
+        l.push(`| ${r.keys[0]}${r.keys[0] > final ? " (provisional)" : ""} | ${r.clicks} | ${r.impressions} | ${r.position.toFixed(1)} |`);
+      }
+      const suma = (rs) => rs.reduce((t, r) => ({ c: t.c + r.clicks, i: t.i + r.impressions }), { c: 0, i: 0 });
+      const orden = porDia.slice().sort((a, b) => a.keys[0].localeCompare(b.keys[0]));
+      const ult = suma(orden.slice(-7)), prev = suma(orden.slice(-14, -7));
+      if (orden.length >= 14) l.push("", `Últimos 7 días: ${ult.c} clics y ${ult.i} impresiones (los 7 anteriores: ${prev.c} y ${prev.i}).`);
+    }
     if (paginas.length) {
       l.push("", "| Página | Clics | Impresiones | CTR | Posición |", "|---|---|---|---|---|");
       for (const r of paginas) l.push(`| ${ruta(r.keys[0])} | ${fila(r)} |`);
