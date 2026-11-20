@@ -108,7 +108,7 @@ function CABECERA_PIE_EN(cuerpo, pie) {
   return `<header class="cabecera-publica">
   <a class="enlace-marca" href="/en/spots" aria-label="Costaviva, home">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Sections">
-    <a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a>
+    <a href="/">🗺️ Map</a><a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a>
   </nav>
 </header>
 <main class="contenido">
@@ -125,7 +125,7 @@ function CABECERA_PIE_PT(cuerpo) {
   return `<header class="cabecera-publica">
   <a class="enlace-marca" href="/pt/spots/region/portugal" aria-label="Costaviva, início">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secções">
-    <a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a>
+    <a href="/">🗺️ Mapa</a><a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a>
   </nav>
 </header>
 <main class="contenido">
@@ -179,7 +179,7 @@ ${ld.map(jsonLd).join("\n")}
 ${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : idioma === "pt" ? CABECERA_PIE_PT(cuerpo) : `<header class="cabecera-publica">
   <a class="enlace-marca" href="/" aria-label="Costaviva, inicio">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secciones">
-    <a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a><a href="/aprende">Aprende</a>
+    <a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a><a href="/aprende">Aprende</a>
   </nav>
 </header>
 <main class="contenido">
