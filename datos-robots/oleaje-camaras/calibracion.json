@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-20T14:37:47.996Z",
- "lineasHistorial": 11910,
+ "fecha": "2026-11-20T15:07:55.676Z",
+ "lineasHistorial": 11921,
  "etiquetas": 1240,
  "etiquetasClaude": 252,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.106
   },
   "zarautz/dinamico": {
-   "a": 2.964,
+   "a": 2.9647,
    "p": 0.5,
-   "n": 948,
+   "n": 949,
    "nEtiquetas": 196,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -109,9 +109,9 @@
    "correlacion": -0.559
   },
   "zumaia/a": {
-   "a": 4.0008,
+   "a": 3.9825,
    "p": 0.5,
-   "n": 97,
+   "n": 98,
    "nEtiquetas": 12,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -126,12 +126,12 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.217
+   "correlacion": 0.216
   },
   "deba/rompiente": {
-   "a": 3.5687,
+   "a": 3.564,
    "p": 0.5,
-   "n": 307,
+   "n": 308,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.298
+   "correlacion": 0.297
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -266,9 +266,9 @@
    "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.9165,
+   "a": 2.9171,
    "p": 0.5,
-   "n": 478,
+   "n": 479,
    "nEtiquetas": 102,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -515,7 +515,7 @@
    "motivo": "204 etiquetas",
    "ruido": {
     "ruido": 0.575,
-    "pares": 649
+    "pares": 650
    }
   },
   "getaria": {
@@ -530,16 +530,16 @@
    "sustituye": true,
    "motivo": "13 etiquetas",
    "ruido": {
-    "ruido": 0.659,
-    "pares": 40
+    "ruido": 0.635,
+    "pares": 41
    }
   },
   "deba": {
    "sustituye": true,
    "motivo": "53 etiquetas",
    "ruido": {
-    "ruido": 0.961,
-    "pares": 123
+    "ruido": 0.942,
+    "pares": 124
    }
   },
   "mutriku": {
@@ -578,8 +578,8 @@
    "sustituye": true,
    "motivo": "102 etiquetas",
    "ruido": {
-    "ruido": 0.781,
-    "pares": 209
+    "ruido": 0.79,
+    "pares": 210
    }
   },
   "castrourdiales": {
@@ -617,16 +617,16 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 12,
+   "n": 13,
    "suficiente": false,
-   "lineas": 0.138,
-   "cerca": -0.359
+   "lineas": 0.197,
+   "cerca": -0.292
   },
   "sopelana": {
-   "n": 6,
+   "n": 7,
    "suficiente": false,
-   "lineas": -0.655,
-   "cerca": 0.655
+   "lineas": -0.612,
+   "cerca": 0.408
   },
   "castrourdiales": {
    "n": 1,
@@ -647,10 +647,10 @@
    "cerca": null
   },
   "zumaia": {
-   "n": 6,
+   "n": 7,
    "suficiente": false,
-   "lineas": -0.278,
-   "cerca": -0.247
+   "lineas": 0,
+   "cerca": -0.239
   },
   "nz-napier": {
    "n": 2,
