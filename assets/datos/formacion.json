@@ -29,6 +29,7 @@
     "bajos",
     "anzuelos",
     "quitavueltas-perlas-topes",
+    "senuelos-spinning",
     "jigs-vinilos",
     "currican",
     "fondeo-deriva",
@@ -2750,6 +2751,534 @@
      "para": "De noche y con poca luz: la silueta se ve mejor contra la superficie."
     }
    ]
+  },
+  {
+   "id": "cana-partes",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "La caña: partes y cómo leer sus datos",
+   "otros_nombres": [
+    "Partes de la caña"
+   ],
+   "para": "Qué es cada parte de una caña y qué significan los números que lleva impresos.",
+   "resumen": "Toda caña tiene lo mismo: el tubo (blank), las anillas, el portacarrete y la empuñadura. Lo que cambia entre una de surfcasting y una de jigging es la longitud, la potencia, la acción y el peso de lance.",
+   "como_es": [
+    "Blank: el tubo de la caña (carbono, fibra de vidrio o mezcla). El carbono es más ligero y sensible; la fibra, más resistente a golpes.",
+    "Anillas (guías): llevan el sedal; el anillo interior tiene que estar liso, sin grietas.",
+    "Portacarrete: donde se atornilla el carrete; distinto para carrete frontal o de tambor giratorio.",
+    "Empuñadura: corcho o EVA; larga en cañas de lance para hacer palanca.",
+    "Puntera: el último tramo; marca la picada.",
+    "Potencia: la fuerza que hace falta para doblarla (ligera, media, pesada): manda el tamaño del pez y del sedal.",
+    "Acción: dónde se dobla. Rápida: solo la punta (sensible, clava rápido). Moderada o lenta: se dobla hasta abajo (perdona más, amortigua).",
+    "Peso de lance (p. ej. 10–40 g o 100–200 g): el peso del señuelo o plomo que lanza bien. Fuera de ese rango lanza mal o se puede romper.",
+    "Tramos: de enchufe (mejor acción) o telescópica (cómoda para llevar)."
+   ],
+   "medidas": [
+    "Caña larga: lanza más lejos. Corta: más precisa y más fuerza para pelear.",
+    "El peso de lance de la caña tiene que cubrir el de tus señuelos o plomos."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Surfcasting: largas y potentes.",
+    "Spinning: medias y sensibles."
+   ],
+   "usos_embarcacion": [
+    "Barco: más cortas y de más potencia."
+   ],
+   "ojo": "No lances por encima del peso de lance que marca la caña: es la forma más común de romperla.",
+   "fuentes": [
+    {
+     "titulo": "Academy: partes de una caña de pescar",
+     "url": "https://www.academy.com/expert-advice/parts-of-a-fishing-rod"
+    },
+    {
+     "titulo": "Okuma: anatomía de una caña",
+     "url": "https://okumafishingusa.com/blogs/news/anatomy-of-a-fishing-rod-okuma-tune-up-tuesday"
+    },
+    {
+     "titulo": "West Marine: elegir una caña",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    },
+    {
+     "titulo": "Salt Water Sportsman: cómo elegir la caña de mar",
+     "url": "https://www.saltwatersportsman.com/find-right-fishing-rod/"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "carrete-partes",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "El carrete: tipos y partes",
+   "otros_nombres": [
+    "Partes del carrete"
+   ],
+   "para": "Los tipos de carrete y qué significa cada dato: tamaño, ratio y freno.",
+   "resumen": "En mar se usan sobre todo dos: el carrete frontal (spinning), fácil y universal, y el de tambor giratorio (multiplicador), más fuerte para barco y curricán.",
+   "como_es": [
+    "Frontal (spinning): la bobina no gira; el hilo sale por delante. El más fácil y el que se usa en surfcasting y spinning.",
+    "Tambor giratorio (multiplicador, «de barco»): la bobina gira; más potencia y aguante para barco, jigging pesado y curricán.",
+    "Bobina: donde va el hilo; las de surfcasting son largas y cónicas para lanzar lejos.",
+    "Freno: deja salir hilo cuando el pez tira más de lo que aguanta el sedal. Delantero (más fino y fuerte) o trasero.",
+    "Ratio (p. ej. 5,7:1): vueltas del rotor por cada vuelta de manivela. Pero el hilo que recoges depende también del diámetro de la bobina.",
+    "Asa (pick-up): el arco que recoge el hilo en el carrete frontal."
+   ],
+   "medidas": [
+    "El tamaño (1000, 2500, 4000, 10000…) no es igual entre marcas; dentro de una marca, más número es más grande.",
+    "En los datos mira el freno máximo y la capacidad de hilo."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Spinning: frontal de tamaño medio.",
+    "Surfcasting: frontal grande de bobina larga."
+   ],
+   "usos_embarcacion": [
+    "Jigging pesado, fondo profundo y curricán: tambor giratorio o frontal grande de mar."
+   ],
+   "ojo": "En mar, que sea un carrete preparado para agua salada: los de agua dulce se oxidan enseguida.",
+   "fuentes": [
+    {
+     "titulo": "West Marine: elegir un carrete de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "FishingBooker: carretes de spinning de mar",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "Bass Resource: guía de carretes de spinning",
+     "url": "https://bassresource.com/fishing/spinning-reels-buyers-guide.html"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "carrete-tamanos",
+   "tema": "canas-costa",
+   "tambien_en": [
+    "canas-barco"
+   ],
+   "tipo": "material",
+   "nombre": "Tamaño del carrete: cuándo un 2500, un 3000, un 5000…",
+   "otros_nombres": [
+    "Tamaños de carrete"
+   ],
+   "para": "Qué tamaño de carrete frontal elegir según la pesca.",
+   "resumen": "El número del carrete indica su tamaño y la cantidad de hilo que cabe. Regla práctica: más pequeño cuanto más fino el hilo y más ligeros los señuelos; más grande para lanzar lejos, hilos gruesos y peces que tiran mucho.",
+   "como_es": [
+    "Dentro de una marca, más número = carrete más grande, más hilo y más freno.",
+    "Entre marcas no es igual: un 4000 de una puede ser bastante más pequeño que el 4000 de otra. Compara la capacidad de hilo y el freno máximo.",
+    "Daiwa normalizó sus tamaños LT (diámetro de bobina) en 1000, 2000, 2500, 3000, 4000, 5000 y 6000.",
+    "El carrete tiene que equilibrar la caña: uno muy grande en una caña ligera cansa la muñeca."
+   ],
+   "por_especie_titulo": "🎣 Qué tamaño para cada pesca",
+   "por_especie": [
+    {
+     "pez": "Pesca ligera en puerto (LRF), peces pequeños",
+     "tam": "1000–2000",
+     "nota": "hilos muy finos"
+    },
+    {
+     "pez": "Spinning ligero de lubina, corcheo",
+     "tam": "2500–3000",
+     "nota": "el más versátil para empezar"
+    },
+    {
+     "pez": "Spinning de lubina grande, anjova, señuelos más pesados",
+     "tam": "4000",
+     "nota": "más hilo y freno"
+    },
+    {
+     "pez": "Shore jigging, spinning pesado, fondo ligero desde barco",
+     "tam": "5000–6000",
+     "nota": ""
+    },
+    {
+     "pez": "Surf y jigging pesado desde barco",
+     "tam": "6000–10000",
+     "nota": ""
+    },
+    {
+     "pez": "Surfcasting a distancia",
+     "tam": "10000–14000 de bobina larga (long cast)",
+     "nota": "hay cañas de surfcasting que recomiendan 5000–10000"
+    }
+   ],
+   "medidas": [
+    "Mira siempre la capacidad (metros de hilo de un grosor dado) y el freno máximo del modelo concreto.",
+    "Con trenzado cabe mucho más hilo que con nylon en el mismo carrete."
+   ],
+   "medidas_titulo": "📏 Qué mirar al comprar",
+   "usos_costa": [
+    "Spinning: 2500–4000.",
+    "Surfcasting: 5000–14000 de bobina larga."
+   ],
+   "usos_embarcacion": [
+    "Fondo y spinning desde barco: 4000–6000.",
+    "Jigging pesado: 6000–10000 o carretes de tambor giratorio."
+   ],
+   "ojo": "El número es orientativo: dos «4000» de marcas distintas pueden tener capacidades muy diferentes. Las tablas de las guías son de pesca en EE. UU., tómalas como punto de partida.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tamaños de carrete de spinning (con tablas)",
+     "url": "https://tacklevillage.com/?p=1010135"
+    },
+    {
+     "titulo": "FishingBooker: carretes de spinning de mar",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "West Marine: elegir un carrete de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "Daiwa: tamaños LT (diámetros de bobina normalizados)",
+     "url": "https://daiwafishing.com.au/light-tough/"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: caña de surfcasting con carrete 5000–10000",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: carretes 14000",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "carrete-freno",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "El freno del carrete: cómo ajustarlo",
+   "otros_nombres": [
+    "Ajustar el freno"
+   ],
+   "para": "Cuánto apretar el freno para no partir el sedal ni dejar escapar al pez.",
+   "resumen": "La regla general es ajustarlo a una cuarta parte, más o menos, de lo que aguanta el sedal (o el bajo, si es más débil). Con trenzado, algo menos.",
+   "como_es": [
+    "Se mide con un dinamómetro (o una báscula de equipaje) tirando del hilo pasado por las anillas, con la caña doblada.",
+    "Con nylon: en torno al 20 % del sedal en líneas finas y al 25–30 % en líneas gruesas.",
+    "Con trenzado: menos (del 15 al 25 %), porque no estira y el golpe llega entero.",
+    "Se calcula sobre el eslabón más débil: el bajo, el nudo o la caña."
+   ],
+   "medidas": [
+    "Ejemplo: bajo de 10 kg → freno en torno a 2–2,5 kg."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Spinning con trenzado fino: freno suave, el bajo es el que manda.",
+    "Surfcasting: algo más apretado para clavar a distancia, sin pasarse."
+   ],
+   "usos_embarcacion": [
+    "Jigging y curricán: se ajusta antes de empezar y no se toca a ciegas con el pez enganchado."
+   ],
+   "ojo": "No aprietes el freno a mano mientras el pez tira: es cuando más sedales se rompen. Las fuentes no se ponen de acuerdo en si aflojarlo al guardar el carrete.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: cómo usar el freno del carrete",
+     "url": "https://www.saltwatersportsman.com/how-to-manage-your-drag"
+    },
+    {
+     "titulo": "Salt Water Sportsman: ¿cuánto freno usar?",
+     "url": "https://www.saltwatersportsman.com/?p=58503"
+    },
+    {
+     "titulo": "George Poveromo: cómo manejar el freno",
+     "url": "https://georgepoveromo.com/how_to_manage_your_drag.html"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "cana-carrete-mantenimiento",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Mantenimiento de cañas y carretes",
+   "otros_nombres": [
+    "Limpieza del equipo"
+   ],
+   "para": "Cómo cuidar el equipo después de pescar en el mar para que dure años.",
+   "resumen": "La sal es el enemigo: un enjuague suave con agua dulce después de cada salida, secar bien y una gota de lubricante evitan casi todas las averías.",
+   "como_es": [
+    "Después de cada salida: enjuaga caña y carrete con agua dulce suave, en lluvia o con un paño. Nunca a presión ni sumergido: mete la sal dentro.",
+    "Seca todo bien antes de guardarlo; no lo guardes en la funda mojada.",
+    "Revisa las anillas: pasa un bastoncillo de algodón; si se engancha, hay una grieta que cortará el hilo.",
+    "Limpia el portacarrete, donde se acumula la sal.",
+    "De vez en cuando, una capa fina de protector anticorrosión o lubricante en las partes metálicas exteriores (nunca en el freno).",
+    "Una vez al año, revisión del carrete en una tienda o desmontándolo si sabes."
+   ],
+   "medidas": [
+    "Enjuague: cada salida. Revisión completa: una vez al año (o antes si suena o gira duro)."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Tras pescar en playa, la arena: enjuaga también el asa y el rotor del carrete."
+   ],
+   "usos_embarcacion": [
+    "En barco el agua salpica todo el día: enjuague al volver siempre."
+   ],
+   "ojo": "No uses jabón fuerte ni disolventes en el carrete: quitan la grasa de dentro. Y no metas aceite en el freno.",
+   "fuentes": [
+    {
+     "titulo": "Mercury Marine: cómo limpiar los carretes",
+     "url": "https://mercurymarine.com/ch/fr/dockline/how-to-clean-fishing-reels"
+    },
+    {
+     "titulo": "Texas Parks and Wildlife: mantenimiento del equipo de pesca (PDF)",
+     "url": "https://tpwd.texas.gov/education/angler-education/fishing-gear-maintenance-and-repair.pdf"
+    },
+    {
+     "titulo": "Pure Fishing: limpiar y guardar el equipo de mar",
+     "url": "https://www.purefishing.com/dock-talk-April-2023-cleaning-and-storing-saltwater-fishing-gear"
+    },
+    {
+     "titulo": "BoatUS: cuidado de las cañas",
+     "url": "https://boatus.geico.com/expert-advice/expert-advice-archive/2015/april/fishing-rod-care"
+    },
+    {
+     "titulo": "Marlin: mantenimiento de carretes",
+     "url": "https://www.marlinmag.com/howto/fishing-reel-maintenance-aftermarket-performance-tweaks/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: cómo limpiar los carretes",
+     "url": "https://www.saltwatersportsman.com/spinning-reels-maintenance/"
+    }
+   ],
+   "consultada": "2026-11-20",
+   "tambien_en": [
+    "canas-barco"
+   ]
+  },
+  {
+   "id": "equipo-surfcasting",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Equipo de surfcasting",
+   "otros_nombres": [
+    "Caña de surfcasting"
+   ],
+   "para": "Caña y carrete para lanzar lejos desde la playa con plomo y cebo.",
+   "resumen": "Cañas largas (unos 4,20–4,50 m) y potentes, con carretes grandes de bobina larga para lanzar lejos.",
+   "como_es": [
+    "Caña larga de acción para lanzar fuerte; empuñadura larga.",
+    "Carrete frontal grande de bobina larga y cónica (long cast).",
+    "Línea madre fina para volar más y una punta de lanza (shock leader) que aguante el golpe del lance."
+   ],
+   "medidas": [
+    "Caña: 4,20–4,50 m; peso de lance habitual 100–200 g (óptimo en torno a 130 g en algunos modelos).",
+    "Carrete: tamaños 5000–14000 de bobina larga.",
+    "Línea madre en torno a 0,14–0,35 mm según caña y modalidad, con punta de lanza más gruesa."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Playas: pesca a fondo de sargo, dorada, lubina, herrera, peces planos.",
+    "Con corriente o mar de fondo, plomo de grapa del peso que aguante la caña."
+   ],
+   "usos_embarcacion": [
+    "No se usa desde barco."
+   ],
+   "ojo": "Lanzar un plomo más pesado que lo que marca la caña la puede partir; y sin punta de lanza, el golpe del lance revienta la madre fina.",
+   "fuentes": [
+    {
+     "titulo": "Caperlan Symbios 500: caña de surfcasting 4,20 m 100–200 g y carrete 5000–10000",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: 4,50 m 100–200 g",
+     "url": "https://www.decathlon.ie/p/338548-281436-surfcasting-fishing-rod-symbios-500-450-100-200-gr.html"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: 4,20 m, 150–200 g, carretes 14000",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-spinning-costa",
+   "tema": "canas-costa",
+   "tipo": "material",
+   "nombre": "Equipo de spinning desde costa",
+   "otros_nombres": [
+    "Caña de spinning"
+   ],
+   "para": "Caña y carrete para lanzar señuelos desde roca y playa.",
+   "resumen": "Caña ligera y sensible con carrete frontal mediano y trenzado: hay que lanzar miles de veces, así que el peso cuenta.",
+   "como_es": [
+    "Caña de acción rápida o semirrápida: sensible y que clave bien a distancia.",
+    "Carrete frontal mediano con buen freno.",
+    "Trenzado fino con bajo de fluorocarbono."
+   ],
+   "medidas": [
+    "Peso de lance que cubra tus señuelos (por ejemplo 10–40 g para señuelos de 10–30 g).",
+    "Carrete de tamaño 3000–4000 (4000 para señuelos y peces más grandes).",
+    "En roca y playa se usan cañas más largas que las de agua dulce: lanzan más y controlan el señuelo sobre olas y piedras."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Lubina, anjova, caballa desde roca y playa.",
+    "Shore jigging con jigs de 20–60 g: caña más potente."
+   ],
+   "usos_embarcacion": [
+    "La misma caña sirve para lanzar desde el barco a la piedra."
+   ],
+   "ojo": "Una caña muy dura con señuelos ligeros no carga y lanza poco: ajusta el peso de lance a lo que más uses.",
+   "fuentes": [
+    {
+     "titulo": "Bass Resource: combinaciones de spinning",
+     "url": "https://www.bassresource.com/fishing/spinning-outfits.html"
+    },
+    {
+     "titulo": "Outdoor Life: cañas de spinning de mar",
+     "url": "https://www.outdoorlife.com/gear/best-inshore-spinning-rods.md"
+    },
+    {
+     "titulo": "West Marine: elegir un carrete de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-jigging",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Equipo de jigging (barco)",
+   "otros_nombres": [
+    "Caña de jigging",
+    "Slow pitch"
+   ],
+   "para": "Caña y carrete para pescar con jigs metálicos en vertical desde el barco.",
+   "resumen": "Cañas cortas, potentes y ligeras. En jigging rápido, puntera rápida; en slow pitch, cañas más parabólicas que hacen bailar el jig al caer.",
+   "como_es": [
+    "Caña corta y con espina para levantar al pez del fondo.",
+    "Jigging rápido: acción rápida.",
+    "Slow pitch: caña algo más larga y blanda que da movimiento al jig.",
+    "Carrete de tambor giratorio o frontal de mar con freno fuerte; trenzado multicolor."
+   ],
+   "medidas": [
+    "Cañas cortas (en torno a 1,8–2,1 m) para trabajar en vertical.",
+    "Peso de jig según profundidad y corriente."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "Shore jigging: ver «Equipo de spinning desde costa» (caña más larga)."
+   ],
+   "usos_embarcacion": [
+    "Jigging vertical y slow pitch sobre piedra y pecios."
+   ],
+   "ojo": "Un jig más pesado que el que marca la caña la sobrecarga: cambia de caña antes que de jig.",
+   "fuentes": [
+    {
+     "titulo": "FishingBooker: cañas de pesca en altura",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    },
+    {
+     "titulo": "Salt Water Sportsman: elegir la caña adecuada",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "Mustad: slow pitch jigging",
+     "url": "https://mustad-fishing.com/us/article/get-in-on-the-slow-pitch-jig-craze"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-currican",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Equipo de curricán",
+   "otros_nombres": [
+    "Caña de curricán",
+    "Trolling"
+   ],
+   "para": "Caña y carrete para arrastrar señuelos o cebos desde el barco en marcha.",
+   "resumen": "Cañas cortas y robustas, de acción más lenta, y carretes de tambor giratorio con mucho hilo.",
+   "como_es": [
+    "Caña corta y fuerte; acción lenta o moderada para que el pez coja el señuelo antes de notar la caña.",
+    "Carrete de tambor giratorio con gran capacidad y freno de palanca o de estrella.",
+    "Portacañas en el barco: la caña trabaja sola hasta la picada."
+   ],
+   "medidas": [
+    "Cañas más cortas que las de lance: aquí manda la fuerza, no la distancia."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "No se usa desde costa."
+   ],
+   "usos_embarcacion": [
+    "Curricán de superficie (bonito, caballa, anjova) y de fondo con línea de plomo."
+   ],
+   "ojo": "Ajusta el freno antes de soltar: con el barco en marcha la picada es un tirón brusco.",
+   "fuentes": [
+    {
+     "titulo": "West Marine: elegir una caña",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    },
+    {
+     "titulo": "Salt Water Sportsman: elegir la caña adecuada",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "FishingBooker: cañas de pesca en altura",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "equipo-fondo-barco",
+   "tema": "canas-barco",
+   "tipo": "material",
+   "nombre": "Equipo de fondo desde barco",
+   "otros_nombres": [
+    "Caña de barco"
+   ],
+   "para": "Caña y carrete para pescar con cebo al ancla o a la deriva.",
+   "resumen": "Caña de longitud media con puntera sensible para ver la picada y espina para sacar el pez del fondo.",
+   "como_es": [
+    "Puntera sensible para notar la picada en profundidad.",
+    "Espina potente para despegar el pez de la piedra.",
+    "Carrete frontal de mar o de tambor giratorio, según profundidad y plomo."
+   ],
+   "medidas": [
+    "Longitud media; en barcos pequeños, más corta para manejarla bien."
+   ],
+   "medidas_titulo": "📏 Medidas típicas",
+   "usos_costa": [
+    "No se usa desde costa (desde costa, ver surfcasting)."
+   ],
+   "usos_embarcacion": [
+    "Fondeo y deriva con bajos de brazoladas: besugo, pageles, chicharro, congrio, abadejo."
+   ],
+   "ojo": "En profundidad, el trenzado transmite mucho mejor la picada que el nylon.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: elegir la caña adecuada",
+     "url": "https://www.saltwatersportsman.com/?p=52202"
+    },
+    {
+     "titulo": "FishingBooker: cañas de pesca en altura",
+     "url": "https://fishingbooker.com/blog/deep-sea-fishing-rods"
+    },
+    {
+     "titulo": "West Marine: elegir una caña",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Fishing-Rod.html"
+    }
+   ],
+   "consultada": "2026-11-20"
   }
  ],
  "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."

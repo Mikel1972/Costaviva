@@ -11,7 +11,9 @@ import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, imagenOg } from "
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
 const NOMBRE_SEDAL = { nylon: "nylon", fluorocarbono: "fluorocarbono", trenzado: "trenzado" };
 
-const fichasDeTema = (datos, tema) => datos.fichas.filter((f) => f.tema === tema);
+// Una ficha puede salir en más de un tema (p. ej. las partes de la caña, en
+// costa y en barco) con `tambien_en`.
+const fichasDeTema = (datos, tema) => datos.fichas.filter((f) => f.tema === tema || f.tambien_en?.includes(tema));
 
 export function paginaIndiceFormacion(datos) {
   const ruta = "/aprende";
@@ -62,7 +64,7 @@ ${f.otros_nombres?.length ? `<p class="cientifico">También: ${f.otros_nombres.m
 ${f.como_es?.length ? bloque("como-es", "Cómo es", lista(f.como_es)) : ""}
 ${f.colores?.length ? bloque("colores", "🎨 Colores", `<ul>${f.colores.map((c) => `<li><strong>${esc(c.color)}:</strong> ${esc(c.para)}</li>`).join("")}</ul>`) : ""}
 ${f.pasarse?.length ? bloque("pasarse", "🎯 El tamaño justo: no te pases", f.pasarse.map((x) => `<p>${esc(x)}</p>`).join("")) : ""}
-${f.por_especie?.length ? bloque("por-especie", "🐟 Qué tamaño para cada pez", `<table class="tabla-especies"><thead><tr><th>Pez</th><th>Anzuelo</th></tr></thead><tbody>${f.por_especie.map((e) => `<tr><td>${esc(e.pez)}</td><td><strong>${esc(e.tam)}</strong>${e.nota ? `<br><span class="nota">${esc(e.nota)}</span>` : ""}</td></tr>`).join("")}</tbody></table><p class="nota">Orientativo: cada marca numera a su manera. Empieza por aquí y ajusta con el cebo.</p>`) : ""}
+${f.por_especie?.length ? bloque("por-especie", esc(f.por_especie_titulo || "🐟 Qué tamaño para cada pez"), `<table class="tabla-especies"><thead><tr><th>${f.tema === "anzuelos" ? "Pez" : "Pesca"}</th><th>${f.tema === "anzuelos" ? "Anzuelo" : "Tamaño"}</th></tr></thead><tbody>${f.por_especie.map((e) => `<tr><td>${esc(e.pez)}</td><td><strong>${esc(e.tam)}</strong>${e.nota ? `<br><span class="nota">${esc(e.nota)}</span>` : ""}</td></tr>`).join("")}</tbody></table><p class="nota">Orientativo: cada marca numera a su manera.${f.tema === "anzuelos" ? " Empieza por aquí y ajusta con el cebo." : ""}</p>`) : ""}
 ${f.medidas?.length ? bloque("medidas", esc(f.medidas_titulo || "📏 Grosor y largo"), lista(f.medidas)) : ""}
 ${f.usos_costa?.length ? bloque("costa", "🪨 Desde costa", lista(f.usos_costa)) : ""}
 ${f.usos_embarcacion?.length ? bloque("embarcacion", "🚤 Desde embarcación", lista(f.usos_embarcacion)) : ""}
