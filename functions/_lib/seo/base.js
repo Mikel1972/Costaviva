@@ -60,11 +60,13 @@ export function migasJsonLd(migas) {
 
 export function migasHtml(migas, idioma = "es") {
   const etiqueta = { en: "Breadcrumb", pt: "Navegação estrutural" }[idioma] || "Migas de pan";
-  // «Atrás» siempre (2026-11-20, Mikel: «siempre tiene que haber una de
-  // atrás»): a la página de arriba en las migas; en la primera, al mapa.
-  const arriba = migas.length > 1 ? migas[migas.length - 2] : { nombre: { en: "Map", pt: "Mapa" }[idioma] || "Mapa", ruta: "/" };
+  // «Atrás» (2026-11-20, Mikel: «siempre tiene que haber una de atrás») a la
+  // página de arriba en las migas. En la primera no: llevaría al mapa y ya
+  // está el botón «🗺️ Mapa» de la cabecera (Mikel: «es redundante»).
+  const arriba = migas.length > 1 ? migas[migas.length - 2] : null;
   const atras = { en: "Back", pt: "Voltar" }[idioma] || "Atrás";
-  return `<p class="volver"><a href="${esc(arriba.ruta)}">← ${atras}: ${esc(arriba.nombre)}</a></p><nav class="migas" aria-label="${etiqueta}"><ol>${migas
+  const volver = arriba ? `<p class="volver"><a href="${esc(arriba.ruta)}">← ${atras}: ${esc(arriba.nombre)}</a></p>` : "";
+  return `${volver}<nav class="migas" aria-label="${etiqueta}"><ol>${migas
     .map((m, i) => (i === migas.length - 1 ? `<li aria-current="page">${esc(m.nombre)}</li>` : `<li><a href="${esc(m.ruta)}">${esc(m.nombre)}</a></li>`))
     .join("")}</ol></nav>`;
 }
