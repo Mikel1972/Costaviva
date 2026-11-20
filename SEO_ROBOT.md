@@ -56,3 +56,14 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - PARTE A y B: ninguna; sin datos que lo justifiquen.
 - PARTE D: viernes, KPIs solo martes. DeepL: lanzado "Contraste de traducciones con DeepL" (idioma=pt, ref main); el de en, en la pasada siguiente del mes. Informe aún sin leer ni aplicar.
 - Esperado próxima pasada: 32 o más indexadas; "Descubierta" estancada o a la baja; primeros veredictos a 2 semanas de los cambios del 23-oct.
+
+## 2026-11-20 06:3x UTC (viernes)
+- Aviso: SEO_ESTADO.md es del 2026-11-17 12:19 UTC (no de hoy).
+- Números: indexadas 34 de 500 inspeccionadas (7%; antes 32: +2). Sitemap 558 URLs. 292 "Descubierta: sin indexar" (antes 380), 173 "Google no reconoce esta URL" (antes 87), 465 sin rastrear nunca. Google, 28 días: 25 clics, 1825 impresiones, CTR 1,4 %, posición 29,9 (antes 17 clics, 925 impresiones, pos. 29,8).
+- País priorizado: España (pais_foco: MRR 0 frente a 14,42 €; PT y NZ también en rojo, sin huecos que no sean técnicas o ya trabajados).
+- PARTE C (rama robot/palabras-2026-11-20-sitios-pesca, commit 8161ca6; la PR la abre robot-diseno-pr.yml): /spots cambia título ("Sitios de pesca en España y Portugal: N spots y puntos de pesca") y descripción ("Dónde se pesca…"); h1 y texto igual. Términos: sitios para pescar (pos. 91), sitios de pesca (94,5), donde se pesca (73,5), lugares pesca (78), punto de pesca (41,5). Sirve al punto 1. Medición en comun seo/palabras/costaviva-es-cambios.json.
+- No toqué los huecos de regiones (mareas Canarias/Galicia/Mediterráneo/Cádiz, pesca por región), calamar/chipirón ni /mareas|spots/bakio: los títulos se reescribieron el 19-20-nov (#550, #551) y el informe es anterior; tocarlos otra vez impediría medirlos. Lubina: cambio del 23-oct aún en medición.
+- Veredictos: 12-oct (pendiente, sin s1-s4 aún) y 23-oct (s1 pos. 46,6 y s2 49,1 frente a 58,4 de antes: mejora); nada que revertir.
+- Huecos dejados: "spinning" y demás técnicas, sin datos reales con fuente en la app; NZ ("fishing spots near me", mareas por bahía): sin páginas con datos para ello esta pasada.
+- PARTE A y B: ninguna; sin datos que lo justifiquen. PARTE D (DeepL): día 20, no aplica; KPIs solo martes.
+- Esperado próxima pasada: PR fusionada; 34 indexadas o más; "Descubierta" a la baja; primeros s1 de los términos de /spots.
