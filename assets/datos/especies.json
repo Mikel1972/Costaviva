@@ -24,6 +24,16 @@
   "madeira"
  ],
  "fuentes": {
+  "eeh_upv_ehu": {
+   "titulo": "Egungo Euskararen Hiztegia (EEH): txipiroi",
+   "url": "https://www.ehu.eus/eeh/cgi/bila?h=txipiroi",
+   "editor": "UPV/EHU (Universidad del País Vasco)",
+   "tipo": "diccionario",
+   "licencia": "Solo se usa el dato (el nombre en euskera y que designa al Loligo vulgaris), citado con enlace; no se reproduce el texto del diccionario",
+   "cita": "Egungo Euskararen Hiztegia (UPV/EHU)",
+   "fecha_consulta": "2026-11-20",
+   "nota": "Define txipiroi (también xipiroi, xipiron) como molusco cefalópodo comestible, Loligo vulgaris."
+  },
   "xunta_pescadegalicia_lonxas": {
    "titulo": "Principais indicadores de vendas nas lonxas (primeira venda por día, lonxa e especie)",
    "url": "https://www.pescadegalicia.gal/informe-notasventa/agregation",
@@ -4415,7 +4425,20 @@
     "dgrm_tmc_2025"
    ],
    "cientifico": "Loligo vulgaris",
-   "nombres_nota": "'Txipiroi/txipirón' es uso local (la app lo trata como sinónimo); sin fuente lingüística verificada.",
+   "nombres_nota": "Txipiroi (también xipiroi, xipiron) es el nombre en euskera del Loligo vulgaris según el Egungo Euskararen Hiztegia (fuente eeh_upv_ehu, consultado el 2026-11-20). En el castellano del País Vasco se dice txipirón (Mikel, 2026-11-20).",
+   "titulo_seo": "Calamar, chipirón o txipirón: pesca, temporada, talla mínima y cebos | Costaviva",
+   "preguntas": [
+    {
+     "pregunta": "¿Chipirón y calamar son lo mismo?",
+     "respuesta": "Sí: es el mismo animal, el calamar común (Loligo vulgaris). Lo que cambia es el nombre según la zona: en la mayor parte de España se dice calamar o chipirón; en Euskadi se le llama popularmente txipirón, y en euskera, txipiroi.",
+     "fuentes": ["eeh_upv_ehu"]
+    },
+    {
+     "pregunta": "¿Cómo se dice calamar en euskera?",
+     "respuesta": "Txipiroi (también xipiroi o xipiron). En el habla popular del País Vasco se dice txipirón, como en los txipirones en su tinta.",
+     "fuentes": ["eeh_upv_ehu"]
+    }
+   ],
    "habitat": {
     "valor": null,
     "fuentes": [],

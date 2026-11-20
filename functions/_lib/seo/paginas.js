@@ -206,7 +206,12 @@ export function paginaEspecie(e, especiesDatos, spots, mes) {
   const n = f.nombres.es;
   const ruta = `/especies/${f.slug}`;
   const intro = introEspecie(f, mes);
-  const titulo = `Pesca de ${n.toLowerCase()}: dónde y cuándo se pesca, talla mínima y cebos | Costaviva`;
+  // titulo_seo (especies.json): para nombres que se buscan de varias maneras
+  // (2026-11-20, Mikel: «calamar se utiliza en España; en Euskadi es txipirón»).
+  const titulo = e.titulo_seo || `Pesca de ${n.toLowerCase()}: dónde y cuándo se pesca, talla mínima y cebos | Costaviva`;
+  // Preguntas frecuentes con su fuente (especies.json, "preguntas"): solo
+  // respuestas verificadas, cada una con su enlace.
+  const preguntas = (e.preguntas || []).filter((q) => q?.pregunta && q?.respuesta);
   const tallaTxt = f.tallas.length ? ` Talla mínima desde ${Math.min(...f.tallas.map((t) => t.cm))} cm.` : "";
   const descripcion = `Pesca de ${n.toLowerCase()}${f.nombres.cientifico ? ` (${f.nombres.cientifico})` : ""}: temporada por zonas de España y Portugal, modalidades, cebos y spots donde se pesca.${tallaTxt}`;
   const migas = [{ nombre: "Especies", ruta: "/especies" }, { nombre: n, ruta }];
@@ -223,11 +228,19 @@ export function paginaEspecie(e, especiesDatos, spots, mes) {
       publisher: ORG_LD,
     },
     migasJsonLd(migas),
+    ...(preguntas.length ? [{
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: preguntas.map((q) => ({ "@type": "Question", name: q.pregunta, acceptedAnswer: { "@type": "Answer", text: q.respuesta } })),
+    }] : []),
   ];
   const cuerpo = `${migasHtml(migas)}
 <h1><span aria-hidden="true">${esc(f.emoji)}</span> ${esc(n)}</h1>
 <p class="cientifico">${f.nombres.cientifico ? `<em>${esc(f.nombres.cientifico)}</em>` : ""}${f.nombres.otros.length ? ` · ${f.nombres.otros.map((o) => `${esc(o.nombre)} <span class="nota">(${esc(o.idioma)})</span>`).join(" · ")}` : ""}</p>
 <p class="intro">${esc(intro)}</p>
+${preguntas.length ? `<section class="tarjeta" aria-labelledby="t-preg"><h2 id="t-preg">Preguntas frecuentes</h2>
+${preguntas.map((q) => `<h3>${esc(q.pregunta)}</h3><p>${esc(q.respuesta)}${(q.fuentes || []).map((id) => especiesDatos.fuentes?.[id]).filter((x) => x?.url).map((x) => ` <span class="nota">(<a href="${esc(x.url)}" rel="noopener nofollow" target="_blank">${esc(x.cita || x.titulo || "fuente")}</a>)</span>`).join("")}</p>`).join("")}
+</section>` : ""}
 ${f.temporada.length ? `<section class="tarjeta" aria-labelledby="t-temp"><h2 id="t-temp">Temporada por zonas</h2>
 <div class="tabla-env"><table><thead><tr><th scope="col">Zona</th><th scope="col">Meses</th><th scope="col">Freza</th></tr></thead><tbody>
 ${f.temporada.map((t) => `<tr${t.ahora ? ' class="ahora"' : ""}><th scope="row">${esc(t.nombre)}</th><td>${esc(t.texto)}${t.ahora && !t.veda ? " · <strong>ahora</strong>" : ""}${t.veda ? ` · <strong>en veda</strong>` : ""}</td><td>${t.freza ? esc(t.freza) : "–"}</td></tr>`).join("")}
