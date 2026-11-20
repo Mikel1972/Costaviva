@@ -2860,6 +2860,100 @@
    ]
   },
   {
+   "id": "carrete-tamanos",
+   "tema": "canas-costa",
+   "tambien_en": [
+    "canas-barco"
+   ],
+   "tipo": "material",
+   "nombre": "Tamaño del carrete: cuándo un 2500, un 3000, un 5000…",
+   "otros_nombres": [
+    "Tamaños de carrete"
+   ],
+   "para": "Qué tamaño de carrete frontal elegir según la pesca.",
+   "resumen": "El número del carrete indica su tamaño y la cantidad de hilo que cabe. Regla práctica: más pequeño cuanto más fino el hilo y más ligeros los señuelos; más grande para lanzar lejos, hilos gruesos y peces que tiran mucho.",
+   "como_es": [
+    "Dentro de una marca, más número = carrete más grande, más hilo y más freno.",
+    "Entre marcas no es igual: un 4000 de una puede ser bastante más pequeño que el 4000 de otra. Compara la capacidad de hilo y el freno máximo.",
+    "Daiwa normalizó sus tamaños LT (diámetro de bobina) en 1000, 2000, 2500, 3000, 4000, 5000 y 6000.",
+    "El carrete tiene que equilibrar la caña: uno muy grande en una caña ligera cansa la muñeca."
+   ],
+   "por_especie_titulo": "🎣 Qué tamaño para cada pesca",
+   "por_especie": [
+    {
+     "pez": "Pesca ligera en puerto (LRF), peces pequeños",
+     "tam": "1000–2000",
+     "nota": "hilos muy finos"
+    },
+    {
+     "pez": "Spinning ligero de lubina, corcheo",
+     "tam": "2500–3000",
+     "nota": "el más versátil para empezar"
+    },
+    {
+     "pez": "Spinning de lubina grande, anjova, señuelos más pesados",
+     "tam": "4000",
+     "nota": "más hilo y freno"
+    },
+    {
+     "pez": "Shore jigging, spinning pesado, fondo ligero desde barco",
+     "tam": "5000–6000",
+     "nota": ""
+    },
+    {
+     "pez": "Surf y jigging pesado desde barco",
+     "tam": "6000–10000",
+     "nota": ""
+    },
+    {
+     "pez": "Surfcasting a distancia",
+     "tam": "10000–14000 de bobina larga (long cast)",
+     "nota": "hay cañas de surfcasting que recomiendan 5000–10000"
+    }
+   ],
+   "medidas": [
+    "Mira siempre la capacidad (metros de hilo de un grosor dado) y el freno máximo del modelo concreto.",
+    "Con trenzado cabe mucho más hilo que con nylon en el mismo carrete."
+   ],
+   "medidas_titulo": "📏 Qué mirar al comprar",
+   "usos_costa": [
+    "Spinning: 2500–4000.",
+    "Surfcasting: 5000–14000 de bobina larga."
+   ],
+   "usos_embarcacion": [
+    "Fondo y spinning desde barco: 4000–6000.",
+    "Jigging pesado: 6000–10000 o carretes de tambor giratorio."
+   ],
+   "ojo": "El número es orientativo: dos «4000» de marcas distintas pueden tener capacidades muy diferentes. Las tablas de las guías son de pesca en EE. UU., tómalas como punto de partida.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Village: tamaños de carrete de spinning (con tablas)",
+     "url": "https://tacklevillage.com/?p=1010135"
+    },
+    {
+     "titulo": "FishingBooker: carretes de spinning de mar",
+     "url": "https://fishingbooker.com/blog/?p=64067"
+    },
+    {
+     "titulo": "West Marine: elegir un carrete de spinning",
+     "url": "https://www.westmarine.com/west-advisor/Selecting-a-Spinning-Reel.html"
+    },
+    {
+     "titulo": "Daiwa: tamaños LT (diámetros de bobina normalizados)",
+     "url": "https://daiwafishing.com.au/light-tough/"
+    },
+    {
+     "titulo": "Caperlan Symbios 500: caña de surfcasting con carrete 5000–10000",
+     "url": "https://www.decathlon.co.uk/p/salt-water-surfcasting-set-symbios-500-4-20-m-100-200-g/_/R-p-346451"
+    },
+    {
+     "titulo": "Shimano Beastmaster GX Surf: carretes 14000",
+     "url": "https://fish.shimano.com/en-GB/product/rods/surfcasting/p-beastmaster-gx-surf-tele.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
    "id": "carrete-freno",
    "tema": "canas-costa",
    "tipo": "material",
