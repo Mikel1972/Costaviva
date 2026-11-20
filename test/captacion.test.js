@@ -103,7 +103,30 @@ test("/empieza es pública; login y empieza guardan el origen", () => {
   assert.match(login, /origen: leerPrimerContacto\(\)/);
   assert.match(login, /ref: leerRef\(\)/);
   assert.match(leer("empieza.html"), /href="\/login\?alta=1"/);
-  assert.match(leer("functions/_middleware.js"), /context\.waitUntil\(contarVisita/);
+  // Desde el 2026-11-20 la visita se cuenta desde el navegador (baliza).
+  assert.match(leer("functions/_middleware.js"), /conScriptVisita\(/);
+  assert.match(leer("functions/contar-visita.js"), /context\.waitUntil\(contarVisita/);
+  assert.equal(esRutaPermitida("/contar-visita"), true);
+});
+
+test("baliza de visitas: misma decisión que antes, solo desde nuestra web y sin robots", () => {
+  const baliza = (cuerpo, cab = {}) => V.visitaDeBaliza(cuerpo, new Request("https://costaviva.org/contar-visita", {
+    method: "POST", headers: { origin: "https://costaviva.org", "user-agent": "Mozilla/5.0 (iPhone)", ...cab },
+  }));
+  assert.deepEqual(baliza({ ruta: "/mareas/bakio", referer: "https://www.google.com/" }), { p_pagina: "mareas", p_fuente: "google", p_campana: null });
+  assert.equal(baliza({ ruta: "/spots" }).p_fuente, "directo");
+  assert.equal(baliza({ ruta: "/empieza?utm_source=instagram&utm_campaign=bf" }).p_campana, "bf");
+  // Navegar dentro de la web, páginas no contadas, robots, otra web o ruta rara: nada.
+  assert.equal(baliza({ ruta: "/spots", referer: "https://costaviva.org/mareas" }), null);
+  assert.equal(baliza({ ruta: "/diario" }), null);
+  assert.equal(baliza({ ruta: "/spots" }, { "user-agent": "Googlebot/2.1" }), null);
+  assert.equal(baliza({ ruta: "/spots" }, { origin: "https://otra.web" }), null);
+  assert.equal(baliza({ ruta: "//otra.web/spots" }), null);
+  assert.equal(baliza({ ruta: "/spots" }, { cookie: "cv_interno=1" }), null);
+  assert.match(V.SCRIPT_VISITA, /src="\/assets\/js\/visita\.js"/);
+  const js = leer("assets/js/visita.js").replace(/^\s*\/\/.*$/gm, "");
+  assert.match(js, /navigator\.webdriver/);
+  assert.doesNotMatch(js, /cookie|localStorage|userAgent/);
 });
 
 const METRICAS = {
