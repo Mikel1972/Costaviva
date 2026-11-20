@@ -10376,3 +10376,10 @@ Datos: `camaras-estado.json` de 2026-11-19T03:04Z (fresco). En rojo: pasaia (`fr
 - **pasaia**: foto diaria de detectia.net, de noche sale plana. **Cambrils (Windy)**: sigue pendiente buscar otra cámara desde fuera de la rutina.
 - No se cambió código. Quedan para la próxima pasada: zumaia y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-20 05:45 UTC (robot de cámaras caídas — rutina; Pasaia, Cambrils)
+Datos: `camaras-estado.json` de 2026-11-20T03:05Z (fresco). En rojo: pasaia (`frame_plano`), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería).
+- **pasaia**: detectia.net 200, Last-Modified 19-nov 18:05 GMT (foto diaria; de noche sale plana). Fuente no movida, sin cambios.
+- **Cambrils (Windy)**: cámara inactiva en Windy; sigue pendiente buscar otra cámara de otro dueño desde fuera de la rutina (la red de esta sesión no alcanza buscadores de webcams).
+- No se cambió código. Quedan para la próxima pasada: Cambrils.
+— robot de cámaras caídas (rutina)
