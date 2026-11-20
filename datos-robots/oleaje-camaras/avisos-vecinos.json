@@ -1,10 +1,10 @@
 {
- "actualizado": "2026-11-20T18:07:37.048Z",
+ "actualizado": "2026-11-20T18:37:31.605Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "bakio",
-   "alto": 13,
+   "alto": 15,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -511,6 +511,24 @@
    "antes": 0.9,
    "referencia": 0.8,
    "visto": "2026-11-20T15:10:02.698Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-21T03:00",
+   "antes": 1.2,
+   "referencia": 1.1,
+   "visto": "2026-11-20T18:37:31.605Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-21T18:00",
+   "antes": 1.1,
+   "referencia": 0.8,
+   "visto": "2026-11-20T18:37:31.605Z"
   }
  ]
 }
