@@ -83,7 +83,7 @@ export async function onRequestGet(context) {
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>
     <!-- «Atrás» y menú (2026-11-20, Mikel: «en mareas tampoco puedo retroceder»). -->
-    <nav class="nav-cv" aria-label="Navegación"><a href="/">← Atrás: Mapa</a><a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/aprende">Aprende</a></nav>
+    <nav class="nav-cv" aria-label="Navegación"><a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/aprende">Aprende</a></nav>
 
     <h1>Mareas y oleaje en España y Portugal</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>

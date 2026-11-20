@@ -262,12 +262,12 @@
     "consultada": "2026-11-20"
    },
    "imagen": {
-    "src": "/assets/formacion/nudo-albright.jpg",
-    "alt": "Nudo Albright apretado",
-    "autor": "StromBer",
-    "licencia": "CC BY-SA 2.0 DE",
-    "licencia_url": "https://creativecommons.org/licenses/by-sa/2.0/de/deed.en",
-    "fuente_url": "https://commons.wikimedia.org/wiki/File:AlbrightKnotenFertig.jpg",
+    "src": "/assets/formacion/nudo-albright.png",
+    "alt": "Nudo Albright en 4 dibujos: 1, el fino entra en el lazo del grueso (pasos 1-2); 2, las vueltas hacia la punta del lazo (paso 3); 3, sale por el lazo (paso 4); 4, apretado (paso 5)",
+    "autor": "diagrama de Albright knot diagram (retocado), numerado por Costaviva",
+    "licencia": "dominio público",
+    "licencia_url": "",
+    "fuente_url": "https://commons.wikimedia.org/wiki/File:Albright_knot_diagram_retouched.png",
     "comprobada": "2026-11-20"
    },
    "resistencia": {
