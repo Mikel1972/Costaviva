@@ -43,7 +43,7 @@ on:
         required: false
         type: string
       tipo:
-        description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma, peces, normas, finde); normas = serie Normas que nadie te cuenta (reel-normas.mjs), finde = Dónde pescar este finde (reel-finde.mjs); vacío = el siguiente de la rotación. peces = banco de peces con datos reales (reel-peces.mjs; es el de por defecto en España)"
+        description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma, peces, normas, finde); normas = serie Normas que nadie te cuenta (reel-normas.mjs), finde = Dónde pescar este finde (reel-finde.mjs), calamar = ¿calamar, chipirón o txipirón? (reel-calamar.mjs), blackfriday = el 2x1; vacío = el siguiente de la rotación. peces = banco de peces con datos reales (reel-peces.mjs; es el de por defecto en España)"
         required: false
         type: string
       mercado:
@@ -107,6 +107,7 @@ jobs:
           # Los otros tipos siguen a mano (input tipo) y NZ va con su generador.
           # Series del 2026-11-19 (Mikel): martes normas, viernes el finde.
           if [ "$TIPO_REEL" = "blackfriday" ]; then node reel-bf.mjs
+          elif [ "$TIPO_REEL" = "calamar" ]; then node reel-calamar.mjs
           elif [ "$TIPO_REEL" = "normas" ]; then node reel-normas.mjs
           elif [ "$TIPO_REEL" = "finde" ]; then node reel-finde.mjs
           elif [ "$TIPO_REEL" = "peces" ] || { [ "$MERCADO" = "es" ] && [ -z "$TIPO_REEL" ]; }; then node reel-peces.mjs
