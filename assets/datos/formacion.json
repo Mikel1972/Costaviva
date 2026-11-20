@@ -3507,6 +3507,1598 @@
     }
    ],
    "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-surfcasting-punta-lanza",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Montaje de surfcasting con punta de lanza (shock leader)",
+   "otros_nombres": [
+    "Shock leader",
+    "Línea de choque"
+   ],
+   "para": "La línea completa de surfcasting: madre fina en el carrete, un tramo grueso (punta de lanza) que aguanta el lance, y al final el bajo y el plomo.",
+   "resumen": "Es la base de cualquier lance con plomo pesado desde playa: la madre fina vuela más y la punta de lanza aguanta el tirón del lance.",
+   "como_es": [
+    "Línea madre fina en la bobina: lanza más lejos.",
+    "Punta de lanza: un tramo de sedal mucho más resistente, unido a la madre con un nudo de unión (por ejemplo el Albright o el uni doble).",
+    "Al final de la punta, un quitavueltas: así cambias de bajo en un momento.",
+    "Del quitavueltas cuelga el bajo que toque (de brazoladas, corredizo, de polea…) con su plomo.",
+    "Con madre de trenzado, la punta también protege el trenzado del roce con piedras y conchas, y tus manos al sacar el pez."
+   ],
+   "medidas_titulo": "📏 Resistencia y largo",
+   "medidas": [
+    "Regla general: unas 10 lb de resistencia por cada onza (28 g) de plomo. Con 4 oz (unos 113 g), al menos 40 lb; con 6 oz (unos 170 g), al menos 60 lb.",
+    "Valores típicos en playa: madre de 12–20 lb y punta de 50–80 lb.",
+    "Largo: lo que mide la caña más unas seis vueltas en la bobina. Otras guías dan 2–3 largos de caña más 4–5 vueltas (unos 6–9 m)."
+   ],
+   "usos_costa": [
+    "Surfcasting en playa con plomos pesados y lances largos.",
+    "Playas de piedra o de concha: la punta aguanta el roce mejor que una madre fina.",
+    "Si se te rompe la madre por un enredo, rehaces la unión y vuelves a pescar con el mismo bajo."
+   ],
+   "usos_embarcacion": [
+    "Al lanzar desde el barco (uptide) también se usa: punta de 40–50 lb sobre madre de 20–25 lb."
+   ],
+   "pasos": [
+    "Llena la bobina con la madre.",
+    "Une la punta de lanza a la madre con un nudo de unión; moja los dos sedales antes de apretar.",
+    "Ata un quitavueltas al final de la punta.",
+    "Engancha el bajo y el plomo al quitavueltas.",
+    "Antes de cada lance, comprueba que el nudo de unión queda dentro de la bobina, con varias vueltas de punta encima."
+   ],
+   "ojo": "La punta tiene que llegar al carrete con vueltas de sobra: si en el lance trabaja la madre fina, puede partir y el plomo salir disparado. Nunca lances con gente detrás o al lado.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: qué es la punta de lanza (10 lb por onza)",
+     "url": "https://planetseafishing.com/glossary/p-to-t/s/shock-leader/amp"
+    },
+    {
+     "titulo": "Fishing Megastore: cómo usar la punta de lanza",
+     "url": "https://blog.fishingmegastore.com/2017/06/using-shock-leader.html"
+    },
+    {
+     "titulo": "Salt Strong: puntas de lanza para surfcasting",
+     "url": "https://www.saltstrong.com/?p=32445"
+    },
+    {
+     "titulo": "British Sea Fishing: nudo de unión madre–punta de lanza",
+     "url": "https://britishseafishing.co.uk/main-line-shock-leader-knot/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: el uptide explicado",
+     "url": "https://planetseafishing.com/?p=2151"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-clipado",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Montaje clipado (con escudo de impacto)",
+   "otros_nombres": [
+    "Clipped down rig",
+    "Bajo con clip",
+    "Escudo de impacto"
+   ],
+   "para": "Un bajo en el que el anzuelo cebado va enganchado durante el lance a un clip o a un escudo de impacto, pegado al plomo.",
+   "resumen": "Para lanzar lo más lejos posible en playas de arena limpia: el bajo vuela recogido y el cebo llega entero al fondo.",
+   "como_es": [
+    "El anzuelo se engancha en un clip o en un escudo de impacto (una pieza de plástico) que va encima del plomo.",
+    "Al lanzar, todo el bajo vuela junto y recogido: más aerodinámico, menos enredos.",
+    "Al entrar en el agua, el escudo protege el cebo y suelta el anzuelo.",
+    "El escudo se fija con un tope ajustable (de tubo de silicona o goma), no con un tope de presión fijo: así lo colocas justo donde llega el anzuelo.",
+    "Lo habitual es de un solo anzuelo; también hay versión de dos anzuelos para cebos grandes (ver montaje pennell)."
+   ],
+   "medidas_titulo": "📏 Medidas de ejemplo",
+   "medidas": [
+    "Ejemplo de un anzuelo: cuerpo de 60 lb, brazolada de 30 lb y anzuelo del 2/0.",
+    "Los bajos de brazoladas de playa también pueden llevar 2 o 3 clips para que no sean demasiado largos al lanzar."
+   ],
+   "usos_costa": [
+    "Playas de arena donde el pez come lejos y hay que lanzar mucho.",
+    "Fondos limpios, sin piedras.",
+    "Lances potentes (pendulares): el bajo recogido aguanta mejor el lance."
+   ],
+   "ojo": "Solo en fondo limpio: en piedra se engancha. Y antes de cada lance comprueba que el anzuelo ha quedado bien sujeto en el clip, o el cebo saldrá volando.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: montaje clipado de un anzuelo",
+     "url": "https://britishseafishing.co.uk/single-hook-clipped-down/"
+    },
+    {
+     "titulo": "British Sea Fishing: bajos para lanzar lejos",
+     "url": "https://britishseafishing.co.uk/terminal-tackle/distance-rigs/"
+    },
+    {
+     "titulo": "British Sea Fishing: montaje pennell clipado para cebos grandes",
+     "url": "https://britishseafishing.co.uk/clipped-down-rig-for-big-baits/"
+    },
+    {
+     "titulo": "Leurre de la Pêche: cómo se monta el surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-pennell",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Montaje pennell (dos anzuelos en tándem)",
+   "otros_nombres": [
+    "Pennell",
+    "Pennel rig",
+    "Anzuelos en tándem"
+   ],
+   "para": "Dos anzuelos en la misma brazolada, uno en cada extremo de un cebo grande.",
+   "resumen": "Para cebos grandes (calamar entero, filete de caballa, gusanos grandes): el pez queda clavado lo coja por donde lo coja.",
+   "como_es": [
+    "El anzuelo de abajo va atado al final de la brazolada.",
+    "El de arriba se coloca más arriba en la misma brazolada, a la distancia que pida el cebo.",
+    "Anzuelo de arriba corredizo: se enrolla la brazolada en la pata, o se sujeta con un trozo de tubo de silicona (de unos 2 mm), y se mueve según el cebo.",
+    "Anzuelo de arriba fijo: se ata con nudo de pala (snell); no se mueve, pero el cebo tiene que ser siempre del mismo tamaño.",
+    "Los anzuelos de ojo vuelto hacia arriba se enhebran más fácil."
+   ],
+   "medidas_titulo": "📏 Anzuelos",
+   "medidas": [
+    "Anzuelos grandes y fuertes, porque busca peces grandes. En un montaje clipado de ejemplo, dos del 4/0.",
+    "Unos prefieren los dos iguales; otros, el de arriba al menos un número más pequeño. Las dos opciones funcionan."
+   ],
+   "usos_costa": [
+    "Con polea (pennell de polea) en roca y fondos con enganches, para peces grandes.",
+    "Clipado (ver montaje clipado) en playas de arena o cantos para lanzar lejos.",
+    "Peces grandes: lubina, rayas o congrio."
+   ],
+   "usos_embarcacion": [
+    "Al lanzar desde el barco (uptide), una sola brazolada con pennell es lo más usado para peces grandes."
+   ],
+   "ojo": "Con el anzuelo de arriba corredizo, si un pez grande tira de la cabeza del cebo, el anzuelo puede resbalar hasta el de abajo. Clipa siempre los cebos grandes: sueltos, aletean en el lance y se enredan.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: anzuelos pennell",
+     "url": "https://britishseafishing.co.uk/pennell-hooks/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: cómo atar un pennell",
+     "url": "https://planetseafishing.com/rigs-and-traces/pennel-rig"
+    },
+    {
+     "titulo": "British Sea Fishing: montaje pennell clipado para cebos grandes",
+     "url": "https://britishseafishing.co.uk/clipped-down-rig-for-big-baits/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: el uptide explicado",
+     "url": "https://planetseafishing.com/?p=2151"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-boya-cebo-vivo",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Boya con cebo vivo (lubina)",
+   "otros_nombres": [
+    "Corcheo con vivo",
+    "Livebait float rig"
+   ],
+   "para": "Un pez pequeño vivo colgado de una boya corrediza, con un plomo que lo mantiene a la profundidad elegida.",
+   "resumen": "Muy usado para lubina, y también para abadejo y otros depredadores, junto a rocas y escolleras.",
+   "como_es": [
+    "Es el bajo de boya corrediza (ver «Bajo de boya»), con un plomo de agujero bajo la boya que mantiene abajo al vivo.",
+    "Entre el plomo y el anzuelo, una brazolada de 60–90 cm: el vivo nada por debajo del plomo.",
+    "Boya con flotación de sobra para el plomo y el cebo; para vivo se usan mucho las boyas de burbuja.",
+    "Dónde clavar el anzuelo: por la nariz o el labio, nada más natural y aguanta la corriente; por el lomo, cerca de la cola, tiende a irse hacia abajo y lejos.",
+    "Para lubina con vivo, algunos cambian el anzuelo simple por un triple."
+   ],
+   "medidas_titulo": "📏 Medidas",
+   "medidas": [
+    "Anzuelo del 1 al 4/0, según el tamaño del vivo: el anzuelo va al tamaño del cebo, no del pez que buscas. Uno grande le quita vida y movimiento.",
+    "Brazolada de 10–20 lb, de nylon transparente o fluorocarbono.",
+    "Profundidad: empieza a pocos metros y baja hasta dar con el pez; el abadejo grande suele estar más hondo."
+   ],
+   "usos_costa": [
+    "Lubina junto a piedras, escolleras y espigones: deja que la corriente lleve la boya despacio.",
+    "Abadejo más hondo, cerca de la pared de piedra."
+   ],
+   "usos_embarcacion": [
+    "El mismo montaje sirve desde barco, al ancla o a la deriva."
+   ],
+   "ojo": "No recojas al primer toque: espera a que la boya se hunda del todo. Si falla, déjala: el pez suele volver. Antes de pescar con peces vivos de cebo, mira la normativa de tu zona: cada comunidad o país puede tener reglas propias.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: boya corrediza (con vivo para lubina)",
+     "url": "https://planetseafishing.com/?p=3737"
+    },
+    {
+     "titulo": "British Sea Fishing: pesca con boya",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Sport Fishing: dónde clavar el cebo vivo",
+     "url": "https://www.sportfishingmag.com/how-to-catch-more-fish-with-live-bait/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "tramo-debil-plomo",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Tramo débil para el plomo (rotten bottom)",
+   "otros_nombres": [
+    "Rotten bottom",
+    "Weak link",
+    "Plomo perdido"
+   ],
+   "para": "Un trozo de sedal más flojo que el resto entre el bajo y el plomo, para que, si el plomo se engancha, se rompa solo ese trozo.",
+   "resumen": "En piedra y pecios pierdes el plomo, pero recuperas el bajo y, muchas veces, el pez.",
+   "como_es": [
+    "El plomo no va atado al bajo con el mismo sedal: va con un tramo corto de sedal más fino.",
+    "Al engancharse el plomo, tiras y parte el tramo débil; el resto sube.",
+    "Desde barco no se lanza: basta con atar el plomo con sedal más fino a un quitavueltas o a la pata del boom.",
+    "Desde costa, el plomo va en un clip o enganche que lo sujeta durante el lance y lo suelta al tocar el agua, colgando ya del tramo débil.",
+    "Hay enganches de plástico con cierre que se abre al entrar en el agua; el plomo sigue sujeto y se suelta si se engancha."
+   ],
+   "medidas_titulo": "📏 Resistencia",
+   "medidas": [
+    "Tramo débil de unas 10–15 lb (de 12–15 lb en el ejemplo de barco), siempre más flojo que la madre y que el bajo.",
+    "Desde barco basta un tramo de unos 7–8 cm; también se usan una brida de plástico o un clip de papel."
+   ],
+   "usos_costa": [
+    "Roca y fondos sucios, con plomo de una sola pieza.",
+    "Pesca de congrio en piedra y al pie de muelles de piedra."
+   ],
+   "usos_embarcacion": [
+    "Fondo sobre piedra o pecio: con bajos de fondo, de congrio o con boom."
+   ],
+   "ojo": "Los montajes con tramo débil no valen para lances fuertes (pendulares): el plomo se puede soltar en pleno lance. Lanza suave, por encima de la cabeza. Si el enganche lleva cierre de plástico, vuelve a cerrarlo cada vez que recojas.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: cómo montar un rotten bottom",
+     "url": "https://planetseafishing.com/rigs-and-traces/rotten-bottom/"
+    },
+    {
+     "titulo": "British Sea Fishing: enganches de plomo con tramo débil",
+     "url": "https://britishseafishing.co.uk/gemini-breakers-weak-link-release/"
+    },
+    {
+     "titulo": "Talk Sea Fishing: montaje de collar volante (tramo débil en el boom)",
+     "url": "https://www.talkseafishing.co.uk/flying-collar-rig-2/"
+    },
+    {
+     "titulo": "British Sea Fishing: montaje de congrio a corta distancia",
+     "url": "https://britishseafishing.co.uk/short-range-conger-rig/"
+    },
+    {
+     "titulo": "Talk Sea Fishing: montaje de congrio desde barco",
+     "url": "https://www.talkseafishing.co.uk/build-boat-conger-rig/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-collar-volante",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Collar volante con boom (flying collar)",
+   "otros_nombres": [
+    "Flying collar",
+    "Boom francés",
+    "Brazo separador"
+   ],
+   "para": "Un brazo rígido de alambre (boom) en la madre: de su pata cuelga el plomo y de su punta sale una brazolada larga con un vinilo o un cebo.",
+   "resumen": "Para abadejo y carbonero sobre piedra y pecios desde barco: el boom baja rápido sin que la brazolada larga se enrede.",
+   "como_es": [
+    "Boom de alambre rígido (tipo boom francés): los de plástico se doblan con la presión del agua y se enredan.",
+    "La madre va al ojo de arriba del boom; el plomo, a la pata, con un tramo débil.",
+    "La brazolada larga de nylon transparente va al ojo de la punta, con un quitavueltas a media brazolada para que no se rice.",
+    "Al final, un vinilo tipo anguila (o un cebo).",
+    "Opcional: la mitad de arriba de la brazolada más gruesa y rígida, para que se enrede menos con la marea parada."
+   ],
+   "medidas_titulo": "📏 Medidas",
+   "medidas": [
+    "Boom de al menos 10 pulgadas (unos 25 cm) en piedra; de 15 pulgadas (unos 38 cm) en pecios hondos.",
+    "Brazolada: unos 3–3,7 m en piedra de unos 30 m de fondo; en pecios de más de 45 m, al menos 3,7 m y lo normal 4,5–5,5 m.",
+    "Madre de 15–20 lb; brazolada de 12–18 lb; tramo débil de 12–15 lb."
+   ],
+   "usos_embarcacion": [
+    "Abadejo y carbonero en pecios y piedra, a la deriva.",
+    "Variante «hopper» (boom largo y brazolada corta de 1,2–1,8 m, de 30–50 lb, con vinilo lastrado) para trabajar pegado al fondo: maruca y bacalao.",
+    "En verano, lubina sobre pecios poco hondos."
+   ],
+   "pasos": [
+    "Deja bajar el montaje hasta que el plomo toque fondo.",
+    "Cierra el carrete y sube el plomo unos palmos del fondo o del pecio.",
+    "Espera unos segundos a que la brazolada se estire detrás del boom.",
+    "Recoge a velocidad lenta o media, contando las vueltas de manivela: si pican, ya sabes a qué altura está el pez.",
+    "No claves al primer toque: sigue recogiendo hasta que la caña se doble del todo; el pez se clava solo."
+   ],
+   "ojo": "Si notas toques pero no se clavan (te muerden la cola del vinilo), alarga la brazolada antes de cambiar de color.",
+   "fuentes": [
+    {
+     "titulo": "Talk Sea Fishing: montaje de collar volante",
+     "url": "https://www.talkseafishing.co.uk/flying-collar-rig-2/"
+    },
+    {
+     "titulo": "British Sea Fishing: booms de pesca en el mar",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/sea-fishing-booms/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-congrio",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Montaje para congrio",
+   "otros_nombres": [
+    "Conger rig",
+    "Bajo de congrio"
+   ],
+   "para": "Un bajo de fondo corredizo, corto y muy grueso, con un anzuelo grande y quitavueltas fuertes.",
+   "resumen": "El congrio tiene dientes, vive entre piedras y pecios y gira sobre sí mismo al subir: el montaje tiene que aguantar las tres cosas.",
+   "como_es": [
+    "Plomo corredizo en un boom deslizante, entre dos perlas, sobre un tramo de nylon grueso que protege la madre del roce.",
+    "Debajo, un quitavueltas fuerte y el bajo final de nylon muy grueso o de cable de acero (ver «Acero»).",
+    "Un solo anzuelo grande.",
+    "El plomo, con tramo débil (ver «Tramo débil para el plomo»): en esos fondos se engancha mucho.",
+    "Poca pieza metálica: menos cosas que se enganchen."
+   ],
+   "medidas_titulo": "📏 Medidas de ejemplo",
+   "medidas": [
+    "Barco: madre de trenzado; 60 cm de nylon de 100 lb para el boom; bajo de 75 cm de nylon de 200 lb; anzuelo 8/0 en piedra o 10/0 en pecio con congrios muy grandes.",
+    "Costa: madre de 30 lb; bajo de cable de 100 lb o nylon de 100 lb o más; anzuelo 6/0 u 8/0; tramo débil de 10–15 lb."
+   ],
+   "usos_costa": [
+    "Grietas de roca, piedra y pie de muelles de piedra: se baja el montaje en vertical o se lanza muy cerca, sin lance fuerte.",
+    "Carrete en libre con el aviso de picada puesto, para que el congrio se lleve hilo sin arrastrar el plomo."
+   ],
+   "usos_embarcacion": [
+    "Piedra y pecios, fondeado: anzuelo 8/0 en piedra y 10/0 en pecio.",
+    "Con trenzado directo, sin punta de lanza: notas mejor y aprietas más."
+   ],
+   "ojo": "El congrio gira al subir: usa quitavueltas grandes y de calidad entre el bajo y la madre, o te riza y parte el sedal.",
+   "fuentes": [
+    {
+     "titulo": "Talk Sea Fishing: montaje de congrio desde barco",
+     "url": "https://www.talkseafishing.co.uk/build-boat-conger-rig/"
+    },
+    {
+     "titulo": "British Sea Fishing: montaje de congrio a corta distancia",
+     "url": "https://britishseafishing.co.uk/short-range-conger-rig/"
+    },
+    {
+     "titulo": "British Sea Fishing: booms de pesca en el mar",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/sea-fishing-booms/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-deriva-pez-plano",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Montaje de deriva para pez plano",
+   "otros_nombres": [
+    "Bajo de cucharilla para planos",
+    "Flatfish spoon rig",
+    "Buttlöffel"
+   ],
+   "para": "Un bajo largo que se arrastra por el fondo con el barco a la deriva, con perlas de colores y a veces una cuchara que levanta arena.",
+   "resumen": "Para sollas, platijas y rodaballos en fondos de arena: los planos se acercan al color y al movimiento.",
+   "como_es": [
+    "Corredizo: boom deslizante con el plomo en la madre, perla y quitavueltas.",
+    "Del quitavueltas sale un bajo largo de fluorocarbono: aguanta mejor el roce con la concha.",
+    "Junto al anzuelo, 5 o 6 perlas de colores (verde y negro, o amarillo y rojo).",
+    "Variante con cuchara: bajo largo hasta una cuchara giratoria y, detrás, un bajo corto con perlas y el anzuelo.",
+    "Variante «buttlöffel»: una cuchara plomada en forma de ocho hace de plomo, levanta el fondo y aletea al caer; lleva encima dos brazoladas."
+   ],
+   "medidas_titulo": "📏 Medidas",
+   "medidas": [
+    "Bajo corredizo: 1,2–1,8 m de fluorocarbono de 12–20 lb; anzuelo Aberdeen del 1.",
+    "Con cuchara: 1,5–3 m de 10 lb del quitavueltas a la cuchara y unos 15 cm de la cuchara al anzuelo; Aberdeen del 2 al 2/0.",
+    "Buttlöffel: 30–90 g; el más ligero que mantenga contacto con el fondo. Brazoladas de unos 45 cm de 10–20 lb."
+   ],
+   "usos_costa": [
+    "El buttlöffel también se pesca desde playa en aguas poco hondas, recorriendo la orilla.",
+    "En playa de arena limpia, a corta distancia, con bajos de brazoladas cortas, perlas y anzuelo del 1."
+   ],
+   "usos_embarcacion": [
+    "A la deriva lenta sobre arena limpia: la cuchara aletea y llama la atención.",
+    "Con poca corriente (marea parada), bajo más corto, cerca de 1,5 m."
+   ],
+   "ojo": "Usa el plomo o la cuchara más ligeros que mantengan el contacto con el fondo con la corriente y la deriva que haya. Desde playa, varios anzuelos sueltos restan distancia y se enganchan más.",
+   "fuentes": [
+    {
+     "titulo": "Talk Sea Fishing: montaje de deriva para solla",
+     "url": "https://www.talkseafishing.co.uk/build-plaice-drifting-rig/"
+    },
+    {
+     "titulo": "Talk Sea Fishing: bajo de cuchara cebada",
+     "url": "https://www.talkseafishing.co.uk/baited-spoon-rig/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: cómo montar un buttlöffel",
+     "url": "https://planetseafishing.com/?p=45976"
+    },
+    {
+     "titulo": "British Sea Fishing: bajo para peces planos",
+     "url": "https://britishseafishing.co.uk/flatfish-rig/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-uptide",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Uptide: lanzar desde el barco",
+   "otros_nombres": [
+    "Uptiding",
+    "Boat casting",
+    "Lance desde barco"
+   ],
+   "para": "Desde el barco fondeado, lanzas el montaje corriente arriba con un plomo de grapa, lejos del casco, y lo dejas clavado en el fondo.",
+   "resumen": "En poco fondo, el ruido del barco espanta a los peces que comen debajo; lanzando lejos los buscas donde están tranquilos. Además, con corriente fuerte pide menos plomo.",
+   "como_es": [
+    "Caña algo más larga que la de barco, con carrete de lanzar (no un carrete grande de fondo).",
+    "Madre de nylon de 20–25 lb con punta de lanza de 40–50 lb.",
+    "Plomo de grapa: de grapa fija con mucha corriente, de grapa que se suelta con menos.",
+    "Montajes sencillos: una sola brazolada, a menudo con pennell para peces grandes. Las brazoladas largas con boom se enredan."
+   ],
+   "medidas_titulo": "📏 Medidas",
+   "medidas": [
+    "Cañas de unos 2,9–3 m que lanzan unas 4–8 oz (unos 113–227 g).",
+    "Se usa sobre todo en fondos de unos 18 m (60 pies) o menos."
+   ],
+   "usos_embarcacion": [
+    "Fondeado en poco fondo y con corriente: peces de fondo grandes que se apartan del barco.",
+    "Cuando no hay sitio para soltar todos los montajes corriente abajo sin enredarse."
+   ],
+   "pasos": [
+    "Saca el plomo y el bajo por fuera de la borda antes de empezar el lance.",
+    "Lanza suave, por encima de la cabeza o por debajo; ve dando más fuerza según cojas práctica.",
+    "Cuando el plomo toque fondo, sigue soltando hilo: la corriente hace una panza que clava la grapa en el fondo.",
+    "Suelta hasta que el sedal quede a unos 45° corriente abajo de donde lanzaste. En un sitio nuevo, suelta el doble de lo que creas.",
+    "Apoya la caña en la borda y espera.",
+    "Picada: la puntera cabecea y luego se endereza de golpe (el pez ha soltado el plomo). Coge la caña, recoge rápido el hilo flojo y, al notar el peso, levanta: no hace falta clavar."
+   ],
+   "ojo": "En un barco con gente, nunca empieces el lance con el plomo y los anzuelos dentro: primero fuera de la borda, luego lanzas. Si sueltas poco hilo o el plomo es ligero, la grapa se suelta y el montaje se va con la corriente.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: el uptide explicado",
+     "url": "https://planetseafishing.com/?p=2151"
+    },
+    {
+     "titulo": "Talk Sea Fishing: montaje de uptide",
+     "url": "https://www.talkseafishing.co.uk/uptide-rig/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jig-vertical",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Jig metálico de jigging vertical",
+   "otros_nombres": [
+    "Speed jig",
+    "Knife jig",
+    "Jig de velocidad"
+   ],
+   "para": "Pieza de metal pesada con anzuelos asistentes que se baja en vertical desde el barco y se sube a tirones o a toda velocidad.",
+   "resumen": "Para peces activos, a media agua o bajo bancos de pasto, sobre piedra y pecios. Muchas picadas llegan en la caída.",
+   "como_es": [
+    "Largo y fino (tipo cuchillo): baja rápido y se desliza de lado; corto y ancho: aletea más.",
+    "Peso en la cola: cae rápido. Peso en el centro: aletea y se mueve más de lado a lado.",
+    "Anzuelos asistentes en una anilla sólida (ver «Anzuelo asistente (jigging)»).",
+    "Trenzado sin elasticidad y carrete de recogida rápida (ver «Equipo de jigging (barco)»)."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "medidas": [
+    "No hay regla fija: el más ligero que llegue al fondo y deje el sedal casi vertical.",
+    "Punto de partida de una fuente: 1 g por pie de fondo (unos 3 g por metro). Más corriente o más deriva, más peso.",
+    "Si el sedal se inclina más de unos 15°, pon un jig más pesado."
+   ],
+   "usos_costa": [
+    "Desde costa se usa el jig de lance: ver «Jig de lance (casting jig)»."
+   ],
+   "usos_embarcacion": [
+    "Sobre piedra, pecios y cambios de fondo marcados en la sonda.",
+    "Bajo bancos de pasto, para peces que cazan a media agua.",
+    "Una guía lo cita para dentón, pez limón, meros, pargo, bacoreta, llampuga y anjova."
+   ],
+   "pasos": [
+    "Ponte encima de las marcas de la sonda y baja el jig hasta el fondo.",
+    "Da tirones de caña de 30 a 60 cm y deja caer el jig con el sedal casi flojo.",
+    "Otra forma: sube a toda velocidad a través de la zona marcada, con alguna pausa tras unas vueltas.",
+    "Mira el sedal en la caída: un toque o que se afloje de golpe es picada.",
+    "Cuando el jig pase la zona de los peces, vuelve a bajarlo."
+   ],
+   "ojo": "Ata el bajo directamente a la anilla sólida, no a una anilla partida: la partida puede abrirse con un pez grande.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: tácticas de jigging en altura",
+     "url": "https://www.saltwatersportsman.com/howto/offshore-jigging-tactics/"
+    },
+    {
+     "titulo": "FishTrack: jigging en profundidad",
+     "url": "https://fishtrack.com/article/jig-deep"
+    },
+    {
+     "titulo": "Demon: jigging vertical e inchiku, guía completa",
+     "url": "https://www.demonsunglasses.com/blogs/sport-fishing-blog/vertical-jigging-and-inchiku-complete-guide-to-technique-equipment-and-target-species"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jig-lento",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Jig lento (slow pitch)",
+   "otros_nombres": [
+    "Slow pitch jig",
+    "Slow jigging",
+    "SPJ"
+   ],
+   "para": "Jig metálico asimétrico que se levanta poco a poco con la caña y se deja caer aleteando, como un pez herido.",
+   "resumen": "Técnica fina, sobre todo para peces de fondo, que cansa menos que el jigging rápido. La mayoría de picadas llegan en la caída.",
+   "como_es": [
+    "Asimétrico y con el peso en el centro.",
+    "Corto y ancho: cae más despacio y aletea más; para menos fondo y peces apáticos (short pitch).",
+    "Largo y fino: cae más rápido, con un movimiento más cerrado; para más fondo y peces activos (long pitch).",
+    "Caña muy ligera y blanda que rebota y lanza el jig; trenzado fino para que el sedal baje vertical."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "medidas": [
+    "Poco fondo: 60 g o menos.",
+    "Fondos más profundos: de 90 a 120 g.",
+    "Mucha profundidad o peces grandes de altura: 300 g o más."
+   ],
+   "usos_costa": [
+    "Desde costa se usa el jig de lance: ver «Jig de lance (casting jig)»."
+   ],
+   "usos_embarcacion": [
+    "Peces de fondo sobre piedra y pecios.",
+    "También depredadores de media agua que bajan a comer cerca del fondo.",
+    "Dos expertos de una revista dicen que rinde más a partir de unos 45 m de fondo."
+   ],
+   "pasos": [
+    "Baja el jig al fondo con algo de tensión para que caiga vertical.",
+    "Apoya el talón de la caña bajo el antebrazo.",
+    "Levanta la caña lo justo para cargarla y para: la puntera rebota y lanza el jig hacia arriba. También vale una vuelta seca de manivela con la caña quieta.",
+    "Baja la puntera y acompaña la caída dejando el sedal flojo: así aletea el jig.",
+    "No recojas mientras cae y mira el sedal: ahí llegan la mayoría de picadas.",
+    "Trabaja la parte baja, a unos 5–9 m del fondo."
+   ],
+   "ojo": "Al pelear el pez, mantén la caña paralela al agua o más baja: por encima puede romperse. Gana metros con el carrete, no con la caña.",
+   "fuentes": [
+    {
+     "titulo": "Sport Fishing: los detalles del slow pitch",
+     "url": "https://www.sportfishingmag.com/?p=47427"
+    },
+    {
+     "titulo": "On The Water: lo básico del slow pitch",
+     "url": "https://onthewater.com/slow-pitch-jigging-basics"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "inchiku",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Inchiku",
+   "otros_nombres": [
+    "Inchiku jig"
+   ],
+   "para": "Jig con cuerpo de metal en forma de bala y un faldón blando de pulpo o calamar, con anzuelos asistentes.",
+   "resumen": "El cuerpo baja rápido y el faldón se mueve solo: casi no hay que animarlo. Para peces de fondo o desconfiados que comen despacio.",
+   "como_es": [
+    "Cuerpo de metal compacto y pesado.",
+    "Faldón blando tipo pulpo o calamar, que tiene que moverse libre.",
+    "Anzuelos asistentes que cuelgan sueltos, aparte del cuerpo.",
+    "Nada mejor con el sedal algo en diagonal que en vertical recto."
+   ],
+   "medidas_titulo": "📏 Peso",
+   "medidas": [
+    "De 40 a 80 g: poco fondo o poca deriva.",
+    "De 80 a 150 g: fondo medio o corriente moderada.",
+    "De 150 a 300 g o más: mucho fondo o corriente fuerte.",
+    "Si el sedal se va lejos del barco, sube de peso antes que cambiar de color."
+   ],
+   "usos_embarcacion": [
+    "Peces pegados al fondo o que no persiguen un jig rápido.",
+    "Una guía lo cita para dentón, pez limón, meros y pargo en piedra y veriles."
+   ],
+   "pasos": [
+    "Déjalo bajar hasta el fondo o hasta la profundidad marcada en la sonda.",
+    "Recoge el sedal flojo.",
+    "Recoge a ritmo constante y cambia la velocidad para ver qué quieren los peces.",
+    "Si hace falta, alguna levantada corta o una pausa, sin tirones fuertes.",
+    "Cada vez que toque fondo, vuelve a subirlo un poco y trabaja justo por encima para no engancharte."
+   ],
+   "ojo": "Revisa el faldón antes de cada bajada: roto, tieso o enredado en los anzuelos no trabaja. Y no lo animes como un jig rápido: el faldón deja de moverse.",
+   "fuentes": [
+    {
+     "titulo": "Demon: jigging vertical e inchiku, guía completa",
+     "url": "https://www.demonsunglasses.com/blogs/sport-fishing-blog/vertical-jigging-and-inchiku-complete-guide-to-technique-equipment-and-target-species"
+    },
+    {
+     "titulo": "Anglers Secrets: kabura, inchiku y tenya",
+     "url": "https://anglers-secrets.com/kabura-inchiku-and-tenya/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "tai-rubber",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Tai rubber (kabura)",
+   "otros_nombres": [
+    "Kabura",
+    "Tai kabura",
+    "Slider"
+   ],
+   "para": "Cabeza de plomo que corre libre por el sedal, con faldones y tiras de goma de colores y dos anzuelos pequeños y fuertes.",
+   "resumen": "Se recoge despacio y constante, sin tirones. Pensado para el pargo («tai» en japonés); también se usa para meros.",
+   "como_es": [
+    "Cabeza con peso que desliza libre por el sedal.",
+    "Faldones y tiras largas y finas de colores, que se mueven al recoger.",
+    "Entre las tiras, un asistente con dos anzuelos pequeños pero fuertes.",
+    "El nudo que une el bajo con la línea madre hace de tope para que las tiras no suban demasiado."
+   ],
+   "medidas_titulo": "📏 Peso y ritmo",
+   "medidas": [
+    "En 35–50 m, patrones de Nueva Zelanda empiezan con 140 g y pasan a 180 g si sube el viento o la corriente.",
+    "El peso que baje y se quede abajo; en la duda, más pesado.",
+    "Recogida lenta: de media vuelta a dos vueltas de manivela por segundo."
+   ],
+   "usos_embarcacion": [
+    "Pargo neozelandés (snapper), seriola (kingfish) y pez de San Pedro, en 20–100 m (mejor 30–50 m).",
+    "Pargos y meros en poco fondo (hasta unos 60 m, según una fuente).",
+    "Si cuesta que piquen, una tira pequeña de tentáculo de calamar en el anzuelo delantero."
+   ],
+   "pasos": [
+    "Pesca a la deriva; si va demasiado rápida, usa ancla de deriva.",
+    "Lanza un poco por delante del barco para que llegue antes al fondo.",
+    "Al tocar fondo, cierra el carrete.",
+    "Recoge despacio unos 3–6 m de sedal; si no pica, vuelve a bajar.",
+    "Si notas toques, no claves: sigue recogiendo igual o algo más rápido y el pez se clava solo.",
+    "Cuando el sedal se incline unos 35–40°, recoge y empieza otra deriva."
+   ],
+   "ojo": "No claves al primer toque, sigue recogiendo. Y evita los fondos muy sucios: se pierde mucho material.",
+   "fuentes": [
+    {
+     "titulo": "Boating NZ: pescar con kabura (slider)",
+     "url": "https://www.boatingnz.co.nz/?p=23055"
+    },
+    {
+     "titulo": "Anglers Secrets: kabura, inchiku y tenya",
+     "url": "https://anglers-secrets.com/kabura-inchiku-and-tenya/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "vinilo-cabeza-plomada",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Vinilo con cabeza plomada desde barco",
+   "otros_nombres": [
+    "Jig head",
+    "Cabeza plomada"
+   ],
+   "para": "Vinilo montado en una cabeza plomada para pescarlo cerca del fondo desde el barco.",
+   "resumen": "Barato y versátil: el mismo vinilo se pesca a cualquier profundidad cambiando solo el peso de la cabeza. Desde barco, en vertical o a la deriva.",
+   "como_es": [
+    "Cola de pala (shad): nada sola al recoger y al caer; imita un pececillo.",
+    "Cola rizada (grub): se mueve al caer, al recoger y hasta parado en el fondo; buena para empezar.",
+    "Cola recta o de horquilla: casi sin movimiento propio y baja más rápido; buena en fondo y mar abierto. La animas tú con la puntera.",
+    "En vertical, la cola recta suele ir mejor que la de pala, que puede girar al caer.",
+    "Color: claro y natural con agua clara y sol; oscuro con agua turbia o poca luz; flúor si nada funciona (más en «Colores del señuelo: cuál elegir»)."
+   ],
+   "medidas_titulo": "📏 Peso de la cabeza",
+   "medidas": [
+    "En bahías y mar abierto, de unos 3,5 g (1/8 oz) a 85 g (3 oz); con vinilos grandes, mucho fondo y corriente fuerte, más.",
+    "Más fondo, viento o corriente: más peso. Un vinilo con cola de mucho movimiento baja más despacio.",
+    "Anzuelo a juego con el tamaño del vinilo; de alambre grueso para peces de boca fuerte."
+   ],
+   "usos_costa": [
+    "Desde costa: ver «Vinilo (señuelo blando)». Mismo vinilo, cabezas más ligeras."
+   ],
+   "usos_embarcacion": [
+    "Pesca vertical o a la deriva cerca del fondo, sobre piedra y arena.",
+    "A la deriva, lanza a favor del viento: el sedal se mantiene vertical más tiempo.",
+    "Lanza hacia arriba de la corriente para llegar más hondo con la misma cabeza."
+   ],
+   "pasos": [
+    "Pon el vinilo junto a la cabeza y fíjate en por dónde tiene que salir la punta para que quede recto.",
+    "Mete la punta por el centro de la cabeza del vinilo, como si enhebraras un gusano.",
+    "Sigue por el centro del cuerpo; si te desvías, sácalo un poco y vuelve a seguir.",
+    "Saca la punta por el lomo en el punto que marcaste.",
+    "Empuja el vinilo hasta la cabeza plomada y comprueba en el agua que nada recto."
+   ],
+   "ojo": "Ata el sedal a la anilla de la cabeza con un nudo directo, no con un lazo: con mucha presión y sedal fino el lazo puede salirse de la anilla.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Tactics: Soft Plastics 101 (cabezas y vinilos)",
+     "url": "https://tackletactics.com.au/cdn/shop/files/SoftPlastics101-01-2025.pdf"
+    },
+    {
+     "titulo": "FishTalk: elegir la cabeza plomada para cada caso",
+     "url": "https://fishtalkmag.com/blog/choosing-best-jig-situation"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "pesca-fondeado",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Pescar fondeado",
+   "otros_nombres": [
+    "Fondear",
+    "Pesca al ancla"
+   ],
+   "para": "Dejar el barco quieto con el ancla, corriente arriba de un punto concreto, para pescar encima y cebar.",
+   "resumen": "Para trabajar un pecio o una piedra que ya has marcado y tener allí a los peces con engodo. Un patrón de una revista solo fondea si ve pasto en la sonda.",
+   "como_es": [
+    "Fondea corriente arriba del punto: la corriente deja el barco encima y lleva el engodo hacia los peces.",
+    "Antes, una deriva de prueba sobre el punto te dice hacia dónde y cuánto empuja la corriente.",
+    "Ejemplos de patrones en una revista: uno fondea a 23–30 m corriente arriba del pecio; otro, a unos 90 m.",
+    "Engodo: poco y constante. Si echas mucho, pierde efecto y los peces se dispersan.",
+    "En el fondo funcionan las bolas de arena con engodo: lo bajan y reparten el olor."
+   ],
+   "medidas_titulo": "📏 Cabo",
+   "medidas": [
+    "Al menos 3 veces la profundidad; con mar, 5 veces.",
+    "Cuenta desde la proa, no desde el agua: en poco fondo, la altura de la proa cambia mucho la cuenta."
+   ],
+   "usos_embarcacion": [
+    "Pecios, piedras y bajos pequeños que quieres tener justo debajo.",
+    "Pesca con engodo para peces que hay que atraer.",
+    "Aparejos de fondo con cebo: ver «Bajo corredizo (plomo corredizo)»."
+   ],
+   "pasos": [
+    "Haz una deriva de prueba sobre el punto para ver la corriente.",
+    "Sube corriente arriba y baja el ancla por proa, sin tirarla, para que no se enrede.",
+    "Larga cabo (al menos 3 veces la profundidad) y hazlo firme en proa.",
+    "Comprueba que agarra: tensión del cabo y tu posición respecto a referencias de tierra.",
+    "Si has marcado peces, echa engodo una media hora antes de pescar y sigue echando poco y a menudo.",
+    "Revisa de vez en cuando que el ancla no garre."
+   ],
+   "ojo": "Nunca fondees por popa ni por el costado: el barco puede inundarse. Mira también «Dónde no fondear».",
+   "fuentes": [
+    {
+     "titulo": "Safe Transport Victoria: fondear (manual de navegación)",
+     "url": "https://handbook.safetransport.vic.gov.au/boating-rules/basic-boat-handling-tips/anchoring/"
+    },
+    {
+     "titulo": "Practical Boat Owner: calcular el cabo de fondeo",
+     "url": "https://www.pbo.co.uk/seamanship/estimating-anchor-scope-how-to-get-it-right-101895"
+    },
+    {
+     "titulo": "Salt Water Sportsman: estrategias de pesca en pecios",
+     "url": "https://www.saltwatersportsman.com/story/howto/wreck-fishing-strategies/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: cómo pescar con engodo",
+     "url": "https://www.saltwatersportsman.com/chumming-tips-how-to-guide/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "pesca-deriva",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Pescar a la deriva",
+   "otros_nombres": [
+    "Deriva",
+    "Drift fishing"
+   ],
+   "para": "Dejar que el viento y la corriente lleven el barco, con el motor parado o en punto muerto, mientras los aparejos van por el fondo.",
+   "resumen": "Cubres mucho fondo y encuentras peces. Lo importante es la velocidad: ni tan rápido que el aparejo salte, ni tan lento que se quede muerto.",
+   "como_es": [
+    "Velocidad buena en la mayoría de casos: de medio nudo a nudo y medio.",
+    "Viento y corriente hacia el mismo lado: deriva limpia. Opuestos: el barco se frena o se para y suele haber menos picadas.",
+    "Para frenar: ancla de deriva, sobre todo cuando el viento empuja más que la corriente. Para afinar: meter y sacar marcha.",
+    "Sedal casi vertical: vas bien. Muy por detrás del barco: vas rápido o te falta plomo. Recto y sin moverse: vas demasiado lento."
+   ],
+   "medidas_titulo": "📏 Plomo",
+   "medidas": [
+    "El más ligero que mantenga el aparejo en el fondo.",
+    "En una guía, en aguas más profundas hacen falta de 8 a 12 onzas (unos 225–340 g) para no despegarse del fondo."
+   ],
+   "usos_embarcacion": [
+    "Fondos de arena y cascajo con peces repartidos.",
+    "Jigs, inchiku, tai rubber y vinilos a la deriva.",
+    "Si fallas una picada, suelta sedal unos segundos: a veces el pez vuelve."
+   ],
+   "pasos": [
+    "Mira el viento y la corriente y elige una deriva que cruce estructura: veriles, montículos, hoyas, pecios o piedras.",
+    "Ponte corriente arriba (o viento arriba) del punto y deja el motor en punto muerto.",
+    "Baja el aparejo hasta el fondo y mira el ángulo del sedal.",
+    "Ajusta la velocidad (ancla de deriva o motor) y el plomo hasta que el sedal vaya casi vertical.",
+    "Si pica, marca el punto o guarda la traza en el GPS y repite la misma deriva."
+   ],
+   "ojo": "Los peces suelen estar juntos en zonas pequeñas cerca de la estructura: unos metros de más en la deriva cambian el día. Repite la buena.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: control del barco a la deriva",
+     "url": "https://www.thefisherman.com/article/inshore-boat-control-for-consistent-fluke-limits/"
+    },
+    {
+     "titulo": "The Fisherman: consejos de profesionales a la deriva",
+     "url": "https://www.thefisherman.com/article/inshore-fluke-tips-from-the-pros/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: estrategias de pesca en pecios",
+     "url": "https://www.saltwatersportsman.com/story/howto/wreck-fishing-strategies/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "ancla-de-deriva",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Ancla de deriva (ancla de capa)",
+   "otros_nombres": [
+    "Ancla flotante",
+    "Drift sock",
+    "Drogue"
+   ],
+   "para": "Cono de tela que se larga al agua atado al barco y frena la deriva.",
+   "resumen": "Para que el aparejo vaya más despacio y pase más tiempo sobre el fondo bueno cuando el viento empuja demasiado.",
+   "como_es": [
+    "Cono de boca ancha abierto por el extremo estrecho: el agua entra por la boca, sale por detrás y frena el barco.",
+    "Cabo de remolque atado a la brida de la boca.",
+    "Cabo de recogida en el extremo estrecho: al tirar de él, el cono se cierra y sale fácil.",
+    "Se larga por proa o por el costado."
+   ],
+   "medidas_titulo": "📏 Tamaño",
+   "medidas": [
+    "Los fabricantes dan tablas por eslora del barco: úsalas como punto de partida.",
+    "Una pequeña frena menos pero pesa menos y se maneja mejor; si la usas mucho, ten dos tamaños."
+   ],
+   "usos_embarcacion": [
+    "Deriva demasiado rápida con viento, sobre todo cuando el viento empuja más que la corriente.",
+    "Tai rubber, inchiku y aparejos de fondo que tienen que ir despacio.",
+    "Con el GPS encendido: si la deriva da peces, repite la misma traza."
+   ],
+   "ojo": "Ponle un flotador grande: si se suelta, se hunde enseguida y la pierdes.",
+   "fuentes": [
+    {
+     "titulo": "Bassmaster: lo básico del ancla de deriva",
+     "url": "https://bassmaster.com/news/drift-sock-basics"
+    },
+    {
+     "titulo": "The Fisherman: control del barco a la deriva",
+     "url": "https://www.thefisherman.com/article/inshore-boat-control-for-consistent-fluke-limits/"
+    },
+    {
+     "titulo": "Boating NZ: pescar con kabura (slider)",
+     "url": "https://www.boatingnz.co.nz/?p=23055"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "elegir-zona-sonda",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Elegir la zona con la sonda",
+   "otros_nombres": [
+    "Leer la sonda",
+    "Fondo duro"
+   ],
+   "para": "Usar la sonda para encontrar fondo duro, piedra y cambios de fondo antes de fondear o empezar la deriva.",
+   "resumen": "Los peces de fondo suelen estar en fondo duro y en la estructura. La sonda te dice si debajo hay piedra o arena.",
+   "como_es": [
+    "Banda del fondo gruesa (eco fuerte): fondo duro, como roca o arrecife. Banda fina (eco débil): fondo blando, como arena o fango.",
+    "Segundo eco fino: fondo blando. Segundo eco más ancho y oscuro: fondo duro (roca o cascajo).",
+    "El fondo duro puede tener poco relieve y aun así tener pasto y peces.",
+    "Las frecuencias bajas (50 kHz) muestran mejor cómo es el fondo."
+   ],
+   "usos_embarcacion": [
+    "Buscar veriles, montículos, hoyas, pecios y piedras para cruzarlos a la deriva.",
+    "Fondear solo cuando ves pasto o peces encima del punto.",
+    "Marcar en el GPS los puntos donde pica para volver."
+   ],
+   "pasos": [
+    "Pon una escala de profundidad algo mayor que el doble del fondo (con 15 m de fondo, unos 33 m).",
+    "Quita el filtro de ruido, sube la ganancia hasta que aparezca un segundo eco claro y bájala un poco.",
+    "Recorre la zona y fíjate en el grosor del fondo y del segundo eco.",
+    "Cuando cambie el fondo o veas peces, marca el punto.",
+    "Vuelve a ajustar la ganancia cada vez que cambie mucho la profundidad."
+   ],
+   "ojo": "La ganancia no da más potencia: solo filtra lo que se ve. Y si la frecuencia no llega a esa profundidad, subir la ganancia no arregla nada.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: sacar partido a la sonda",
+     "url": "https://www.saltwatersportsman.com/?p=54031"
+    },
+    {
+     "titulo": "Furuno: intensidad del eco y tipo de fondo",
+     "url": "https://www.furuno.com/en/technology/fishfinder/basic/story-11/index.html"
+    },
+    {
+     "titulo": "The Fisherman: control del barco a la deriva",
+     "url": "https://www.thefisherman.com/article/inshore-boat-control-for-consistent-fluke-limits/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "donde-no-fondear",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Dónde no fondear (y señales al fondear)",
+   "otros_nombres": [
+    "Normas de fondeo",
+    "RIPA"
+   ],
+   "para": "Lo que dicen las normas oficiales sobre dónde evitar fondear y cómo señalizar el barco fondeado.",
+   "resumen": "No fondees en canales ni en zonas de tráfico, ni sobre praderas protegidas. Cada comunidad y cada zona protegida puede tener reglas propias.",
+   "como_es": [
+    "Reglamento internacional para prevenir abordajes (RIPA), regla 9 g): siempre que se pueda, evita fondear en un canal angosto.",
+    "RIPA, regla 10 g): evita fondear dentro de un dispositivo de separación de tráfico o cerca de sus extremos.",
+    "RIPA, regla 30: fondeado, de día una bola a proa; de noche, luz blanca todo horizonte (con menos de 50 m de eslora basta una).",
+    "Con menos de 7 m de eslora no es obligatorio si no estás en un canal angosto, un fondeadero o una zona de paso frecuente, ni cerca de ellos.",
+    "Illes Balears (Decreto 25/2018, art. 7): prohibido con carácter general fondear sobre posidonia; sobre ella, solo con sistemas de bajo impacto (boyas autorizadas)."
+   ],
+   "usos_embarcacion": [
+    "Fondea sobre arena o piedra, lejos de canales de entrada a puertos y de zonas de paso.",
+    "En reservas marinas, parques y otras zonas protegidas puede haber reglas propias: consulta su norma antes de ir.",
+    "Respeta los campos de boyas regulados donde los haya."
+   ],
+   "ojo": "Esto no es toda la normativa: cada comunidad, puerto y zona protegida puede tener reglas propias. Consulta la norma oficial de tu zona.",
+   "fuentes": [
+    {
+     "titulo": "BOE: Reglamento internacional para prevenir los abordajes (1977)",
+     "url": "https://boe.es/boe/dias/1977/07/09/pdfs/A15421-15432.pdf"
+    },
+    {
+     "titulo": "Govern de les Illes Balears: Decreto 25/2018 de la posidonia",
+     "url": "https://www.caib.es/sites/cuidamposidonia/es/decreto_de_posidania/"
+    },
+    {
+     "titulo": "BOIB: sentencia del TSJ sobre el Decreto 25/2018",
+     "url": "https://www.caib.es/eboibfront/pdf/es/2021/125/1096200"
+    },
+    {
+     "titulo": "Safe Transport Victoria: fondear (manual de navegación)",
+     "url": "https://handbook.safetransport.vic.gov.au/boating-rules/basic-boat-handling-tips/anchoring/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "fusil-gomas-neumatico",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Fusil de gomas o neumático",
+   "otros_nombres": [
+    "Arbalete",
+    "Fusil de aire comprimido",
+    "Speargun"
+   ],
+   "para": "El arma que dispara la varilla: con gomas que estiras tú o con aire a presión dentro.",
+   "resumen": "El de gomas es el más sencillo y el más usado; el neumático da mucha potencia para su tamaño, pero pide más mantenimiento.",
+   "como_es": [
+    "De gomas: una o varias gomas que estiras hasta engancharlas en la varilla. Es el más simple y el más barato de mantener.",
+    "En el de gomas cambias la potencia poniendo o quitando gomas, y dispara casi sin ruido.",
+    "Las gomas se gastan: cámbialas antes de que se deterioren, porque una goma vieja es peligrosa.",
+    "Neumático: la varilla va dentro de un cañón cerrado con aire que bombeas a mano. Mucha potencia para su tamaño.",
+    "El neumático pierde potencia cuanto más bajas y necesita más mantenimiento."
+   ],
+   "medidas_titulo": "📏 Largo y alcance",
+   "medidas": [
+    "Los fusiles miden normalmente entre 0,5 y 2 m.",
+    "Un fusil de gomas tipo europeo alcanza de forma eficaz unas tres veces el largo de la varilla, contado desde la punta del fusil."
+   ],
+   "ojo": "Nunca lleves el fusil cargado fuera del agua: es peligroso y está prohibido en España (RD 347/2011, art. 16) y en Portugal (Portaria 14/2014, art. 3). Lleva el seguro puesto salvo en el momento de disparar.",
+   "fuentes": [
+    {
+     "titulo": "Scuba.com: Guía de compra de pesca submarina (en inglés)",
+     "url": "https://www.scuba.com/i/spearfishing"
+    },
+    {
+     "titulo": "Wikipedia: Speargun (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    },
+    {
+     "titulo": "BOE: Real Decreto 347/2011, pesca marítima de recreo (texto consolidado)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "Portaria n.º 14/2014 (Diário da República, 1.ª série, n.º 16), en portugués",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "fusil-largo",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Largo del fusil: según el agua",
+   "otros_nombres": [
+    "Medida del fusil",
+    "Speargun length"
+   ],
+   "para": "Cómo elegir lo largo que debe ser el fusil.",
+   "resumen": "Manda la visibilidad: agua turbia y piedra, fusil corto; agua clara y peces de media agua, fusil largo.",
+   "como_es": [
+    "Con poca visibilidad el pez aparece cerca: necesitas un fusil corto y manejable.",
+    "En agua clara el pez te ve de lejos y el tiro es más largo: ahí rinde un fusil largo, más preciso a distancia.",
+    "Para peces de roca que se meten en agujeros y cuevas, fusil corto: hay que apuntar rápido antes de que se escondan.",
+    "Con peces que nadan a media agua hay más tiempo para apuntar y la manejabilidad importa menos.",
+    "El corto se mueve mejor entre piedras y es más fácil para empezar; el largo da más potencia, pero es menos ágil.",
+    "Peces más grandes piden fusiles más largos."
+   ],
+   "medidas_titulo": "📏 Alcance",
+   "medidas": [
+    "El alcance eficaz es de dos a tres veces lo que se estiran las gomas.",
+    "El largo se mide desde la boca del fusil hasta el final de la empuñadura.",
+    "No hay una tabla fija de centímetros por visibilidad: prueba y ajusta a tu zona."
+   ],
+   "ojo": "No elijas el más largo pensando que pescarás más: en agua turbia o entre piedras un fusil largo es lento de girar y te hace perder tiros.",
+   "fuentes": [
+    {
+     "titulo": "Neptonics: Cómo elegir el largo del fusil (en inglés)",
+     "url": "https://neptonics.com/blogs/spearfishing-101/howtopicktherightspeargunlengthforyou"
+    },
+    {
+     "titulo": "Adreno: Cómo elegir el largo del fusil (en inglés)",
+     "url": "https://adreno.com.au/blogs/news/how-to-choose-right-speargun-length"
+    },
+    {
+     "titulo": "Scuba.com: Guía de compra de pesca submarina (en inglés)",
+     "url": "https://www.scuba.com/i/spearfishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "varilla-punta",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Varilla y punta (tahitiana, roscada, desprendible)",
+   "otros_nombres": [
+    "Arpón",
+    "Flecha",
+    "Tahitiana",
+    "Slip tip"
+   ],
+   "para": "La varilla de acero que dispara el fusil y la punta que sujeta el pez.",
+   "resumen": "Punta fija con aleta para peces de roca; punta desprendible, sobre varilla roscada, para peces grandes de media agua.",
+   "como_es": [
+    "Tahitiana: varilla de una pieza, con la punta en la propia varilla y una aleta abatible que se abre dentro del pez. Es rápida y precisa, pero a veces atraviesa el pez de lado a lado.",
+    "Roscada: la punta se enrosca y se cambia cuando se estropea. Hay puntas cortas con una aleta y puntas más largas con varias aletas.",
+    "Desprendible: unos 10–15 cm de punta se separan tras entrar y quedan unidos a la varilla por cable o cabo. Se recomienda para peces grandes.",
+    "Punta fija con aleta: para peces de roca. Desprendible: para peces de media agua, de carne más blanda, que con una varilla fija pueden desgarrarse y escapar.",
+    "En el mismo fusil, la varilla roscada tiene que ser más corta que la de punta fija."
+   ],
+   "medidas_titulo": "📏 Grosor y largo",
+   "medidas": [
+    "Fina (6,5–7,5 mm): más ligera, llega más lejos y penetra mejor, pero se dobla más con peces grandes de roca.",
+    "Gruesa (8 mm): para peces grandes de media agua.",
+    "La varilla debe sobresalir unos 23–28 cm (9–11 pulgadas) por delante del fusil."
+   ],
+   "ojo": "Lleva una varilla de repuesto: una varilla doblada sin recambio te acaba la jornada.",
+   "fuentes": [
+    {
+     "titulo": "Neptonics: Cómo elegir la varilla (en inglés)",
+     "url": "https://neptonics.com/spearfishing-101/choosing-the-right-spear-shaft"
+    },
+    {
+     "titulo": "Adreno: Varilla tahitiana y hawaiana (en inglés)",
+     "url": "https://adreno.com.au/blogs/news/tahitian-vs-hawaiian-floppers-spear-tip-differences"
+    },
+    {
+     "titulo": "Wikipedia: Speargun (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "fusil-carrete-boya",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Carrete o boya en el fusil",
+   "otros_nombres": [
+    "Carrete de fusil",
+    "Cabo de boya",
+    "Float line"
+   ],
+   "para": "Lo que une el fusil a más cabo o a una boya para no perder ni el pez ni la varilla.",
+   "resumen": "El carrete suelta cabo cuando el pez tira; el cabo a una boya te deja seguir al pez y localizar la varilla. Elige según el fondo.",
+   "como_es": [
+    "El hilo de la varilla se enrolla en el fusil al cargar y se suelta al disparar. Mejor fino, para frenar poco, y fuerte: unos 135 kg (300 lb) como mínimo.",
+    "Carrete: va montado en el fusil y suelta cabo tras el disparo para que puedas cansar al pez. Útil donde piedras o algas impiden arrastrar una boya.",
+    "Cabo de boya: une el fusil a la boya. Puede ser de cabo trenzado, de monofilamento dentro de un tubo estanco o de cabo elástico.",
+    "Con boya localizas la varilla entre algas y recuperas peces que se meten en agujeros.",
+    "Si usas la boya de señalización, no te alejes de ella más de lo que permite la norma: 25 m en España y 30 m en Portugal (mira la ficha de la boya)."
+   ],
+   "ojo": "Cualquier cabo en el agua puede enredarse en ti o en el fusil. Revísalo al cargar y lleva un cuchillo a mano.",
+   "fuentes": [
+    {
+     "titulo": "Wikipedia: Speargun (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    },
+    {
+     "titulo": "Scuba.com: Guía de compra de pesca submarina (en inglés)",
+     "url": "https://www.scuba.com/i/spearfishing"
+    },
+    {
+     "titulo": "BOE: Real Decreto 347/2011, pesca marítima de recreo (texto consolidado)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "Portaria n.º 14/2014 (Diário da República, 1.ª série, n.º 16), en portugués",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "traje-submarina",
+   "tema": "traje-plomos-aletas",
+   "tipo": "material",
+   "nombre": "Traje de neopreno para submarina",
+   "otros_nombres": [
+    "Neopreno",
+    "Traje de célula abierta",
+    "Wetsuit"
+   ],
+   "para": "El traje que te protege del frío mientras pescas en apnea.",
+   "resumen": "El grosor depende de la temperatura del agua; el de célula abierta por dentro es de los más calientes.",
+   "como_es": [
+    "Célula abierta por dentro: de los más calientes. Es más caro y más frágil, y para ponértelo hay que lubricarlo, por ejemplo con agua y un poco de acondicionador o polvos de talco.",
+    "Forrado por fuera (liso): se pone fácil, seca rápido y protege del viento, pero se estropea si lo rozas contra roca.",
+    "Dos piezas (chaqueta y pantalón o peto): se solapan en el tronco y abrigan más en agua fría.",
+    "Busca un refuerzo en el pecho: protege al cargar el fusil.",
+    "El neopreno flota y al bajar se comprime: un traje grueso flota mucho arriba y pierde flotación en el fondo; uno fino cambia menos.",
+    "Color: azul o camuflaje azul en agua clara; marrones en fondo de roca."
+   ],
+   "medidas_titulo": "📏 Grosor según el agua",
+   "medidas": [
+    "Agua cálida (24–28 °C): 1–2,5 mm.",
+    "Agua fresca (16–23 °C): 3–5 mm.",
+    "Agua muy fría: 7 mm."
+   ],
+   "ojo": "Si cambias de grosor de traje, vuelve a calcular el lastro: más neopreno pide más plomo.",
+   "fuentes": [
+    {
+     "titulo": "Adreno: Cómo elegir el traje de pesca submarina (en inglés)",
+     "url": "https://adreno.com.au/blogs/news/choosing-a-spearfishing-wetsuit"
+    },
+    {
+     "titulo": "SSI: Flotabilidad en apnea (en inglés)",
+     "url": "https://www.divessi.com/en/blog/how-to-master-freediving-buoyancy-2179"
+    },
+    {
+     "titulo": "DAN: Weight Up, cómo lastrarse (en inglés)",
+     "url": "https://dan.org/alert-diver/article/weight-up/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "lastre-submarina",
+   "tema": "traje-plomos-aletas",
+   "tipo": "material",
+   "nombre": "Lastre: cuánto plomo llevar",
+   "otros_nombres": [
+    "Cinturón de plomos",
+    "Flotabilidad neutra",
+    "Lastrarse"
+   ],
+   "para": "Los plomos que compensan lo que flotan tu cuerpo y tu traje.",
+   "resumen": "Lleva el plomo justo para flotar en superficie y quedar neutro hacia los 10–12 m. Pasarse de plomo es uno de los factores de los síncopes.",
+   "como_es": [
+    "Cinturón de goma con hebilla de suelta rápida, que puedas soltar tú o tu compañero.",
+    "Al bajar, el traje y los pulmones se comprimen: flotas menos y, pasado el punto neutro, te hundes casi sin esfuerzo.",
+    "La mayoría de los apneístas quedan neutros entre 10 y 12 m.",
+    "Tienes que flotar en superficie incluso tras soltar todo el aire: si pierdes el conocimiento, tu compañero debe poder mantenerte arriba.",
+    "En los últimos 10 m debes subir con flotación positiva: el final de la subida es lo más duro.",
+    "Con exceso de plomo bajas muy rápido y subes agotado; muchos síncopes ocurren con buceadores agotados, sobrelastrados y sin vigilancia."
+   ],
+   "pasos": [
+    "Ponte todo el equipo: traje, cinturón y aletas.",
+    "En el agua, flota en vertical, relajado, y suelta todo el aire.",
+    "Mira dónde queda el agua: lo ideal, a la altura de las cejas.",
+    "Si te hundes rápido, quita plomo; si te cuesta sumergirte, añade un poco.",
+    "Repite la prueba cada vez que cambies de traje o de zona."
+   ],
+   "ojo": "Ante la duda, quédate corto de plomo. Y enséñale a tu compañero cómo se suelta tu cinturón.",
+   "fuentes": [
+    {
+     "titulo": "SSI: Flotabilidad en apnea (en inglés)",
+     "url": "https://www.divessi.com/en/blog/how-to-master-freediving-buoyancy-2179"
+    },
+    {
+     "titulo": "DAN Europe: 15 reglas básicas para una apnea más segura (en inglés)",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    },
+    {
+     "titulo": "DAN: Síncope en aguas poco profundas (en inglés)",
+     "url": "https://dan.org/?p=44103"
+    },
+    {
+     "titulo": "Scuba.com: Guía de equipo de apnea (en inglés)",
+     "url": "https://www.scuba.com/blog/freediving-equipment-guide/"
+    },
+    {
+     "titulo": "DAN: Weight Up, cómo lastrarse (en inglés)",
+     "url": "https://dan.org/alert-diver/article/weight-up/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "aletas-mascara-tubo",
+   "tema": "traje-plomos-aletas",
+   "tipo": "material",
+   "nombre": "Aletas, máscara y tubo",
+   "otros_nombres": [
+    "Aletas largas",
+    "Máscara de bajo volumen",
+    "Snorkel"
+   ],
+   "para": "El equipo básico para moverte y ver bajo el agua en apnea.",
+   "resumen": "Aletas largas para avanzar con poco esfuerzo, máscara de volumen bajo para compensar fácil y un tubo sencillo.",
+   "como_es": [
+    "Aletas de pala larga (hasta un metro): avanzas más con menos esfuerzo aguantando la respiración.",
+    "Pala de plástico para empezar: resistente y fácil de llevar de viaje. Fibra de vidrio o carbono: más ligeras, pero más frágiles.",
+    "Usa dos aletas, no monoaleta: son las de la apnea recreativa y las de vigilar al compañero.",
+    "Máscara de volumen bajo: poco aire entre el cristal y la cara. Gastas menos aire de los pulmones para compensarla al bajar y evitas que se te pegue a la cara.",
+    "Tubo: cuanto más sencillo, mejor. Solo sirve para respirar en superficie mientras te preparas.",
+    "Sácate el tubo de la boca antes de bajar: al subir tendrías que soplar fuerte para vaciarlo justo cuando necesitas aire, y si pierdes el conocimiento deja entrar agua."
+   ],
+   "ojo": "No fuerces nunca la compensación de los oídos: si no compensa, sube. Forzarla puede romper el tímpano o dañar el oído interno.",
+   "fuentes": [
+    {
+     "titulo": "SSI: Equipo de apnea imprescindible (en inglés)",
+     "url": "https://www.divessi.com/en/blog/diving/page/freediving-gear-9186.html"
+    },
+    {
+     "titulo": "Scuba.com: Guía de equipo de apnea (en inglés)",
+     "url": "https://www.scuba.com/blog/freediving-equipment-guide/"
+    },
+    {
+     "titulo": "DAN Europe: 15 reglas básicas para una apnea más segura (en inglés)",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-submarina",
+   "tema": "boya-seguridad",
+   "tipo": "material",
+   "nombre": "Boya de señalización",
+   "otros_nombres": [
+    "Boya de pesca submarina",
+    "Bandera Alfa",
+    "Boya de buceador"
+   ],
+   "para": "La boya que avisa a las embarcaciones de que hay un buceador debajo.",
+   "resumen": "Es obligatoria en España y en Portugal y tienes que quedarte cerca de ella. Que te arrolle una embarcación es uno de los mayores riesgos de la apnea.",
+   "como_es": [
+    "España: cada buceador marca su posición con una boya claramente visible y no puede alejarse de ella más de 25 m (Real Decreto 347/2011, art. 15).",
+    "España: fuera de la zona de baño balizada, la apnea debe señalizarse con un dispositivo en superficie: una boya de color muy visible con la bandera «Alfa» del Código Internacional de Señales (Real Decreto 550/2020, art. 2 y 5).",
+    "España: el RD 550/2020 obliga a las embarcaciones a 50 m de las zonas de buceo, pero la apnea queda fuera de ese artículo. No hay una distancia estatal para la pesca submarina: consulta tu comunidad autónoma y la Capitanía.",
+    "Portugal (continente): boya redonda o cilíndrica, roja, naranja o amarilla, de 8 litros como mínimo y con bandera Alfa; o una tabla de al menos 70 × 40 × 5 cm con mástil de 40 cm o más y bandera Alfa (Portaria 14/2014, art. 2).",
+    "Portugal: la boya no puede estar a más de 30 m de ti, cualquier embarcación debe quedarse a 50 m de ella y la embarcación de apoyo tiene que izar la bandera Alfa (Portaria 14/2014, art. 4 y 7).",
+    "En la boya puedes llevar agua y repuestos, y agarrarte a ella para descansar."
+   ],
+   "medidas_titulo": "📏 Distancias",
+   "medidas": [
+    "España: buceador a 25 m de su boya como máximo.",
+    "Portugal: buceador a 30 m de su boya como máximo; embarcaciones a 50 m de la boya."
+   ],
+   "ojo": "Muchas embarcaciones no respetan la boya, pero es lo único que avisa de que estás ahí. Si vas con embarcación de apoyo, que ice la bandera Alfa: reduce mucho el riesgo.",
+   "fuentes": [
+    {
+     "titulo": "BOE: Real Decreto 347/2011, pesca marítima de recreo (texto consolidado)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "BOE: Real Decreto 550/2020, seguridad de las actividades de buceo",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2020-6745"
+    },
+    {
+     "titulo": "Portaria n.º 14/2014 (Diário da República, 1.ª série, n.º 16), en portugués",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    },
+    {
+     "titulo": "DAN Europe: 15 reglas básicas para una apnea más segura (en inglés)",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "cabo-cuchillo-aviso",
+   "tema": "boya-seguridad",
+   "tipo": "material",
+   "nombre": "Cabo, cuchillo y cómo pedir ayuda",
+   "otros_nombres": [
+    "Cabo de boya",
+    "Cuchillo de buceo",
+    "Radio VHF"
+   ],
+   "para": "El cabo que te une a la boya, el cuchillo para soltarte y lo necesario para avisar si algo va mal.",
+   "resumen": "Con el cabo tu compañero sabe dónde estás; el cuchillo te suelta si te enredas; una radio te comunica con tierra.",
+   "como_es": [
+    "El cabo une la boya al fusil. Puede ser trenzado, de monofilamento dentro de un tubo estanco o elástico.",
+    "Con la boya y su cabo tu compañero te sigue y sabe en todo momento dónde estás.",
+    "Cuchillo: sirve para liberarte si te enredas. Lleva solo lo imprescindible.",
+    "Para pedir ayuda, mejor una radio VHF: en el mar el móvil no siempre tiene cobertura.",
+    "Lleva apuntados los teléfonos de emergencia y el canal de VHF de tu zona."
+   ],
+   "ojo": "Antes de entrar al agua, acuerda con tu compañero qué hará cada uno si uno se enreda o tiene un síncope.",
+   "fuentes": [
+    {
+     "titulo": "Wikipedia: Speargun (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    },
+    {
+     "titulo": "DAN: A Rude Awakening, caso real de samba pescando (en inglés)",
+     "url": "https://dan.org/alert-diver/article/a-rude-awakening/"
+    },
+    {
+     "titulo": "Scuba.com: Guía de equipo de apnea (en inglés)",
+     "url": "https://www.scuba.com/blog/freediving-equipment-guide/"
+    },
+    {
+     "titulo": "DAN Europe: 15 reglas básicas para una apnea más segura (en inglés)",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "apnea-companero",
+   "tema": "apnea-segura",
+   "tipo": "material",
+   "nombre": "Nunca solo: uno arriba, uno abajo",
+   "otros_nombres": [
+    "Compañero de apnea",
+    "One up, one down",
+    "Buddy"
+   ],
+   "para": "La regla básica de la apnea: mientras uno baja, el otro le vigila desde arriba.",
+   "resumen": "Casi todos los síncopes acaban bien si hay un compañero al lado que saque al buceador del agua. Sin él, pueden acabar en ahogamiento.",
+   "como_es": [
+    "El accidente más temido en apnea es el síncope; casi siempre se resuelve sin consecuencias si hay un compañero al lado que le saque la cara del agua.",
+    "«Mismo mar, misma hora» no es ir con compañero: si cada uno pesca por su lado, nadie vigila al otro.",
+    "El que está arriba se dedica solo a vigilar.",
+    "El sistema protege en bajadas sencillas y con buena visibilidad; cuanto más complicada es la bajada, más fácil es que falle."
+   ],
+   "pasos": [
+    "Antes de entrar, repasad qué hará cada uno si hay un síncope o una samba.",
+    "Baja solo uno. El otro se queda en superficie, encima de él, mirándole todo el rato.",
+    "Cuando el que bucea sube, el compañero baja a su encuentro, más o menos a un tercio de la profundidad, y sube a su lado, un poco por debajo.",
+    "En superficie, el compañero le mira la cara y le vigila al menos 30 segundos más: hay síncopes que llegan al salir.",
+    "Solo cuando el que ha subido está recuperado, cambiáis los papeles."
+   ],
+   "ojo": "Haz un curso de apnea con instructor: aprenderás a rescatar a tu compañero, y él a ti.",
+   "fuentes": [
+    {
+     "titulo": "DAN Europe: 15 reglas básicas para una apnea más segura (en inglés)",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    },
+    {
+     "titulo": "DAN: Hipoxia en el buceo en apnea (en inglés)",
+     "url": "https://dan.org/alert-diver/article/hypoxia-in-breath-hold-diving/"
+    },
+    {
+     "titulo": "SSI: Cómo ser el mejor compañero de apnea",
+     "url": "https://www.divessi.com/es/blog/freediving-buddy-9507.html"
+    },
+    {
+     "titulo": "DAN: A Rude Awakening, caso real de samba pescando (en inglés)",
+     "url": "https://dan.org/alert-diver/article/a-rude-awakening/"
+    },
+    {
+     "titulo": "Wikipedia: Freediving blackout (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Freediving_blackout"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sincope-samba",
+   "tema": "apnea-segura",
+   "tipo": "material",
+   "nombre": "Síncope y samba",
+   "otros_nombres": [
+    "Blackout",
+    "Pérdida de control motor (PCM)",
+    "Síncope hipóxico"
+   ],
+   "para": "Perder el conocimiento (síncope) o el control del cuerpo (samba) por falta de oxígeno al final de una apnea.",
+   "resumen": "Llega sin avisar, casi siempre cerca de la superficie al subir o nada más salir. Lo que te salva es un compañero atento.",
+   "como_es": [
+    "Las ganas de respirar las da el CO₂, no la falta de oxígeno: puedes quedarte sin oxígeno sin sentir necesidad de respirar.",
+    "Suele pasar cerca de la superficie, en los últimos 3 m de la subida, o en superficie después de salir.",
+    "Samba: pérdida de control motor; el cuerpo tiembla o tiene espasmos y el buceador no lo controla.",
+    "Señales: va más despacio, pierde la coordinación, tiene la mirada perdida, le salen burbujas por la boca, brazos o piernas flojos.",
+    "Influyen hiperventilar, el cansancio, el exceso de plomo y la falta de vigilancia."
+   ],
+   "pasos": [
+    "Si pierde el conocimiento bajo el agua, súbelo protegiendo sus vías respiratorias: que no le entre agua.",
+    "En superficie, mantenle la cara fuera del agua.",
+    "Estimúlale con «tocar, soplar, hablar»: el método que la mayoría de las escuelas considera más eficaz.",
+    "Si no respira, hacen falta insuflaciones y ayuda de emergencia.",
+    "Después de un síncope o una samba se acabó la jornada: nada de agua durante al menos 24 horas."
+   ],
+   "ojo": "Es más frecuente de lo que parece: un 70 % de los pescadores submarinos italianos de competición había tenido al menos un síncope. No apures la apnea por un pez.",
+   "fuentes": [
+    {
+     "titulo": "DAN: Síncope en aguas poco profundas (en inglés)",
+     "url": "https://dan.org/?p=44103"
+    },
+    {
+     "titulo": "DAN: Hipoxia en el buceo en apnea (en inglés)",
+     "url": "https://dan.org/alert-diver/article/hypoxia-in-breath-hold-diving/"
+    },
+    {
+     "titulo": "Wikipedia: Freediving blackout (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Freediving_blackout"
+    },
+    {
+     "titulo": "SSI: Cómo ser el mejor compañero de apnea",
+     "url": "https://www.divessi.com/es/blog/freediving-buddy-9507.html"
+    },
+    {
+     "titulo": "DAN: A Rude Awakening, caso real de samba pescando (en inglés)",
+     "url": "https://dan.org/alert-diver/article/a-rude-awakening/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "apnea-respiracion",
+   "tema": "apnea-segura",
+   "tipo": "material",
+   "nombre": "Respirar antes y después de cada bajada",
+   "otros_nombres": [
+    "Hiperventilación",
+    "Respiración de recuperación",
+    "Descanso en superficie"
+   ],
+   "para": "Cómo prepararte en superficie y cómo recuperarte al subir.",
+   "resumen": "No hiperventiles antes de bajar; haz respiración de recuperación al salir y descansa en superficie al menos el doble de lo que duró la bajada.",
+   "como_es": [
+    "Hiperventilar es respirar fuerte y seguido para bajar el CO₂. No añade oxígeno: solo retrasa las ganas de respirar y aumenta el riesgo de síncope.",
+    "Bastan unas pocas respiraciones forzadas (6 o 7) para hiperventilar. Llamarlo «respiraciones de limpieza» no cambia nada.",
+    "Como mucho, dos respiraciones completas antes de bajar.",
+    "Si notas hormigueo en las manos o la cara, para la preparación y espera unos minutos."
+   ],
+   "pasos": [
+    "Al empezar, haz 3 o 4 bajadas de calentamiento, a no más de 5 m.",
+    "En superficie, respira tranquilo, con el diafragma y a tu ritmo natural.",
+    "Antes de bajar, dos respiraciones completas como máximo, y sácate el tubo de la boca.",
+    "Al salir, respiración de recuperación: suelta parte del aire, inspira rápido y cierra la garganta un momento haciendo presión; repítelo durante unos 30 segundos.",
+    "Descansa en superficie al menos el doble de lo que duró la bajada, y el triple si fue profunda."
+   ],
+   "ojo": "En jornadas largas bebe agua aunque no tengas sed, no bucees en ayunas ni tras una comida pesada, y si estás cansado, tienes calambres o falla el equipo, sal del agua.",
+   "fuentes": [
+    {
+     "titulo": "DAN: Hipoxia en el buceo en apnea (en inglés)",
+     "url": "https://dan.org/alert-diver/article/hypoxia-in-breath-hold-diving/"
+    },
+    {
+     "titulo": "DAN Europe: 15 reglas básicas para una apnea más segura (en inglés)",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    },
+    {
+     "titulo": "Wikipedia: Freediving blackout (en inglés)",
+     "url": "https://en.wikipedia.org/wiki/Freediving_blackout"
+    },
+    {
+     "titulo": "DAN: Seguridad en apnea (en inglés)",
+     "url": "https://dan.org/alert-diver/article/freediving-safety-awareness"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "normas-submarina-espana",
+   "tema": "normas-submarina",
+   "tipo": "material",
+   "nombre": "Normas generales en España",
+   "otros_nombres": [
+    "Real Decreto 347/2011",
+    "Pesca marítima de recreo submarina"
+   ],
+   "para": "Lo que dice la norma estatal sobre la pesca submarina en aguas exteriores.",
+   "resumen": "Licencia autonómica, solo a pulmón libre, solo de día, fusil descargado fuera del agua y boya a menos de 25 m. Tu comunidad autónoma y cada reserva marina añaden sus propias normas.",
+   "como_es": [
+    "Solo a pulmón libre: sin ningún equipo que permita respirar bajo el agua ni propulsores mecánicos (art. 3).",
+    "Necesitas la licencia de actividad que expide una comunidad autónoma del litoral (o Ceuta y Melilla), y cumplir las normas de la comunidad en cuya costa pescas (art. 13).",
+    "Solo arpón manual o impulsado por medios mecánicos, con una o varias puntas. Prohibido pescar si en la embarcación van a la vez material de pesca submarina y equipos de respiración (art. 14).",
+    "Boya de señalización claramente visible, sin alejarte más de 25 m de ella (art. 15).",
+    "Prohibido: fusil cargado fuera del agua; puntas explosivas, eléctricas o electrónicas; focos, salvo linternas de mano; hidrodeslizadores y vehículos parecidos; y pescar de noche, del ocaso al orto (art. 16).",
+    "También prohibido atraer los peces con cualquier medio, como luces, salvo el brumeo con pequeños pelágicos; usar sustancias venenosas, narcóticas, explosivas o contaminantes; e interferir con la pesca profesional (art. 12 y 16).",
+    "Solo especies del anexo I, con su talla mínima, y nunca para vender (art. 1 y 4)."
+   ],
+   "medidas_titulo": "📏 Distancias (RD 347/2011, art. 12 y 15)",
+   "medidas": [
+    "A tu boya: 25 m como máximo.",
+    "A barcos de pesca profesional: 300 m como mínimo.",
+    "A sus artes caladas: 148 m como mínimo.",
+    "Al perímetro de instalaciones de acuicultura: 200 m como mínimo."
+   ],
+   "ojo": "Esto es el mínimo estatal para aguas exteriores. La edad mínima, el tipo de licencia, los cupos, las vedas, las zonas prohibidas y las aguas interiores los regula cada comunidad autónoma, y cada reserva marina tiene sus propias reglas. Consúltalas antes de salir.",
+   "fuentes": [
+    {
+     "titulo": "BOE: Real Decreto 347/2011, pesca marítima de recreo (texto consolidado)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "BOE: Real Decreto 550/2020, seguridad de las actividades de buceo",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2020-6745"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "normas-submarina-portugal",
+   "tema": "normas-submarina",
+   "tipo": "material",
+   "nombre": "Normas generales en Portugal",
+   "otros_nombres": [
+    "Portaria 14/2014",
+    "Pesca lúdica submarina"
+   ],
+   "para": "Lo que dicen las normas portuguesas sobre la pesca submarina en el continente.",
+   "resumen": "Licencia de pesca lúdica, solo en apnea, solo de día, sin cebo, boya a menos de 30 m y 15 kg al día como máximo. Las áreas protegidas y las Capitanías añaden restricciones.",
+   "como_es": [
+    "Solo en apnea (Decreto-Lei 246/2000, en la redacción del Decreto-Lei 101/2013, art. 9) y con licencia de pesca lúdica.",
+    "Útiles permitidos: fusil submarino (sin explosivo ni gas comprimido artificialmente), cuchillo de marisqueo, gancho (puxeiro) y arrilhada. Ni cebo ni engodo (Portaria 14/2014, art. 3 y 5).",
+    "Prohibido llevar a bordo a la vez fusil y equipo de respiración, y llevar el fusil armado fuera del agua o en zonas donde la submarina está prohibida (art. 3).",
+    "Boya obligatoria a 30 m como máximo; entre pescadores submarinos, 20 m salvo acuerdo; las embarcaciones, a 50 m de la boya (art. 4, 6 y 7).",
+    "Prohibida entre la puesta y la salida del sol, y en los canales de navegación de barras y desembocaduras, los canales de acceso a puertos y los canales balizados (art. 7 y 8).",
+    "Máximo 15 kg al día por pescador, sin contar el ejemplar más grande (art. 12).",
+    "Especies que no se pueden capturar en submarina (anexo I): entre otras, meros, langostas, bogavante y atún rojo.",
+    "Según la DGRM, en la Reserva Natural de las Berlengas y en todo el Parque Natural de la Arrábida la pesca submarina está prohibida; en otras áreas protegidas hay zonas vetadas."
+   ],
+   "medidas_titulo": "📏 Cifras (Portaria 14/2014)",
+   "medidas": [
+    "Boya: 30 m como máximo del pescador; 8 litros como mínimo.",
+    "Entre pescadores submarinos: 20 m.",
+    "Embarcaciones: 50 m de la boya.",
+    "Capturas: 15 kg al día, sin contar el mayor ejemplar."
+   ],
+   "ojo": "Estas reglas son de la Portaria 14/2014, que se aplica al continente; Azores y Madeira tienen normativa regional. Las Capitanías pueden añadir restricciones por edicto y la lista de especies puede cambiar: consúltalo en la DGRM y en la Capitanía antes de salir.",
+   "fuentes": [
+    {
+     "titulo": "Portaria n.º 14/2014 (Diário da República, 1.ª série, n.º 16), en portugués",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    },
+    {
+     "titulo": "Decreto-Lei n.º 101/2013 (Diário da República), en portugués",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/DL-101-2013-de25-julho.pdf"
+    },
+    {
+     "titulo": "DGRM: preguntas frecuentes de pesca lúdica 2026 (en portugués)",
+     "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc"
+    }
+   ],
+   "consultada": "2026-11-20"
   }
  ],
  "nota_resistencia": "Media simple de las pruebas publicadas que se encontraron (Mikel, 2026-11-20: «cuando encuentres dos o tres referencias, pon el valor medio y ya está»). Varía mucho con el estado del sedal y con cómo se ate."

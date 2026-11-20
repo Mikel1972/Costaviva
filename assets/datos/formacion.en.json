@@ -3509,6 +3509,1598 @@
     }
    ],
    "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-surfcasting-punta-lanza",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Surfcasting set-up with a shock leader",
+   "otros_nombres": [
+    "Shock leader",
+    "Casting leader"
+   ],
+   "para": "The full surfcasting line: thin main line on the reel, a thick length (shock leader) that takes the cast, and then the rig and lead.",
+   "resumen": "The basis of any cast with a heavy lead from the beach: the thin main line flies further and the shock leader takes the force of the cast.",
+   "como_es": [
+    "Thin main line on the spool: it casts further.",
+    "Shock leader: a length of much stronger line, joined to the main line with a joining knot (for example the Albright or the double uni).",
+    "A swivel at the end of the leader: you can change rigs in a moment.",
+    "From the swivel hangs whichever rig you need (paternoster, running ledger, pulley…) with its lead.",
+    "With a braid main line, the leader also protects the braid from rubbing on rocks and shells, and your hands when landing the fish."
+   ],
+   "medidas_titulo": "📏 Strength and length",
+   "medidas": [
+    "General rule: about 10 lb of breaking strain for every ounce (28 g) of lead. With 4 oz (about 113 g), at least 40 lb; with 6 oz (about 170 g), at least 60 lb.",
+    "Typical beach values: 12–20 lb main line and 50–80 lb leader.",
+    "Length: the length of the rod plus about six turns on the spool. Other guides give 2–3 rod lengths plus 4–5 turns (about 6–9 m)."
+   ],
+   "usos_costa": [
+    "Beach surfcasting with heavy leads and long casts.",
+    "Shingle or shelly beaches: the leader stands up to abrasion better than a thin main line.",
+    "If a tangle forces you to cut the main line, re-tie the join and get back to fishing with the same rig."
+   ],
+   "usos_embarcacion": [
+    "Also used when casting from a boat (uptiding): 40–50 lb leader on a 20–25 lb main line."
+   ],
+   "pasos": [
+    "Fill the spool with the main line.",
+    "Join the shock leader to the main line with a joining knot; wet both lines before tightening.",
+    "Tie a swivel to the end of the leader.",
+    "Clip the rig and lead to the swivel.",
+    "Before every cast, check that the joining knot is on the spool, with several turns of leader over it."
+   ],
+   "ojo": "The leader must reach the reel with turns to spare: if the thin main line takes the cast, it can snap and send the lead flying. Never cast with people behind you or alongside.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: what a shock leader is (10 lb per ounce)",
+     "url": "https://planetseafishing.com/glossary/p-to-t/s/shock-leader/amp"
+    },
+    {
+     "titulo": "Fishing Megastore: using a shock leader",
+     "url": "https://blog.fishingmegastore.com/2017/06/using-shock-leader.html"
+    },
+    {
+     "titulo": "Salt Strong: shock leaders for surf fishing",
+     "url": "https://www.saltstrong.com/?p=32445"
+    },
+    {
+     "titulo": "British Sea Fishing: main line to shock leader knot",
+     "url": "https://britishseafishing.co.uk/main-line-shock-leader-knot/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: uptiding explained",
+     "url": "https://planetseafishing.com/?p=2151"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-clipado",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Clipped-down rig (with impact shield)",
+   "otros_nombres": [
+    "Clipped down rig",
+    "Bait clip rig",
+    "Impact shield"
+   ],
+   "para": "A rig where the baited hook is clipped to a bait clip or impact shield next to the lead during the cast.",
+   "resumen": "For casting as far as possible on clean sandy beaches: the rig flies tucked up and the bait reaches the bottom intact.",
+   "como_es": [
+    "The hook is clipped to a bait clip or impact shield (a plastic piece) above the lead.",
+    "When you cast, the whole rig flies together and tucked up: more aerodynamic, fewer tangles.",
+    "On hitting the water, the shield protects the bait and releases the hook.",
+    "The shield is held with an adjustable stop (silicone or rubber tubing), not a fixed crimp: that way you set it exactly where the hook reaches.",
+    "Usually single-hook; there is also a two-hook version for big baits (see Pennell rig)."
+   ],
+   "medidas_titulo": "📏 Example sizes",
+   "medidas": [
+    "Single-hook example: 60 lb rig body, 30 lb snood and a size 2/0 hook.",
+    "Beach paternosters can also carry 2 or 3 clips so they are not too long to cast."
+   ],
+   "usos_costa": [
+    "Sandy beaches where the fish feed far out and you need distance.",
+    "Clean ground, with no rocks.",
+    "Powerful (pendulum) casts: the tucked-up rig stands the cast better."
+   ],
+   "ojo": "Clean ground only: on rocks it snags. And before every cast check that the hook is properly held in the clip, or the bait will fly off.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: single hook clipped down rig",
+     "url": "https://britishseafishing.co.uk/single-hook-clipped-down/"
+    },
+    {
+     "titulo": "British Sea Fishing: distance rigs",
+     "url": "https://britishseafishing.co.uk/terminal-tackle/distance-rigs/"
+    },
+    {
+     "titulo": "British Sea Fishing: clipped down Pennell rig for big baits",
+     "url": "https://britishseafishing.co.uk/clipped-down-rig-for-big-baits/"
+    },
+    {
+     "titulo": "Leurre de la Pêche: how to set up for surfcasting",
+     "url": "https://www.leurredelapeche.fr/es/articles/128-como-se-configura-el-surfcasting.html"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-pennell",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Pennell rig (two hooks in tandem)",
+   "otros_nombres": [
+    "Pennell",
+    "Pennel rig",
+    "Tandem hooks"
+   ],
+   "para": "Two hooks on the same snood, one at each end of a big bait.",
+   "resumen": "For big baits (whole squid, mackerel fillet, big worm baits): the fish is hooked whichever end it takes.",
+   "como_es": [
+    "The bottom hook is tied at the end of the snood.",
+    "The top hook sits further up the same snood, at whatever distance the bait needs.",
+    "Sliding top hook: wrap the snood round the shank, or hold it with a piece of silicone tubing (about 2 mm), and move it to suit the bait.",
+    "Fixed top hook: tie it on with a snell knot; it won't move, but the bait always has to be the same size.",
+    "Hooks with an up-turned eye are easier to thread."
+   ],
+   "medidas_titulo": "📏 Hooks",
+   "medidas": [
+    "Big, strong hooks, because it is for big fish. In one clipped-down example, two size 4/0.",
+    "Some anglers prefer both the same; others make the top one at least one size smaller. Both work."
+   ],
+   "usos_costa": [
+    "With a pulley (pulley Pennell) on rocky, snaggy ground, for big fish.",
+    "Clipped down (see clipped-down rig) on sandy or shingle beaches for distance.",
+    "Big fish: bass, rays or conger eel."
+   ],
+   "usos_embarcacion": [
+    "When casting from a boat (uptiding), a single snood with Pennell hooks is the most popular choice for big fish."
+   ],
+   "ojo": "With a sliding top hook, if a big fish pulls on the head of the bait, the hook can slide down to the bottom one. Always clip big baits down: loose, they flap during the cast and tangle.",
+   "fuentes": [
+    {
+     "titulo": "British Sea Fishing: Pennell hooks",
+     "url": "https://britishseafishing.co.uk/pennell-hooks/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: how to tie a Pennel rig",
+     "url": "https://planetseafishing.com/rigs-and-traces/pennel-rig"
+    },
+    {
+     "titulo": "British Sea Fishing: clipped down Pennell rig for big baits",
+     "url": "https://britishseafishing.co.uk/clipped-down-rig-for-big-baits/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: uptiding explained",
+     "url": "https://planetseafishing.com/?p=2151"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-boya-cebo-vivo",
+   "tema": "montajes-costa",
+   "tipo": "material",
+   "nombre": "Livebait float rig (bass)",
+   "otros_nombres": [
+    "Livebaiting under a float",
+    "Livebait float rig"
+   ],
+   "para": "A small live fish hung under a sliding float, with a lead that keeps it at the chosen depth.",
+   "resumen": "Widely used for bass, and also for pollack and other predators, next to rocks and breakwaters.",
+   "como_es": [
+    "It is the sliding float rig (see «Float rig»), with a drilled lead under the float that keeps the livebait down.",
+    "Between the lead and the hook, a 60–90 cm snood: the livebait swims below the lead.",
+    "A float with plenty of buoyancy for the lead and bait; bubble floats are popular for livebaiting.",
+    "Where to hook it: through the nose or lip, it swims more naturally and copes with current; through the back near the tail, it tends to swim down and away.",
+    "For bass on livebait, some anglers swap the single hook for a treble."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "medidas": [
+    "Hook size 1 to 4/0, depending on the size of the livebait: match the hook to the bait, not to the fish you're after. Too big a hook kills its life and action.",
+    "10–20 lb snood, clear nylon or fluorocarbon.",
+    "Depth: start a few metres down and go deeper until you find the fish; big pollack tend to be deeper."
+   ],
+   "usos_costa": [
+    "Bass next to rocks, breakwaters and groynes: let the tide carry the float slowly.",
+    "Pollack deeper down, close to the rock face."
+   ],
+   "usos_embarcacion": [
+    "The same rig works from a boat, at anchor or on the drift."
+   ],
+   "ojo": "Don't strike at the first touch: wait until the float goes right under. If you miss, leave it out: the fish often comes back. Before fishing with live fish as bait, check the rules where you are: each region or country may have its own.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: sliding float rig (livebaiting for bass)",
+     "url": "https://planetseafishing.com/?p=3737"
+    },
+    {
+     "titulo": "British Sea Fishing: float fishing",
+     "url": "https://britishseafishing.co.uk/fishing-tactics/float-fishing/"
+    },
+    {
+     "titulo": "Sport Fishing: hook placement with live bait",
+     "url": "https://www.sportfishingmag.com/how-to-catch-more-fish-with-live-bait/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "tramo-debil-plomo",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Weak link for the lead (rotten bottom)",
+   "otros_nombres": [
+    "Rotten bottom",
+    "Weak link",
+    "Lead release"
+   ],
+   "para": "A length of line weaker than the rest between the rig and the lead, so that if the lead snags only that piece breaks.",
+   "resumen": "On rocks and wrecks you lose the lead but get the rig back and, often, the fish.",
+   "como_es": [
+    "The lead isn't tied to the rig with the same line: it hangs on a short length of weaker line.",
+    "When the lead snags, you pull and the weak link breaks; the rest comes up.",
+    "From a boat there's no cast: just tie the lead with weaker line to a swivel or to the leg of the boom.",
+    "From the shore, the lead sits in a clip or link that holds it during the cast and releases it when it hits the water, leaving it hanging on the weak link.",
+    "There are plastic links with a lock that opens on hitting the water; the lead stays attached and breaks free if it snags."
+   ],
+   "medidas_titulo": "📏 Strength",
+   "medidas": [
+    "Weak link of about 10–15 lb (12–15 lb in the boat example), always weaker than the main line and the rig.",
+    "From a boat a length of about 7–8 cm is enough; a cable tie or a paper clip also works."
+   ],
+   "usos_costa": [
+    "Rocks and rough ground, with a plain lead.",
+    "Conger fishing among rocks and at the foot of stone piers."
+   ],
+   "usos_embarcacion": [
+    "Bottom fishing over rock or wrecks: with bottom rigs, conger rigs or booms."
+   ],
+   "ojo": "Weak-link rigs are not for power (pendulum) casting: the lead can come off mid-cast. Cast gently overhead. If the link has a plastic lock, re-set it every time you reel in.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: how to tie a rotten bottom",
+     "url": "https://planetseafishing.com/rigs-and-traces/rotten-bottom/"
+    },
+    {
+     "titulo": "British Sea Fishing: weak link releases",
+     "url": "https://britishseafishing.co.uk/gemini-breakers-weak-link-release/"
+    },
+    {
+     "titulo": "Talk Sea Fishing: flying collar rig (weak link on the boom)",
+     "url": "https://www.talkseafishing.co.uk/flying-collar-rig-2/"
+    },
+    {
+     "titulo": "British Sea Fishing: short range conger rig",
+     "url": "https://britishseafishing.co.uk/short-range-conger-rig/"
+    },
+    {
+     "titulo": "Talk Sea Fishing: boat conger rig",
+     "url": "https://www.talkseafishing.co.uk/build-boat-conger-rig/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-collar-volante",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Flying collar rig (with boom)",
+   "otros_nombres": [
+    "Flying collar",
+    "French boom",
+    "Stand-off boom"
+   ],
+   "para": "A stiff wire arm (boom) on the main line: the lead hangs from its leg and a long trace with a soft lure or bait comes off its tip.",
+   "resumen": "For pollack and coalfish over rock and wrecks from a boat: the boom drops fast without the long trace tangling.",
+   "como_es": [
+    "Stiff wire boom (French-boom type): plastic ones flex under water pressure and tangle.",
+    "The main line goes to the top eye of the boom; the lead to its leg, on a weak link.",
+    "The long clear mono trace goes to the eye at the tip, with a swivel halfway along to stop twist.",
+    "At the end, an eel-type soft lure (or a bait).",
+    "Optional: a thicker, stiffer upper half to the trace, so it tangles less at slack water."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "medidas": [
+    "Boom of at least 10 inches (about 25 cm) on reefs; 15 inches (about 38 cm) on deep wrecks.",
+    "Trace: about 10–12 ft (3–3.7 m) on reefs around 100 ft (30 m) deep; on wrecks deeper than 150 ft (45 m), at least 12 ft and typically 15–18 ft (4.5–5.5 m).",
+    "15–20 lb main line; 12–18 lb trace; 12–15 lb weak link."
+   ],
+   "usos_embarcacion": [
+    "Pollack and coalfish over wrecks and reefs, on the drift.",
+    "Hopper variant (long boom and a short 4–6 ft trace of 30–50 lb with a weighted shad) for working tight to the bottom: ling and cod.",
+    "In summer, bass over shallower wrecks."
+   ],
+   "pasos": [
+    "Let the rig drop until the lead touches bottom.",
+    "Engage the reel and lift the lead a few feet off the bottom or the wreck.",
+    "Pause a few seconds so the trace straightens out behind the boom.",
+    "Retrieve at slow to medium speed, counting the turns of the handle: when they bite, you know the depth the fish are at.",
+    "Don't strike at the first touch: keep winding until the rod pulls right over; the fish hooks itself."
+   ],
+   "ojo": "If you get plucks that don't hook up (they're nipping the lure's tail), lengthen the trace before changing colour.",
+   "fuentes": [
+    {
+     "titulo": "Talk Sea Fishing: flying collar rig",
+     "url": "https://www.talkseafishing.co.uk/flying-collar-rig-2/"
+    },
+    {
+     "titulo": "British Sea Fishing: sea fishing booms",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/sea-fishing-booms/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-congrio",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Conger rig",
+   "otros_nombres": [
+    "Conger trace",
+    "Conger eel rig"
+   ],
+   "para": "A short, very heavy running ledger rig with one big hook and strong swivels.",
+   "resumen": "Conger eels have teeth, live among rocks and wrecks and spin as they come up: the rig has to cope with all three.",
+   "como_es": [
+    "Running lead on a slider boom, between two beads, on a length of heavy mono that protects the main line from abrasion.",
+    "Below that, a strong swivel and the hook length of very heavy mono or steel wire (see «Steel wire»).",
+    "A single big hook.",
+    "The lead on a weak link (see «Weak link for the lead»): it snags a lot on that ground.",
+    "Little metalwork: fewer things to snag."
+   ],
+   "medidas_titulo": "📏 Example sizes",
+   "medidas": [
+    "Boat: braid main line; 24 in (60 cm) of 100 lb mono for the boom; 30 in (75 cm) hook length of 200 lb mono; 8/0 hook on reefs or 10/0 on wrecks with very big conger.",
+    "Shore: 30 lb main line; 100 lb wire or 100 lb-plus mono hook length; 6/0 or 8/0 hook; 10–15 lb weak link."
+   ],
+   "usos_costa": [
+    "Rock crevices, rough ground and the base of stone piers: lower the rig straight down or lob it a short way, no power casting.",
+    "Reel in free spool with the ratchet on, so the conger can take line without dragging the lead."
+   ],
+   "usos_embarcacion": [
+    "Reefs and wrecks, at anchor: 8/0 hook on reefs and 10/0 on wrecks.",
+    "Straight braid, no shock leader: better feel and more pressure."
+   ],
+   "ojo": "Conger spin as they come up: use big, good-quality swivels between the hook length and the main line, or the line will twist and break.",
+   "fuentes": [
+    {
+     "titulo": "Talk Sea Fishing: boat conger rig",
+     "url": "https://www.talkseafishing.co.uk/build-boat-conger-rig/"
+    },
+    {
+     "titulo": "British Sea Fishing: short range conger rig",
+     "url": "https://britishseafishing.co.uk/short-range-conger-rig/"
+    },
+    {
+     "titulo": "British Sea Fishing: sea fishing booms",
+     "url": "https://britishseafishing.co.uk/terminal-tackle-2/sea-fishing-booms/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-deriva-pez-plano",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Flatfish drift rig",
+   "otros_nombres": [
+    "Baited spoon rig",
+    "Flatfish spoon rig",
+    "Buttlöffel"
+   ],
+   "para": "A long trace dragged along the bottom with the boat on the drift, with coloured beads and sometimes a spoon that stirs up the sand.",
+   "resumen": "For plaice, flounder and turbot over sand: flatfish are drawn to colour and movement.",
+   "como_es": [
+    "Running ledger: a slider boom with the lead on the main line, a bead and a swivel.",
+    "A long fluorocarbon trace comes off the swivel: it stands up better to abrasion on shell.",
+    "Next to the hook, 5 or 6 coloured beads (green and black, or yellow and red).",
+    "Spoon variant: a long trace to a revolving spoon and, behind it, a short hook length with beads and the hook.",
+    "Buttlöffel variant: a figure-of-eight lead spoon acts as the weight, stirs up the bottom and flutters on the drop; it carries two snoods above it."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "medidas": [
+    "Running ledger: 4–6 ft (1.2–1.8 m) of 12–20 lb fluorocarbon; size 1 Aberdeen hook.",
+    "With a spoon: 5–10 ft (1.5–3 m) of 10 lb from the swivel to the spoon and about 6 in (15 cm) from the spoon to the hook; Aberdeen size 2 to 2/0.",
+    "Buttlöffel: 30–90 g; the lightest that keeps contact with the bottom. Snoods of about 45 cm of 10–20 lb."
+   ],
+   "usos_costa": [
+    "The buttlöffel can also be fished from the beach in shallower water, roving along the shoreline.",
+    "On clean sandy beaches at short range, with short-snood paternosters, beads and a size 1 hook."
+   ],
+   "usos_embarcacion": [
+    "Slow drifts over clean sand: the spoon flutters and draws attention.",
+    "In slack tide, a shorter trace, close to 1.5 m."
+   ],
+   "ojo": "Use the lightest lead or spoon that keeps contact with the bottom in the tide and drift there is. From the beach, several flapping hooks cut casting distance and snag more.",
+   "fuentes": [
+    {
+     "titulo": "Talk Sea Fishing: plaice drifting rig",
+     "url": "https://www.talkseafishing.co.uk/build-plaice-drifting-rig/"
+    },
+    {
+     "titulo": "Talk Sea Fishing: baited spoon rig",
+     "url": "https://www.talkseafishing.co.uk/baited-spoon-rig/"
+    },
+    {
+     "titulo": "Planet Sea Fishing: how to tie a Buttlöffel rig",
+     "url": "https://planetseafishing.com/?p=45976"
+    },
+    {
+     "titulo": "British Sea Fishing: flatfish rig",
+     "url": "https://britishseafishing.co.uk/flatfish-rig/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "montaje-uptide",
+   "tema": "montajes-fondo",
+   "tipo": "material",
+   "nombre": "Uptiding: casting from the boat",
+   "otros_nombres": [
+    "Uptiding",
+    "Boat casting",
+    "Uptide fishing"
+   ],
+   "para": "From an anchored boat, you cast the rig uptide with a grip lead, away from the hull, and leave it anchored on the bottom.",
+   "resumen": "In shallow water, boat noise scares fish feeding underneath; casting away finds them where they're undisturbed. It also needs less lead in strong tides.",
+   "como_es": [
+    "A rod rather longer than a boat rod, with a casting reel (not a big downtide winch).",
+    "20–25 lb mono main line with a 40–50 lb shock leader.",
+    "Grip lead: fixed wires in strong tides, breakout wires in weaker flow.",
+    "Simple rigs: a single snood, often with Pennell hooks for big fish. Long-snood boom rigs tangle."
+   ],
+   "medidas_titulo": "📏 Sizes",
+   "medidas": [
+    "Rods of about 9 ft 6 in–10 ft (2.9–3 m) casting about 4–8 oz (113–227 g).",
+    "Mainly used in about 60 ft (18 m) of water or less."
+   ],
+   "usos_embarcacion": [
+    "At anchor in shallow water with tide: big bottom fish that keep away from the boat.",
+    "When there's no room to let every rig out downtide without tangling."
+   ],
+   "pasos": [
+    "Get the lead and trace outside the boat before you start the cast.",
+    "Cast gently, overhead or underarm; add power as you get the hang of it.",
+    "When the lead hits bottom, keep paying out line: the tide forms a bow that digs the grip lead in.",
+    "Pay out until the line is about 45° downtide of where you cast. On a new venue, pay out double what you think.",
+    "Rest the rod against the side of the boat and wait.",
+    "Bite: the rod tip nods and then springs back (the fish has dislodged the lead). Pick up the rod, wind quickly to take up the slack and, once you feel the weight, lift: no strike is needed."
+   ],
+   "ojo": "On a boat with other people, never start the cast with the lead and hooks inside: get them over the side first, then cast. If you pay out too little line or the lead is too light, it will pull free and wash away with the tide.",
+   "fuentes": [
+    {
+     "titulo": "Planet Sea Fishing: uptiding explained",
+     "url": "https://planetseafishing.com/?p=2151"
+    },
+    {
+     "titulo": "Talk Sea Fishing: uptide rig",
+     "url": "https://www.talkseafishing.co.uk/uptide-rig/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jig-vertical",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Vertical jigging metal jig",
+   "otros_nombres": [
+    "Speed jig",
+    "Knife jig",
+    "Jig de velocidad (Spanish)"
+   ],
+   "para": "A heavy piece of metal with assist hooks that is dropped vertically from the boat and worked up with snaps or at full speed.",
+   "resumen": "For active fish, in mid-water or under bait schools, over rock and wrecks. Many bites come on the drop.",
+   "como_es": [
+    "Long and slim (knife style): sinks fast and slides sideways; short and wide: flutters more.",
+    "Tail-weighted: sinks fast. Centre-weighted: flutters and moves more from side to side.",
+    "Assist hooks on a solid ring (see “Assist hook (jigging)”).",
+    "Zero-stretch braid and a high-speed reel (see “Jigging outfit (boat)”)."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "medidas": [
+    "There is no fixed rule: the lightest jig that reaches the bottom and keeps the line almost vertical.",
+    "One source's starting point: 1 g per foot of depth (about 3 g per metre). More current or more drift, more weight.",
+    "If the line angles more than about 15°, use a heavier jig."
+   ],
+   "usos_costa": [
+    "From the shore you use a casting jig: see “Casting jig”."
+   ],
+   "usos_embarcacion": [
+    "Over rock, wrecks and bottom changes marked on the sounder.",
+    "Under bait schools, for fish hunting in mid-water.",
+    "One guide lists it for common dentex, greater amberjack, groupers, red porgy, little tunny, dolphinfish and bluefish."
+   ],
+   "pasos": [
+    "Get over the marks on the sounder and drop the jig to the bottom.",
+    "Make rod snaps of 30 to 60 cm and let the jig fall on an almost slack line.",
+    "Another way: wind at full speed through the marked zone, with the odd pause after a few turns.",
+    "Watch the line on the drop: a tap or sudden slack is a bite.",
+    "When the jig has passed the fish zone, drop it back down."
+   ],
+   "ojo": "Tie the leader directly to the solid ring, not to a split ring: a split ring can open with a big fish.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: offshore jigging tactics",
+     "url": "https://www.saltwatersportsman.com/howto/offshore-jigging-tactics/"
+    },
+    {
+     "titulo": "FishTrack: jig deep",
+     "url": "https://fishtrack.com/article/jig-deep"
+    },
+    {
+     "titulo": "Demon: vertical jigging and inchiku, complete guide",
+     "url": "https://www.demonsunglasses.com/blogs/sport-fishing-blog/vertical-jigging-and-inchiku-complete-guide-to-technique-equipment-and-target-species"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "jig-lento",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Slow pitch jig",
+   "otros_nombres": [
+    "Slow pitch jig",
+    "Slow jigging",
+    "SPJ"
+   ],
+   "para": "An asymmetric metal jig that is lifted a little at a time with the rod and allowed to flutter down like a wounded fish.",
+   "resumen": "A finesse technique, mainly for bottom fish, that is less tiring than speed jigging. Most bites come on the drop.",
+   "como_es": [
+    "Asymmetric and centre-weighted.",
+    "Short and wide: falls more slowly and flutters more; for shallower water and sluggish fish (short pitch).",
+    "Long and slim: falls faster, with a tighter action; for deeper water and active fish (long pitch).",
+    "A very light, soft rod that springs back and pitches the jig; thin braid so the line drops vertically."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "medidas": [
+    "Shallow water: 60 g or less.",
+    "Deeper grounds: 90 to 120 g.",
+    "Great depths or big offshore fish: 300 g or more."
+   ],
+   "usos_costa": [
+    "From the shore you use a casting jig: see “Casting jig”."
+   ],
+   "usos_embarcacion": [
+    "Bottom fish over rock and wrecks.",
+    "Also mid-water predators that come down to feed near the bottom.",
+    "Two experts in one magazine say it works best from about 45 m of depth."
+   ],
+   "pasos": [
+    "Drop the jig to the bottom with a little tension so it falls vertically.",
+    "Rest the rod butt under your forearm.",
+    "Lift the rod just enough to load it, then stop: the tip springs back and pitches the jig up. A sharp turn of the handle with the rod still also works.",
+    "Lower the tip and follow the fall with slack line: that is what makes the jig flutter.",
+    "Don't wind during the drop and watch the line: that is where most bites come.",
+    "Work the lower part, about 5–9 m off the bottom."
+   ],
+   "ojo": "When fighting the fish, keep the rod parallel to the water or lower: above that it can break. Gain line with the reel, not the rod.",
+   "fuentes": [
+    {
+     "titulo": "Sport Fishing: the finer points of slow-pitch jigging",
+     "url": "https://www.sportfishingmag.com/?p=47427"
+    },
+    {
+     "titulo": "On The Water: slow-pitch jigging basics",
+     "url": "https://onthewater.com/slow-pitch-jigging-basics"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "inchiku",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Inchiku",
+   "otros_nombres": [
+    "Inchiku jig"
+   ],
+   "para": "A jig with a bullet-shaped metal body and a soft octopus or squid skirt, with assist hooks.",
+   "resumen": "The body sinks fast and the skirt moves on its own: it needs little rod work. For bottom-hugging or cautious fish that feed slowly.",
+   "como_es": [
+    "Compact, heavy metal body.",
+    "Soft octopus or squid style skirt, which must move freely.",
+    "Assist hooks hanging loose, separate from the body.",
+    "It swims better with the line at a slight angle than straight up and down."
+   ],
+   "medidas_titulo": "📏 Weight",
+   "medidas": [
+    "40 to 80 g: shallow water or light drift.",
+    "80 to 150 g: medium depth or moderate current.",
+    "150 to 300 g or more: deep water or strong current.",
+    "If the line sweeps far from the boat, go up in weight before changing colour."
+   ],
+   "usos_embarcacion": [
+    "Fish holding on the bottom or not chasing a fast jig.",
+    "One guide lists it for common dentex, greater amberjack, groupers and red porgy on rock and drop-offs."
+   ],
+   "pasos": [
+    "Let it sink to the bottom or to the depth marked on the sounder.",
+    "Take up the slack.",
+    "Wind at a steady pace and vary the speed to see what the fish want.",
+    "If needed, the odd short lift or pause, with no hard snaps.",
+    "Each time it touches bottom, lift it a little and work just above to avoid snagging."
+   ],
+   "ojo": "Check the skirt before every drop: torn, stiff or tangled in the hooks, it does not work. And don't work it like a speed jig: the skirt stops moving.",
+   "fuentes": [
+    {
+     "titulo": "Demon: vertical jigging and inchiku, complete guide",
+     "url": "https://www.demonsunglasses.com/blogs/sport-fishing-blog/vertical-jigging-and-inchiku-complete-guide-to-technique-equipment-and-target-species"
+    },
+    {
+     "titulo": "Anglers Secrets: kabura, inchiku and tenya",
+     "url": "https://anglers-secrets.com/kabura-inchiku-and-tenya/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "tai-rubber",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Tai rubber (kabura)",
+   "otros_nombres": [
+    "Kabura",
+    "Tai kabura",
+    "Slider"
+   ],
+   "para": "A lead head that slides freely on the line, with coloured skirts and rubber tendrils and two small, strong hooks.",
+   "resumen": "Wound in slowly and steadily, with no jerks. Designed for sea bream (“tai” in Japanese); also used for groupers.",
+   "como_es": [
+    "Weighted head that slides freely on the line.",
+    "Long, slim, coloured skirts and tendrils that move on the retrieve.",
+    "Among the tendrils, an assist rig with two small but strong hooks.",
+    "The leader-to-mainline knot acts as a stop so the tendrils don't slide too far up."
+   ],
+   "medidas_titulo": "📏 Weight and pace",
+   "medidas": [
+    "In 35–50 m, New Zealand charter skippers start at 140 g and go to 180 g if the wind or current picks up.",
+    "A weight that gets down and stays there; if in doubt, go heavier.",
+    "Slow retrieve: half a turn to two turns of the handle per second."
+   ],
+   "usos_embarcacion": [
+    "New Zealand snapper, kingfish and john dory, in 20–100 m (best 30–50 m).",
+    "Sea bream and groupers in shallow water (up to about 60 m, per one source).",
+    "If the bite is slow, a small strip of squid tentacle on the leading hook."
+   ],
+   "pasos": [
+    "Drift-fish; if the drift is too fast, use a drift sock.",
+    "Lob the lure a little ahead of the boat so it reaches the bottom sooner.",
+    "When it touches bottom, engage the reel.",
+    "Wind slowly for about 3–6 m of line; if nothing bites, drop it back down.",
+    "If you feel taps, don't strike: keep winding at the same pace or a bit faster and the fish hooks itself.",
+    "When the line reaches about 35–40°, wind in and start another drift."
+   ],
+   "ojo": "Don't strike at the first tap, keep winding. And avoid very rough ground: you lose a lot of tackle.",
+   "fuentes": [
+    {
+     "titulo": "Boating NZ: fishing kabura (slider) lures",
+     "url": "https://www.boatingnz.co.nz/?p=23055"
+    },
+    {
+     "titulo": "Anglers Secrets: kabura, inchiku and tenya",
+     "url": "https://anglers-secrets.com/kabura-inchiku-and-tenya/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "vinilo-cabeza-plomada",
+   "tema": "jigs-vinilos",
+   "tipo": "material",
+   "nombre": "Soft plastic on a jig head from a boat",
+   "otros_nombres": [
+    "Jig head",
+    "Leadhead"
+   ],
+   "para": "A soft plastic rigged on a jig head to fish it near the bottom from a boat.",
+   "resumen": "Cheap and versatile: the same soft plastic fishes any depth just by changing the head weight. From a boat, vertically or on the drift.",
+   "como_es": [
+    "Paddle tail (shad): swims on its own on the retrieve and on the drop; imitates a small fish.",
+    "Curl tail (grub): moves on the drop, on the retrieve and even at rest on the bottom; good for beginners.",
+    "Straight or forked tail: almost no built-in action and sinks faster; good on the bottom and offshore. You work it with the rod tip.",
+    "For vertical jigging, a straight tail usually beats a paddle tail, which can spin on the drop.",
+    "Colour: light and natural in clear water and sun; dark in dirty water or low light; fluoro if nothing works (more in “Lure colours: which to choose”)."
+   ],
+   "medidas_titulo": "📏 Head weight",
+   "medidas": [
+    "In bays and offshore, from about 3.5 g (1/8 oz) to 85 g (3 oz); with big plastics, deep water and strong current, more.",
+    "More depth, wind or current: more weight. A plastic with a lively tail sinks more slowly.",
+    "Hook matched to the size of the plastic; heavy wire for fish with strong jaws."
+   ],
+   "usos_costa": [
+    "From the shore: see “Soft plastic (soft lure)”. Same plastic, lighter heads."
+   ],
+   "usos_embarcacion": [
+    "Vertical or drift fishing near the bottom, over rock and sand.",
+    "On the drift, cast downwind: the line stays vertical for longer.",
+    "Cast up-current to reach deeper with the same head."
+   ],
+   "pasos": [
+    "Hold the plastic next to the head and note where the point must come out for it to sit straight.",
+    "Push the point into the centre of the plastic's nose, as if threading a worm.",
+    "Keep going through the centre of the body; if you go off centre, pull back a little and carry on.",
+    "Push the point out through the back at the spot you noted.",
+    "Slide the plastic up to the jig head and check in the water that it swims straight."
+   ],
+   "ojo": "Tie the line to the jig head's eye with a direct knot, not a loop: with high pressure and thin line the loop can slip out of the eye.",
+   "fuentes": [
+    {
+     "titulo": "Tackle Tactics: Soft Plastics 101 (jig heads and plastics)",
+     "url": "https://tackletactics.com.au/cdn/shop/files/SoftPlastics101-01-2025.pdf"
+    },
+    {
+     "titulo": "FishTalk: choosing the best jig for the situation",
+     "url": "https://fishtalkmag.com/blog/choosing-best-jig-situation"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "pesca-fondeado",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Fishing at anchor",
+   "otros_nombres": [
+    "Anchoring",
+    "Anchored fishing"
+   ],
+   "para": "Holding the boat still on the anchor, up-current of a specific spot, to fish over it and use groundbait.",
+   "resumen": "For working a wreck or rock you have already marked and holding the fish there with chum. One skipper in a magazine only anchors if he sees bait on the sounder.",
+   "como_es": [
+    "Anchor up-current of the spot: the current sets the boat over it and carries the chum to the fish.",
+    "Beforehand, a test drift over the spot tells you which way and how hard the current is pushing.",
+    "Examples from skippers in one magazine: one anchors 23–30 m up-current of the wreck; another, about 90 m.",
+    "Chum: little and steady. Throw too much and it stops working and the fish scatter.",
+    "On the bottom, sand balls with chum work: they take it down and spread the scent."
+   ],
+   "medidas_titulo": "📏 Rode",
+   "medidas": [
+    "At least 3 times the depth; in rough water, 5 times.",
+    "Count from the bow, not the water: in shallow water, bow height changes the sum a lot."
+   ],
+   "usos_embarcacion": [
+    "Wrecks, rocks and small reefs you want right under you.",
+    "Chum fishing for fish that need drawing in.",
+    "Bottom rigs with bait: see “Running ledger (sliding lead)”."
+   ],
+   "pasos": [
+    "Make a test drift over the spot to read the current.",
+    "Move up-current and lower the anchor from the bow, don't throw it, so it doesn't tangle.",
+    "Pay out rode (at least 3 times the depth) and make it fast at the bow.",
+    "Check it is holding: rode tension and your position against landmarks.",
+    "If you have marked fish, chum for about half an hour before fishing and keep it going little and often.",
+    "Check now and then that the anchor is not dragging."
+   ],
+   "ojo": "Never anchor from the stern or the side: the boat can be swamped. Also see “Where not to anchor”.",
+   "fuentes": [
+    {
+     "titulo": "Safe Transport Victoria: anchoring (boating handbook)",
+     "url": "https://handbook.safetransport.vic.gov.au/boating-rules/basic-boat-handling-tips/anchoring/"
+    },
+    {
+     "titulo": "Practical Boat Owner: estimating anchor scope",
+     "url": "https://www.pbo.co.uk/seamanship/estimating-anchor-scope-how-to-get-it-right-101895"
+    },
+    {
+     "titulo": "Salt Water Sportsman: wreck fishing strategies",
+     "url": "https://www.saltwatersportsman.com/story/howto/wreck-fishing-strategies/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: how to fish with chum",
+     "url": "https://www.saltwatersportsman.com/chumming-tips-how-to-guide/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "pesca-deriva",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Drift fishing",
+   "otros_nombres": [
+    "Drifting",
+    "Fishing on the drift"
+   ],
+   "para": "Letting the wind and current carry the boat, with the engine off or in neutral, while the rigs work the bottom.",
+   "resumen": "You cover a lot of ground and find fish. Speed is what matters: not so fast that the rig skips, not so slow that it goes dead.",
+   "como_es": [
+    "Good speed in most cases: half a knot to one and a half knots.",
+    "Wind and current the same way: a clean drift. Opposed: the boat slows or stops and there are usually fewer bites.",
+    "To slow down: a drift sock, especially when the wind pushes harder than the current. To fine-tune: bump the engine in and out of gear.",
+    "Line almost vertical: you're right. Far behind the boat: too fast or not enough lead. Straight down and not moving: too slow."
+   ],
+   "medidas_titulo": "📏 Lead",
+   "medidas": [
+    "The lightest that keeps the rig on the bottom.",
+    "One guide says deeper water may need 8 to 12 ounces (about 225–340 g) to keep bottom contact."
+   ],
+   "usos_embarcacion": [
+    "Sand and gravel ground with scattered fish.",
+    "Jigs, inchiku, tai rubber and soft plastics on the drift.",
+    "If you miss a bite, free-spool for a few seconds: the fish sometimes comes back."
+   ],
+   "pasos": [
+    "Read the wind and current and choose a drift that crosses structure: edges, humps, depressions, wrecks or rock.",
+    "Get up-current (or upwind) of the spot and put the engine in neutral.",
+    "Drop the rig to the bottom and watch the line angle.",
+    "Adjust speed (drift sock or engine) and lead until the line is almost vertical.",
+    "If you get a bite, mark the spot or save the GPS track and repeat the same drift."
+   ],
+   "ojo": "Fish often stack up in small areas near structure: a few metres off on the drift can change the day. Repeat the good one.",
+   "fuentes": [
+    {
+     "titulo": "The Fisherman: boat control on the drift",
+     "url": "https://www.thefisherman.com/article/inshore-boat-control-for-consistent-fluke-limits/"
+    },
+    {
+     "titulo": "The Fisherman: drift tips from the pros",
+     "url": "https://www.thefisherman.com/article/inshore-fluke-tips-from-the-pros/"
+    },
+    {
+     "titulo": "Salt Water Sportsman: wreck fishing strategies",
+     "url": "https://www.saltwatersportsman.com/story/howto/wreck-fishing-strategies/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "ancla-de-deriva",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Drift sock (sea anchor)",
+   "otros_nombres": [
+    "Drogue",
+    "Drift anchor",
+    "Ancla de deriva (Spanish)"
+   ],
+   "para": "A fabric cone streamed in the water on a line from the boat to slow the drift.",
+   "resumen": "So the rig moves more slowly and spends more time over good ground when the wind is pushing too hard.",
+   "como_es": [
+    "A wide-mouthed cone open at the narrow end: water goes in the mouth, out the back, and slows the boat.",
+    "Tow line tied to the bridle at the mouth.",
+    "Retrieval (dump) line on the narrow end: pulling it collapses the cone so it comes in easily.",
+    "Streamed off the bow or the side."
+   ],
+   "medidas_titulo": "📏 Size",
+   "medidas": [
+    "Makers give charts by boat length: use them as a starting point.",
+    "A small one slows you less but is lighter and easier to handle; if you use it a lot, carry two sizes."
+   ],
+   "usos_embarcacion": [
+    "A drift that is too fast in the wind, especially when the wind pushes harder than the current.",
+    "Tai rubber, inchiku and bottom rigs that need to go slowly.",
+    "With the GPS on: if a drift produces fish, repeat the same track."
+   ],
+   "ojo": "Fit a large float: if it comes loose, it sinks at once and is gone.",
+   "fuentes": [
+    {
+     "titulo": "Bassmaster: drift sock basics",
+     "url": "https://bassmaster.com/news/drift-sock-basics"
+    },
+    {
+     "titulo": "The Fisherman: boat control on the drift",
+     "url": "https://www.thefisherman.com/article/inshore-boat-control-for-consistent-fluke-limits/"
+    },
+    {
+     "titulo": "Boating NZ: fishing kabura (slider) lures",
+     "url": "https://www.boatingnz.co.nz/?p=23055"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "elegir-zona-sonda",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Choosing the spot with the sounder",
+   "otros_nombres": [
+    "Reading the sounder",
+    "Hard bottom"
+   ],
+   "para": "Using the sounder to find hard bottom, rock and bottom changes before anchoring or starting the drift.",
+   "resumen": "Bottom fish are usually on hard ground and structure. The sounder tells you whether there is rock or sand below.",
+   "como_es": [
+    "Thick bottom band (strong echo): hard bottom, such as rock or reef. Thin band (weak echo): soft bottom, such as sand or mud.",
+    "Thin second echo: soft bottom. Wider, darker second echo: hard bottom (rock or rubble).",
+    "Hard bottom may have little relief and still hold bait and fish.",
+    "Low frequencies (50 kHz) show the type of bottom better."
+   ],
+   "usos_embarcacion": [
+    "Find edges, humps, depressions, wrecks and rock to cross on the drift.",
+    "Anchor only when you see bait or fish over the spot.",
+    "Mark the spots where you get bites on the GPS so you can go back."
+   ],
+   "pasos": [
+    "Set a depth range a little over double the depth (in 15 m of water, about 33 m).",
+    "Turn off the clutter filter, raise the gain until a clear second echo appears, then back it off a touch.",
+    "Run over the area and watch the thickness of the bottom and the second echo.",
+    "When the bottom changes or you see fish, mark the spot.",
+    "Readjust the gain whenever the depth changes a lot."
+   ],
+   "ojo": "Gain does not add power: it only filters what you see. And if the frequency cannot reach that depth, more gain fixes nothing.",
+   "fuentes": [
+    {
+     "titulo": "Salt Water Sportsman: optimising fish finders",
+     "url": "https://www.saltwatersportsman.com/?p=54031"
+    },
+    {
+     "titulo": "Furuno: echo strength and bottom type",
+     "url": "https://www.furuno.com/en/technology/fishfinder/basic/story-11/index.html"
+    },
+    {
+     "titulo": "The Fisherman: boat control on the drift",
+     "url": "https://www.thefisherman.com/article/inshore-boat-control-for-consistent-fluke-limits/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "donde-no-fondear",
+   "tema": "fondeo-deriva",
+   "tipo": "material",
+   "nombre": "Where not to anchor (and signals at anchor)",
+   "otros_nombres": [
+    "Anchoring rules",
+    "COLREGs"
+   ],
+   "para": "What the official rules say about where to avoid anchoring and how to signal a boat at anchor.",
+   "resumen": "Don't anchor in channels or traffic lanes, or on protected seagrass meadows. Each region and each protected area may have its own rules.",
+   "como_es": [
+    "International Regulations for Preventing Collisions at Sea (COLREGs), rule 9(g): whenever possible, avoid anchoring in a narrow channel.",
+    "COLREGs, rule 10(g): avoid anchoring in a traffic separation scheme or in areas near its ends.",
+    "COLREGs, rule 30: at anchor, one ball forward by day; at night, an all-round white light (under 50 m in length, one is enough).",
+    "Under 7 m in length it is not compulsory unless you are in or near a narrow channel, an anchorage or where other vessels normally navigate.",
+    "Balearic Islands (Decree 25/2018, art. 7): anchoring on Posidonia seagrass is generally prohibited; over it, only with low-impact systems (authorised buoys)."
+   ],
+   "usos_embarcacion": [
+    "Anchor on sand or rock, away from harbour entrance channels and traffic lanes.",
+    "Marine reserves, parks and other protected areas may have their own rules: check them before you go.",
+    "Use the regulated mooring buoy fields where there are any."
+   ],
+   "ojo": "This is not the whole of the rules: each region, port and protected area may have its own. Check the official rules for your area.",
+   "fuentes": [
+    {
+     "titulo": "BOE: International Regulations for Preventing Collisions at Sea (1977, Spanish text)",
+     "url": "https://boe.es/boe/dias/1977/07/09/pdfs/A15421-15432.pdf"
+    },
+    {
+     "titulo": "Government of the Balearic Islands: Decree 25/2018 on Posidonia",
+     "url": "https://www.caib.es/sites/cuidamposidonia/es/decreto_de_posidania/"
+    },
+    {
+     "titulo": "BOIB: High Court ruling on Decree 25/2018",
+     "url": "https://www.caib.es/eboibfront/pdf/es/2021/125/1096200"
+    },
+    {
+     "titulo": "Safe Transport Victoria: anchoring (boating handbook)",
+     "url": "https://handbook.safetransport.vic.gov.au/boating-rules/basic-boat-handling-tips/anchoring/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "fusil-gomas-neumatico",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Band or pneumatic speargun",
+   "otros_nombres": [
+    "Band gun",
+    "Air gun",
+    "Pneumatic gun"
+   ],
+   "para": "The gun that fires the shaft: either with rubber bands you stretch or with pressurised air inside.",
+   "resumen": "The band gun is the simplest and most common; the pneumatic gives a lot of power for its size but needs more maintenance.",
+   "como_es": [
+    "Band gun: one or more rubber bands that you stretch and hook onto the shaft. It is the simplest and cheapest to maintain.",
+    "With a band gun you change the power by adding or removing bands, and it fires almost silently.",
+    "Bands wear out: replace them before they deteriorate, because an old band is dangerous.",
+    "Pneumatic: the shaft sits inside a sealed barrel with air that you pump by hand. Lots of power for its size.",
+    "A pneumatic gun loses power the deeper you go and needs more maintenance."
+   ],
+   "medidas_titulo": "📏 Length and range",
+   "medidas": [
+    "Spearguns are usually between 0.5 and 2 m long.",
+    "A Euro-style band gun has an effective range of about three times the shaft length, measured from the tip of the gun."
+   ],
+   "ojo": "Never carry the gun loaded out of the water: it is dangerous and banned in Spain (RD 347/2011, art. 16) and Portugal (Portaria 14/2014, art. 3). Keep the safety on except when you are about to shoot.",
+   "fuentes": [
+    {
+     "titulo": "Scuba.com: Spearfishing buying guide",
+     "url": "https://www.scuba.com/i/spearfishing"
+    },
+    {
+     "titulo": "Wikipedia: Speargun",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    },
+    {
+     "titulo": "BOE: Royal Decree 347/2011 on recreational sea fishing (consolidated text, Spanish)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "Portaria No. 14/2014 (Diário da República, series 1, No. 16), Portuguese",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "fusil-largo",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Speargun length: match it to the water",
+   "otros_nombres": [
+    "Gun size",
+    "Speargun length"
+   ],
+   "para": "How to choose how long your speargun should be.",
+   "resumen": "Visibility decides: murky water and rock, short gun; clear water and fish in open water, long gun.",
+   "como_es": [
+    "In poor visibility the fish appears close: you need a short, manoeuvrable gun.",
+    "In clear water the fish sees you from far away and shots are longer: a long gun, more accurate at distance, works best.",
+    "For rock fish that dart into holes and caves, go short: you have to aim quickly before they hide.",
+    "With fish swimming in open water you have more time to aim, so manoeuvrability matters less.",
+    "A short gun moves better among rocks and is easier for beginners; a long one has more power but is less agile.",
+    "Bigger fish call for longer guns."
+   ],
+   "medidas_titulo": "📏 Range",
+   "medidas": [
+    "Effective range is two to three times the band stretch distance.",
+    "Length is measured from the tip of the muzzle to the back of the handle.",
+    "There is no fixed chart of centimetres per visibility: try and adjust to your area."
+   ],
+   "ojo": "Don't pick the longest gun thinking you'll catch more: in murky water or among rocks a long gun is slow to swing and you'll miss shots.",
+   "fuentes": [
+    {
+     "titulo": "Neptonics: How to pick the right speargun length",
+     "url": "https://neptonics.com/blogs/spearfishing-101/howtopicktherightspeargunlengthforyou"
+    },
+    {
+     "titulo": "Adreno: How to choose the right speargun length",
+     "url": "https://adreno.com.au/blogs/news/how-to-choose-right-speargun-length"
+    },
+    {
+     "titulo": "Scuba.com: Spearfishing buying guide",
+     "url": "https://www.scuba.com/i/spearfishing"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "varilla-punta",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Shaft and tip (Tahitian, threaded, slip tip)",
+   "otros_nombres": [
+    "Spear",
+    "Tahitian shaft",
+    "Slip tip",
+    "Breakaway tip"
+   ],
+   "para": "The steel shaft the gun fires and the tip that holds the fish.",
+   "resumen": "Fixed tip with a flopper for reef fish; slip tip, on a threaded shaft, for large open-water fish.",
+   "como_es": [
+    "Tahitian: one-piece shaft with the tip on the shaft itself and a folding flopper that opens inside the fish. Fast and accurate, but it can sometimes pass straight through.",
+    "Threaded: the tip screws on and is changed when damaged. Short tips have one flopper; longer ones may have several.",
+    "Slip or breakaway tip: about 10–15 cm of tip separates after penetrating and stays joined to the shaft by cable or line. Recommended for large fish.",
+    "Fixed flopper tip: for reef fish. Slip tip: for open-water fish with softer flesh, which can tear off a fixed shaft and escape.",
+    "On the same gun, a threaded shaft has to be shorter than a flopper shaft."
+   ],
+   "medidas_titulo": "📏 Diameter and length",
+   "medidas": [
+    "Thin (6.5–7.5 mm): lighter, shoots further and penetrates more easily, but bends more readily on big reef fish.",
+    "Thick (8 mm): for large open-water fish.",
+    "The shaft should stick out about 23–28 cm (9–11 inches) beyond the muzzle."
+   ],
+   "ojo": "Carry a spare shaft: a bent shaft with no spare ends your day.",
+   "fuentes": [
+    {
+     "titulo": "Neptonics: Choosing the right spear shaft",
+     "url": "https://neptonics.com/spearfishing-101/choosing-the-right-spear-shaft"
+    },
+    {
+     "titulo": "Adreno: Tahitian vs Hawaiian floppers",
+     "url": "https://adreno.com.au/blogs/news/tahitian-vs-hawaiian-floppers-spear-tip-differences"
+    },
+    {
+     "titulo": "Wikipedia: Speargun",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "fusil-carrete-boya",
+   "tema": "fusil-varilla-punta",
+   "tipo": "material",
+   "nombre": "Reel or float line on the gun",
+   "otros_nombres": [
+    "Speargun reel",
+    "Float line",
+    "Floatline"
+   ],
+   "para": "What links the gun to extra line or a float so you lose neither the fish nor the shaft.",
+   "resumen": "A reel pays out line when the fish pulls; a float line lets you follow the fish and find your shaft. Choose by the seabed.",
+   "como_es": [
+    "The shooting line wraps around the gun on loading and releases when you shoot. It should be thin, to limit drag, and strong: at least about 135 kg (300 lb).",
+    "Reel: mounted on the gun, it pays out line after the shot so you can play the fish. Useful where rock or kelp stops you towing a float.",
+    "Float line: links the gun to the float. It can be braided line, monofilament inside an airtight tube, or bungee cord.",
+    "With a float you can find your shaft in weed and recover fish that hide in holes.",
+    "If you use your marker buoy, don't move further from it than the law allows: 25 m in Spain and 30 m in Portugal (see the buoy card)."
+   ],
+   "ojo": "Any line in the water can tangle around you or the gun. Check it when loading and keep a knife within reach.",
+   "fuentes": [
+    {
+     "titulo": "Wikipedia: Speargun",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    },
+    {
+     "titulo": "Scuba.com: Spearfishing buying guide",
+     "url": "https://www.scuba.com/i/spearfishing"
+    },
+    {
+     "titulo": "BOE: Royal Decree 347/2011 on recreational sea fishing (consolidated text, Spanish)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "Portaria No. 14/2014 (Diário da República, series 1, No. 16), Portuguese",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "traje-submarina",
+   "tema": "traje-plomos-aletas",
+   "tipo": "material",
+   "nombre": "Spearfishing wetsuit",
+   "otros_nombres": [
+    "Neoprene suit",
+    "Open-cell wetsuit",
+    "Wetsuit"
+   ],
+   "para": "The suit that keeps you warm while you spearfish on a breath-hold.",
+   "resumen": "Thickness depends on water temperature; an open-cell lining is among the warmest.",
+   "como_es": [
+    "Open-cell inside: among the warmest suits. It costs more and is more fragile, and you need to lubricate it to put it on, for example with water and a little conditioner or baby powder.",
+    "Lined outside (smooth): easy to put on, dries fast and cuts wind chill, but it is damaged if you scrape it on rock.",
+    "Two-piece (jacket and trousers or long john): they overlap at the core and are warmer in cold water.",
+    "Look for a chest pad: it protects you when loading the gun.",
+    "Neoprene floats and compresses as you go down: a thick suit floats a lot at the surface and loses buoyancy at depth; a thin one changes less.",
+    "Colour: blue or blue camo in clear water; browns over rocky ground."
+   ],
+   "medidas_titulo": "📏 Thickness by water",
+   "medidas": [
+    "Warm water (24–28 °C): 1–2.5 mm.",
+    "Cool water (16–23 °C): 3–5 mm.",
+    "Very cold water: 7 mm."
+   ],
+   "ojo": "If you change suit thickness, work out your weighting again: more neoprene needs more lead.",
+   "fuentes": [
+    {
+     "titulo": "Adreno: Choosing a spearfishing wetsuit",
+     "url": "https://adreno.com.au/blogs/news/choosing-a-spearfishing-wetsuit"
+    },
+    {
+     "titulo": "SSI: How to Master Freediving Buoyancy",
+     "url": "https://www.divessi.com/en/blog/how-to-master-freediving-buoyancy-2179"
+    },
+    {
+     "titulo": "DAN: Weight Up",
+     "url": "https://dan.org/alert-diver/article/weight-up/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "lastre-submarina",
+   "tema": "traje-plomos-aletas",
+   "tipo": "material",
+   "nombre": "Weighting: how much lead to carry",
+   "otros_nombres": [
+    "Weight belt",
+    "Neutral buoyancy",
+    "Ballast"
+   ],
+   "para": "The weights that offset how much your body and suit float.",
+   "resumen": "Carry just enough lead to float at the surface and become neutral around 10–12 m. Overweighting is one of the factors behind blackouts.",
+   "como_es": [
+    "Rubber belt with a quick-release buckle that you or your buddy can open.",
+    "As you go down, suit and lungs compress: you float less and, past the neutral point, you sink with little effort.",
+    "Most freedivers become neutral between 10 and 12 m.",
+    "You must float at the surface even after a full exhale: if you black out, your buddy has to be able to keep you up.",
+    "Be positively buoyant in the last 10 m: the end of the ascent is the hardest part.",
+    "Too much lead means very fast descents and exhausting ascents; many blackouts happen to divers who are overexerted, overweighted and unsupervised."
+   ],
+   "pasos": [
+    "Put on all your gear: suit, belt and fins.",
+    "In the water, float upright and relaxed, and breathe out fully.",
+    "Check the waterline: ideally around your eyebrows.",
+    "If you sink quickly, remove lead; if you struggle to go under, add a little.",
+    "Repeat the test whenever you change suit or area."
+   ],
+   "ojo": "If in doubt, go lighter on lead. And show your buddy how to release your belt.",
+   "fuentes": [
+    {
+     "titulo": "SSI: How to Master Freediving Buoyancy",
+     "url": "https://www.divessi.com/en/blog/how-to-master-freediving-buoyancy-2179"
+    },
+    {
+     "titulo": "DAN Europe: 15 basic rules for safer free diving",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    },
+    {
+     "titulo": "DAN: Shallow-Water Blackout",
+     "url": "https://dan.org/?p=44103"
+    },
+    {
+     "titulo": "Scuba.com: Freediving Equipment Guide",
+     "url": "https://www.scuba.com/blog/freediving-equipment-guide/"
+    },
+    {
+     "titulo": "DAN: Weight Up",
+     "url": "https://dan.org/alert-diver/article/weight-up/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "aletas-mascara-tubo",
+   "tema": "traje-plomos-aletas",
+   "tipo": "material",
+   "nombre": "Fins, mask and snorkel",
+   "otros_nombres": [
+    "Long-blade fins",
+    "Low-volume mask",
+    "Snorkel"
+   ],
+   "para": "The basic kit for moving and seeing underwater on a breath-hold.",
+   "resumen": "Long fins to move with little effort, a low-volume mask that is easy to equalise and a simple snorkel.",
+   "como_es": [
+    "Long-blade fins (up to a metre): you move further with less effort while holding your breath.",
+    "Plastic blades to start: tough and easy to travel with. Fibreglass or carbon: lighter but more fragile.",
+    "Use two fins, not a monofin: bi-fins are the ones for recreational freediving and buddy watching.",
+    "Low-volume mask: little air between lens and face. You use less air from your lungs to equalise it on the way down and avoid mask squeeze.",
+    "Snorkel: the simpler the better. It is only for breathing at the surface while you get ready.",
+    "Take the snorkel out of your mouth before you dive: on the way up you'd have to blow hard to clear it just when you need air, and if you black out it lets water in."
+   ],
+   "ojo": "Never force ear equalisation: if it won't clear, go up. Forcing it can burst the eardrum or damage the inner ear.",
+   "fuentes": [
+    {
+     "titulo": "SSI: Freediving gear, must-have items",
+     "url": "https://www.divessi.com/en/blog/diving/page/freediving-gear-9186.html"
+    },
+    {
+     "titulo": "Scuba.com: Freediving Equipment Guide",
+     "url": "https://www.scuba.com/blog/freediving-equipment-guide/"
+    },
+    {
+     "titulo": "DAN Europe: 15 basic rules for safer free diving",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "boya-submarina",
+   "tema": "boya-seguridad",
+   "tipo": "material",
+   "nombre": "Diver marker buoy",
+   "otros_nombres": [
+    "Spearfishing float",
+    "Alpha flag",
+    "Dive float"
+   ],
+   "para": "The buoy that warns boats there is a diver below.",
+   "resumen": "It is compulsory in Spain and Portugal and you must stay close to it. Being hit by a boat is one of the biggest risks in freediving.",
+   "como_es": [
+    "Spain: every diver marks their position with a clearly visible buoy and may not move more than 25 m from it (Royal Decree 347/2011, art. 15).",
+    "Spain: outside a buoyed bathing area, breath-hold diving must be marked with a surface device: a highly visible buoy flying the International Code of Signals \"Alpha\" flag (Royal Decree 550/2020, arts. 2 and 5).",
+    "Spain: RD 550/2020 requires vessels to keep 50 m from diving areas, but breath-hold diving is outside that article. There is no national distance for spearfishing: check your autonomous community and the Harbour Master.",
+    "Portugal (mainland): round or cylindrical buoy, red, orange or yellow, at least 8 litres, with an Alpha flag; or a board at least 70 × 40 × 5 cm with a mast of 40 cm or more and an Alpha flag (Portaria 14/2014, art. 2).",
+    "Portugal: the buoy may not be more than 30 m from you, every vessel must keep 50 m from it, and a support boat must fly the Alpha flag (Portaria 14/2014, arts. 4 and 7).",
+    "You can carry water and spares on the buoy, and hold on to it to rest."
+   ],
+   "medidas_titulo": "📏 Distances",
+   "medidas": [
+    "Spain: diver no more than 25 m from their buoy.",
+    "Portugal: diver no more than 30 m from their buoy; vessels 50 m from the buoy."
+   ],
+   "ojo": "Many boats ignore the buoy, but it is the only thing that shows you are there. If you have a support boat, have it fly the Alpha flag: it greatly cuts the risk.",
+   "fuentes": [
+    {
+     "titulo": "BOE: Royal Decree 347/2011 on recreational sea fishing (consolidated text, Spanish)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "BOE: Royal Decree 550/2020 on diving safety (Spanish)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2020-6745"
+    },
+    {
+     "titulo": "Portaria No. 14/2014 (Diário da República, series 1, No. 16), Portuguese",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    },
+    {
+     "titulo": "DAN Europe: 15 basic rules for safer free diving",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "cabo-cuchillo-aviso",
+   "tema": "boya-seguridad",
+   "tipo": "material",
+   "nombre": "Line, knife and calling for help",
+   "otros_nombres": [
+    "Float line",
+    "Dive knife",
+    "VHF radio"
+   ],
+   "para": "The line that links you to the buoy, the knife to cut yourself free and what you need to raise the alarm.",
+   "resumen": "With the line your buddy knows where you are; the knife frees you if you get tangled; a radio puts you in touch with shore.",
+   "como_es": [
+    "The line links the buoy to the gun. It can be braided, monofilament inside an airtight tube, or bungee.",
+    "With the buoy and its line your buddy can follow you and always knows where you are.",
+    "Knife: for freeing yourself if you get tangled. Carry only the essentials.",
+    "To call for help, a VHF radio is best: at sea a mobile phone doesn't always have signal.",
+    "Keep a note of the emergency numbers and the VHF channel for your area."
+   ],
+   "ojo": "Before you get in, agree with your buddy what each of you will do if one gets tangled or blacks out.",
+   "fuentes": [
+    {
+     "titulo": "Wikipedia: Speargun",
+     "url": "https://en.wikipedia.org/wiki/Speargun"
+    },
+    {
+     "titulo": "DAN: A Rude Awakening",
+     "url": "https://dan.org/alert-diver/article/a-rude-awakening/"
+    },
+    {
+     "titulo": "Scuba.com: Freediving Equipment Guide",
+     "url": "https://www.scuba.com/blog/freediving-equipment-guide/"
+    },
+    {
+     "titulo": "DAN Europe: 15 basic rules for safer free diving",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "apnea-companero",
+   "tema": "apnea-segura",
+   "tipo": "material",
+   "nombre": "Never alone: one up, one down",
+   "otros_nombres": [
+    "Freediving buddy",
+    "One up, one down",
+    "Buddy system"
+   ],
+   "para": "The basic freediving rule: while one dives, the other watches from above.",
+   "resumen": "Almost all blackouts end well if a buddy is there to get the diver's face out of the water. Without one, they can end in drowning.",
+   "como_es": [
+    "The most feared freediving accident is blackout; it almost always resolves without harm if a buddy is there to get the diver's face out of the water.",
+    "\"Same ocean, same time\" is not diving with a buddy: if you each fish your own way, nobody is watching.",
+    "The one at the surface does nothing but watch.",
+    "The system protects on simple dives in good visibility; the more complex the dive, the more easily it breaks down."
+   ],
+   "pasos": [
+    "Before you get in, go over what each of you will do if there is a blackout or a samba.",
+    "Only one dives. The other stays at the surface, above them, watching the whole time.",
+    "When the diver comes up, the buddy goes down to meet them, at roughly a third of the depth, and comes up alongside, slightly below.",
+    "At the surface, the buddy watches the diver's face for at least another 30 seconds: some blackouts happen after surfacing.",
+    "Only swap roles once the diver who came up has recovered."
+   ],
+   "ojo": "Take a freediving course with an instructor: you'll learn to rescue your buddy, and they'll learn to rescue you.",
+   "fuentes": [
+    {
+     "titulo": "DAN Europe: 15 basic rules for safer free diving",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    },
+    {
+     "titulo": "DAN: Hypoxia in Breath-Hold Diving",
+     "url": "https://dan.org/alert-diver/article/hypoxia-in-breath-hold-diving/"
+    },
+    {
+     "titulo": "SSI: How to be the best freediving buddy (Spanish edition)",
+     "url": "https://www.divessi.com/es/blog/freediving-buddy-9507.html"
+    },
+    {
+     "titulo": "DAN: A Rude Awakening",
+     "url": "https://dan.org/alert-diver/article/a-rude-awakening/"
+    },
+    {
+     "titulo": "Wikipedia: Freediving blackout",
+     "url": "https://en.wikipedia.org/wiki/Freediving_blackout"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "sincope-samba",
+   "tema": "apnea-segura",
+   "tipo": "material",
+   "nombre": "Blackout and samba",
+   "otros_nombres": [
+    "Shallow water blackout",
+    "Loss of motor control (LMC)",
+    "Hypoxic blackout"
+   ],
+   "para": "Losing consciousness (blackout) or body control (samba) from lack of oxygen at the end of a breath-hold.",
+   "resumen": "It strikes without warning, usually near the surface on the way up or just after surfacing. What saves you is an attentive buddy.",
+   "como_es": [
+    "The urge to breathe comes from CO₂, not lack of oxygen: you can run out of oxygen without feeling the need to breathe.",
+    "It usually happens near the surface, in the last 3 m of the ascent, or at the surface after coming up.",
+    "Samba: loss of motor control; the body shakes or spasms and the diver cannot control it.",
+    "Signs: slowing down, losing coordination, a dazed look, bubbles from the mouth, limp arms or legs.",
+    "Hyperventilation, fatigue, overweighting and lack of supervision all play a part."
+   ],
+   "pasos": [
+    "If they black out underwater, bring them up protecting their airway: keep water out.",
+    "At the surface, keep their face out of the water.",
+    "Stimulate them with \"tap, blow, talk\": the method most agencies consider most effective.",
+    "If they are not breathing, they need rescue breaths and emergency help.",
+    "After a blackout or samba the day is over: stay out of the water for at least 24 hours."
+   ],
+   "ojo": "It is more common than it seems: about 70% of Italian competition spearfishers had had at least one blackout. Don't stretch a breath-hold for a fish.",
+   "fuentes": [
+    {
+     "titulo": "DAN: Shallow-Water Blackout",
+     "url": "https://dan.org/?p=44103"
+    },
+    {
+     "titulo": "DAN: Hypoxia in Breath-Hold Diving",
+     "url": "https://dan.org/alert-diver/article/hypoxia-in-breath-hold-diving/"
+    },
+    {
+     "titulo": "Wikipedia: Freediving blackout",
+     "url": "https://en.wikipedia.org/wiki/Freediving_blackout"
+    },
+    {
+     "titulo": "SSI: How to be the best freediving buddy (Spanish edition)",
+     "url": "https://www.divessi.com/es/blog/freediving-buddy-9507.html"
+    },
+    {
+     "titulo": "DAN: A Rude Awakening",
+     "url": "https://dan.org/alert-diver/article/a-rude-awakening/"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "apnea-respiracion",
+   "tema": "apnea-segura",
+   "tipo": "material",
+   "nombre": "Breathing before and after each dive",
+   "otros_nombres": [
+    "Hyperventilation",
+    "Recovery breathing",
+    "Surface interval"
+   ],
+   "para": "How to prepare at the surface and how to recover when you come up.",
+   "resumen": "Don't hyperventilate before diving; do recovery breathing when you surface and rest at the surface at least twice as long as the dive lasted.",
+   "como_es": [
+    "Hyperventilating is breathing hard and fast to lower CO₂. It adds no oxygen: it only delays the urge to breathe and raises the risk of blackout.",
+    "A few forced breaths (6 or 7) are enough to hyperventilate. Calling them \"cleansing breaths\" changes nothing.",
+    "Two full breaths at most before diving.",
+    "If you feel tingling in your hands or face, stop your preparation and wait a few minutes."
+   ],
+   "pasos": [
+    "When you start, do 3 or 4 warm-up dives, no deeper than 5 m.",
+    "At the surface, breathe calmly, using your diaphragm, at your natural pace.",
+    "Before diving, two full breaths at most, and take the snorkel out of your mouth.",
+    "On surfacing, do recovery breathing: let out part of the air, inhale quickly and briefly close your throat, holding the pressure; repeat for about 30 seconds.",
+    "Rest at the surface at least twice as long as the dive lasted, and three times as long after a deep dive."
+   ],
+   "ojo": "On long days drink water even if you're not thirsty, don't dive on an empty stomach or after a heavy meal, and if you're tired, cramping or your gear fails, get out.",
+   "fuentes": [
+    {
+     "titulo": "DAN: Hypoxia in Breath-Hold Diving",
+     "url": "https://dan.org/alert-diver/article/hypoxia-in-breath-hold-diving/"
+    },
+    {
+     "titulo": "DAN Europe: 15 basic rules for safer free diving",
+     "url": "https://alertdiver.eu/en_US/articles/15-basic-rules-for-safer-free-diving/?print=pdf"
+    },
+    {
+     "titulo": "Wikipedia: Freediving blackout",
+     "url": "https://en.wikipedia.org/wiki/Freediving_blackout"
+    },
+    {
+     "titulo": "DAN: Freediving Safety Awareness",
+     "url": "https://dan.org/alert-diver/article/freediving-safety-awareness"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "normas-submarina-espana",
+   "tema": "normas-submarina",
+   "tipo": "material",
+   "nombre": "General rules in Spain",
+   "otros_nombres": [
+    "Royal Decree 347/2011",
+    "Recreational spearfishing"
+   ],
+   "para": "What the national law says about spearfishing in Spain's external waters.",
+   "resumen": "Regional licence, breath-hold only, daylight only, gun unloaded out of the water and buoy within 25 m. Your autonomous community and each marine reserve add their own rules.",
+   "como_es": [
+    "Breath-hold only: no equipment that lets you breathe underwater and no mechanical propulsion (art. 3).",
+    "You need the activity licence issued by a coastal autonomous community (or Ceuta and Melilla), and must follow the rules of the community whose coast you fish (art. 13).",
+    "Only a hand spear or a mechanically powered gun, with one or more points. Spearfishing is banned if spearfishing gear and breathing equipment are on board the same boat (art. 14).",
+    "A clearly visible marker buoy, and never more than 25 m from it (art. 15).",
+    "Banned: a loaded gun out of the water; explosive, electric or electronic tips; lights other than hand torches; underwater scooters and similar; and fishing at night, from sunset to sunrise (art. 16).",
+    "Also banned: attracting fish by any means, such as lights, except chumming with small pelagics; using poisonous, narcotic, explosive or polluting substances; and interfering with commercial fishing (arts. 12 and 16).",
+    "Only species in Annex I, at their minimum size, and never for sale (arts. 1 and 4)."
+   ],
+   "medidas_titulo": "📏 Distances (RD 347/2011, arts. 12 and 15)",
+   "medidas": [
+    "To your buoy: 25 m at most.",
+    "To commercial fishing vessels: at least 300 m.",
+    "To their set gear: at least 148 m.",
+    "To the boundary of aquaculture sites: at least 200 m."
+   ],
+   "ojo": "This is the national minimum for external waters. Minimum age, licence type, bag limits, closed seasons, no-fishing zones and internal waters are set by each autonomous community, and every marine reserve has its own rules. Check them before you go.",
+   "fuentes": [
+    {
+     "titulo": "BOE: Royal Decree 347/2011 on recreational sea fishing (consolidated text, Spanish)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2011-6099"
+    },
+    {
+     "titulo": "BOE: Royal Decree 550/2020 on diving safety (Spanish)",
+     "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2020-6745"
+    }
+   ],
+   "consultada": "2026-11-20"
+  },
+  {
+   "id": "normas-submarina-portugal",
+   "tema": "normas-submarina",
+   "tipo": "material",
+   "nombre": "General rules in Portugal",
+   "otros_nombres": [
+    "Portaria 14/2014",
+    "Recreational spearfishing (pesca lúdica)"
+   ],
+   "para": "What Portuguese law says about spearfishing on the mainland.",
+   "resumen": "Recreational fishing licence, breath-hold only, daylight only, no bait, buoy within 30 m and 15 kg a day at most. Protected areas and Harbour Masters add restrictions.",
+   "como_es": [
+    "Breath-hold only (Decree-Law 246/2000 as amended by Decree-Law 101/2013, art. 9) and with a recreational fishing licence.",
+    "Allowed tools: speargun (not powered by explosive or artificially compressed gas), shellfish knife, gaff hook (puxeiro) and arrilhada. No bait or groundbait (Portaria 14/2014, arts. 3 and 5).",
+    "Banned: carrying a speargun and breathing equipment on board at the same time, and carrying a cocked gun out of the water or where spearfishing is banned (art. 3).",
+    "Buoy compulsory, 30 m away at most; 20 m between spearfishers unless agreed; vessels 50 m from the buoy (arts. 4, 6 and 7).",
+    "Banned between sunset and sunrise, and in navigation channels of river bars and mouths, port access channels and buoyed channels (arts. 7 and 8).",
+    "15 kg a day per person at most, not counting the largest fish (art. 12).",
+    "Species you may not take when spearfishing (Annex I) include groupers, spiny lobsters, European lobster and bluefin tuna.",
+    "According to the DGRM, spearfishing is banned in the Berlengas Nature Reserve and throughout the Arrábida Nature Park; other protected areas have no-go zones."
+   ],
+   "medidas_titulo": "📏 Figures (Portaria 14/2014)",
+   "medidas": [
+    "Buoy: no more than 30 m from the spearfisher; at least 8 litres.",
+    "Between spearfishers: 20 m.",
+    "Vessels: 50 m from the buoy.",
+    "Catch: 15 kg a day, not counting the largest fish."
+   ],
+   "ojo": "These rules come from Portaria 14/2014, which applies to the mainland; the Azores and Madeira have regional rules. Harbour Masters can add restrictions by notice and the species list may change: check with the DGRM and the Harbour Master before you go.",
+   "fuentes": [
+    {
+     "titulo": "Portaria No. 14/2014 (Diário da República, series 1, No. 16), Portuguese",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf"
+    },
+    {
+     "titulo": "Decree-Law No. 101/2013 (Diário da República), Portuguese",
+     "url": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/DL-101-2013-de25-julho.pdf"
+    },
+    {
+     "titulo": "DGRM: recreational fishing FAQ 2026 (Portuguese)",
+     "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc"
+    }
+   ],
+   "consultada": "2026-11-20"
   }
  ]
 }
