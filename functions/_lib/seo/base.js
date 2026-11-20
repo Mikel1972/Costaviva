@@ -114,14 +114,14 @@ function CABECERA_PIE_EN(cuerpo, pie) {
   return `<header class="cabecera-publica">
   <a class="enlace-marca" href="/en/spots" aria-label="Costaviva, home">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Sections">
-    <a href="/">🗺️ Map</a><a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a>
+    <a href="/">🗺️ Map</a><a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a><a href="/en/aprende">Learn</a>
   </nav>
 </header>
 <main class="contenido">
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/en/spots">Fishing spots</a> · <a href="/en/species">Species</a> · <a href="/en/tides">Tides today</a> · <a href="/privacidad">Privacy (Spanish)</a> · <a href="/login">Log in</a></p>
+  <p><a href="/en/spots">Fishing spots</a> · <a href="/en/species">Species</a> · <a href="/en/tides">Tides today</a> · <a href="/en/aprende">Learn to fish</a> · <a href="/privacidad">Privacy (Spanish)</a> · <a href="/login">Log in</a></p>
   ${pie ? `<p class="nota">${pie}</p>` : ""}
 </footer>`;
 }
@@ -131,14 +131,14 @@ function CABECERA_PIE_PT(cuerpo) {
   return `<header class="cabecera-publica">
   <a class="enlace-marca" href="/pt/spots/region/portugal" aria-label="Costaviva, início">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secções">
-    <a href="/">🗺️ Mapa</a><a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a>
+    <a href="/">🗺️ Mapa</a><a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a><a href="/pt/aprende">Aprender</a>
   </nav>
 </header>
 <main class="contenido">
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/pt/spots/region/portugal">Pesqueiros em Portugal</a> · <a href="/pt/especies">Espécies</a> · <a href="/pt/mareas/region/portugal">Marés de hoje</a> · <a href="/spots" lang="es">España (español)</a> · <a href="/privacidad">Privacidade (em espanhol)</a> · <a href="/login">Entrar</a></p>
+  <p><a href="/pt/spots/region/portugal">Pesqueiros em Portugal</a> · <a href="/pt/especies">Espécies</a> · <a href="/pt/mareas/region/portugal">Marés de hoje</a> · <a href="/pt/aprende">Aprender a pescar</a> · <a href="/spots" lang="es">España (español)</a> · <a href="/privacidad">Privacidade (em espanhol)</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Dados do mar e do tempo: Open-Meteo (CC BY 4.0). Profundidade: EMODnet Bathymetry (CC BY 4.0). Tipo de fundo: EMODnet Seabed Habitats (CC BY 4.0) e © contribuidores do OpenStreetMap (ODbL). Orientativo: não serve para navegar. Tamanhos mínimos e defesos orientativos: prevalece a norma em vigor publicada no Diário da República.</p>
 </footer>`;
 }
