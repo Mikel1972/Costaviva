@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-20T08:08:38.865Z",
- "lineasHistorial": 11759,
+ "fecha": "2026-11-20T08:38:07.234Z",
+ "lineasHistorial": 11770,
  "etiquetas": 1240,
  "etiquetasClaude": 252,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.106
   },
   "zarautz/dinamico": {
-   "a": 2.9632,
+   "a": 2.9636,
    "p": 0.5,
-   "n": 935,
+   "n": 936,
    "nEtiquetas": 196,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -87,7 +87,7 @@
     "2026-11-04T16",
     "2026-11-05T16"
    ],
-   "dias": 43,
+   "dias": 44,
    "hMin": 0.15,
    "hMax": 6.97,
    "errorRel": 1,
@@ -95,13 +95,13 @@
    "correlacion": 0.206
   },
   "zumaia/c": {
-   "a": 5.3503,
+   "a": 5.2597,
    "p": 1,
-   "n": 9,
+   "n": 10,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 4,
+   "dias": 5,
    "hMin": 0.75,
    "hMax": 3.59,
    "errorRel": 1,
@@ -109,9 +109,9 @@
    "correlacion": -0.559
   },
   "zumaia/a": {
-   "a": 3.974,
+   "a": 4.0138,
    "p": 0.5,
-   "n": 93,
+   "n": 94,
    "nEtiquetas": 12,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -121,12 +121,12 @@
     "2026-11-01T16",
     "2026-11-05T16"
    ],
-   "dias": 25,
+   "dias": 26,
    "hMin": 0.15,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.222
+   "correlacion": 0.217
   },
   "deba/rompiente": {
    "a": 3.5996,
@@ -206,9 +206,9 @@
    "correlacion": 0.065
   },
   "sopelana/principal": {
-   "a": 3.1336,
+   "a": 3.1242,
    "p": 0.5,
-   "n": 182,
+   "n": 183,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -223,12 +223,12 @@
     "2026-10-31T14",
     "2026-11-01T14"
    ],
-   "dias": 28,
+   "dias": 29,
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.376
+   "correlacion": 0.374
   },
   "berria/principal": {
    "a": 74.2857,
@@ -530,8 +530,8 @@
    "sustituye": true,
    "motivo": "13 etiquetas",
    "ruido": {
-    "ruido": 0.635,
-    "pares": 37
+    "ruido": 0.659,
+    "pares": 38
    }
   },
   "deba": {
@@ -617,10 +617,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 2,
+   "n": 3,
    "suficiente": false,
-   "lineas": null,
-   "cerca": null
+   "lineas": 0,
+   "cerca": 0
   },
   "sopelana": {
    "n": 2,
@@ -647,10 +647,10 @@
    "cerca": null
   },
   "zumaia": {
-   "n": 2,
+   "n": 3,
    "suficiente": false,
-   "lineas": null,
-   "cerca": null
+   "lineas": -0.866,
+   "cerca": -0.866
   },
   "nz-napier": {
    "n": 2,
