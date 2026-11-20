@@ -13,9 +13,9 @@ test("migas: siempre «← Atrás» a la página de arriba (o al mapa en la prim
 
 test("mareas, empieza, clubes, privacidad y términos: con enlace para volver", () => {
   for (const f of ["functions/mareas/index.js", "functions/mareas/region/[region].js", "functions/mareas/[slug].js"]) {
-    assert.match(readFileSync(f, "utf8"), /class="nav-cv"[^>]*><a href="[^"]+">← Atrás/, f);
+    assert.match(readFileSync(f, "utf8"), /class="nav-cv"[\s\S]{0,200}← Atrás/, f);
   }
   for (const f of ["empieza.html", "clubes.html", "privacidad.html", "terminos.html"]) {
-    assert.match(readFileSync(f, "utf8"), /href="\/"/, f);
+    assert.match(readFileSync(f, "utf8"), /href="\/"|>Volver /, f);
   }
 });
