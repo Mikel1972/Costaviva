@@ -194,12 +194,29 @@ function rango(h) {
 //     coeficiente × factorCamara.
 //   - vecina: todos los bloques, modelo × coeficiente × factorCamara(peso).
 // Sin lectura vigente, el spot sale tal cual (modelo × coeficiente).
+// Lectura poco segura (2026-11-20, Mikel en Sopelana: «~0,6–2,6 m… estará en
+// torno a 1 metro»): la cámara decía 1,65 m con un margen de 0,8 a 3,3 m y el
+// panel enseñaba ese margen como si fuera la ola. Si el margen de la lectura
+// es de x3 o más (máx/mín), la lectura vale la mitad: estimación y cociente
+// se acercan a medio camino (en logaritmos) del modelo × coeficiente.
+export const MARGEN_POCO_SEGURO = 3;
+export function lecturaPocoSegura(lectura) {
+  const a = lectura?.rangoMin, b = lectura?.rangoMax;
+  return Number.isFinite(a) && Number.isFinite(b) && a > 0 && b / a >= MARGEN_POCO_SEGURO;
+}
+
 export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now()) {
   return (spots || []).map((s) => {
     const fuente = FUENTE_POR_SPOT[s?.slug];
     const lectura = fuente ? lecturas?.[fuente.camara] : null;
     if (!fuente || !s.bloques?.length || !lecturaVigente(lectura, ahoraMs)) return s;
-    const cociente = cocienteCamaraModelo(lectura.estimacion, lectura.modeloCamara, lectura.errorRel);
+    const dudosa = lecturaPocoSegura(lectura);
+    const cocienteCrudo = cocienteCamaraModelo(lectura.estimacion, lectura.modeloCamara, lectura.errorRel);
+    const cociente = cocienteCrudo !== null && dudosa ? +Math.sqrt(cocienteCrudo).toFixed(3) : cocienteCrudo;
+    // Lo que se enseña como ola de la cámara: la estimación (a medio camino
+    // del modelo si la lectura es poco segura), con ±10 %, no su margen.
+    const estimacionUsada = dudosa && Number.isFinite(lectura.modeloCamara) && lectura.modeloCamara > 0.05
+      ? Math.sqrt(lectura.estimacion * lectura.modeloCamara) : lectura.estimacion;
     const peso = fuente.propia ? 1 : fuente.peso ?? 0.5;
     const horaLectura = isoLocalSpot(Date.parse(lectura.fecha), zonaDeSpot(s));
     const info = {
@@ -215,6 +232,7 @@ export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now()) {
         ? [+lectura.rangoMin.toFixed(1), +lectura.rangoMax.toFixed(1)]
         : rango(lectura.estimacion),
       cociente,
+      pocoSegura: dudosa,
       decaimientoHoras: DECAIMIENTO_HORAS,
     };
     // Bloque más cercano a la lectura (para la estimación directa).
@@ -226,7 +244,7 @@ export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now()) {
     const bloques = s.bloques.map((b, i) => {
       if (!b.altura) return b;
       if (fuente.propia && i === iCerca && dMin <= 2) {
-        return { ...b, altura: info.rango, alturaModelo: b.altura, fuenteAltura: "camara" };
+        return { ...b, altura: rango(estimacionUsada), alturaModelo: b.altura, fuenteAltura: "camara" };
       }
       if (cociente === null || !b.horaISO) return b;
       const f = factorCamara(cociente, horasEntreLocales(horaLectura, b.horaISO), peso);
