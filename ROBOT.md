@@ -10391,3 +10391,23 @@ Datos: `camaras-estado.json` de 2026-11-20T03:05Z (fresco). En rojo: pasaia (`fr
 - Reglas existentes (`coeficientes_altos`, `congrio_luna_llena`, `rodaballo_mareas_vivas_otono`): sin contraste nuevo; no se tocó nada.
 - Sin cambios en código ni en `especies.json`; no se creó rama.
 Firmado: robot buscador de fuentes (rutina), 2026-11-20 05:55 UTC.
+
+### 2026-11-21 UTC (robot de patrones de uso, rutina)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado el 2026-11-21 03:10 UTC (fresco, `errores` vacío). Perfiles: 13 (0 altas en 7 días, 4 en 28). Usuarios activos: 3 en 7 días y 7 en 28 (el 2026-11-14 eran 7 y 7). De 13 perfiles con más de 7 días, 3 nunca hicieron nada y 7 llevan 7 días sin actividad. Eventos: 67 filas en 7 días (3 usuarios), 278 en 28 días (7), 909 en total (10), desde 2026-09-17.
+
+**Qué se usa (28 días, usuarios distintos):** `ver_mapa` 7; capas: ríos 5, boyas 4, clorofila 4, frentes 4, estaciones 4, sustrato 4, corriente 4, isóbatas 3, radar de lluvia 3, viento 3, temperatura del agua 2, rayos 2, satélite 1; vista 3D 2. Diario: `crear_salida` 2 y `crear_captura` 2 (las mismas dos personas; última salida 15-nov, última captura 10-nov). Pago: `ver_suscripcion` 3, `iniciar_checkout` 1, `acepta_condiciones_pago` 1 (todo el 5-nov, nada desde entonces). 7 días: `ver_mapa` 60 filas/3 usuarios; el resto, 1-2 filas por capa.
+
+**Propuestas (todas con sí/no de Mikel; no he tocado nada):**
+1. **Caída de actividad semanal:** de 7 a 3 usuarios activos en una semana sin altas nuevas (0 en 7 días). Con 13 perfiles es ruido posible, pero 7 de 13 llevan 7 días sin entrar: valorar un aviso de reenganche ("las condiciones de tu spot hoy") a quien lleva más de 7 días sin abrir la app, antes de tocar el producto.
+2. **Diario concentrado en 2 personas (de 7 activas en 28 días, 29 %):** sin capturas en 7 días. No quitar nada; mirar si quien no lo usa lo encuentra (pestaña inferior) antes de proponer cambio de diseño.
+3. **Embudo de pago parado:** 3 vieron la suscripción y 1 inició checkout en 28 días, todo el 5-nov. Con estas cifras no hay conclusión; seguir observando cuando haya altas nuevas.
+4. **Capas de mar:** frentes, corriente, clorofila y sustrato las prueban 4 usuarios cada una en 28 días, más que el diario; la temperatura del agua (2) y rayos (2) las que menos. Ninguna se toca; solo vigilar.
+
+**Sin propuesta de quitar:** SOS y WhatsApp (1 uso total; función de seguridad). `ver_capa_batimetria` (0 en 28 días) está sustituida por isóbatas/sustrato.
+
+**Puntos ciegos (sin cambios respecto a la entrada del 2026-11-14):** sin evento para cambio de modalidad, flota AIS, coordenadas al tocar el mapa en Embarcación, ventana de actividad/índice de pesca ni Aprende; propuesta (no aplicada) a `scripts/patrones-uso/agregar.mjs`/`registrarEvento` si Mikel quiere medirlos.
+
+**No me dio tiempo/dato:** detalle por spot (casi todo en "otros" por la regla de 2 usuarios) y comparación más allá de la semana pasada.
+
+Firmado: robot de patrones de uso (rutina).
