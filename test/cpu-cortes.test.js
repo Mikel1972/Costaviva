@@ -50,5 +50,5 @@ test("mareas: un spot en error (sin bloques ni marea) da página, no excepción"
 });
 
 test("prevision en error: se guarda poco, no media hora ni nada", () => {
-  assert.equal(TTL_PREVISION_CON_ERROR_S, 300);
+  assert.equal(TTL_PREVISION_CON_ERROR_S, 900);
 });

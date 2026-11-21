@@ -50,7 +50,7 @@ import { datosWaikato, mareografoDeSpot, ATRIBUCION_WAIKATO_DATOS } from "./_lib
 // Cloudflare pidiera todos los spots de todas las regiones, la cuota de
 // Open-Meteo se iría a ~1,2 M/mes (ver CLAUDE.md, "Cuota de Open-Meteo").
 // Tiempo en caché de una /prevision mayormente en error (ver más abajo).
-export const TTL_PREVISION_CON_ERROR_S = 300;
+export const TTL_PREVISION_CON_ERROR_S = 900;
 
 export const SPOTS_ES = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -1545,7 +1545,8 @@ export async function onRequestGet(context) {
   });
 
   // Respuesta mayormente en error (p. ej. Open-Meteo dando 429): se guarda
-  // solo 5 minutos, no media hora, para no congelar el fallo. Antes no se
+  // 15 minutos, no media hora, para no congelar el fallo (y no seguir
+  // gastando la cuota diaria de Open-Meteo: cada cálculo pide ~85 puntos). Antes no se
   // guardaba nada y cada visita (y cada página de mareas/spots) volvía a
   // calcularlo todo: 100-280 ms de CPU por petición, cortes 1102 de
   // Cloudflare y más peticiones a Open-Meteo, que alargaban el 429
