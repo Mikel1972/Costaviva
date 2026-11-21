@@ -444,3 +444,15 @@
 {"fecha":"2026-11-21T15:10:02.698Z","camara":"donostia","spot":"donostia","altura":[0.4,0.5],"fuente":"modelo"}
 {"fecha":"2026-11-21T15:10:02.698Z","camara":"hondarribia","spot":"hondarribia","altura":[0.2,0.3],"fuente":"modelo_corregido_camara"}
 {"fecha":"2026-11-21T15:10:02.698Z","camara":"castrourdiales","spot":"castrourdiales","altura":[0.5,0.7],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"mundaka","spot":"mundaka","altura":[0.6,0.7],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"bakio","spot":"bakio","altura":[0.8,0.9],"fuente":"modelo_corregido_camara"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"sopelana","spot":"sopelana","altura":[0.9,1.1],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"mutriku","spot":"mutriku","altura":[0.4,0.5],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"deba","spot":"deba","altura":[0.4,0.5],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"zumaia","spot":"zumaia","altura":[0.5,0.7],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"getaria","spot":"getaria","altura":[0.3,0.3],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"zarautz","spot":"zarautz","altura":[0.5,0.6],"fuente":"camara"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"orio","spot":"orio","altura":[0.3,0.4],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"donostia","spot":"donostia","altura":[0.4,0.5],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"hondarribia","spot":"hondarribia","altura":[0.3,0.3],"fuente":"modelo"}
+{"fecha":"2026-11-21T15:39:57.360Z","camara":"castrourdiales","spot":"castrourdiales","altura":[0.5,0.7],"fuente":"modelo"}
