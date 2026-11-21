@@ -282,11 +282,32 @@ export function sinBarraFinal(request) {
 
 // JSON estático del propio sitio (assets/datos/...). En Pages, env.ASSETS
 // lo sirve sin pasar por las Functions; si no existe (tests), fetch normal.
+// Memo por isolate (2026-11-21): los ficheros de assets no cambian dentro de
+// un despliegue y especies.json (~0,8 MB) se parseaba en cada petición de
+// cada ficha (CPU, cortes 1102). Solo con env.ASSETS (producción); en los
+// tests (fetch normal) se pide siempre. Quien lo usa NO debe modificar el
+// objeto devuelto (copiar antes: { ...datos }, .slice(), .map()).
+const memoJson = new Map();
+export function vaciarMemoJson() {
+  memoJson.clear();
+}
 export async function cargarJson(context, ruta) {
   const url = new URL(ruta, context.request.url);
-  const r = context.env?.ASSETS ? await context.env.ASSETS.fetch(url) : await fetch(url);
-  if (!r.ok) throw new Error(`${ruta}: HTTP ${r.status}`);
-  return r.json();
+  if (!context.env?.ASSETS) {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`${ruta}: HTTP ${r.status}`);
+    return r.json();
+  }
+  let p = memoJson.get(url.pathname);
+  if (!p) {
+    p = context.env.ASSETS.fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`${ruta}: HTTP ${r.status}`);
+      return r.json();
+    });
+    memoJson.set(url.pathname, p);
+    p.catch(() => memoJson.delete(url.pathname));
+  }
+  return p;
 }
 
 // Una petición con tiempo máximo; null si falla o tarda. No se aborta: si
@@ -329,7 +350,23 @@ export async function conCache(context, generar, version = "") {
 }
 
 // Huella corta de unos datos para usarla como `version` de conCache.
+// Memo por objeto (2026-11-21): con cargarJson memorizado, el mismo objeto
+// de datos llega en cada petición y su huella (stringify de ~240 KB + hash)
+// costaba 3-4 ms aunque la página saliera de la caché.
+const memoHuella = new WeakMap();
 export function huella(datos) {
+  if (Array.isArray(datos)) return datos.map(huellaDe).join(".");
+  return huellaDe(datos);
+}
+function huellaDe(datos) {
+  if (datos && typeof datos === "object") {
+    let h = memoHuella.get(datos);
+    if (!h) { h = huellaTexto(datos); memoHuella.set(datos, h); }
+    return h;
+  }
+  return huellaTexto(datos);
+}
+function huellaTexto(datos) {
   const t = JSON.stringify(datos);
   let h = 0;
   for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0;

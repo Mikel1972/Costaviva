@@ -49,6 +49,9 @@ import { datosWaikato, mareografoDeSpot, ATRIBUCION_WAIKATO_DATOS } from "./_lib
 // propia caché (fase 2 de NZ, 2026-10-09): si cada centro de datos de
 // Cloudflare pidiera todos los spots de todas las regiones, la cuota de
 // Open-Meteo se iría a ~1,2 M/mes (ver CLAUDE.md, "Cuota de Open-Meteo").
+// Tiempo en caché de una /prevision mayormente en error (ver más abajo).
+export const TTL_PREVISION_CON_ERROR_S = 900;
+
 export const SPOTS_ES = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989 },
@@ -215,8 +218,17 @@ function horaLocalDesdeISO(iso) {
 // hora que no era la real. Mismo fallo corregido a la vez en index.html y
 // diario.html (sus propias copias de este mismo cálculo de "ahora").
 // 2026-10-09: la zona es la del spot (regiones.js), no siempre Madrid.
+// Memo por zona y minuto (2026-11-21): se llama dentro de bucles
+// (findIndex por hora y spot) y cada llamada es un Intl.formatToParts;
+// ~3.500 por petición se comían decenas de ms de CPU.
+const memoHoraActual = new Map();
 function horaActualISO(zona = ZONA_POR_DEFECTO) {
-  return horaLocalISO(zona, new Date());
+  const minuto = Math.floor(Date.now() / 60000);
+  const m = memoHoraActual.get(zona);
+  if (m && m.minuto === minuto) return m.valor;
+  const valor = horaLocalISO(zona, new Date());
+  memoHoraActual.set(zona, { minuto, valor });
+  return valor;
 }
 
 // Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
@@ -1532,13 +1544,19 @@ export async function onRequestGet(context) {
     },
   });
 
-  // No cachear una respuesta mayormente en error (p.ej. Open-Meteo dando
-  // 429 como ahora) — cachearla dejaría el fallo "congelado" media hora
-  // aunque la fuente externa ya se hubiera recuperado en la siguiente
-  // visita real. Solo se guarda si la mayoría de spots sí trajo datos.
+  // Respuesta mayormente en error (p. ej. Open-Meteo dando 429): se guarda
+  // 15 minutos, no media hora, para no congelar el fallo (y no seguir
+  // gastando la cuota diaria de Open-Meteo: cada cálculo pide ~85 puntos). Antes no se
+  // guardaba nada y cada visita (y cada página de mareas/spots) volvía a
+  // calcularlo todo: 100-280 ms de CPU por petición, cortes 1102 de
+  // Cloudflare y más peticiones a Open-Meteo, que alargaban el 429
+  // (2026-11-21).
   const conError = resultados.filter((s) => s.error).length;
   if (conError < resultados.length / 2) {
     context.waitUntil(cache.put(cacheKey, respuesta.clone()));
+  } else {
+    const corta = new Response(respuesta.clone().body, { headers: { "content-type": "application/json; charset=utf-8", "cache-control": `public, max-age=${TTL_PREVISION_CON_ERROR_S}` } });
+    context.waitUntil(cache.put(cacheKey, corta));
   }
 
   return respuesta;
