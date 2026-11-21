@@ -1,15 +1,7 @@
 {
- "actualizado": "2026-11-21T09:39:45.934Z",
+ "actualizado": "2026-11-21T10:09:53.039Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "zumaia",
-   "alto": 3,
-   "bajo": 1,
-   "spots": [
-    "zumaia"
-   ]
-  },
   {
    "clave": "bakio",
    "alto": 9,
@@ -24,6 +16,14 @@
    "bajo": 1,
    "spots": [
     "sopelana"
+   ]
+  },
+  {
+   "clave": "zumaia",
+   "alto": 2,
+   "bajo": 1,
+   "spots": [
+    "zumaia"
    ]
   }
  ],
