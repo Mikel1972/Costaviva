@@ -200,14 +200,14 @@ export async function pedirDatosMeteo(api, consulta, opciones = {}) {
   } catch (e) {
     const env = opciones.env || {};
     const yaGratuitas = env.FUENTE_ATMOSFERA === "metno" && env.FUENTE_MAR === "copernicus";
-    // Atmósfera solo con una coordenada (el proxy /meteo/): MET Norway hace
-    // una petición por punto y con las ~100 de /prevision pasaría del límite
-    // de subpeticiones de un Worker. El mar sí con varias: Copernicus sale de
-    // nuestras cajas de 0,5° (21 puntos de toda España = 1 petición, medido
-    // el 2026-10-21 con un lote de /registrar-presion, que fallaba por el 429).
-    const qs = typeof consulta === "string" ? consulta : new URLSearchParams(consulta).toString();
-    const unaCoordenada = !/latitude=[^&]*(,|%2C)/i.test(qs);
-    if (!ESTADOS_RESPALDO.has(e.status) || !GRUPOS[api] || yaGratuitas || (!unaCoordenada && api !== "marine")) throw e;
+    // Con varias coordenadas también (2026-11-21, Mikel: "sí" al respaldo de
+    // /prevision): la atmósfera de varios puntos sale de la instantánea
+    // diaria de MET Norway (atmosfera/todos.json, 1 sola lectura; cubre los
+    // 105 spots de España y Portugal), no de una petición por punto; el mar,
+    // de las cajas de Copernicus. Antes /prevision se quedaba con los 105
+    // spots "sin dato" mientras Open-Meteo daba 429. La comparativa con las
+    // boyas (datos-robots/fuentes/COMPARATIVA.md) da errores casi iguales.
+    if (!ESTADOS_RESPALDO.has(e.status) || !GRUPOS[api] || yaGratuitas) throw e;
     try {
       const datos = await pedirDatosMeteoSinRespaldo(api, consulta, { ...opciones, env: envConFuenteForzada(env, "gratuitas") });
       for (const o of Array.isArray(datos) ? datos : [datos]) {

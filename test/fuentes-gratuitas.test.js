@@ -380,7 +380,8 @@ test("comparativa: solo marca de calidad 1 y mismas horas para todas las fuentes
 // 2026-10-20: Open-Meteo gratis con 429 dejaba sin datos las ubicaciones
 // personales. Respaldo automático a las fuentes gratuitas, solo con 429/5xx
 // y una coordenada; si el respaldo falla, el error original.
-test("respaldo de Open-Meteo: 429 de una coordenada prueba las gratuitas; 400 o varias coordenadas, no", async () => {
+test("respaldo de Open-Meteo: 429 prueba las gratuitas (una o varias coordenadas); 400, no", async () => {
+  vaciarMemoriaInstantaneas();
   const { pedirDatosMeteo } = await import("../functions/_lib/fuentes.js");
   const pedidas = [];
   const fetchImpl = async (url) => {
@@ -396,10 +397,29 @@ test("respaldo de Open-Meteo: 429 de una coordenada prueba las gratuitas; 400 o 
   assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "un 400 no usa respaldo");
   pedidas.length = 0;
   await assert.rejects(pedirDatosMeteo("forecast", q("43.39,43.5").replace("longitude=-3.02", "longitude=-3.02,-3.1"), { env: {}, fetchImpl }), (e) => e.status === 429);
-  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "varias coordenadas de atmósfera no usan respaldo");
+  assert.ok(pedidas.some((u) => u.endsWith("/atmosfera/todos.json")), "varias coordenadas de atmósfera prueban la instantánea de MET (2026-11-21)");
   pedidas.length = 0;
   await assert.rejects(pedirDatosMeteo("marine", "latitude=43.39,43.5&longitude=-3.02,-3.1&timezone=Europe%2FMadrid&forecast_days=1&hourly=sea_level_height_msl", { env: {}, fetchImpl }), (e) => e.status === 429);
   assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "el mar con varias coordenadas sí prueba Copernicus");
+});
+
+// 2026-11-21: /prevision (105 spots en varias coordenadas) con Open-Meteo en
+// 429 sale de la instantánea de MET Norway, con aviso.
+test("respaldo de /prevision: 429 con varias coordenadas → instantánea de MET con aviso", async () => {
+  vaciarMemoriaInstantaneas();
+  const serie = serieDesdeMet(MET);
+  const inst = { generado_en: "2026-10-08T00:10:00Z", rejilla: { paso: 1 }, puntos: [
+    { id: "mundaka", tipo: "spot", lat: 43.4047, lon: -2.6989, serie },
+    { id: "bakio", tipo: "spot", lat: 43.4297, lon: -2.8103, serie },
+  ] };
+  const fetchImpl = async (url) => String(url).includes("open-meteo.com") ? new Response("{}", { status: 429 }) : respuestaJSON(inst);
+  const d = await pedirDatosMeteo("forecast", "latitude=43.4047,43.4297&longitude=-2.6989,-2.8103&timezone=GMT&forecast_days=1&hourly=windspeed_10m&windspeed_unit=ms", {
+    env: { ...CONTACTO }, fetchImpl, ahora: AHORA_MET,
+  });
+  assert.equal(d.length, 2);
+  assert.equal(d[0].hourly.windspeed_10m[0], 11.1);
+  assert.equal(d[1].aviso_respaldo, "Open-Meteo 429: fuentes gratuitas");
+  vaciarMemoriaInstantaneas();
 });
 
 // 2026-11-04: MET Norway cortó conexiones ("fetch failed") y mandó cuerpos
