@@ -1,7 +1,15 @@
 {
- "actualizado": "2026-11-21T08:39:57.505Z",
+ "actualizado": "2026-11-21T09:09:49.311Z",
  "dias": 7,
  "repetidos": [
+  {
+   "clave": "hondarribia",
+   "alto": 2,
+   "bajo": 1,
+   "spots": [
+    "hondarribia"
+   ]
+  },
   {
    "clave": "zumaia",
    "alto": 3,
@@ -12,7 +20,7 @@
   },
   {
    "clave": "bakio",
-   "alto": 8,
+   "alto": 9,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -21,7 +29,7 @@
   {
    "clave": "sopelana",
    "alto": 3,
-   "bajo": 0,
+   "bajo": 1,
    "spots": [
     "sopelana"
    ]
@@ -567,6 +575,42 @@
    "antes": 1,
    "referencia": 0.9,
    "visto": "2026-11-21T08:39:57.505Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-22T09:00",
+   "antes": 1.2,
+   "referencia": 1.1,
+   "visto": "2026-11-21T09:09:49.311Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "bajo",
+   "horaISO": "2026-11-21T12:00",
+   "antes": 0.7,
+   "referencia": null,
+   "visto": "2026-11-21T09:09:49.311Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "bajo",
+   "horaISO": "2026-11-22T09:00",
+   "antes": 0.7,
+   "referencia": null,
+   "visto": "2026-11-21T09:09:49.311Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "alto",
+   "horaISO": "2026-11-22T09:00",
+   "antes": 0.8,
+   "referencia": 0.6,
+   "visto": "2026-11-21T09:09:49.311Z"
   }
  ]
 }
