@@ -1,0 +1,32 @@
+name: Vigía de páginas (sitemap entero, sin IA)
+
+# 2026-11-21 (Mikel: "que el robot aprenda el error y cree un agente que lo
+# revise para que no vuelva a pasar"). Recorre cada día todas las URL del
+# sitemap y /prevision. En rojo si alguna página falla dos veces (p. ej.
+# "error code: 1102", corte por CPU de Cloudflare) o si /prevision trae la
+# mayoría de spots en error (Open-Meteo 429). Ver scripts/vigia/paginas.mjs.
+
+on:
+  schedule:
+    - cron: "37 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vigia-paginas
+  cancel-in-progress: false
+
+jobs:
+  vigia:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Recorrer el sitemap
+        run: node scripts/vigia/paginas.mjs
