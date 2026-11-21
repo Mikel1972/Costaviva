@@ -27,7 +27,12 @@ import { fileURLToPath } from "node:url";
 import { GoogleAuth } from "google-auth-library";
 
 const RAIZ_REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const LIMITE_URLS = 500;
+// 300 (antes 500; 2026-11-21): la inspección de URLs de Search Console tiene
+// una cuota diaria por propiedad que comparte con Mikel. El 20/11 se lanzó
+// este robot 3 veces (3 x 500 inspecciones) y al día siguiente Search
+// Console le dijo «Cuota superada» al ir a pedir indexaciones a mano. Con 300
+// por pasada y no lanzarlo más de una vez al día queda sitio de sobra.
+const LIMITE_URLS = 300;
 const CONCURRENCIA = 4;
 const MAX_NO_INDEXADAS_LISTADAS = 10;
 const MAX_INDEXADAS_LISTADAS = 30;
