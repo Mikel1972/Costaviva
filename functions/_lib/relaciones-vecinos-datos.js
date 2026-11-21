@@ -3,7 +3,7 @@
 // cociente histórico orilla A / orilla B entre cámaras cercanas, por tamaño
 // de mar. Lo usa la regla de vecinos (coherencia-vecinos.js). No editar a mano.
 export default {
- "generado": "2026-11-19T20:56:02.467Z",
+ "generado": "2026-11-21T10:09:48.553Z",
  "radioKm": 40,
  "nMin": 8,
  "pares": {
@@ -51,8 +51,8 @@ export default {
    },
    "medio": {
     "log": 0,
-    "mad": 0.458,
-    "n": 10
+    "mad": 0,
+    "n": 20
    }
   },
   "castrourdiales|sopelana": {
@@ -63,8 +63,8 @@ export default {
    },
    "grande": {
     "log": -0.916,
-    "mad": 0.223,
-    "n": 9
+    "mad": 0.458,
+    "n": 14
    }
   },
   "deba|getaria": {
@@ -90,7 +90,7 @@ export default {
    "medio": {
     "log": 0,
     "mad": 0,
-    "n": 11
+    "n": 21
    },
    "grande": {
     "log": 0,
@@ -102,7 +102,7 @@ export default {
    "medio": {
     "log": 0,
     "mad": 0.916,
-    "n": 9
+    "n": 15
    }
   },
   "donostia|hondarribia": {
@@ -159,7 +159,7 @@ export default {
    "medio": {
     "log": 0,
     "mad": 0,
-    "n": 25
+    "n": 29
    },
    "pequeno": {
     "log": 0,
@@ -175,13 +175,13 @@ export default {
   "hondarribia|zarautz": {
    "medio": {
     "log": -0.916,
-    "mad": 0.693,
-    "n": 107
+    "mad": 0,
+    "n": 114
    },
    "grande": {
     "log": -0.916,
     "mad": 0,
-    "n": 31
+    "n": 36
    },
    "pequeno": {
     "log": 0,
@@ -196,9 +196,9 @@ export default {
     "n": 20
    },
    "grande": {
-    "log": -0.805,
-    "mad": 0.458,
-    "n": 8
+    "log": -0.916,
+    "mad": 0.223,
+    "n": 13
    }
   },
   "orio|zarautz": {
@@ -212,7 +212,7 @@ export default {
    "medio": {
     "log": 0,
     "mad": 0,
-    "n": 18
+    "n": 23
    }
   }
  }
