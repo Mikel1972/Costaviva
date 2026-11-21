@@ -1,18 +1,10 @@
 {
- "actualizado": "2026-11-21T03:37:33.289Z",
+ "actualizado": "2026-11-21T04:07:27.220Z",
  "dias": 7,
  "repetidos": [
   {
-   "clave": "mundaka",
-   "alto": 3,
-   "bajo": 0,
-   "spots": [
-    "mundaka"
-   ]
-  },
-  {
    "clave": "hondarribia",
-   "alto": 3,
+   "alto": 2,
    "bajo": 1,
    "spots": [
     "hondarribia"
