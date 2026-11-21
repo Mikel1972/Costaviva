@@ -1,15 +1,7 @@
 {
- "actualizado": "2026-11-21T06:07:33.043Z",
+ "actualizado": "2026-11-21T06:37:32.562Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "hondarribia",
-   "alto": 2,
-   "bajo": 1,
-   "spots": [
-    "hondarribia"
-   ]
-  },
   {
    "clave": "sopelana",
    "alto": 6,
@@ -28,7 +20,7 @@
   },
   {
    "clave": "bakio",
-   "alto": 7,
+   "alto": 8,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -539,6 +531,24 @@
    "antes": 0.9,
    "referencia": 0.6,
    "visto": "2026-11-20T21:37:30.710Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-22T06:00",
+   "antes": 1.6,
+   "referencia": 1.2,
+   "visto": "2026-11-21T06:37:32.562Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-22T06:00",
+   "antes": 1,
+   "referencia": 0.9,
+   "visto": "2026-11-21T06:37:32.562Z"
   }
  ]
 }
