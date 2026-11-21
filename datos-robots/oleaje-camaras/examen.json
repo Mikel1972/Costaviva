@@ -1,9 +1,9 @@
 {
- "generado": "2026-11-21T10:09:58.343Z",
+ "generado": "2026-11-21T10:39:37.789Z",
  "tolerancia": 0.3,
  "resumen": {
-  "examenes": 123,
-  "suspensos": 5
+  "examenes": 137,
+  "suspensos": 7
  },
  "suspensos24h": [
   {
@@ -64,6 +64,34 @@
   },
   {
    "fecha": "2026-11-21T10:08:31.170456+00:00",
+   "camara": "zarautz",
+   "spot": "zarautz",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "camara",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-21T10:10:06.074688+00:00",
+   "camara": "zarautz",
+   "spot": "zarautz",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "camara",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-21T10:10:21.762741+00:00",
    "camara": "zarautz",
    "spot": "zarautz",
    "banda": "<0.5",
@@ -144,13 +172,13 @@
   },
   "hondarribia": {
    "spot": "hondarribia",
-   "examenes": 29,
+   "examenes": 35,
    "suspensos": 0,
-   "errorMedio": 0.01,
+   "errorMedio": 0.02,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:09:29.750004+00:00",
+     "fecha": "2026-11-21T10:10:03.959213+00:00",
      "banda": "<0.5",
      "mostrado": [
       0.4,
@@ -159,7 +187,16 @@
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:36.983937+00:00",
+     "fecha": "2026-11-21T10:10:09.958587+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.4,
+      0.4
+     ],
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-21T10:10:13.339704+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.4,
@@ -168,25 +205,16 @@
      "error": 0.1
     },
     {
-     "fecha": "2026-11-21T10:09:42.148787+00:00",
-     "banda": "<0.5",
+     "fecha": "2026-11-21T10:10:16.542965+00:00",
+     "banda": "0.5-1",
      "mostrado": [
       0.4,
       0.4
      ],
-     "error": 0
+     "error": 0.1
     },
     {
-     "fecha": "2026-11-21T10:09:50.752336+00:00",
-     "banda": "<0.5",
-     "mostrado": [
-      0.4,
-      0.4
-     ],
-     "error": 0
-    },
-    {
-     "fecha": "2026-11-21T10:09:55.694352+00:00",
+     "fecha": "2026-11-21T10:10:19.889944+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.4,
@@ -198,13 +226,13 @@
   },
   "zarautz": {
    "spot": "zarautz",
-   "examenes": 29,
-   "suspensos": 5,
+   "examenes": 37,
+   "suspensos": 7,
    "errorMedio": 0.09,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:09:32.185374+00:00",
+     "fecha": "2026-11-21T10:10:14.942267+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.9,
@@ -213,7 +241,7 @@
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:38.157973+00:00",
+     "fecha": "2026-11-21T10:10:18.380417+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.9,
@@ -222,7 +250,16 @@
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:47.204026+00:00",
+     "fecha": "2026-11-21T10:10:21.762741+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.9,
+      1.1
+     ],
+     "error": 0.5
+    },
+    {
+     "fecha": "2026-11-21T10:10:23.578897+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.9,
@@ -231,16 +268,7 @@
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:52.308168+00:00",
-     "banda": "0.5-1",
-     "mostrado": [
-      0.9,
-      1.1
-     ],
-     "error": 0
-    },
-    {
-     "fecha": "2026-11-21T10:09:58.155907+00:00",
+     "fecha": "2026-11-21T10:10:24.776188+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.9,
