@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-21T07:07:23.061Z",
- "lineasHistorial": 12015,
+ "fecha": "2026-11-21T08:08:26.906Z",
+ "lineasHistorial": 12025,
  "etiquetas": 1244,
  "etiquetasClaude": 256,
  "calibracion": {
@@ -390,9 +390,9 @@
    "correlacion": 0.495
   },
   "nz-riverton/principal": {
-   "a": 7.3465,
+   "a": 7.3401,
    "p": 0.5,
-   "n": 1107,
+   "n": 1108,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 73,
    "franjasClaude": [
@@ -618,10 +618,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 13,
+   "n": 15,
    "suficiente": false,
-   "lineas": 0.197,
-   "cerca": -0.292
+   "lineas": 0.276,
+   "cerca": -0.195
   },
   "sopelana": {
    "n": 7,
@@ -642,7 +642,7 @@
    "cerca": null
   },
   "zarautz": {
-   "n": 1,
+   "n": 2,
    "suficiente": false,
    "lineas": null,
    "cerca": null
@@ -675,11 +675,11 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.984,
-    "n": 6,
-    "peso": 6,
-    "mae": 0.1,
-    "maeCorregido": 0.1
+    "factor": 1.055,
+    "n": 8,
+    "peso": 6.6,
+    "mae": 0.31,
+    "maeCorregido": 0.31
    },
    "0-6": {
     "factor": 1.002,
@@ -689,14 +689,30 @@
     "maeCorregido": 0.07
    },
    "6-24": {
-    "factor": 0.99,
-    "n": 3,
-    "peso": 3,
-    "mae": 0.07,
-    "maeCorregido": 0.07
+    "factor": 1.036,
+    "n": 4,
+    "peso": 3.3,
+    "mae": 0.28,
+    "maeCorregido": 0.29
    }
   },
   "camaras": {
+   "deba": {
+    "24-48": {
+     "factor": 1.114,
+     "n": 2,
+     "peso": 0.6,
+     "mae": 2.4,
+     "maeCorregido": 2.35
+    },
+    "6-24": {
+     "factor": 1.06,
+     "n": 1,
+     "peso": 0.3,
+     "mae": 2.44,
+     "maeCorregido": 2.42
+    }
+   },
    "nz-aramoana": {
     "24-48": {
      "factor": 0.966,
