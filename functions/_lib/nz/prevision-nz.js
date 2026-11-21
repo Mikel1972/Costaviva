@@ -12,6 +12,7 @@
 // directo a los estáticos sin pasar por _middleware.js. Sin ASSETS (tests,
 // scripts) o si falla, la marea sale null y el resto del spot sigue.
 
+import { leerAssetJson } from "../assets-memo.js";
 import { mareaSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ } from "./mareas-linz.js";
 import { normativaArea } from "../../../assets/js/normativa-nz.js";
 import { reservasCercanas, ATRIBUCION_DOC } from "./reservas-doc.js";
@@ -25,16 +26,10 @@ export function aniosNecesarios(ahora = Date.now()) {
   return [y, y + 1];
 }
 
-async function leerJSON(env, origen, ruta) {
-  if (!env?.ASSETS) return null;
-  try {
-    const r = await env.ASSETS.fetch(new URL(ruta, origen));
-    if (!r.ok) return null;
-    return await r.json();
-  } catch (e) {
-    console.error(`prevision-nz: no se pudo leer ${ruta}:`, e);
-    return null;
-  }
+// Memorizado por isolate (assets-memo.js): linz-mareas-<año>.json pesa
+// ~400 KB y se parseaba en cada visita (cortes 1102, 2026-11-21).
+function leerJSON(env, origen, ruta) {
+  return leerAssetJson(env, new URL(ruta, origen).toString());
 }
 
 // { catalogo, anios } o { catalogo: null, anios: [] } si falta algo.

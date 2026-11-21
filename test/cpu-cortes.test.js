@@ -52,3 +52,18 @@ test("mareas: un spot en error (sin bloques ni marea) da página, no excepción"
 test("prevision en error: se guarda poco, no media hora ni nada", () => {
   assert.equal(TTL_PREVISION_CON_ERROR_S, 900);
 });
+
+test("assets de NZ: una lectura por isolate; un fallo no se memoriza", async () => {
+  const { leerAssetJson, vaciarMemoAssets } = await import("../functions/_lib/assets-memo.js");
+  vaciarMemoAssets();
+  let n = 0;
+  const env = { ASSETS: { fetch: async () => { n++; return n === 1 ? new Response("x", { status: 500 }) : new Response('{"ok":1}'); } } };
+  assert.equal(await leerAssetJson(env, "https://costaviva.org/datos/nz/linz-puertos.json"), null);
+  const a = await leerAssetJson(env, "https://costaviva.org/datos/nz/linz-puertos.json");
+  const b = await leerAssetJson(env, "https://costaviva.org/datos/nz/linz-puertos.json");
+  assert.deepEqual(a, { ok: 1 });
+  assert.strictEqual(a, b);
+  assert.equal(n, 2);
+  assert.equal(await leerAssetJson({}, "https://costaviva.org/x.json"), null);
+  vaciarMemoAssets();
+});
