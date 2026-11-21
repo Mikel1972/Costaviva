@@ -22,6 +22,8 @@ import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { mareaNZRespuesta } from "../_lib/seo/rutas-nz.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
+import { conCache, pedirConLimite, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "../_lib/seo/base.js";
+import { esSpotIberia } from "../_lib/seo/paginas-ib.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -88,15 +90,25 @@ function hora24(etiqueta) {
 // temperatura del agua y la previsión de las próximas horas (los mismos
 // bloques de la app), para que la página tenga contenido propio suficiente
 // y Google no la trate como una ficha vacía repetida 105 veces.
-function renderizarPagina(spot, todos) {
-  const bloque = spot.bloques[0];
+function fechaISO(valor) {
+  const d = new Date(valor ?? Date.now());
+  return Number.isFinite(d.getTime()) ? d.toISOString() : new Date().toISOString();
+}
+
+export function renderizarPagina(spot, todos) {
+  // Spot con error en /prevision (p. ej. Open-Meteo dando 429): sin bloques
+  // ni marea. Antes esto lanzaba TypeError (2026-11-21: 61 excepciones/día);
+  // ahora la página sale igual, con "sin dato ahora mismo".
+  const bloques = Array.isArray(spot.bloques) ? spot.bloques : [];
+  const marea = spot.marea || null;
+  const bloque = bloques[0];
   const oleajeTexto = bloque ? `${bloque.altura[0]}–${bloque.altura[1]} m (periodo ${bloque.periodo}s)` : "sin dato ahora mismo";
   const vientoTexto = bloque ? `${bloque.viento} km/h ${bloque.dirViento}` : "sin dato ahora mismo";
-  const mareaFlecha = spot.marea.tendencia === "subiendo" ? "▲" : "▼";
-  const mareaTexto = `${spot.marea.altura} m, ${spot.marea.tendencia} ${mareaFlecha} (coeficiente ${spot.marea.coeficiente})`;
+  const mareaFlecha = marea?.tendencia === "subiendo" ? "▲" : "▼";
+  const mareaTexto = marea ? `${marea.altura} m, ${marea.tendencia} ${mareaFlecha} (coeficiente ${marea.coeficiente})` : "sin dato ahora mismo";
   const nombre = escaparHtml(spot.nombre);
   const region = regionDeSlug(spot.slug);
-  const proximas = spot.marea.proximas || [];
+  const proximas = marea?.proximas || [];
   const pleamar = proximas.find((e) => e.tipo === "pleamar");
   const bajamar = proximas.find((e) => e.tipo === "bajamar");
   const tempAgua = bloque?.tempAgua;
@@ -139,7 +151,7 @@ function renderizarPagina(spot, todos) {
       name: titulo,
       url,
       inLanguage: "es",
-      dateModified: new Date(spot.actualizado).toISOString(),
+      dateModified: fechaISO(spot.actualizado),
       isPartOf: { "@type": "WebSite", name: "Costaviva", url: "https://costaviva.org/" },
       about: { "@type": "Place", name: spot.nombre },
     },
@@ -150,7 +162,7 @@ function renderizarPagina(spot, todos) {
     },
   ]).replace(/</g, "\\u003c");
 
-  const filasPrevision = spot.bloques
+  const filasPrevision = bloques
     .map(
       (b) =>
         `<tr><td>${escaparHtml(hora24(b.hora))}</td><td>${b.altura[0]}–${b.altura[1]} m</td><td>${b.viento ?? "–"} km/h ${escaparHtml(b.dirViento ?? "")}</td><td>${b.tempAgua != null ? `${b.tempAgua} °C` : "–"}</td></tr>`
@@ -292,25 +304,21 @@ export async function onRequestGet(context) {
   const nz = mareaNZRespuesta(context, "es", slug);
   if (nz) return nz;
 
-  const previsionUrl = new URL("/prevision", request.url).toString();
-  let datos;
-  try {
-    const resp = await fetch(previsionUrl);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    datos = await resp.json();
-  } catch (e) {
-    return new Response(`No se pudo cargar la previsión ahora mismo: ${e.message}`, { status: 502 });
-  }
-
-  const spot = datos.spots.find((s) => s.slug === slug);
-  if (!spot) return paginaNoEncontrada(slug);
-
-  return new Response(renderizarPagina(spot, datos.spots), {
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      // Media hora -- mismo orden de magnitud que la caché de /prevision,
-      // no tiene sentido que esta página vaya más fresca que su fuente.
-      "cache-control": "public, max-age=1800",
-    },
+  if (!esSpotIberia(slug)) return paginaNoEncontrada(slug);
+  // Caché del borde como /en y /pt (2026-11-21): antes cada visita volvía a
+  // pedir y leer /prevision entero (CPU, cortes 1102 de Cloudflare) y, si
+  // /prevision fallaba, la página daba 502.
+  return conCache(context, async () => {
+    const datos = await pedirConLimite(new URL("/prevision", request.url).toString(), 8000, context);
+    const todos = datos?.spots || [];
+    const spot = todos.find((s) => s.slug === slug);
+    if (!spot || spot.error) {
+      return { html: renderizarPagina({ ...(spot || { slug, nombre: nombreDeSlug(slug) }), bloques: [], marea: null }, todos), ttl: TTL_SIN_DATOS_S };
+    }
+    return { html: renderizarPagina(spot, todos), ttl: TTL_CON_DATOS_S };
   });
+}
+
+function nombreDeSlug(slug) {
+  return String(slug).replace(/-/g, " ").replace(/\b\p{L}/gu, (c) => c.toUpperCase());
 }

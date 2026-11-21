@@ -33,6 +33,7 @@ const MEMORIA_MS = 5 * 60 * 1000;
 
 export function vaciarMemoriaInstantaneas() {
   memoria.clear();
+  enCurso.clear();
 }
 
 // Devuelve el JSON, o null si no existe (404). Lanza si está caducada o si
@@ -68,15 +69,33 @@ async function aCacheEdge(url, texto, ttl) {
   }
 }
 
-export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora = Date.now(), maxEdadHoras = MAX_EDAD_HORAS, cacheTtl = 900 } = {}) {
+// Lecturas en curso por URL (2026-11-21): /prevision pide mar/spots.json
+// (2,5 MB) a la vez para cada grupo de zona horaria; sin esto se bajaba y se
+// parseaba 3 veces en paralelo (~30-60 ms de CPU de más, cortes 1102).
+const enCurso = new Map();
+
+export async function leerInstantanea(ruta, opciones = {}) {
+  const { env = {}, ahora = Date.now(), maxEdadHoras = MAX_EDAD_HORAS } = opciones;
   const url = `${baseInstantaneas(env)}/${ruta}`;
   const m = memoria.get(url);
   if (m && ahora - m.t < MEMORIA_MS) return comprobarEdad(m.datos, ruta, ahora, maxEdadHoras);
+  let p = enCurso.get(url);
+  if (!p) {
+    p = bajarInstantanea(url, ruta, opciones).finally(() => enCurso.delete(url));
+    enCurso.set(url, p);
+  }
+  const datos = await p;
+  return comprobarEdad(datos, ruta, ahora, maxEdadHoras);
+}
+
+// Baja y parsea la instantánea (Cache API del borde o Supabase); la deja en
+// memoria. null si no existe. Sin comprobar la edad (eso, quien la pide).
+async function bajarInstantanea(url, ruta, { fetchImpl = fetch, ahora = Date.now(), cacheTtl = 900 } = {}) {
   const ttl = ttlEdge(ruta, cacheTtl);
   const enEdge = await deCacheEdge(url);
   if (enEdge !== undefined) {
     memoria.set(url, { t: ahora, datos: enEdge });
-    return comprobarEdad(enEdge, ruta, ahora, maxEdadHoras);
+    return enEdge;
   }
   let resp;
   try {
@@ -97,7 +116,7 @@ export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora
   const datos = JSON.parse(texto);
   memoria.set(url, { t: ahora, datos });
   await aCacheEdge(url, texto, ttl);
-  return comprobarEdad(datos, ruta, ahora, maxEdadHoras);
+  return datos;
 }
 
 function comprobarEdad(datos, ruta, ahora, maxEdadHoras = MAX_EDAD_HORAS) {
