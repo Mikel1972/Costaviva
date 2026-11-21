@@ -1,6 +1,6 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (sesgo-plazo.mjs). No editar a mano.
 export default {
- "generado": "2026-11-21T10:09:48.578Z",
+ "generado": "2026-11-21T10:39:30.032Z",
  "k": 10,
  "nMin": 20,
  "camaras": {
@@ -13,11 +13,11 @@ export default {
     "maeCorregido": 0.06
    },
    "6-24": {
-    "factor": 0.644,
-    "n": 21,
-    "peso": 21,
-    "mae": 0.31,
-    "maeCorregido": 0.14
+    "factor": 0.519,
+    "n": 47,
+    "peso": 47,
+    "mae": 0.4,
+    "maeCorregido": 0.12
    }
   },
   "orio": {
@@ -45,11 +45,11 @@ export default {
     "maeCorregido": 0.21
    },
    "6-24": {
-    "factor": 0.884,
-    "n": 19,
-    "peso": 19,
-    "mae": 0.14,
-    "maeCorregido": 0.16
+    "factor": 0.875,
+    "n": 47,
+    "peso": 47,
+    "mae": 0.11,
+    "maeCorregido": 0.1
    }
   },
   "zumaia": {
@@ -70,11 +70,11 @@ export default {
     "maeCorregido": 0.38
    },
    "6-24": {
-    "factor": 1.131,
-    "n": 23,
-    "peso": 22.3,
-    "mae": 0.15,
-    "maeCorregido": 0.09
+    "factor": 0.999,
+    "n": 33,
+    "peso": 32.3,
+    "mae": 0.18,
+    "maeCorregido": 0.18
    }
   },
   "bakio": {
@@ -111,11 +111,11 @@ export default {
     "maeCorregido": 0.23
    },
    "6-24": {
-    "factor": 0.725,
-    "n": 22,
-    "peso": 22,
-    "mae": 0.32,
-    "maeCorregido": 0.17
+    "factor": 0.607,
+    "n": 36,
+    "peso": 36,
+    "mae": 0.41,
+    "maeCorregido": 0.22
    }
   },
   "nz-aramoana": {
@@ -167,11 +167,11 @@ export default {
    "maeCorregido": 0.2
   },
   "6-24": {
-   "factor": 0.763,
-   "n": 123,
-   "peso": 122.3,
-   "mae": 0.26,
-   "maeCorregido": 0.19
+   "factor": 0.683,
+   "n": 201,
+   "peso": 200.3,
+   "mae": 0.28,
+   "maeCorregido": 0.21
   },
   "0-6": {
    "factor": 1.002,

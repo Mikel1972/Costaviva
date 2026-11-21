@@ -1,16 +1,16 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-21T10:09:48.547Z",
- "n": 1278,
+ "generado": "2026-11-21T10:39:29.998Z",
+ "n": 1348,
  "k": 8,
  "global": {
-  "coef": 0.303,
-  "n": 1278
+  "coef": 0.29,
+  "n": 1348
  },
  "camaras": {
   "zarautz": {
-   "coef": 0.405,
-   "n": 276,
+   "coef": 0.382,
+   "n": 299,
    "tamanos": {
     "pequeno": {
      "coef": 0.451,
@@ -27,7 +27,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.372,
+     "coef": 0.371,
      "n": 81,
      "periodos": {
       "corto": {
@@ -41,27 +41,27 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.256,
-     "n": 22,
+     "coef": 0.221,
+     "n": 45,
      "periodos": {
       "corto": {
-       "coef": 0.273,
+       "coef": 0.24,
        "n": 1
       },
       "largo": {
-       "coef": 0.247,
-       "n": 21
+       "coef": 0.214,
+       "n": 44
       }
      }
     }
    }
   },
   "deba": {
-   "coef": 0.3,
-   "n": 87,
+   "coef": 0.273,
+   "n": 99,
    "tamanos": {
     "pequeno": {
-     "coef": 0.375,
+     "coef": 0.373,
      "n": 47,
      "periodos": {
       "corto": {
@@ -69,88 +69,88 @@ export default {
        "n": 21
       },
       "largo": {
-       "coef": 0.37,
+       "coef": 0.369,
        "n": 26
       }
      }
     },
     "medio": {
-     "coef": 0.249,
+     "coef": 0.247,
      "n": 28,
      "periodos": {
       "corto": {
-       "coef": 0.261,
+       "coef": 0.26,
        "n": 7
       },
       "largo": {
-       "coef": 0.244,
+       "coef": 0.243,
        "n": 21
       }
      }
     },
     "grande": {
-     "coef": 0.199,
-     "n": 12,
+     "coef": 0.167,
+     "n": 24,
      "periodos": {
       "corto": {
-       "coef": 0.183,
+       "coef": 0.157,
        "n": 1
       },
       "largo": {
-       "coef": 0.202,
-       "n": 11
+       "coef": 0.164,
+       "n": 23
       }
      }
     }
    }
   },
   "berria": {
-   "coef": 0.38,
-   "n": 157,
+   "coef": 0.356,
+   "n": 169,
    "tamanos": {
     "pequeno": {
-     "coef": 0.43,
+     "coef": 0.429,
      "n": 97,
      "periodos": {
       "corto": {
-       "coef": 0.417,
+       "coef": 0.416,
        "n": 58
       },
       "largo": {
-       "coef": 0.447,
+       "coef": 0.446,
        "n": 39
       }
      }
     },
     "medio": {
-     "coef": 0.338,
-     "n": 48,
+     "coef": 0.308,
+     "n": 54,
      "periodos": {
       "corto": {
-       "coef": 0.42,
+       "coef": 0.41,
        "n": 23
       },
       "largo": {
-       "coef": 0.283,
-       "n": 25
+       "coef": 0.249,
+       "n": 31
       }
      }
     },
     "grande": {
-     "coef": 0.251,
-     "n": 12,
+     "coef": 0.22,
+     "n": 18,
      "periodos": {
       "largo": {
-       "coef": 0.25,
-       "n": 12
+       "coef": 0.215,
+       "n": 18
       }
      }
     }
    }
   },
   "hondarribia": {
-   "coef": 0.171,
-   "n": 313,
+   "coef": 0.161,
+   "n": 334,
    "tamanos": {
     "pequeno": {
      "coef": 0.314,
@@ -167,7 +167,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.14,
+     "coef": 0.139,
      "n": 131,
      "periodos": {
       "corto": {
@@ -181,23 +181,23 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.078,
-     "n": 62,
+     "coef": 0.075,
+     "n": 83,
      "periodos": {
       "corto": {
-       "coef": 0.089,
+       "coef": 0.088,
        "n": 21
       },
       "largo": {
        "coef": 0.066,
-       "n": 41
+       "n": 62
       }
      }
     }
    }
   },
   "castrourdiales": {
-   "coef": 0.414,
+   "coef": 0.413,
    "n": 127,
    "tamanos": {
     "pequeno": {
@@ -215,25 +215,25 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.191,
+     "coef": 0.19,
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.187,
+       "coef": 0.186,
        "n": 1
       },
       "largo": {
-       "coef": 0.164,
+       "coef": 0.163,
        "n": 15
       }
      }
     },
     "grande": {
-     "coef": 0.191,
+     "coef": 0.19,
      "n": 6,
      "periodos": {
       "largo": {
-       "coef": 0.162,
+       "coef": 0.163,
        "n": 6
       }
      }
@@ -241,7 +241,7 @@ export default {
    }
   },
   "donostia": {
-   "coef": 0.276,
+   "coef": 0.274,
    "n": 32,
    "tamanos": {
     "pequeno": {
@@ -263,17 +263,17 @@ export default {
      "n": 13,
      "periodos": {
       "corto": {
-       "coef": 0.247,
+       "coef": 0.246,
        "n": 13
       }
      }
     },
     "grande": {
-     "coef": 0.19,
+     "coef": 0.186,
      "n": 5,
      "periodos": {
       "largo": {
-       "coef": 0.183,
+       "coef": 0.18,
        "n": 5
       }
      }
@@ -281,15 +281,15 @@ export default {
    }
   },
   "getaria": {
-   "coef": 0.3,
+   "coef": 0.297,
    "n": 26,
    "tamanos": {
     "pequeno": {
-     "coef": 0.405,
+     "coef": 0.404,
      "n": 17,
      "periodos": {
       "corto": {
-       "coef": 0.393,
+       "coef": 0.392,
        "n": 10
       },
       "largo": {
@@ -299,7 +299,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.189,
+     "coef": 0.188,
      "n": 9,
      "periodos": {
       "corto": {
@@ -307,28 +307,28 @@ export default {
        "n": 6
       },
       "largo": {
-       "coef": 0.16,
+       "coef": 0.159,
        "n": 3
       }
      }
     },
     "grande": {
-     "coef": 0.189,
+     "coef": 0.188,
      "n": 0,
      "periodos": {}
     }
    }
   },
   "sopelana": {
-   "coef": 0.408,
+   "coef": 0.405,
    "n": 46,
    "tamanos": {
     "pequeno": {
-     "coef": 0.619,
+     "coef": 0.62,
      "n": 20,
      "periodos": {
       "corto": {
-       "coef": 0.805,
+       "coef": 0.806,
        "n": 6
       },
       "largo": {
@@ -338,7 +338,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.35,
+     "coef": 0.349,
      "n": 17,
      "periodos": {
       "corto": {
@@ -352,11 +352,11 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.273,
+     "coef": 0.269,
      "n": 9,
      "periodos": {
       "largo": {
-       "coef": 0.261,
+       "coef": 0.259,
        "n": 9
       }
      }
@@ -364,43 +364,43 @@ export default {
    }
   },
   "mundaka": {
-   "coef": 0.481,
+   "coef": 0.475,
    "n": 20,
    "tamanos": {
     "pequeno": {
-     "coef": 0.631,
+     "coef": 0.629,
      "n": 9,
      "periodos": {
       "corto": {
-       "coef": 0.614,
+       "coef": 0.613,
        "n": 8
       },
       "largo": {
-       "coef": 0.669,
+       "coef": 0.667,
        "n": 1
       }
      }
     },
     "medio": {
-     "coef": 0.479,
+     "coef": 0.477,
      "n": 10,
      "periodos": {
       "corto": {
-       "coef": 0.503,
+       "coef": 0.502,
        "n": 8
       },
       "largo": {
-       "coef": 0.502,
+       "coef": 0.5,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.36,
+     "coef": 0.346,
      "n": 1,
      "periodos": {
       "corto": {
-       "coef": 0.37,
+       "coef": 0.357,
        "n": 1
       }
      }
@@ -408,29 +408,29 @@ export default {
    }
   },
   "zumaia": {
-   "coef": 0.3,
-   "n": 31,
+   "coef": 0.291,
+   "n": 33,
    "tamanos": {
     "pequeno": {
-     "coef": 0.505,
+     "coef": 0.503,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.503,
+       "coef": 0.502,
        "n": 1
       },
       "largo": {
-       "coef": 0.549,
+       "coef": 0.547,
        "n": 2
       }
      }
     },
     "medio": {
-     "coef": 0.304,
+     "coef": 0.303,
      "n": 14,
      "periodos": {
       "corto": {
-       "coef": 0.371,
+       "coef": 0.37,
        "n": 7
       },
       "largo": {
@@ -440,19 +440,19 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.251,
-     "n": 14,
+     "coef": 0.241,
+     "n": 16,
      "periodos": {
       "largo": {
-       "coef": 0.249,
-       "n": 14
+       "coef": 0.239,
+       "n": 16
       }
      }
     }
    }
   },
   "orio": {
-   "coef": 0.342,
+   "coef": 0.338,
    "n": 27,
    "tamanos": {
     "pequeno": {
@@ -470,25 +470,25 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.275,
+     "coef": 0.273,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.271,
+       "coef": 0.27,
        "n": 2
       },
       "largo": {
-       "coef": 0.286,
+       "coef": 0.284,
        "n": 1
       }
      }
     },
     "grande": {
-     "coef": 0.219,
+     "coef": 0.213,
      "n": 4,
      "periodos": {
       "largo": {
-       "coef": 0.213,
+       "coef": 0.209,
        "n": 4
       }
      }
@@ -496,11 +496,11 @@ export default {
    }
   },
   "bakio": {
-   "coef": 0.542,
+   "coef": 0.537,
    "n": 29,
    "tamanos": {
     "pequeno": {
-     "coef": 0.655,
+     "coef": 0.654,
      "n": 25,
      "periodos": {
       "corto": {
@@ -508,27 +508,27 @@ export default {
        "n": 14
       },
       "largo": {
-       "coef": 0.633,
+       "coef": 0.632,
        "n": 11
       }
      }
     },
     "medio": {
-     "coef": 0.421,
+     "coef": 0.417,
      "n": 3,
      "periodos": {
       "largo": {
-       "coef": 0.434,
+       "coef": 0.431,
        "n": 3
       }
      }
     },
     "grande": {
-     "coef": 0.35,
+     "coef": 0.336,
      "n": 1,
      "periodos": {
       "largo": {
-       "coef": 0.356,
+       "coef": 0.344,
        "n": 1
       }
      }
@@ -536,39 +536,39 @@ export default {
    }
   },
   "mutriku": {
-   "coef": 0.262,
+   "coef": 0.255,
    "n": 6,
    "tamanos": {
     "pequeno": {
-     "coef": 0.379,
+     "coef": 0.375,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.383,
+       "coef": 0.379,
        "n": 1
       },
       "largo": {
-       "coef": 0.403,
+       "coef": 0.4,
        "n": 2
       }
      }
     },
     "medio": {
-     "coef": 0.198,
+     "coef": 0.194,
      "n": 2,
      "periodos": {
       "largo": {
-       "coef": 0.176,
+       "coef": 0.173,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.175,
+     "coef": 0.167,
      "n": 1,
      "periodos": {
       "largo": {
-       "coef": 0.159,
+       "coef": 0.153,
        "n": 1
       }
      }
@@ -576,64 +576,64 @@ export default {
    }
   },
   "nz-aramoana": {
-   "coef": 0.285,
+   "coef": 0.28,
    "n": 13,
    "tamanos": {
     "pequeno": {
-     "coef": 0.317,
+     "coef": 0.315,
      "n": 11,
      "periodos": {
       "corto": {
-       "coef": 0.31,
+       "coef": 0.309,
        "n": 11
       }
      }
     },
     "medio": {
-     "coef": 0.206,
+     "coef": 0.203,
      "n": 2,
      "periodos": {
       "corto": {
-       "coef": 0.194,
+       "coef": 0.192,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.188,
+     "coef": 0.179,
      "n": 0,
      "periodos": {}
     }
    }
   },
   "nz-napier": {
-   "coef": 0.667,
+   "coef": 0.657,
    "n": 16,
    "tamanos": {
     "pequeno": {
-     "coef": 0.898,
+     "coef": 0.895,
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.958,
+       "coef": 0.957,
        "n": 16
       }
      }
     },
     "medio": {
-     "coef": 0.489,
+     "coef": 0.481,
      "n": 0,
      "periodos": {}
     },
     "grande": {
-     "coef": 0.416,
+     "coef": 0.396,
      "n": 0,
      "periodos": {}
     }
    }
   },
   "nz-riverton": {
-   "coef": 0.179,
+   "coef": 0.178,
    "n": 72,
    "tamanos": {
     "pequeno": {
@@ -641,11 +641,11 @@ export default {
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.283,
+       "coef": 0.284,
        "n": 13
       },
       "largo": {
-       "coef": 0.273,
+       "coef": 0.274,
        "n": 3
       }
      }
@@ -665,15 +665,15 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.112,
+     "coef": 0.109,
      "n": 6,
      "periodos": {
       "corto": {
-       "coef": 0.103,
+       "coef": 0.101,
        "n": 3
       },
       "largo": {
-       "coef": 0.102,
+       "coef": 0.101,
        "n": 3
       }
      }
@@ -682,13 +682,13 @@ export default {
   }
  },
  "efectoTamano": {
-  "pequeno": 1.365,
-  "medio": 0.902,
-  "grande": 0.768
+  "pequeno": 1.384,
+  "medio": 0.909,
+  "grande": 0.749
  },
  "globalTamanos": {
-  "pequeno": 0.448,
-  "medio": 0.268,
-  "grande": 0.214
+  "pequeno": 0.447,
+  "medio": 0.265,
+  "grande": 0.203
  }
 };
