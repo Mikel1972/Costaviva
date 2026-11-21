@@ -5,6 +5,7 @@
 // solo pide los spots de NZ a Open-Meteo); los datos de LINZ y del DOC salen
 // de env.ASSETS (estáticos, sin cuota) y la página entera se guarda 30-60
 // min con conCache().
+import { leerAssetJson } from "../assets-memo.js";
 import { SPOTS } from "../../prevision.js";
 import { cargarJson, pedirConLimite } from "./base.js";
 import { datosEspeciesDePais } from "../regiones-activas.js";
@@ -21,15 +22,10 @@ export { mesNZ };
 
 export const cargarEspeciesNZ = (context) => cargarJson(context, "/assets/datos/especies.json").then((d) => datosEspeciesDePais(d, "nz"));
 
-async function leerPrivado(context, ruta) {
+function leerPrivado(context, ruta) {
   // datos/nz no es público (lista blanca de rutas): solo por env.ASSETS.
-  if (!context.env?.ASSETS) return null;
-  try {
-    const r = await context.env.ASSETS.fetch(new URL(ruta, context.request.url));
-    return r.ok ? await r.json() : null;
-  } catch (e) {
-    return null;
-  }
+  // Memorizado por isolate (assets-memo.js).
+  return leerAssetJson(context.env, new URL(ruta, context.request.url).toString());
 }
 
 const previsionNZ = (context) => pedirConLimite(new URL("/prevision?region=nz", context.request.url).toString(), undefined, context);
