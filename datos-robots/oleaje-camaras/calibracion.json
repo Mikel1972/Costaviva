@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-21T15:37:49.049Z",
- "lineasHistorial": 12217,
+ "fecha": "2026-11-21T17:37:19.851Z",
+ "lineasHistorial": 12218,
  "etiquetas": 1401,
  "etiquetasClaude": 256,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.103
   },
   "zarautz/dinamico": {
-   "a": 2.8621,
+   "a": 2.8615,
    "p": 0.5,
-   "n": 997,
+   "n": 998,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -266,9 +266,9 @@
    "correlacion": 0.102
   },
   "berria/dinamico": {
-   "a": 2.6603,
+   "a": 2.6608,
    "p": 0.5,
-   "n": 518,
+   "n": 519,
    "nEtiquetas": 127,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
