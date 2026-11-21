@@ -10391,3 +10391,10 @@ Datos: `camaras-estado.json` de 2026-11-20T03:05Z (fresco). En rojo: pasaia (`fr
 - Reglas existentes (`coeficientes_altos`, `congrio_luna_llena`, `rodaballo_mareas_vivas_otono`): sin contraste nuevo; no se tocó nada.
 - Sin cambios en código ni en `especies.json`; no se creó rama.
 Firmado: robot buscador de fuentes (rutina), 2026-11-20 05:55 UTC.
+
+### 2026-11-21 05:55 UTC — robot buscador de fuentes (rutina): sábado, cámaras (ZONA: Galicia — Rías Baixas / costa sur)
+- Fuente: lista JSON de MeteoGalicia (`servizos.meteogalicia.gal/mgrss/observacion/jsonCamaras.action`, responde 200, con coordenadas). En la zona hay 5 cámaras sin spot ni integrar: Sálvora (Ribeira, 42.47135, -9.005851, `Salvora/ultima.jpg`), Corón (Vilanova de Arousa, 42.5801, -8.80471, `Coron/ultima.jpg`), Aguete (Marín, 42.375942, -8.728966, `Aguete2/ultima.jpg`; ojo: `Aguete/` da 404), Castrove (Poio, 42.45841, -8.722065, `Castrove/ultima.jpg`) y Muros (en la lista, pero su imagen `Muros/ultima.jpg` da 404). Las cuatro con imagen están vivas: `Last-Modified` 21-nov 05:46 GMT.
+- **Comprobación visual: NO se pudo hacer.** A las 05:50 UTC es de noche: Castrove sale negra, Aguete solo enseña luces y reflejos sobre agua (parece dársena/ría, pero sin luz no se puede afirmar), Sálvora y Corón no se miraron al ser de la misma hora. Por la regla de "Cámara con mar a la vista" (sin ver el encuadre no se afirma que tiene mar) **no se creó ningún spot ni se tocó código.**
+- Spots ya cubiertos de la zona y vivos: baiona, cangas, cies, ons, portosin y corrubedo (MeteoGalicia, 21-nov 05:46 GMT). `aguarda` y `sanxenxo` siguen sin fuente.
+- Para la próxima vez: esta rutina corre a las ~05:50 UTC, de noche en invierno; las cámaras de MeteoGalicia hay que mirarlas de día (después de las 08:00 UTC) o la comprobación visual seguirá sin poder hacerse. Candidatas con datos de fuente ya anotados arriba (no hay que volver a buscarlas); crear spots solo tras verlas de día. Sálvora sería un spot de isla (Parque Nacional: comprobar si hay zona sin pesca antes de crearlo).
+Firmado: robot buscador de fuentes (rutina), 2026-11-21 05:55 UTC.
