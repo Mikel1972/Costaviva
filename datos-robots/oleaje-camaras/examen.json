@@ -1,11 +1,48 @@
 {
- "generado": "2026-11-21T00:07:38.980Z",
+ "generado": "2026-11-21T00:37:41.153Z",
  "tolerancia": 0.3,
  "resumen": {
-  "examenes": 0,
+  "examenes": 2,
   "suspensos": 0
  },
  "suspensos24h": [],
  "suspendidas": [],
- "camaras": {}
+ "camaras": {
+  "nz-riverton": {
+   "spot": "nz-riverton",
+   "examenes": 1,
+   "suspensos": 0,
+   "errorMedio": 0.05,
+   "racha": 0,
+   "ultimos": [
+    {
+     "fecha": "2026-11-21T00:02:13.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
+     ],
+     "error": 0.05
+    }
+   ]
+  },
+  "nz-aramoana": {
+   "spot": "nz-aramoana",
+   "examenes": 1,
+   "suspensos": 0,
+   "errorMedio": 0,
+   "racha": 0,
+   "ultimos": [
+    {
+     "fecha": "2026-11-21T00:05:04.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.3,
+      0.4
+     ],
+     "error": 0
+    }
+   ]
+  }
+ }
 }
