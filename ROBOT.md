@@ -10391,3 +10391,11 @@ Datos: `camaras-estado.json` de 2026-11-20T03:05Z (fresco). En rojo: pasaia (`fr
 - Reglas existentes (`coeficientes_altos`, `congrio_luna_llena`, `rodaballo_mareas_vivas_otono`): sin contraste nuevo; no se tocó nada.
 - Sin cambios en código ni en `especies.json`; no se creó rama.
 Firmado: robot buscador de fuentes (rutina), 2026-11-20 05:55 UTC.
+
+### 2026-11-21 05:50 UTC (robot de cámaras caídas — rutina; Russell NZ, Cambrils, Pasaia)
+Datos: `camaras-estado.json` de 2026-11-21T03:04Z (fresco). En rojo: ext-nz-windy-russell y ext-windy-1232544942 (Cambrils) (`windy_inactiva`), pasaia (`frame_plano`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería). getaria: un solo `sin_respuesta`, sin `sin_senal`; se vigila.
+- **Russell (NZ, Windy 1735898492)**: inactiva en Windy desde hace ~39 pasadas. Búsqueda "Russell Bay of Islands live webcam": sin cámara de otro dueño confirmada en la orilla de Russell (solo Windfinder/PredictWind sin cámara en Russell, la de PredictWind es el Yacht Club de Waitangi). Sin cambios; pendiente de buscar desde fuera de la rutina (Windfinder /webcams/russell, término "Kororareka").
+- **Cambrils (Windy 1232544942)**: enterat.com solo reembebe la misma imagen de Windy, no es un dueño distinto. Candidatas no verificadas: feratel.com/es/webcams/espana/cambrils.html y windfinder.com/webcams/cambrils (sin comprobar imagen ni frescura). Sin cambios.
+- **pasaia**: foto diaria de detectia.net, de noche sale plana; fuente no movida.
+- No se cambió código. Quedan para la próxima pasada: Russell y Cambrils.
+— robot de cámaras caídas (rutina)
