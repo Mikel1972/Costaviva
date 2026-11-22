@@ -498,6 +498,8 @@
   "mapa.ola_real.error": "Could not save right now.",
   "mapa.ola_real.gracias": "Thanks: this helps us fine-tune the waves for this spot.",
   "mapa.marea.coef": " · coef. {coef}",
+  "mapa.marea.coef_spot": "Coefficient {coef}: this spot's own, from its tides over the last 15 days. It is not the national coefficient in tide tables, which is the same for the whole coast.",
+  "mapa.marea.coef_aprox": "Coefficient {coef}: approximated from the moon phase (this spot's own is not available today). It is not the national coefficient in tide tables.",
   "mapa.marea.proxima": "next {tipo} {hora}",
   "mapa.marea.manana": " (tomorrow)",
   "mapa.marea.pleamar": "high tide",

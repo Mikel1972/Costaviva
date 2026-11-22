@@ -113,6 +113,7 @@
      }
     ],
     "coeficiente": 97,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Bilbao",
      "km": 29,
@@ -179,6 +180,7 @@
      }
     ],
     "coeficiente": 102,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Bilbao",
      "km": 29,
@@ -244,7 +246,8 @@
       "manana": false
      }
     ],
-    "coeficiente": 97
+    "coeficiente": 97,
+    "coeficienteSpot": false
    },
    "presion": {
     "valor": 1011,
@@ -303,7 +306,8 @@
       "manana": true
      }
     ],
-    "coeficiente": 102
+    "coeficiente": 102,
+    "coeficienteSpot": false
    },
    "presion": {
     "valor": 1008,
@@ -363,6 +367,7 @@
      }
     ],
     "coeficiente": 97,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Valencia",
      "km": 4,
@@ -429,6 +434,7 @@
      }
     ],
     "coeficiente": 102,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Valencia",
      "km": 4,
@@ -495,6 +501,7 @@
      }
     ],
     "coeficiente": 97,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Bonanza",
      "km": 31,
@@ -561,6 +568,7 @@
      }
     ],
     "coeficiente": 102,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Bonanza",
      "km": 31,
@@ -627,6 +635,7 @@
      }
     ],
     "coeficiente": 97,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Palma",
      "km": 2,
@@ -693,6 +702,7 @@
      }
     ],
     "coeficiente": 102,
+    "coeficienteSpot": false,
     "referencia": {
      "puerto": "Palma",
      "km": 2,

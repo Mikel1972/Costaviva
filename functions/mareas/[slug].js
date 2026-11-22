@@ -105,7 +105,7 @@ export function renderizarPagina(spot, todos) {
   const oleajeTexto = bloque ? `${bloque.altura[0]}–${bloque.altura[1]} m (periodo ${bloque.periodo}s)` : "sin dato ahora mismo";
   const vientoTexto = bloque ? `${bloque.viento} km/h ${bloque.dirViento}` : "sin dato ahora mismo";
   const mareaFlecha = marea?.tendencia === "subiendo" ? "▲" : "▼";
-  const mareaTexto = marea ? `${marea.altura} m, ${marea.tendencia} ${mareaFlecha} (coeficiente ${marea.coeficiente})` : "sin dato ahora mismo";
+  const mareaTexto = marea ? `${marea.altura} m, ${marea.tendencia} ${mareaFlecha} (coeficiente ${marea.coeficiente}${marea.coeficienteSpot === false ? ", aproximado" : " de este spot"})` : "sin dato ahora mismo";
   const nombre = escaparHtml(spot.nombre);
   const region = regionDeSlug(spot.slug);
   const proximas = marea?.proximas || [];
@@ -267,6 +267,7 @@ ${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", [
         : ""
     }
 
+    ${marea?.coeficiente != null && marea.coeficienteSpot !== undefined ? `<p class="nota">${marea.coeficienteSpot ? `Coeficiente de este spot: ${escaparHtml(marea.coeficiente)}, según su marea de los últimos 15 días. No es el coeficiente nacional de las tablas de mareas, que es el mismo para toda la costa.` : `Coeficiente ${escaparHtml(marea.coeficiente)}, aproximado por la fase de la luna. No es el coeficiente nacional de las tablas de mareas.`}</p>` : ""}
     ${marea?.referencia ? `<p class="nota">Alturas sobre el cero del puerto de ${escaparHtml(marea.referencia.puerto)}, como en su tabla de mareas. Fuente: <a href="${escaparHtml(marea.referencia.url)}" rel="noopener">${escaparHtml(marea.referencia.fuente)}</a>.</p>` : ""}
     <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. La marea, el oleaje y el viento de ${nombre} son gratis y no necesitan cuenta. Con la prueba gratuita de 14 días ves además el mapa completo, las webcams en directo de este spot y de otros, y llevas tu propio diario de pesca con los datos del momento de cada captura.</p>
 

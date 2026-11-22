@@ -498,6 +498,8 @@
   "mapa.ola_real.error": "No se pudo guardar ahora.",
   "mapa.ola_real.gracias": "Gracias: así afinamos la ola de este spot.",
   "mapa.marea.coef": " · coef. {coef}",
+  "mapa.marea.coef_spot": "Coeficiente {coef}: el de este spot, según su marea de los últimos 15 días. No es el coeficiente nacional de las tablas de mareas, que es el mismo para toda la costa.",
+  "mapa.marea.coef_aprox": "Coeficiente {coef}: aproximado por la fase de la luna (hoy no hay el de este spot). No es el coeficiente nacional de las tablas de mareas.",
   "mapa.marea.proxima": "próx. {tipo} {hora}",
   "mapa.marea.manana": " (mañana)",
   "mapa.marea.pleamar": "pleamar",
