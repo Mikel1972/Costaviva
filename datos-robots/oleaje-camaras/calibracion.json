@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-22T11:37:51.694Z",
- "lineasHistorial": 12387,
+ "fecha": "2026-11-22T12:07:42.378Z",
+ "lineasHistorial": 12399,
  "etiquetas": 1404,
  "etiquetasClaude": 259,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.103
   },
   "zarautz/dinamico": {
-   "a": 2.8643,
+   "a": 2.8647,
    "p": 0.5,
-   "n": 1005,
+   "n": 1006,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.9793,
+   "a": 1.9804,
    "p": 0.5,
-   "n": 150,
+   "n": 151,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -203,7 +203,7 @@
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.014
+   "correlacion": -0.012
   },
   "sopelana/principal": {
    "a": 2.7769,
@@ -266,9 +266,9 @@
    "correlacion": 0.103
   },
   "berria/dinamico": {
-   "a": 2.6646,
+   "a": 2.6655,
    "p": 0.5,
-   "n": 524,
+   "n": 525,
    "nEtiquetas": 127,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -516,8 +516,8 @@
    "sustituye": true,
    "motivo": "239 etiquetas",
    "ruido": {
-    "ruido": 0.546,
-    "pares": 679
+    "ruido": 0.544,
+    "pares": 680
    }
   },
   "getaria": {
@@ -562,10 +562,10 @@
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "estable (±25 % entre lecturas cercanas)",
+   "motivo": "estable (±29 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.249,
-    "pares": 30
+    "ruido": 0.291,
+    "pares": 31
    }
   },
   "sopelana": {
@@ -580,8 +580,8 @@
    "sustituye": true,
    "motivo": "127 etiquetas",
    "ruido": {
-    "ruido": 0.813,
-    "pares": 224
+    "ruido": 0.799,
+    "pares": 225
    }
   },
   "castrourdiales": {
@@ -625,10 +625,10 @@
    "cerca": -0.127
   },
   "sopelana": {
-   "n": 13,
+   "n": 14,
    "suficiente": false,
-   "lineas": -0.431,
-   "cerca": 0.332
+   "lineas": -0.423,
+   "cerca": 0.105
   },
   "castrourdiales": {
    "n": 4,
@@ -679,10 +679,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 5,
+   "n": 6,
    "suficiente": false,
-   "lineas": -0.4,
-   "cerca": -0.9
+   "lineas": 0.2,
+   "cerca": -0.886
   }
  },
  "previstoVsReal": {
