@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-22T00:37:23.000Z",
- "lineasHistorial": 12263,
- "etiquetas": 1402,
- "etiquetasClaude": 257,
+ "fecha": "2026-11-22T01:07:28.279Z",
+ "lineasHistorial": 12266,
+ "etiquetas": 1403,
+ "etiquetasClaude": 258,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1699,
@@ -390,11 +390,11 @@
    "correlacion": 0.503
   },
   "nz-riverton/principal": {
-   "a": 7.2153,
+   "a": 7.1772,
    "p": 0.5,
-   "n": 1121,
+   "n": 1123,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 74,
+   "nEtiquetasClaude": 75,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -613,7 +613,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 953
+    "pares": 954
    }
   }
  },
@@ -661,7 +661,7 @@
    "cerca": 0.923
   },
   "nz-riverton": {
-   "n": 68,
+   "n": 69,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -688,11 +688,11 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.901,
-    "n": 63,
-    "peso": 61.6,
+    "factor": 0.904,
+    "n": 64,
+    "peso": 62.6,
     "mae": 0.19,
-    "maeCorregido": 0.2
+    "maeCorregido": 0.19
    },
    "6-24": {
     "factor": 0.684,
@@ -702,11 +702,18 @@
     "maeCorregido": 0.21
    },
    "0-6": {
-    "factor": 1.002,
-    "n": 4,
-    "peso": 4,
-    "mae": 0.07,
-    "maeCorregido": 0.07
+    "factor": 1.009,
+    "n": 5,
+    "peso": 5,
+    "mae": 0.06,
+    "maeCorregido": 0.06
+   },
+   "48-72": {
+    "factor": 1.01,
+    "n": 1,
+    "peso": 1,
+    "mae": 0.03,
+    "maeCorregido": 0.03
    }
   },
   "camaras": {
@@ -842,11 +849,11 @@
    },
    "nz-riverton": {
     "0-6": {
-     "factor": 1.002,
-     "n": 4,
-     "peso": 4,
-     "mae": 0.07,
-     "maeCorregido": 0.07
+     "factor": 1.009,
+     "n": 5,
+     "peso": 5,
+     "mae": 0.06,
+     "maeCorregido": 0.06
     },
     "6-24": {
      "factor": 1.015,
@@ -856,11 +863,18 @@
      "maeCorregido": 0.05
     },
     "24-48": {
-     "factor": 1.014,
-     "n": 6,
-     "peso": 6,
-     "mae": 0.08,
-     "maeCorregido": 0.08
+     "factor": 1.022,
+     "n": 7,
+     "peso": 7,
+     "mae": 0.07,
+     "maeCorregido": 0.07
+    },
+    "48-72": {
+     "factor": 1.01,
+     "n": 1,
+     "peso": 1,
+     "mae": 0.03,
+     "maeCorregido": 0.03
     }
    }
   }
