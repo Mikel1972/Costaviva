@@ -1,21 +1,21 @@
 {
- "actualizado": "2026-11-22T17:37:27.375Z",
+ "actualizado": "2026-11-22T18:07:29.174Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "bakio",
-   "alto": 7,
-   "bajo": 0,
-   "spots": [
-    "bakio"
-   ]
-  },
   {
    "clave": "getaria",
    "alto": 3,
    "bajo": 0,
    "spots": [
     "getaria"
+   ]
+  },
+  {
+   "clave": "bakio",
+   "alto": 6,
+   "bajo": 0,
+   "spots": [
+    "bakio"
    ]
   },
   {
