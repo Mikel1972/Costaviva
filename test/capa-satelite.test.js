@@ -79,3 +79,19 @@ test("borde suave: la foto se funde poco a poco donde empieza el mar sin foto", 
   assert.ok(alfa(31) > 0 && alfa(31) < 40, "junto al borde: casi transparente");
   assert.ok(alfa(20) > alfa(28), "más opaca cuanto más lejos del borde");
 });
+
+// Portugal (DGT, 2026-11-22): ortofotos 2018 CC BY 4.0 por bbox EPSG:3857.
+import { bboxTesela3857, urlTeselaDgt, URL_DGT_ORTOS, ATRIBUCION_DGT, RECTANGULOS_PORTUGAL, vistaTocaPortugal } from "../assets/js/capa-satelite.js";
+test("DGT: bbox de la tesela, URL sin la OrtoSat (Airbus) y crédito obligatorio", () => {
+  assert.equal(bboxTesela3857(0, 0, 0), "-20037508.34,-20037508.34,20037508.34,20037508.34");
+  assert.equal(bboxTesela3857(1, 1, 0), "0.00,0.00,20037508.34,20037508.34");
+  assert.ok(URL_DGT_ORTOS.includes("/collections/ortos2018-rgb/map"));
+  assert.ok(!urlTeselaDgt(14, 7782, 6262).includes("{bbox"));
+  assert.match(ATRIBUCION_DGT, /Informação geográfica cedida pela .*Direção-Geral do Território/);
+  assert.match(ATRIBUCION_DGT, /CC BY 4\.0/);
+  // No pisa España: al norte del Miño y al este del Guadiana, nada.
+  const [[s, o], [n, e]] = RECTANGULOS_PORTUGAL[0];
+  assert.ok(n <= 41.89 && e <= -7.42 && s < 37 && o < -9.5);
+  assert.equal(vistaTocaPortugal([[38.6, -9.5], [38.8, -9.3]]), true);
+  assert.equal(vistaTocaPortugal([[43.2, -3.0], [43.5, -2.5]]), false);
+});

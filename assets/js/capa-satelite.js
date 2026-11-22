@@ -26,6 +26,16 @@
 // pide nada a LINZ y todo queda como antes. Las teselas de LINZ solo se piden
 // dentro de RECTANGULOS_NZ: en España y Portugal nada cambia.
 //
+// Portugal continental (2026-11-22, Mikel: «ok» a foto aérea oficial en los
+// tres países): ortofotos de 25 cm de 2018 de la Direção-Geral do Território
+// (colección ortos2018-rgb de su OGC API - Maps). Licencia CC BY 4.0 según su
+// ficha del SNIG (daf5479d-29c8-4e0c-b7b8-0e1791891186), conjunto de datos de
+// alto valor de la UE (Reglamento 2023/138), con el crédito obligatorio
+// «Informação geográfica cedida pela Direção-Geral do Território». La OrtoSat
+// 2023 NO: va con licencia de Airbus. EOX (Sentinel-2 cloudless) tampoco: el
+// uso comercial es de pago. Sin clave. Azores y Madeira no están en esta
+// colección.
+//
 // Esri World Imagery no se usa: su licencia no cubre el uso
 // comercial sin suscripción (CLAUDE.md, "mapa base").
 //
@@ -123,6 +133,37 @@ export function quitarSinFoto(rgba, zoom = 99, lado = Math.round(Math.sqrt(rgba.
     if (d > 0 && d < BORDE_SUAVE_PX) rgba[p * 4 + 3] = Math.min(rgba[p * 4 + 3], Math.round((255 * d) / BORDE_SUAVE_PX));
   }
   return n;
+}
+
+// ---------------------------------------------------------------------------
+// DGT (Portugal continental). La OGC API no da teselas z/x/y sino un mapa por
+// bbox: MapLibre rellena {bbox-epsg-3857} y en Leaflet lo calcula urlTeselaDgt.
+export const URL_DGT_ORTOS =
+  "https://ogcapi.dgterritorio.gov.pt/collections/ortos2018-rgb/map?f=png&width=256&height=256" +
+  "&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox={bbox-epsg-3857}";
+export const ATRIBUCION_DGT =
+  'Informação geográfica cedida pela <a href="https://www.dgterritorio.gov.pt/" target="_blank" rel="noopener">Direção-Geral do Território</a> ' +
+  '(<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)';
+// Costa de Portugal continental: del Miño (Caminha, 41,87° N) al Guadiana
+// (-7,42°, donde empieza el rectángulo de Huelva). No pisa España.
+// La DGT solo pinta la foto de cerca: a zoom 13 o menos devuelve una tesela
+// vacía (comprobado el 2026-11-22). No se piden.
+export const ZOOM_MIN_DGT = 14;
+export const RECTANGULOS_PORTUGAL = [[[36.9, -9.6], [41.88, -7.42]]];
+const R_TIERRA = 6378137;
+// bbox EPSG:3857 de la tesela z/x/y ("oeste,sur,este,norte").
+export function bboxTesela3857(z, x, y) {
+  const lado = (2 * Math.PI * R_TIERRA) / 2 ** z;
+  const origen = Math.PI * R_TIERRA;
+  const oeste = -origen + x * lado, norte = origen - y * lado;
+  return [oeste, norte - lado, oeste + lado, norte].map((v) => v.toFixed(2)).join(",");
+}
+export function urlTeselaDgt(z, x, y) {
+  return URL_DGT_ORTOS.replace("{bbox-epsg-3857}", bboxTesela3857(z, x, y));
+}
+export function vistaTocaPortugal(vista) {
+  const [[s, o], [n, e]] = vista;
+  return RECTANGULOS_PORTUGAL.some(([[rs, ro], [rn, re]]) => s <= rn && n >= rs && o <= re && e >= ro);
 }
 
 // ---------------------------------------------------------------------------
@@ -246,6 +287,22 @@ export function montarCapa(map, L) {
       }));
     }
   }
+  // Portugal (DGT): teselas por bbox; donde no hay foto devuelve transparente.
+  const TeselaDgt = L.TileLayer.extend({ getTileUrl: (c) => urlTeselaDgt(c.z, c.x, c.y) });
+  for (const r of RECTANGULOS_PORTUGAL) {
+    grupo.addLayer(new TeselaDgt("", {
+      pane: "satelite", bounds: L.latLngBounds(r), minZoom: ZOOM_MIN_DGT, maxZoom: ZOOM_MAX_SATELITE, maxNativeZoom: ZOOM_MAX_SATELITE,
+    }));
+  }
+  let dgtAtribuida = false;
+  const atribucionDgt = () => {
+    const debe = visible && vistaTocaPortugal(boundsComoVista(map.getBounds()));
+    if (debe === dgtAtribuida) return;
+    dgtAtribuida = debe;
+    if (debe) map.attributionControl.addAttribution(ATRIBUCION_DGT);
+    else map.attributionControl.removeAttribution(ATRIBUCION_DGT);
+  };
+  map.on("moveend", () => atribucionDgt());
   // Atribución de LINZ solo mientras se ve NZ con el satélite puesto.
   let linzAtribuida = false;
   const atribucionLinz = () => {
@@ -267,7 +324,10 @@ export function montarCapa(map, L) {
     urlTesela: (z, x, y) => L.Util.template(URL_PNOA, { z, x, y }),
     procesar: (rgba, z, lado) => quitarSinFoto(rgba, 99, lado),
     // Fuentes raster directas (sin pasar por el canvas): LINZ en NZ.
-    directas: urlLinz ? [{ id: "linz", url: urlLinz, rectangulos: RECTANGULOS_NZ }] : [],
+    directas: [
+      { id: "dgt", url: URL_DGT_ORTOS, rectangulos: RECTANGULOS_PORTUGAL, minzoom: ZOOM_MIN_DGT },
+      ...(urlLinz ? [{ id: "linz", url: urlLinz, rectangulos: RECTANGULOS_NZ }] : []),
+    ],
   };
   let enVector = !!MB()?.usaVector?.();
   const colorMar = (v) => { try { MB()?.ponerColorMar?.(v ? COLOR_MAR_SATELITE : null); } catch {} };
@@ -285,6 +345,7 @@ export function montarCapa(map, L) {
         if (visible) map.attributionControl.addAttribution(ATRIBUCION_PNOA);
         else map.attributionControl.removeAttribution(ATRIBUCION_PNOA);
         atribucionLinz();
+        atribucionDgt();
         return;
       }
       if (visible) {
@@ -300,6 +361,7 @@ export function montarCapa(map, L) {
         map.setMaxZoom(max);
       }
       atribucionLinz();
+      atribucionDgt();
     },
   };
   // Si el mapa vectorial falla al cargar, se pasa a la capa de Leaflet.
