@@ -1,15 +1,7 @@
 {
- "actualizado": "2026-11-22T08:10:06.104Z",
+ "actualizado": "2026-11-22T08:40:37.862Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "zumaia",
-   "alto": 2,
-   "bajo": 2,
-   "spots": [
-    "zumaia"
-   ]
-  },
   {
    "clave": "bakio",
    "alto": 9,
@@ -32,6 +24,14 @@
    "bajo": 3,
    "spots": [
     "hondarribia"
+   ]
+  },
+  {
+   "clave": "zumaia",
+   "alto": 2,
+   "bajo": 1,
+   "spots": [
+    "zumaia"
    ]
   },
   {
