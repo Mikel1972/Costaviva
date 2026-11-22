@@ -1,10 +1,18 @@
 {
- "actualizado": "2026-11-22T11:09:47.092Z",
+ "actualizado": "2026-11-22T11:40:06.718Z",
  "dias": 7,
  "repetidos": [
   {
+   "clave": "bakio",
+   "alto": 10,
+   "bajo": 0,
+   "spots": [
+    "bakio"
+   ]
+  },
+  {
    "clave": "orio",
-   "alto": 7,
+   "alto": 6,
    "bajo": 2,
    "spots": [
     "orio"
@@ -13,17 +21,9 @@
   {
    "clave": "hondarribia",
    "alto": 3,
-   "bajo": 5,
+   "bajo": 4,
    "spots": [
     "hondarribia"
-   ]
-  },
-  {
-   "clave": "bakio",
-   "alto": 10,
-   "bajo": 0,
-   "spots": [
-    "bakio"
    ]
   },
   {
