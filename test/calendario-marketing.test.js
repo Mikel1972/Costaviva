@@ -520,3 +520,16 @@ test("reel del Black Friday: solo la oferta real y su propia clave en el calenda
   assert.match(readFileSync("scripts/marketing/reel-bf.mjs", "utf8"), /const clave = `\$\{fecha\}-reel-bf`;/);
   assert.match(readFileSync(".github/workflows/robot-reel-instagram.yml", "utf8"), /"\$TIPO_REEL" = "blackfriday" \]; then node reel-bf\.mjs/);
 });
+
+test("reel de Galicia (2026-11-22): especies y meses de especies.json, como la página de la región", async () => {
+  const G = await import("../scripts/marketing/reel-galicia.mjs");
+  const datos = JSON.parse(readFileSync("assets/datos/especies.json", "utf8"));
+  const x = G.pecesDeGalicia(datos, 11);
+  assert.ok(x.total >= 20 && x.spots >= 5);
+  assert.ok(x.ahora.length <= x.total && x.deEstaEpoca.every((n) => x.ahora.includes(n)));
+  const p = G.piezaGalicia("2026-11-23", x);
+  assert.equal(p.gancho, "¿Qué se pesca en Galicia en noviembre?");
+  assert.equal(p.tarjetas[0].val, `${x.ahora.length} especies`);
+  assert.equal(p.tarjetas[1].val, `${x.total} especies`);
+  assert.match(readFileSync(".github/workflows/robot-reel-instagram.yml", "utf8"), /"\$TIPO_REEL" = "galicia" \]; then node reel-galicia\.mjs/);
+});
