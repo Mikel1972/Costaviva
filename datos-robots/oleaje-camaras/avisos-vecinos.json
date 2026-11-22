@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-22T09:39:55.415Z",
+ "actualizado": "2026-11-22T10:09:44.418Z",
  "dias": 7,
  "repetidos": [
   {
@@ -21,7 +21,7 @@
   {
    "clave": "hondarribia",
    "alto": 3,
-   "bajo": 3,
+   "bajo": 5,
    "spots": [
     "hondarribia"
    ]
@@ -925,6 +925,33 @@
    "antes": 0.7,
    "referencia": 0.5,
    "visto": "2026-11-22T09:09:54.839Z"
+  },
+  {
+   "slug": "donostia",
+   "camara": "donostia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-22T12:00",
+   "antes": 0.7,
+   "referencia": null,
+   "visto": "2026-11-22T10:09:44.418Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-22T18:00",
+   "antes": 0.3,
+   "referencia": null,
+   "visto": "2026-11-22T10:09:44.418Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-22T21:00",
+   "antes": 0.3,
+   "referencia": null,
+   "visto": "2026-11-22T10:09:44.418Z"
   }
  ]
 }
