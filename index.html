@@ -2700,6 +2700,16 @@ function pintarFuenteMarea(s) {
   const el = document.getElementById("panelMareaFuente");
   const m = s.marea;
   el.textContent = "";
+  // Alturas sobre el cero del puerto (Puertos del Estado, 2026-11-21): cita
+  // con enlace a PORTUS, condición de su autorización.
+  if (m && m.referencia) {
+    const r = m.referencia;
+    const a = document.createElement("a");
+    a.href = r.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = r.fuente;
+    el.append(I18n.t("mapa.marea.ref_pde", { puerto: r.puerto, km: I18n.distancia(r.km) }) + " ", a);
+    el.hidden = false;
+    return;
+  }
   if (!m || !m.atribucion) { el.hidden = true; return; }
   const puerto = m.puerto ? I18n.t("mapa.marea.puerto_linz", { puerto: m.puerto.nombre, km: I18n.distancia(m.puerto.km) }) : "";
   const atrib = m.atribucionCorta || m.atribucion;
