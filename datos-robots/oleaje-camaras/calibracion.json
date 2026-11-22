@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-22T12:37:43.850Z",
- "lineasHistorial": 12409,
+ "fecha": "2026-11-22T13:07:45.662Z",
+ "lineasHistorial": 12421,
  "etiquetas": 1404,
  "etiquetasClaude": 259,
  "calibracion": {
@@ -25,21 +25,21 @@
    "correlacion": -0.079
   },
   "hondarribia/bocana": {
-   "a": 3.2704,
+   "a": 3.28,
    "p": 0.5,
-   "n": 45,
+   "n": 46,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-12T16"
    ],
-   "dias": 27,
+   "dias": 28,
    "hMin": 0.05,
    "hMax": 1.05,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.088
+   "correlacion": -0.08
   },
   "donostia/principal": {
    "a": 3.538,
@@ -56,9 +56,9 @@
    "correlacion": 0.103
   },
   "zarautz/dinamico": {
-   "a": 2.8641,
+   "a": 2.8633,
    "p": 0.5,
-   "n": 1007,
+   "n": 1008,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -266,9 +266,9 @@
    "correlacion": 0.103
   },
   "berria/dinamico": {
-   "a": 2.6665,
+   "a": 2.6678,
    "p": 0.5,
-   "n": 526,
+   "n": 527,
    "nEtiquetas": 127,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -287,7 +287,7 @@
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.198
+   "correlacion": 0.197
   },
   "mutriku/principal": {
    "a": 6.5823,
@@ -517,7 +517,7 @@
    "motivo": "239 etiquetas",
    "ruido": {
     "ruido": 0.543,
-    "pares": 681
+    "pares": 682
    }
   },
   "getaria": {
@@ -619,10 +619,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 19,
+   "n": 20,
    "suficiente": false,
-   "lineas": 0.132,
-   "cerca": -0.127
+   "lineas": 0.148,
+   "cerca": -0.099
   },
   "sopelana": {
    "n": 14,
@@ -637,10 +637,10 @@
    "cerca": 0.316
   },
   "hondarribia": {
-   "n": 6,
+   "n": 7,
    "suficiente": false,
-   "lineas": -0.029,
-   "cerca": -0.135
+   "lineas": 0.143,
+   "cerca": 0.02
   },
   "zarautz": {
    "n": 8,

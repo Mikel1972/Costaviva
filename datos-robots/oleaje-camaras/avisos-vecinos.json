@@ -1,21 +1,13 @@
 {
- "actualizado": "2026-11-22T12:39:43.484Z",
+ "actualizado": "2026-11-22T13:09:46.387Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "bakio",
-   "alto": 9,
+   "alto": 8,
    "bajo": 0,
    "spots": [
     "bakio"
-   ]
-  },
-  {
-   "clave": "orio",
-   "alto": 6,
-   "bajo": 3,
-   "spots": [
-    "orio"
    ]
   },
   {
@@ -32,6 +24,14 @@
    "bajo": 0,
    "spots": [
     "mundaka"
+   ]
+  },
+  {
+   "clave": "orio",
+   "alto": 5,
+   "bajo": 3,
+   "spots": [
+    "orio"
    ]
   },
   {
