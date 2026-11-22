@@ -1,6 +1,6 @@
 # Comparativa de fuentes contra boyas de Puertos del Estado
 
-Generado sin IA por `scripts/fuentes/comparar-boyas.mjs` el 2026-11-21T14:54Z.
+Generado sin IA por `scripts/fuentes/comparar-boyas.mjs` el 2026-11-22T14:51Z.
 Ventana: últimos 14 días, 15 pronóstico(s) archivado(s) (cada uno, las 24 h siguientes a su hora).
 
 Cómo leerlo: **sesgo** = previsión − boya (negativo = la fuente se queda corta); **MAE** = error medio absoluto;
@@ -12,80 +12,80 @@ El viento de las boyas se mide a pocos metros sobre el mar y los modelos lo dan 
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 7411 | -0.09 | 0.33 | 0.45 |
-| Copernicus IBI | 7411 | -0.23 | 0.34 | 0.49 |
+| Open-Meteo | 7428 | -0.10 | 0.35 | 0.46 |
+| Copernicus IBI | 7428 | -0.24 | 0.36 | 0.50 |
 
 ## Periodo de pico (s)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Copernicus IBI | 8639 | +0.1 | 1.6 | 2.8 |
+| Copernicus IBI | 8656 | +0.1 | 1.6 | 2.8 |
 
 ## Temperatura del agua (°C)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 7414 | +0.12 | 0.73 | 1.00 |
-| Copernicus IBI | 7414 | +0.01 | 0.77 | 1.02 |
+| Open-Meteo | 7431 | +0.14 | 0.74 | 1.01 |
+| Copernicus IBI | 7431 | +0.05 | 0.76 | 1.01 |
 
 ## Viento (m/s)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 4534 | -1.35 | 2.58 | 3.20 |
-| MET Norway | 4534 | +1.76 | 2.29 | 2.87 |
+| Open-Meteo | 4529 | -1.43 | 2.65 | 3.28 |
+| MET Norway | 4529 | +1.80 | 2.34 | 2.93 |
 
 ## Dirección del viento (°)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 4267 | +3 | 26 | 41 |
-| MET Norway | 4267 | +2 | 26 | 40 |
+| Open-Meteo | 4284 | +3 | 26 | 41 |
+| MET Norway | 4284 | +2 | 25 | 40 |
 
 ## Presión (hPa)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 3979 | +0.6 | 0.8 | 1.2 |
-| MET Norway | 3979 | +0.5 | 0.8 | 1.0 |
+| Open-Meteo | 3995 | +0.6 | 0.8 | 1.1 |
+| MET Norway | 3995 | +0.5 | 0.8 | 1.0 |
 
 ## Temperatura del aire (°C)
 
 | Fuente | n | Sesgo | MAE | RMSE |
 |---|---:|---:|---:|---:|
-| Open-Meteo | 4553 | -0.81 | 1.52 | 2.71 |
-| MET Norway | 4553 | -1.07 | 1.50 | 2.93 |
+| Open-Meteo | 4573 | -0.80 | 1.48 | 2.65 |
+| MET Norway | 4573 | -1.07 | 1.48 | 2.92 |
 
 ## Altura de ola por boya (MAE en m, n entre paréntesis)
 
 | Boya | Open-Meteo | MET Norway | Copernicus IBI |
 |---|---:|---:|---:|
-| 1101 Pasaia II | 0.46 (289) | — | 0.20 (289) |
-| 1103 AP Bilbao | 0.23 (287) | — | 0.23 (287) |
-| 1117 Gijón | 0.22 (274) | — | 0.29 (274) |
-| 1239 Langosteira (A Coruña) | 0.45 (289) | — | 0.28 (289) |
-| 1414 Las Palmas Este | 0.30 (286) | — | 0.22 (286) |
-| 1421 Sta. Cruz de Tenerife | 0.14 (289) | — | 0.35 (289) |
-| 1500 Tarifa | 0.66 (289) | — | 0.40 (289) |
-| 1504 Algeciras-Pta. Carnero | 0.51 (289) | — | 0.25 (289) |
-| 1512 Ceuta | 0.31 (285) | — | 0.22 (285) |
-| 1514 Málaga | 0.12 (285) | — | 0.15 (285) |
-| 1712 Tarragona | 0.11 (289) | — | 0.14 (289) |
-| 1731 Barcelona II | 0.13 (285) | — | 0.17 (285) |
-| 2136 Bilbao-Vizcaya | 0.26 (285) | — | 0.21 (285) |
-| 2242 Cabo Peñas | 0.43 (285) | — | 0.26 (285) |
-| 2244 Estaca de Bares | 0.44 (286) | — | 0.81 (286) |
-| 2246 Villano-Sisargas | 0.45 (285) | — | 0.43 (285) |
-| 2248 Cabo Silleiro | 0.54 (261) | — | 0.39 (261) |
-| 2342 Golfo de Cádiz | 0.27 (285) | — | 0.22 (285) |
-| 2442 Gran Canaria | 0.27 (286) | — | 0.37 (286) |
-| 2446 Tenerife Sur | 0.45 (286) | — | 0.10 (286) |
-| 2548 Cabo de Gata | 0.21 (286) | — | 0.30 (286) |
-| 2610 Cabo de Palos | 0.40 (286) | — | 0.96 (286) |
-| 2720 Tarragona (exterior) | 0.21 (286) | — | 0.25 (286) |
-| 2798 Cabo de Begur | 0.49 (285) | — | 0.67 (285) |
-| 2820 Dragonera (Mallorca) | 0.25 (286) | — | 0.29 (286) |
-| 2838 Mahón (Menorca) | 0.28 (287) | — | 0.76 (287) |
+| 1101 Pasaia II | 0.51 (289) | — | 0.22 (289) |
+| 1103 AP Bilbao | 0.26 (287) | — | 0.25 (287) |
+| 1117 Gijón | 0.24 (270) | — | 0.31 (270) |
+| 1239 Langosteira (A Coruña) | 0.48 (289) | — | 0.30 (289) |
+| 1414 Las Palmas Este | 0.30 (286) | — | 0.24 (286) |
+| 1421 Sta. Cruz de Tenerife | 0.12 (289) | — | 0.33 (289) |
+| 1500 Tarifa | 0.69 (289) | — | 0.41 (289) |
+| 1504 Algeciras-Pta. Carnero | 0.52 (289) | — | 0.26 (289) |
+| 1512 Ceuta | 0.30 (285) | — | 0.22 (285) |
+| 1514 Málaga | 0.12 (286) | — | 0.15 (286) |
+| 1712 Tarragona | 0.12 (289) | — | 0.14 (289) |
+| 1731 Barcelona II | 0.14 (285) | — | 0.18 (285) |
+| 2136 Bilbao-Vizcaya | 0.27 (289) | — | 0.22 (289) |
+| 2242 Cabo Peñas | 0.47 (289) | — | 0.28 (289) |
+| 2244 Estaca de Bares | 0.48 (289) | — | 0.87 (289) |
+| 2246 Villano-Sisargas | 0.47 (289) | — | 0.45 (289) |
+| 2248 Cabo Silleiro | 0.57 (240) | — | 0.39 (240) |
+| 2342 Golfo de Cádiz | 0.27 (289) | — | 0.19 (289) |
+| 2442 Gran Canaria | 0.28 (289) | — | 0.36 (289) |
+| 2446 Tenerife Sur | 0.46 (289) | — | 0.10 (289) |
+| 2548 Cabo de Gata | 0.22 (289) | — | 0.30 (289) |
+| 2610 Cabo de Palos | 0.43 (289) | — | 1.00 (289) |
+| 2720 Tarragona (exterior) | 0.23 (289) | — | 0.26 (289) |
+| 2798 Cabo de Begur | 0.52 (288) | — | 0.72 (288) |
+| 2820 Dragonera (Mallorca) | 0.27 (289) | — | 0.30 (289) |
+| 2838 Mahón (Menorca) | 0.29 (288) | — | 0.80 (288) |
 
 ## Avisos de esta pasada
 
