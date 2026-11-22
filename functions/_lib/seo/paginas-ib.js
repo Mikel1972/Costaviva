@@ -83,6 +83,7 @@ const L = {
       h1: (r) => `Pesca em ${r}`,
       intro: (n, r, urlM, urlE) => `${n} pesqueiros em ${r}. Em cada um: espécies por modalidade e época, fundo, profundidade, câmaras e o índice de pesca de hoje. Marés da zona: <a href="${urlM}">marés de hoje em ${r}</a>. Procure também <a href="${urlE}">por espécie</a>.`,
       temporada: (mes) => `Da época em ${mes}`, otras: "Outras zonas",
+      peces: (r) => `Peixes de ${r}: o que se pesca e quando`, pecesNota: (n, r) => `${n} espécies que se pescam em ${r}, com os meses em que aparecem. Em destaque, as da época agora.`,
     },
     especie: {
       veda: { veda_recreativa: "Defeso na pesca lúdica", prohibida: "Captura proibida", solo_captura_y_suelta: "Só captura e devolução" }, vedaGen: "Defeso",
@@ -96,7 +97,7 @@ const L = {
       epocaZonas: "Época por zonas", zona: "Zona", mesesCol: "Meses", desova: "Desova", ahora_: "agora", notaDesova: "Em desova: se o apanhar, devolva-o.",
       vedas: "Defesos e proibições", norma: "norma", talla: "Tamanho mínimo", tallaCol: "Tamanho", dondeAplica: "Onde se aplica", normaCol: "Norma", ver: "ver",
       comoSePesca: "Como se pesca", cebos: "Iscos e amostras típicos", cta: (n) => `Quando pica hoje: ${n}?`,
-      donde: "Onde pescar", todas: "Todas as espécies →",
+      donde: "Onde pescar", todas: "Todas as espécies →", preguntas: "Perguntas frequentes", fuente: "fonte",
       imagenAlt: "Espécies de pesca: tamanhos mínimos, defesos e época",
       tituloIndice: "Espécies de pesca em Portugal e Espanha: época, tamanhos mínimos e iscos | Costaviva",
       descIndice: (n) => `${n} espécies da pesca lúdica em Portugal e Espanha: época por zonas, tamanho mínimo com a sua norma, modalidades, iscos e onde as pescar.`,
@@ -174,6 +175,7 @@ const L = {
       h1: (r) => `Fishing in ${r}`,
       intro: (n, r, urlM, urlE) => `${n} fishing spots in ${r}. For each one: species by method and season, seabed, depth, cameras and today's fishing index. Tides in the area: <a href="${urlM}">today's tides in ${r}</a>. You can also browse <a href="${urlE}">by species</a>.`,
       temporada: (mes) => `In season in ${mes}`, otras: "Other areas",
+      peces: (r) => `Fish of ${r}: what you can catch and when`, pecesNota: (n, r) => `${n} species caught in ${r}, with the months they are around. Highlighted: in season now.`,
     },
     especie: {
       veda: { veda_recreativa: "Closed season for recreational fishing", prohibida: "Catch prohibited", solo_captura_y_suelta: "Catch and release only" }, vedaGen: "Closed season",
@@ -187,7 +189,7 @@ const L = {
       epocaZonas: "Season by area", zona: "Area", mesesCol: "Months", desova: "Spawning", ahora_: "now", notaDesova: "If it is spawning and you catch one, release it.",
       vedas: "Closed seasons and bans", norma: "rule", talla: "Minimum size", tallaCol: "Size", dondeAplica: "Where it applies", normaCol: "Rule", ver: "see",
       comoSePesca: "How it is fished", cebos: "Typical baits and lures", cta: (n) => `When does ${n} bite today?`,
-      donde: "Where to fish it", todas: "All species →",
+      donde: "Where to fish it", todas: "All species →", preguntas: "Frequently asked questions", fuente: "source",
       imagenAlt: "Fishing species: minimum sizes, closed seasons and season",
       tituloIndice: "Fishing species in Spain and Portugal: season, minimum sizes and baits | Costaviva",
       descIndice: (n) => `${n} recreational fishing species in Spain and Portugal: season by area, minimum size with its rule, methods, baits and where to fish them.`,
@@ -454,6 +456,15 @@ ${region ? `<p><a href="${esc(rRegionSpots(region.slug))}">${esc(T.spot.todos(no
       .filter((e) => regionesEsp.some((r) => e.presencia?.[r]?.meses?.includes(mes)))
       .map((e) => ({ slug: slugEspecie(e.id), nombre: nombreEsp(e) }))
       .sort((a, b) => a.nombre.localeCompare(b.nombre, T.locale));
+    // Todas las especies de la zona con sus meses (como la versión en español:
+    // GSC «peces de galicia», 2026-11-22).
+    const peces = (especiesDatos?.especies || [])
+      .map((e) => {
+        const meses = [...new Set(regionesEsp.flatMap((r) => e.presencia?.[r]?.meses || []))];
+        return meses.length ? { slug: slugEspecie(e.id), nombre: nombreEsp(e), meses: textoMeses(meses), ahora: meses.includes(mes) } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, T.locale));
     const titulo = T.region.titulo(nombreR, del.length);
     const descripcion = T.region.desc(nombreR, del.length, mesLargo(mes), deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", "));
     const migas = [{ nombre: T.spot.migas, ruta: p(ruta) }];
@@ -467,6 +478,9 @@ ${region ? `<p><a href="${esc(rRegionSpots(region.slug))}">${esc(T.spot.todos(no
 <ul class="lista-spots">${del.map((s) => `<li><a href="${esc(rSpot(s.slug))}">${esc(nombreCortoSpot(s.nombre))}</a></li>`).join("")}</ul>
 <section aria-labelledby="t-temp"><h2 id="t-temp">${esc(T.region.temporada(mesLargo(mes)))}</h2>
 <ul class="chips">${deTemporada.map((e) => `<li><a href="${esc(rEspecie(e.slug))}">${esc(e.nombre)}</a></li>`).join("")}</ul></section>
+${peces.length ? `<section aria-labelledby="t-peces"><h2 id="t-peces">${esc(T.region.peces(nombreR))}</h2>
+<p class="nota">${esc(T.region.pecesNota(peces.length, nombreR))}</p>
+<ul class="especies">${peces.map((e) => `<li${e.ahora ? ' class="temporada"' : ""}><a href="${esc(rEspecie(e.slug))}">${esc(e.nombre)}</a> <span class="meses">${esc(e.meses)}</span></li>`).join("")}</ul></section>` : ""}
 ${enlacesRegiones(reg.slug, rRegionSpots)}
 ${T.cta()}`;
     return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ...opciones, imagen: imagenOgRegion(reg), imagenAlt: T.spot.imagenAlt(nombreR) }) };
@@ -543,10 +557,17 @@ ${T.cta()}`;
       migasJsonLd(migas),
     ];
     const aviso = solo(especiesDatos, "aviso_legal") || E.aviso;
+    // Preguntas frecuentes traducidas (especies.json: pregunta_<idioma>,
+    // respuesta_<idioma>); sin traducción no se enseñan.
+    const preguntas = (e.preguntas || []).map((q) => ({ pregunta: solo(q, "pregunta"), respuesta: solo(q, "respuesta"), fuentes: q.fuentes || [] })).filter((q) => q.pregunta && q.respuesta);
+    if (preguntas.length) ld.push({ "@context": "https://schema.org", "@type": "FAQPage", inLanguage: T.lang, mainEntity: preguntas.map((q) => ({ "@type": "Question", name: q.pregunta, acceptedAnswer: { "@type": "Answer", text: q.respuesta } })) });
     const cuerpo = `${migasHtml(migas, idioma)}
 <h1><span aria-hidden="true">${esc(f.emoji)}</span> ${esc(n)}</h1>
 <p class="cientifico">${f.cientifico && f.cientifico !== n ? `<em>${esc(f.cientifico)}</em>` : ""}${f.otros.length ? ` · ${f.otros.map((o) => `${esc(o)} <span class="nota">(${E.otroIdioma})</span>`).join(" · ")}` : ""}</p>
 <p class="intro">${esc(intro)}</p>
+${preguntas.length ? `<section class="tarjeta" aria-labelledby="t-preg"><h2 id="t-preg">${E.preguntas}</h2>
+${preguntas.map((q) => `<h3>${esc(q.pregunta)}</h3><p>${esc(q.respuesta)}${q.fuentes.map((id) => especiesDatos.fuentes?.[id]).filter((x) => x?.url).map((x) => ` <span class="nota">(${E.fuente}: <a href="${esc(x.url)}" rel="noopener nofollow" target="_blank">${esc(x.cita || x.titulo || E.fuente)}</a>)</span>`).join("")}</p>`).join("")}
+</section>` : ""}
 ${f.temporada.length ? `<section class="tarjeta" aria-labelledby="t-temp"><h2 id="t-temp">${E.epocaZonas}</h2>
 <div class="tabla-env"><table><thead><tr><th scope="col">${E.zona}</th><th scope="col">${E.mesesCol}</th><th scope="col">${E.desova}</th></tr></thead><tbody>
 ${f.temporada.map((x) => `<tr${x.ahora ? ' class="ahora"' : ""}><th scope="row">${esc(x.nombre)}</th><td>${esc(x.texto)}${x.ahora && !x.veda ? ` · <strong>${E.ahora_}</strong>` : ""}${x.veda ? ` · <strong>${esc(x.veda.toLowerCase())}</strong>` : ""}</td><td>${x.freza ? esc(x.freza) : "–"}</td></tr>`).join("")}
