@@ -500,6 +500,8 @@
   "mapa.ola_real.error": "Não foi possível guardar agora.",
   "mapa.ola_real.gracias": "Obrigado: assim afinamos a onda deste pesqueiro.",
   "mapa.marea.coef": " · coef. {coef}",
+  "mapa.marea.coef_spot": "Coeficiente {coef}: o deste pesqueiro, segundo as suas marés dos últimos 15 dias. Não é o coeficiente nacional das tabelas de marés, que é igual para toda a costa.",
+  "mapa.marea.coef_aprox": "Coeficiente {coef}: aproximado pela fase da lua (hoje não há o deste pesqueiro). Não é o coeficiente nacional das tabelas de marés.",
   "mapa.marea.proxima": "próx. {tipo} {hora}",
   "mapa.marea.manana": " (amanhã)",
   "mapa.marea.pleamar": "preia-mar",

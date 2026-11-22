@@ -449,7 +449,7 @@ export function paginaMareaPt(sp, todos) {
 ${actualizado ? `<p class="nota">Dados reais, atualizados: ${esc(actualizado)}</p>` : ""}
 <section class="tarjeta hoy" aria-labelledby="t-marea"><h2 id="t-marea">Próximas marés</h2>
 <div class="datos">${celda("Próxima preia-mar", pleamar ? textoEvento(pleamar) : null)}${celda("Próxima baixa-mar", bajamar ? textoEvento(bajamar) : null)}${celda("Maré agora", cond?.marea || null)}${celda("Ondulação", cond?.ola || null)}${celda("Vento", cond?.viento || null)}${celda("Água", cond?.tempAgua || null)}</div>
-${sp.marea?.coeficiente ? `<p class="nota">Coeficiente de maré: ${esc(sp.marea.coeficiente)}.</p>` : ""}</section>
+${sp.marea?.coeficiente ? `<p class="nota">${sp.marea.coeficienteSpot === false ? `Coeficiente de maré: ${esc(sp.marea.coeficiente)}, aproximado pela fase da lua. Não é o coeficiente nacional das tabelas de marés.` : `Coeficiente de maré deste pesqueiro: ${esc(sp.marea.coeficiente)}, segundo as suas marés dos últimos 15 dias. Não é o coeficiente nacional das tabelas de marés, que é igual para toda a costa.`}</p>` : ""}</section>
 ${ctaPt()}
 ${filas ? `<section aria-labelledby="t-prev"><h2 id="t-prev">Previsão das próximas horas em ${esc(nombre)}</h2>
 <div class="tabla-env"><table><thead><tr><th scope="col">Hora</th><th scope="col">Ondulação</th><th scope="col">Vento</th><th scope="col">Água</th></tr></thead><tbody>${filas}</tbody></table></div></section>` : ""}

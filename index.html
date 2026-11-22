@@ -1558,6 +1558,7 @@
         <div class="etq" id="panelMareaProxima"></div>
         <!-- Marea de LINZ (NZ): puerto, atribución (based on Toitū Te Whenua Land Information New Zealand data, CC BY 4.0 con enlace) y aviso obligatorio. -->
         <div class="etq" id="panelMareaFuente" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:3px;"></div>
+        <div class="etq" id="panelMareaCoef" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:3px;"></div>
         <!-- Nivel MEDIDO del mareógrafo de Waikato Regional Council (NZ, ≤ 20 km): valor, tendencia, hora, cita con enlaces y aviso de dato provisional. -->
         <div class="etq" id="panelMareaMedida" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:5px;"></div>
       </div>
@@ -2696,6 +2697,17 @@ function pintarReservasPanel(s) {
 // Marea de LINZ (NZ): puerto de referencia, atribución (abreviada: nombre
 // completo de LINZ, "based on" y "CC BY 4.0" con enlace a la licencia) y
 // aviso obligatorio. Con nodos de texto, sin innerHTML.
+// Qué es el coeficiente que enseñamos (2026-11-22, Mikel: el 73 de Bakio no es
+// el 86 de las tablas, que es el nacional). Spots de NZ: su propio cálculo LINZ.
+function pintarNotaCoef(s) {
+  const el = document.getElementById("panelMareaCoef");
+  if (!el) return;
+  const m = s.marea;
+  if (!m || m.coeficiente == null || m.coeficienteSpot === undefined) { el.hidden = true; el.textContent = ""; return; }
+  el.textContent = I18n.t(m.coeficienteSpot ? "mapa.marea.coef_spot" : "mapa.marea.coef_aprox", { coef: m.coeficiente });
+  el.hidden = false;
+}
+
 function pintarFuenteMarea(s) {
   const el = document.getElementById("panelMareaFuente");
   const m = s.marea;
@@ -5823,6 +5835,7 @@ function abrirPanel(s) {
     document.getElementById("panelMareaProxima").textContent = "";
   }
   pintarFuenteMarea(s);
+  pintarNotaCoef(s);
   pintarMareaMedida(s);
   document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? I18n.t("mapa.sin_datos") : `${I18n.num(I18n.velocidadNumero(s.corriente))} ${I18n.unidadVelocidad()}`;
   document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";

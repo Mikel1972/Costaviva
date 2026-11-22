@@ -52,3 +52,13 @@ test("página de mareas: cita a Puertos del Estado con enlace a PORTUS", () => {
   assert.match(html, /cero del puerto de Bilbao/);
   assert.match(html, /href="https:\/\/portus\.puertos\.es\/"[^>]*>Puertos del Estado</);
 });
+
+// 2026-11-22 (Mikel): el coeficiente que enseñamos es el del spot, no el
+// nacional de las tablas; si falta el del spot, el de respaldo va marcado.
+test("coeficienteSpot dice si el coeficiente es el del spot o el de respaldo", () => {
+  const horas = Array.from({ length: 48 }, (_, i) => new Date(Date.UTC(2026, 10, 22, i)).toISOString().slice(0, 16));
+  const alturas = horas.map((_, i) => Math.sin((i / 12.42) * 2 * Math.PI));
+  assert.equal(calcularMarea(horas, alturas, 73).coeficienteSpot, true);
+  assert.equal(calcularMarea(horas, alturas, 73).coeficiente, 73);
+  assert.equal(calcularMarea(horas, alturas, undefined).coeficienteSpot, false);
+});

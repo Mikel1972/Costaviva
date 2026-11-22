@@ -443,6 +443,10 @@ export function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_P
     tendencia,
     proximas,
     coeficiente: coeficienteCacheado ?? coeficienteMarea(new Date()),
+    // true = el propio del spot (rango de su marea frente a sus últimos ~15
+    // días); false = respaldo por la fase de la luna (2026-11-22, Mikel: que no
+    // se confunda con el nacional de las tablas, que es otro).
+    coeficienteSpot: coeficienteCacheado != null,
     ...(desplazamiento != null
       ? { referencia: { puerto: referencia.puerto, km: referencia.km, cero: referencia.cero, fuente: FUENTE_REFERENCIA.nombre, url: FUENTE_REFERENCIA.url } }
       : {}),
