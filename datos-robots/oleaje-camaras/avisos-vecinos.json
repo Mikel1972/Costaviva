@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-22T13:14:22.559Z",
+ "actualizado": "2026-11-22T13:39:51.803Z",
  "dias": 7,
  "repetidos": [
   {
@@ -8,6 +8,14 @@
    "bajo": 0,
    "spots": [
     "bakio"
+   ]
+  },
+  {
+   "clave": "zarautz",
+   "alto": 1,
+   "bajo": 2,
+   "spots": [
+    "zarautz"
    ]
   },
   {
@@ -1060,6 +1068,15 @@
    "antes": 1,
    "referencia": 0.9,
    "visto": "2026-11-22T12:39:43.484Z"
+  },
+  {
+   "slug": "zarautz",
+   "camara": "zarautz",
+   "tipo": "bajo",
+   "horaISO": "2026-11-22T18:00",
+   "antes": 0.8,
+   "referencia": null,
+   "visto": "2026-11-22T13:39:51.803Z"
   }
  ]
 }
