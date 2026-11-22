@@ -1,10 +1,18 @@
 {
- "actualizado": "2026-11-22T02:37:23.917Z",
+ "actualizado": "2026-11-22T03:07:59.396Z",
  "dias": 7,
  "repetidos": [
   {
+   "clave": "mundaka",
+   "alto": 3,
+   "bajo": 0,
+   "spots": [
+    "mundaka"
+   ]
+  },
+  {
    "clave": "bakio",
-   "alto": 9,
+   "alto": 10,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -20,7 +28,7 @@
   },
   {
    "clave": "orio",
-   "alto": 4,
+   "alto": 5,
    "bajo": 1,
    "spots": [
     "orio"
@@ -809,6 +817,33 @@
    "antes": 1,
    "referencia": 0.9,
    "visto": "2026-11-22T00:37:29.286Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T03:00",
+   "antes": 1.4,
+   "referencia": 1,
+   "visto": "2026-11-22T03:07:59.396Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T03:00",
+   "antes": 0.9,
+   "referencia": 0.8,
+   "visto": "2026-11-22T03:07:59.396Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T03:00",
+   "antes": 0.8,
+   "referencia": 0.4,
+   "visto": "2026-11-22T03:07:59.396Z"
   }
  ]
 }
