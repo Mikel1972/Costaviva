@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-22T10:09:44.418Z",
+ "actualizado": "2026-11-22T10:39:28.459Z",
  "dias": 7,
  "repetidos": [
   {
@@ -28,10 +28,18 @@
   },
   {
    "clave": "bakio",
-   "alto": 8,
+   "alto": 10,
    "bajo": 0,
    "spots": [
     "bakio"
+   ]
+  },
+  {
+   "clave": "getaria",
+   "alto": 3,
+   "bajo": 0,
+   "spots": [
+    "getaria"
    ]
   },
   {
@@ -952,6 +960,42 @@
    "antes": 0.3,
    "referencia": null,
    "visto": "2026-11-22T10:09:44.418Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T06:00",
+   "antes": 1.1,
+   "referencia": 1,
+   "visto": "2026-11-22T10:39:28.459Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T09:00",
+   "antes": 1.1,
+   "referencia": 1,
+   "visto": "2026-11-22T10:39:28.459Z"
+  },
+  {
+   "slug": "getaria",
+   "camara": "getaria",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T06:00",
+   "antes": 0.6,
+   "referencia": 0.5,
+   "visto": "2026-11-22T10:39:28.459Z"
+  },
+  {
+   "slug": "getaria",
+   "camara": "getaria",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T09:00",
+   "antes": 0.6,
+   "referencia": 0.5,
+   "visto": "2026-11-22T10:39:28.459Z"
   }
  ]
 }
