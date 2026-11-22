@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-22T06:37:17.684Z",
- "lineasHistorial": 12298,
+ "fecha": "2026-11-22T07:07:22.932Z",
+ "lineasHistorial": 12299,
  "etiquetas": 1404,
  "etiquetasClaude": 259,
  "calibracion": {
@@ -613,7 +613,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 963
+    "pares": 964
    }
   }
  },
@@ -661,7 +661,7 @@
    "cerca": 0.923
   },
   "nz-riverton": {
-   "n": 79,
+   "n": 80,
    "suficiente": true,
    "lineas": null,
    "cerca": null
