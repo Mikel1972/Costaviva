@@ -779,6 +779,16 @@
    "fecha_consulta": "2026-10-09",
    "pais": "nz",
    "nota": "Consulta 2026-10-09: casi sin registros costeros de NZ con licencia libre (snapper: 3, uno mal identificado). No sirve todavía para la presencia ni para la temperatura."
+  },
+  "mercasa_calamar": {
+   "titulo": "Alimentación en España — Calamar, calamar europeo o chipirón (ficha de producto)",
+   "url": "https://www.mercasa.es/wp-content/uploads/2022/02/Calamar.pdf",
+   "editor": "Mercasa (empresa pública, Ministerio de Agricultura, Pesca y Alimentación)",
+   "tipo": "oficial",
+   "licencia": "Solo se usan los datos (nombres por zona, calibre comercial del chipirón y que las puntillas son Alloteuthis), citados con enlace; no se reproduce el texto",
+   "cita": "Mercasa, ficha del calamar",
+   "fecha_consulta": "2026-11-22",
+   "nota": "«Calamar, calamar europeo o chipirón: Loligo vulgaris». Otras denominaciones: chipirón (Andalucía, Asturias), lura (Galicia), txipirón (País Vasco). Calibres: «Entero pequeño o chipirón: 6-8 pzas/kg (-300 g)». «Calamares enanos o Puntillas (Allotheuthis): adultos de pequeño tamaño»."
   }
  },
  "jurisdicciones": {
@@ -4555,15 +4565,23 @@
    "titulo_seo": "Calamar, chipirón o txipirón: pesca, temporada, talla mínima y cebos | Costaviva",
    "preguntas": [
     {
-     "pregunta": "¿Chipirón y calamar son lo mismo?",
-     "respuesta": "Sí: es el mismo animal, el calamar común (Loligo vulgaris). Lo que cambia es el nombre según la zona: en la mayor parte de España se dice calamar o chipirón; en Euskadi se le llama popularmente txipirón, y en euskera, txipiroi.",
+     "pregunta": "¿Qué diferencia hay entre chipirón y calamar?",
+     "respuesta": "Son el mismo animal, el calamar común (Loligo vulgaris). En el mercado se llama chipirón al calamar pequeño: el calibre «entero pequeño o chipirón» es de 6 a 8 piezas por kilo, menos de 300 g cada uno. Además, en Andalucía y Asturias se le dice chipirón a cualquier calamar, y en el País Vasco, txipirón. Lo que sí es otro animal son las puntillas o calamarines (Alloteuthis), que son pequeñas aunque sean adultas.",
+     "pregunta_en": "What is the difference between chipirón and calamar?",
+     "respuesta_en": "They are the same animal, the European squid (Loligo vulgaris). In Spanish markets, chipirón is the small squid: the «whole small or chipirón» size grade is 6 to 8 pieces per kilo, under 300 g each. In Andalusia and Asturias any squid is also called chipirón, and in the Basque Country, txipirón. Puntillas or calamarines (Alloteuthis) are a different animal: they stay small even as adults.",
+     "pregunta_pt": "Qual é a diferença entre chipirón e calamar?",
+     "respuesta_pt": "São o mesmo animal, a lula-vulgar (Loligo vulgaris). Nos mercados espanhóis chama-se chipirón à lula pequena: o calibre «inteiro pequeno ou chipirón» é de 6 a 8 peças por quilo, menos de 300 g cada. Na Andaluzia e nas Astúrias também se diz chipirón a qualquer lula, e no País Basco, txipirón. Outro animal são as puntillas ou calamarines (Alloteuthis), que são pequenas mesmo quando adultas.",
      "fuentes": [
-      "eeh_upv_ehu"
+      "mercasa_calamar"
      ]
     },
     {
      "pregunta": "¿Cómo se dice calamar en euskera?",
      "respuesta": "Txipiroi (también xipiroi o xipiron). En el habla popular del País Vasco se dice txipirón, como en los txipirones en su tinta.",
+     "pregunta_en": "What is squid called in Basque?",
+     "respuesta_en": "Txipiroi (also xipiroi or xipiron). In everyday speech in the Basque Country it is txipirón, as in txipirones en su tinta (squid in its ink).",
+     "pregunta_pt": "Como se diz lula em basco?",
+     "respuesta_pt": "Txipiroi (também xipiroi ou xipiron). Na fala popular do País Basco diz-se txipirón, como nos txipirones en su tinta (lulas na sua tinta).",
      "fuentes": [
       "eeh_upv_ehu"
      ]
