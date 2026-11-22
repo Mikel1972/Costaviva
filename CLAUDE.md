@@ -1973,7 +1973,8 @@ apagados).
   datasets aparte `..._detided`), uo, vo. Rejilla 1/36°, 10 días de
   previsión, dominio 26-56 N y 19 W-5 E: cubre los 105 spots (península,
   Baleares, Canarias); **no cubre Azores**.
-- **Mareas de Puertos del Estado: NO se pueden reutilizar.** Su manual de
+- **Mareas de Puertos del Estado: AUTORIZADO desde el 2026-11-20** (Samuel Galán, Banco de Datos): predicciones de marea y valores de referencia de PORTUS, obtenidos con los servicios de descarga del portal (nunca sus endpoints internos de forma automatizada), con «Fuente: Puertos del Estado» y enlace a https://portus.puertos.es/, sin redistribuirlos como propios. Las predicciones por API llegarán con su servicio POEM: volver a escribirles a mediados de enero de 2027. Aplicado el 2026-11-21: `functions/_lib/marea-referencias-datos.js` (nivel medio sobre el cero de la tabla de 33 mareógrafos REDMAR, leído por Mikel en «Ceros - Referencias > Esquema Datum») y `marea-referencia.js`: en los spots de España con mareógrafo a ≤ 60 km, la altura va sobre el cero de la tabla del puerto (serie del modelo centrada + nivel medio del puerto); el resto, como antes. Texto antiguo (ya superado):
+- ~~Mareas de Puertos del Estado: NO se pueden reutilizar.~~ Su manual de
   descarga (bancodatos.puertos.es/BD/peticiones/Manual_Usuario_Descargaportus.pdf):
   "Puertos del Estado solo autoriza el uso de los datos para el propósito
   específico de la descarga, y, en ningún caso, se permite la transferencia de

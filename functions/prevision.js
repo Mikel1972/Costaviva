@@ -34,6 +34,9 @@ import SESGO_PLAZO from "./_lib/sesgo-plazo-datos.js";
 import { factorPlazo, PLAZOS_APP } from "./_lib/sesgo-plazo.js";
 // Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
 import { leerInstantanea } from "./_lib/instantaneas.js";
+import { referenciaMarea, desplazamientoReferencia, FUENTE_REFERENCIA } from "./_lib/marea-referencia.js";
+import { REGIONES } from "./mareas/_regiones.js";
+const SPOTS_PORTUGAL = REGIONES.find((r) => r.slug === "portugal")?.spots || new Set();
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
 // espuma que ven las webcams, y corrección de las próximas horas.
 import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA_LECTURA_HORAS, FUENTE_POR_SPOT } from "./_lib/oleaje-camaras.js";
@@ -366,11 +369,17 @@ export function coeficientePorSpot(horas, alturas, zona = ZONA_POR_DEFECTO) {
 // batimétricos reales que no tenemos), solo un número intuitivo — la
 // detección de pleamar/bajamar y la tendencia no cambian, un
 // desplazamiento constante no mueve los máximos/mínimos relativos.
-function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFECTO) {
+// Referencia de Puertos del Estado (2026-11-21): con un mareógrafo REDMAR a
+// menos de 60 km (marea-referencia.js), las alturas van sobre el CERO DE LA
+// TABLA del puerto (como las tablas de marea oficiales): la serie del modelo
+// se centra en su media y se sube al nivel medio del puerto. Sin mareógrafo
+// cerca, como antes: sobre la bajamar más baja de la ventana.
+export function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFECTO, referencia = null) {
   if (!horas.length || !alturas.length) return null;
 
   const validas = alturas.filter((v) => v !== null && v !== undefined);
-  const minVentana = validas.length ? Math.min(...validas) : 0;
+  const desplazamiento = desplazamientoReferencia(alturas, referencia);
+  const minVentana = desplazamiento != null ? -desplazamiento : validas.length ? Math.min(...validas) : 0;
 
   const eventosCrudos = [];
   for (let i = 1; i < alturas.length - 1; i++) {
@@ -423,7 +432,7 @@ function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFE
     .slice(0, 2)
     // La bajamar interpolada puede quedar unos milímetros bajo el mínimo
     // horario de la ventana: nunca negativa (ni -0).
-    .map((e) => ({ ...e, manana: e.hora.slice(0, 10) !== hoyISO, hora: e.hora.slice(11, 16), altura: +Math.max(0, e.altura).toFixed(2) }));
+    .map((e) => ({ ...e, manana: e.hora.slice(0, 10) !== hoyISO, hora: e.hora.slice(11, 16), altura: desplazamiento != null ? +e.altura.toFixed(2) : +Math.max(0, e.altura).toFixed(2) }));
 
   const actualRaw = alturas[idxAhora];
   const siguienteRaw = alturas[idxAhora + 1];
@@ -434,6 +443,9 @@ function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFE
     tendencia,
     proximas,
     coeficiente: coeficienteCacheado ?? coeficienteMarea(new Date()),
+    ...(desplazamiento != null
+      ? { referencia: { puerto: referencia.puerto, km: referencia.km, cero: referencia.cero, fuente: FUENTE_REFERENCIA.nombre, url: FUENTE_REFERENCIA.url } }
+      : {}),
   };
 }
 
@@ -785,7 +797,10 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     marino.hourly?.time || [],
     marino.hourly?.sea_level_height_msl || [],
     coeficientes?.[spot.slug],
-    zona
+    zona,
+    // Solo España: Portugal usa el cero de sus propias tablas (Instituto
+    // Hidrográfico), no el de los puertos españoles.
+    SPOTS_PORTUGAL.has(spot.slug) ? null : referenciaMarea(spot.lat, spot.lon)
   );
   const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || [], historicoPresion?.[spot.slug], zona);
   const precipNubesPorHoraISO = Object.fromEntries(
