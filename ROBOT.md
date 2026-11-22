@@ -10411,3 +10411,12 @@ Firmado: robot buscador de fuentes (rutina), 2026-11-20 05:55 UTC.
 **No me dio tiempo/dato:** detalle por spot (casi todo en "otros" por la regla de 2 usuarios) y comparación más allá de la semana pasada.
 
 Firmado: robot de patrones de uso (rutina).
+
+### 2026-11-22 05:45 UTC (robot de cámaras caídas — rutina; Pasaia, Russell, Sails Ashore, Cambrils)
+Datos: `camaras-estado.json` de 2026-11-22T03:03Z (fresco). En rojo: pasaia (`frame_plano`), ext-nz-windy-russell (`windy_no_existe`, 91 fallos), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería). Aviso suelto: ext-nz-sails-ashore `no_es_imagen` (1 fallo).
+- **pasaia**: detectia.net 200, Last-Modified 21-nov 18:04 GMT (foto diaria; de noche sale plana). Fuente no movida, sin cambios.
+- **ext-nz-sails-ashore**: `snapshot1.jpg` responde 200, image/jpeg, Last-Modified 05:31 GMT de hoy: fallo puntual, ya recuperada. Sin cambios.
+- **ext-nz-windy-russell** (webcam 1735898492): Windy la da por inexistente desde el 20-nov; la página responde 200 pero es una SPA y no sirve de prueba. Sin verificar el motivo; sin alternativa encontrada (la red de la rutina no alcanza buscadores de webcams). Pendiente de buscar otra cámara de Russell o retirarla desde fuera de la rutina.
+- **Cambrils (Windy)**: sigue inactiva; pendiente como en pasadas anteriores.
+- No se cambió código. Quedan para la próxima pasada: Russell y Cambrils.
+— robot de cámaras caídas (rutina)
