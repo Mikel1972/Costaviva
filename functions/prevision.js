@@ -33,7 +33,7 @@ import PERIODO_BOYAS from "./_lib/periodo-boyas-datos.js";
 import SESGO_PLAZO from "./_lib/sesgo-plazo-datos.js";
 import { factorPlazo, PLAZOS_APP } from "./_lib/sesgo-plazo.js";
 // Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
-import { leerInstantanea } from "./_lib/instantaneas.js";
+import { leerInstantanea, baseInstantaneas } from "./_lib/instantaneas.js";
 import { referenciaMarea, desplazamientoReferencia, FUENTE_REFERENCIA } from "./_lib/marea-referencia.js";
 import { REGIONES } from "./mareas/_regiones.js";
 const SPOTS_PORTUGAL = REGIONES.find((r) => r.slug === "portugal")?.spots || new Set();
@@ -1492,6 +1492,91 @@ async function responderRegion(context, region) {
   return new Response(cuerpo, { headers: { "content-type": "application/json; charset=utf-8", "cache-control": cacheControl } });
 }
 
+// Toda la previsión de España (2026-11-21: sacada de onRequestGet para que
+// el robot prevision-precalculada.yml la calcule fuera de Cloudflare, donde
+// costaba 100-280 ms de CPU por cálculo, muy por encima de los 10 ms del plan
+// gratis). `conAemet: false` en el robot: la clave de AEMET solo está en
+// Cloudflare y las estaciones se añaden al servir.
+export async function calcularPrevisionEs(env = {}, { conAemet = true } = {}) {
+  const [resultadosModelo, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios, lecturasOleaje] = await Promise.all([
+    previsionTodosSpots(SPOTS_ES, env).catch((e) =>
+      SPOTS_ES.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
+    ),
+    datosBoyasCopernicus(env).then(
+      (inst) => BOYAS.map((b) => { try { return boyaDesdeCopernicus(b, inst); } catch (e) { return { ...b, error: String(e) }; } }),
+      (e) => BOYAS.map((b) => ({ ...b, error: String(e) }))
+    ),
+    datosBoyaNazare().catch((e) => ({
+      codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210, error: String(e),
+    })),
+    metaRayos().catch((e) => ({ error: String(e) })),
+    datosCaudalTodos().catch((e) => ({ error: String(e) })),
+    conAemet ? estacionesAemetConRespaldo(env.AEMET_API_KEY).catch((e) => ({ error: String(e) })) : Promise.resolve(null),
+    datosTurbidezPorSpot(),
+    datosCamarasPorSpot(),
+    datosMonteRios(),
+    datosOleajeCamaras(),
+  ]);
+  const boyas = [...boyasEspana, boyaNazare];
+  // Con lectura de cámara vigente, la altura del spot sale de la cámara
+  // (y la de las próximas horas, corregida); si no, modelo × coeficiente.
+  // Cámara que sustituye al modelo → manda; cámara propia que aún no
+  // sustituye → solo `camaraReferencia` (dato secundario en el panel).
+  // Regla de vecinos (coherencia-vecinos.js, Mikel 2026-11-19: "si Sopela
+  // tiene 1,9 y Lekeitio 1,7, Bakio no puede tener 2,8"): ningún spot muy
+  // por encima de los de al lado; si pasa, se recorta y queda en
+  // avisosVecinos, que apunta el robot de las cámaras.
+  const revisados = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(resultadosModelo, lecturasOleaje.lecturas), lecturasOleaje.medidas), OPCIONES_VECINOS);
+  const resultados = acotarMargenesSpots(revisados.spots);
+  const avisosVecinos = revisados.avisos;
+
+  // Fuentes de los datos de los spots, para que la página muestre su
+  // atribución (CC BY de Open-Meteo / MET Norway, Copernicus Marine).
+  const fuentesDatos = [...new Set(resultados.flatMap((r) => r.fuentesDatos || []))];
+  return { spots: resultados, avisosVecinos, fuentesDatos, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios };
+}
+
+// --- Previsión precalculada (robot) -----------------------------------------
+export const RUTA_PREVISION_PRECALCULADA = "prevision/es.json";
+// El robot corre cada 30 min; GitHub a veces se retrasa. Más vieja que esto,
+// se calcula en la Function como antes.
+export const MAX_EDAD_PRECALCULADA_MIN = 75;
+export const TTL_PREVISION_PRECALCULADA_S = 600;
+
+// generado_en va el PRIMERO en el JSON del robot: se lee de los primeros
+// caracteres, sin parsear los ~600 KB.
+export function edadPrecalculadaMin(texto, ahora = Date.now()) {
+  const m = /^\{"generado_en":"([^"]+)"/.exec(String(texto || "").slice(0, 80));
+  const t = m ? Date.parse(m[1]) : NaN;
+  return Number.isFinite(t) ? (ahora - t) / 60000 : Infinity;
+}
+
+// Añade estacionesAemet al JSON del robot sin parsearlo (el robot no la trae).
+export function conEstacionesAemet(texto, estaciones) {
+  return String(texto).replace(/\}\s*$/, `,"estacionesAemet":${JSON.stringify(estaciones ?? null)}}`);
+}
+
+export async function leerPrevisionPrecalculada(env = {}, { fetchImpl = fetch, ahora = Date.now() } = {}) {
+  const url = `${baseInstantaneas(env)}/${RUTA_PREVISION_PRECALCULADA}`;
+  const clave = new Request(url);
+  const cache = globalThis.caches?.default;
+  try {
+    let texto = null;
+    const enCache = cache ? await cache.match(clave) : null;
+    if (enCache) texto = await enCache.text();
+    if (texto == null || edadPrecalculadaMin(texto, ahora) > MAX_EDAD_PRECALCULADA_MIN) {
+      const r = await fetchImpl(url);
+      if (!r.ok) return null;
+      texto = await r.text();
+      if (cache) await cache.put(clave, new Response(texto, { headers: { "content-type": "application/json", "cache-control": `public, max-age=${TTL_PREVISION_PRECALCULADA_S}` } }));
+    }
+    const edad = edadPrecalculadaMin(texto, ahora);
+    return edad <= MAX_EDAD_PRECALCULADA_MIN ? { texto, edad } : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function onRequestGet(context) {
   const { request } = context;
 
@@ -1514,41 +1599,21 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultadosModelo, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios, lecturasOleaje] = await Promise.all([
-    previsionTodosSpots(SPOTS_ES, context.env).catch((e) =>
-      SPOTS_ES.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
-    ),
-    datosBoyasCopernicus(context.env).then(
-      (inst) => BOYAS.map((b) => { try { return boyaDesdeCopernicus(b, inst); } catch (e) { return { ...b, error: String(e) }; } }),
-      (e) => BOYAS.map((b) => ({ ...b, error: String(e) }))
-    ),
-    datosBoyaNazare().catch((e) => ({
-      codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210, error: String(e),
-    })),
-    metaRayos().catch((e) => ({ error: String(e) })),
-    datosCaudalTodos().catch((e) => ({ error: String(e) })),
-    estacionesAemetConRespaldo(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
-    datosTurbidezPorSpot(),
-    datosCamarasPorSpot(),
-    datosMonteRios(),
-    datosOleajeCamaras(),
-  ]);
-  const boyas = [...boyasEspana, boyaNazare];
-  // Con lectura de cámara vigente, la altura del spot sale de la cámara
-  // (y la de las próximas horas, corregida); si no, modelo × coeficiente.
-  // Cámara que sustituye al modelo → manda; cámara propia que aún no
-  // sustituye → solo `camaraReferencia` (dato secundario en el panel).
-  // Regla de vecinos (coherencia-vecinos.js, Mikel 2026-11-19: "si Sopela
-  // tiene 1,9 y Lekeitio 1,7, Bakio no puede tener 2,8"): ningún spot muy
-  // por encima de los de al lado; si pasa, se recorta y queda en
-  // avisosVecinos, que apunta el robot de las cámaras.
-  const revisados = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(resultadosModelo, lecturasOleaje.lecturas), lecturasOleaje.medidas), OPCIONES_VECINOS);
-  const resultados = acotarMargenesSpots(revisados.spots);
-  const avisosVecinos = revisados.avisos;
+  // 1) Previsión precalculada por el robot (prevision-precalculada.yml,
+  // 2026-11-21): se sirve tal cual, sin parsearla (CPU casi nula), y solo se
+  // le añaden las estaciones de AEMET (su clave solo está en Cloudflare).
+  // 2) Si no hay o está vieja, se calcula aquí como siempre.
+  const precalculada = await leerPrevisionPrecalculada(context.env);
+  if (precalculada) {
+    const estacionesAemet = await estacionesAemetConRespaldo(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) }));
+    const respuestaPre = new Response(conEstacionesAemet(precalculada.texto, estacionesAemet), {
+      headers: { "content-type": "application/json; charset=utf-8", "cache-control": `public, max-age=${TTL_PREVISION_PRECALCULADA_S}`, "x-prevision": "precalculada" },
+    });
+    context.waitUntil(cache.put(cacheKey, respuestaPre.clone()));
+    return respuestaPre;
+  }
 
-  // Fuentes de los datos de los spots, para que la página muestre su
-  // atribución (CC BY de Open-Meteo / MET Norway, Copernicus Marine).
-  const fuentesDatos = [...new Set(resultados.flatMap((r) => r.fuentesDatos || []))];
+  const { spots: resultados, avisosVecinos, fuentesDatos, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios } = await calcularPrevisionEs(context.env);
   const respuesta = new Response(JSON.stringify({ spots: resultados, avisosVecinos, fuentesDatos, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
