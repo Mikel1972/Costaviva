@@ -1395,6 +1395,7 @@
   "mapa.zonas.aproximado": "Approximate outline taken from the legal text; the legal boundary is the one in the text.",
   "mapa.panel.reservas_atrib": "Marine reserves: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Hauraki Gulf protection areas: Crown Copyright: Department of Conservation Te Papa Atawhai 2025. Simplified outline: check the exact boundary with DOC.",
   "mapa.marea.puerto_linz": "LINZ port: {puerto} ({km})",
+  "mapa.marea.ref_pde": "Heights above the {puerto} port datum ({km}). Source:",
   "mapa.atrib.waikato": "NZ rivers and tide gauges: <a href=\"https://www.waikatoregion.govt.nz\" target=\"_blank\" rel=\"noopener\">Waikato Regional Council</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>; provisional data",
   "mapa.marea.medida": "Measured level at {estacion}: {altura}",
   "mapa.marea.medida_sube": "(rising)",

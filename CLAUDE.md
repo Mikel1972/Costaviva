@@ -1973,7 +1973,8 @@ apagados).
   datasets aparte `..._detided`), uo, vo. Rejilla 1/36°, 10 días de
   previsión, dominio 26-56 N y 19 W-5 E: cubre los 105 spots (península,
   Baleares, Canarias); **no cubre Azores**.
-- **Mareas de Puertos del Estado: NO se pueden reutilizar.** Su manual de
+- **Mareas de Puertos del Estado: AUTORIZADO desde el 2026-11-20** (Samuel Galán, Banco de Datos): predicciones de marea y valores de referencia de PORTUS, obtenidos con los servicios de descarga del portal (nunca sus endpoints internos de forma automatizada), con «Fuente: Puertos del Estado» y enlace a https://portus.puertos.es/, sin redistribuirlos como propios. Las predicciones por API llegarán con su servicio POEM: volver a escribirles a mediados de enero de 2027. Aplicado el 2026-11-21: `functions/_lib/marea-referencias-datos.js` (nivel medio sobre el cero de la tabla de 33 mareógrafos REDMAR, leído por Mikel en «Ceros - Referencias > Esquema Datum») y `marea-referencia.js`: en los spots de España con mareógrafo a ≤ 60 km, la altura va sobre el cero de la tabla del puerto (serie del modelo centrada + nivel medio del puerto); el resto, como antes. Texto antiguo (ya superado):
+- ~~Mareas de Puertos del Estado: NO se pueden reutilizar.~~ Su manual de
   descarga (bancodatos.puertos.es/BD/peticiones/Manual_Usuario_Descargaportus.pdf):
   "Puertos del Estado solo autoriza el uso de los datos para el propósito
   específico de la descarga, y, en ningún caso, se permite la transferencia de
@@ -6162,3 +6163,19 @@ Plan gratis de Pages Functions: **10 ms de CPU por petición**; si se pasa, Clou
 - Nada de `Intl.formatToParts` dentro de bucles: memorizar por minuto (`horaActualISO`).
 - `vigia-paginas.yml` (diario, sin IA, `scripts/vigia/paginas.mjs`) recorre todo el sitemap y `/prevision`: en rojo si una página falla dos veces o si la mayoría de spots están en error. `cpu-cloudflare.yml` del repo polizas-ai mide la CPU de las cuatro webs (token de Cloudflare con Account Analytics Read).
 - Lo que queda por encima de 10 ms en frío es `/prevision` (~100-150 ms) y las fichas de spot la primera vez: la solución de fondo es precalcular `/prevision` en un workflow y que la Function solo la sirva.
+
+## Previsión precalculada (2026-11-22)
+
+`prevision-precalculada.yml` (sin IA, a las :07 y :37 de cada hora) calcula
+la previsión de España con el mismo código que la Function
+(`calcularPrevisionEs` de `functions/prevision.js`, vía
+`scripts/prevision/precalcular.mjs`) y la sube a Supabase Storage
+`fuentes-gratuitas/prevision/es.json` (cache-control 300 s). `/prevision`
+la sirve sin parsearla, con la cabecera `x-prevision: precalculada`, y solo
+añade `estacionesAemet` (la clave de AEMET está solo en Cloudflare). Si falta
+o tiene más de 75 min (`MAX_EDAD_PRECALCULADA_MIN`), la Function la calcula
+como antes. `generado_en` tiene que ser la PRIMERA clave del JSON: la edad se
+lee de los primeros caracteres. El robot usa las mismas fuentes que la web
+(`OPEN_METEO_API_KEY` y las variables `FUENTE_*` del repo, que deben coincidir
+con las de Cloudflare) y sale en rojo sin subir nada si más de la mitad de
+los spots vienen con error. Pruebas: `test/prevision-precalculada.test.js`.
