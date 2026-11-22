@@ -6166,7 +6166,9 @@ Plan gratis de Pages Functions: **10 ms de CPU por petición**; si se pasa, Clou
 
 ## Previsión precalculada (2026-11-22)
 
-`prevision-precalculada.yml` (sin IA, a las :07 y :37 de cada hora) calcula
+`prevision-precalculada.yml` (sin IA; la lanza pg_cron a las :22 y :52 de cada hora,
+migración `20261122080000_programador_prevision_lonjas.sql`, que también lanza
+`lonjas-historico.yml`; su `schedule:` de las :07 y :37 es respaldo) calcula
 la previsión de España con el mismo código que la Function
 (`calcularPrevisionEs` de `functions/prevision.js`, vía
 `scripts/prevision/precalcular.mjs`) y la sube a Supabase Storage
