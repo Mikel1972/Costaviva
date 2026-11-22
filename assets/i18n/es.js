@@ -1395,6 +1395,7 @@
   "mapa.zonas.aproximado": "Contorno aproximado sacado de la norma; el límite legal es el de la norma.",
   "mapa.panel.reservas_atrib": "Reservas marinas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Zonas del golfo de Hauraki: Crown Copyright: Department of Conservation Te Papa Atawhai 2025. Contorno simplificado: comprueba el límite exacto en el DOC.",
   "mapa.marea.puerto_linz": "Puerto LINZ: {puerto} ({km})",
+  "mapa.marea.ref_pde": "Alturas sobre el cero del puerto de {puerto} ({km}). Fuente:",
   "mapa.atrib.waikato": "Ríos y mareógrafos NZ: <a href=\"https://www.waikatoregion.govt.nz\" target=\"_blank\" rel=\"noopener\">Waikato Regional Council</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>; datos provisionales",
   "mapa.marea.medida": "Nivel medido en {estacion}: {altura}",
   "mapa.marea.medida_sube": "(subiendo)",

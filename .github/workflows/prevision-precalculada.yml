@@ -1,0 +1,59 @@
+name: Previsión precalculada (cada 30 min)
+
+# 2026-11-22, aprobado por Mikel ("si"). Calcula la previsión de España con
+# el MISMO código que /prevision (calcularPrevisionEs de functions/prevision.js)
+# fuera de Cloudflare, donde costaba 100-280 ms de CPU por cálculo (el plan
+# gratis corta a los 10 ms: trampa 26 de comun), y la deja en Supabase
+# Storage fuentes-gratuitas/prevision/es.json. /prevision la sirve tal cual;
+# si falta o tiene más de 75 min, la calcula como antes. Sin IA.
+#
+# Usa las mismas fuentes que la web: OPEN_METEO_API_KEY y los interruptores
+# FUENTE_* (variables del repo, como espuma-camaras.yml) y, si Open-Meteo da
+# 429, el respaldo de MET Norway / Copernicus (instantáneas del bucket).
+# En rojo si más de la mitad de los spots vienen con error (no se sube).
+# Repo público: los minutos de Actions no cuentan.
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prevision-precalculada
+  cancel-in-progress: false
+
+jobs:
+  calcular:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Calcular
+        env:
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+          METNO_CONTACTO: ${{ vars.METNO_CONTACTO }}
+          FUENTE_ATMOSFERA: ${{ vars.FUENTE_ATMOSFERA }}
+          FUENTE_MAR: ${{ vars.FUENTE_MAR }}
+          FUENTE_VIENTO: ${{ vars.FUENTE_VIENTO }}
+          FUENTE_PRESION: ${{ vars.FUENTE_PRESION }}
+          FUENTE_NUBES_LLUVIA: ${{ vars.FUENTE_NUBES_LLUVIA }}
+          FUENTE_TEMPERATURA: ${{ vars.FUENTE_TEMPERATURA }}
+          FUENTE_OLEAJE: ${{ vars.FUENTE_OLEAJE }}
+          FUENTE_TEMP_AGUA: ${{ vars.FUENTE_TEMP_AGUA }}
+          FUENTE_MAREA: ${{ vars.FUENTE_MAREA }}
+          FUENTE_CORRIENTE: ${{ vars.FUENTE_CORRIENTE }}
+        run: |
+          mkdir -p /tmp/prevision
+          node scripts/prevision/precalcular.mjs /tmp/prevision/es.json
+      - name: Subir a Supabase Storage
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUBIR_CACHE_SEGUNDOS: "300"
+        run: node scripts/fuentes/subir-storage.mjs /tmp/prevision prevision

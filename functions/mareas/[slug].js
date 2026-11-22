@@ -267,6 +267,7 @@ ${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", [
         : ""
     }
 
+    ${marea?.referencia ? `<p class="nota">Alturas sobre el cero del puerto de ${escaparHtml(marea.referencia.puerto)}, como en su tabla de mareas. Fuente: <a href="${escaparHtml(marea.referencia.url)}" rel="noopener">${escaparHtml(marea.referencia.fuente)}</a>.</p>` : ""}
     <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. La marea, el oleaje y el viento de ${nombre} son gratis y no necesitan cuenta. Con la prueba gratuita de 14 días ves además el mapa completo, las webcams en directo de este spot y de otros, y llevas tu propio diario de pesca con los datos del momento de cada captura.</p>
 
     <div class="cercanos">

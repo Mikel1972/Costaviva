@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-22T00:07:18.211Z",
- "lineasHistorial": 12260,
- "etiquetas": 1401,
- "etiquetasClaude": 256,
+ "fecha": "2026-11-22T00:37:23.000Z",
+ "lineasHistorial": 12263,
+ "etiquetas": 1402,
+ "etiquetasClaude": 257,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1699,
@@ -390,11 +390,11 @@
    "correlacion": 0.503
   },
   "nz-riverton/principal": {
-   "a": 7.2539,
+   "a": 7.2153,
    "p": 0.5,
-   "n": 1119,
+   "n": 1121,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 73,
+   "nEtiquetasClaude": 74,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -442,9 +442,10 @@
     "2026-11-18T00",
     "2026-11-18T22",
     "2026-11-20T00",
-    "2026-11-21T00"
+    "2026-11-21T00",
+    "2026-11-22T00"
    ],
-   "dias": 42,
+   "dias": 43,
    "hMin": 0.23,
    "hMax": 4.42,
    "errorRel": 1,
@@ -612,7 +613,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 952
+    "pares": 953
    }
   }
  },
@@ -660,7 +661,7 @@
    "cerca": 0.923
   },
   "nz-riverton": {
-   "n": 67,
+   "n": 68,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -687,16 +688,16 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.898,
-    "n": 62,
-    "peso": 60.6,
-    "mae": 0.2,
+    "factor": 0.901,
+    "n": 63,
+    "peso": 61.6,
+    "mae": 0.19,
     "maeCorregido": 0.2
    },
    "6-24": {
-    "factor": 0.683,
-    "n": 201,
-    "peso": 200.3,
+    "factor": 0.684,
+    "n": 202,
+    "peso": 201.3,
     "mae": 0.28,
     "maeCorregido": 0.21
    },
@@ -848,18 +849,18 @@
      "maeCorregido": 0.07
     },
     "6-24": {
-     "factor": 1.007,
-     "n": 2,
-     "peso": 2,
-     "mae": 0.06,
-     "maeCorregido": 0.07
+     "factor": 1.015,
+     "n": 3,
+     "peso": 3,
+     "mae": 0.05,
+     "maeCorregido": 0.05
     },
     "24-48": {
-     "factor": 1.008,
-     "n": 5,
-     "peso": 5,
-     "mae": 0.09,
-     "maeCorregido": 0.09
+     "factor": 1.014,
+     "n": 6,
+     "peso": 6,
+     "mae": 0.08,
+     "maeCorregido": 0.08
     }
    }
   }

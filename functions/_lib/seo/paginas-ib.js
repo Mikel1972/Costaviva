@@ -108,7 +108,7 @@ const L = {
       titulo: (n) => `Maré hoje em ${n}: preia-mar, baixa-mar e ondulação | Costaviva`,
       desc: (n, resumen, ola, viento, agua) => `Maré hoje em ${n}: ${resumen ? `próxima ${resumen}; ` : ""}ondulação ${ola || "sem dados agora"}, vento ${viento || "sem dados agora"}${agua ? `, água a ${agua}` : ""}. Dados reais atualizados a cada hora, grátis e sem conta.`,
       migas: "Marés", h1: (n) => `Maré hoje em ${n}`, actualizado: (x) => `Dados reais, atualizados: ${x}`, proximas: "Próximas marés",
-      pleamar: "Próxima preia-mar", bajamar: "Próxima baixa-mar", ahora: "Maré agora", ola: "Ondulação", viento: "Vento", agua: "Água", coef: (c) => `Coeficiente de maré: ${c}.`,
+      pleamar: "Próxima preia-mar", bajamar: "Próxima baixa-mar", ahora: "Maré agora", ola: "Ondulação", viento: "Vento", agua: "Água", coef: (c) => `Coeficiente de maré: ${c}.`, ref: (p) => `Alturas acima do zero do porto de ${p}, como na sua tabela de marés. Fonte:`,
       prev: (n) => `Previsão das próximas horas em ${n}`, hora: "Hora",
       nota: (n) => `A Costaviva é uma app de condições costeiras em tempo real (ondulação, marés, corrente, webcams, radar de chuva) e diário de pesca para a costa de Portugal e Espanha. A maré, a ondulação e o vento de ${n} são grátis e não precisam de conta. Horas locais, calculadas com os mesmos dados da app (Open-Meteo, CC BY 4.0). Orientativo: não serve para navegar.`,
       cercanos: "Pesqueiros próximos", pescaEn: (n) => `Pesca em ${n}: espécies, época, fundo e profundidade →`, todaCosta: (r) => `Marés em ${r} →`,
@@ -199,7 +199,7 @@ const L = {
       titulo: (n) => `Tide today at ${n}: high tide, low tide and swell | Costaviva`,
       desc: (n, resumen, ola, viento, agua) => `Tide today at ${n}: ${resumen ? `next ${resumen}; ` : ""}swell ${ola || "no data right now"}, wind ${viento || "no data right now"}${agua ? `, water at ${agua}` : ""}. Real data updated every hour, free and without an account.`,
       migas: "Tides", h1: (n) => `Tide today at ${n}`, actualizado: (x) => `Real data, updated: ${x}`, proximas: "Next tides",
-      pleamar: "Next high tide", bajamar: "Next low tide", ahora: "Tide now", ola: "Swell", viento: "Wind", agua: "Water", coef: (c) => `Tidal coefficient: ${c}.`,
+      pleamar: "Next high tide", bajamar: "Next low tide", ahora: "Tide now", ola: "Swell", viento: "Wind", agua: "Water", coef: (c) => `Tidal coefficient: ${c}.`, ref: (p) => `Heights above the ${p} port datum, as in its tide table. Source:`,
       prev: (n) => `Forecast for the next hours at ${n}`, hora: "Time",
       nota: (n) => `Costaviva is a real-time coastal conditions app (swell, tides, currents, webcams, rain radar) and fishing log for the coasts of Spain and Portugal. The tide, swell and wind at ${n} are free and need no account. Local times, calculated with the same data as the app (Open-Meteo, CC BY 4.0). A guide only, not for navigation.`,
       cercanos: "Nearby spots", pescaEn: (n) => `Fishing at ${n}: species, season, seabed and depth →`, todaCosta: (r) => `Tides in ${r} →`,
@@ -630,7 +630,8 @@ ${T.cta()}`;
 ${actualizado ? `<p class="nota">${esc(M.actualizado(actualizado))}</p>` : ""}
 <section class="tarjeta hoy" aria-labelledby="t-marea"><h2 id="t-marea">${M.proximas}</h2>
 <div class="datos">${celda(M.pleamar, pleamar ? textoEvento(pleamar) : null)}${celda(M.bajamar, bajamar ? textoEvento(bajamar) : null)}${celda(M.ahora, cond?.marea || null)}${celda(M.ola, cond?.ola || null)}${celda(M.viento, cond?.viento || null)}${celda(M.agua, cond?.tempAgua || null)}</div>
-${sp.marea?.coeficiente ? `<p class="nota">${esc(M.coef(sp.marea.coeficiente))}</p>` : ""}</section>
+${sp.marea?.coeficiente ? `<p class="nota">${esc(M.coef(sp.marea.coeficiente))}</p>` : ""}
+${sp.marea?.referencia ? `<p class="nota">${esc(M.ref(sp.marea.referencia.puerto))} <a href="${esc(sp.marea.referencia.url)}" rel="noopener">${esc(sp.marea.referencia.fuente)}</a>.</p>` : ""}</section>
 ${T.cta()}
 ${filas ? `<section aria-labelledby="t-prev"><h2 id="t-prev">${esc(M.prev(nombre))}</h2>
 <div class="tabla-env"><table><thead><tr><th scope="col">${M.hora}</th><th scope="col">${M.ola}</th><th scope="col">${M.viento}</th><th scope="col">${M.agua}</th></tr></thead><tbody>${filas}</tbody></table></div></section>` : ""}
