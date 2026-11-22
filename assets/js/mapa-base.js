@@ -142,7 +142,7 @@
       (cfg.directas || []).forEach(function (f) {
         f.rectangulos.forEach(function (r, i) {
           var id = "satelite-" + f.id + "-" + i;
-          m.addSource(id, { type: "raster", tiles: [f.url], tileSize: 256, maxzoom: cfg.maxzoom, bounds: [r[0][1], r[0][0], r[1][1], r[1][0]] });
+          m.addSource(id, { type: "raster", tiles: [f.url], tileSize: 256, minzoom: f.minzoom || 0, maxzoom: cfg.maxzoom, bounds: [r[0][1], r[0][0], r[1][1], r[1][0]] });
           m.addLayer({ id: id, type: "raster", source: id }, siguiente);
           CAPAS_SAT.push(id);
         });
