@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-23T14:37:43.568Z",
- "lineasHistorial": 12696,
+ "fecha": "2026-11-23T15:07:45.706Z",
+ "lineasHistorial": 12706,
  "etiquetas": 1407,
  "etiquetasClaude": 262,
  "calibracion": {
@@ -620,10 +620,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 34,
+   "n": 35,
    "suficiente": false,
-   "lineas": 0.041,
-   "cerca": 0.091
+   "lineas": 0.031,
+   "cerca": 0.084
   },
   "sopelana": {
    "n": 20,
