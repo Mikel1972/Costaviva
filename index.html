@@ -8,6 +8,19 @@
 <script src="/assets/i18n/en.js"></script>
 <script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
+<script>
+  // Justo tras los idiomas (test/i18n.test.js) y antes del mapa. Sin sesión guardada, al login YA (2026-11-23, PageSpeed): antes se bajaba
+  // todo el mapa (MapLibre, Leaflet, capas...) y el módulo de Supabase
+  // redirigía después, ~9 s perdidos en móvil. Misma regla que ese módulo (que
+  // sigue ahí para sesiones caducadas); los robots de buscadores no se
+  // redirigen aquí.
+  (function () {
+    try {
+      if (/bot|crawl|spider|slurp/i.test(navigator.userAgent)) return;
+      if (!localStorage.getItem("sb-imncbmizxkorotpeisic-auth-token")) location.replace("/login");
+    } catch (e) {}
+  })();
+</script>
 <title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Previsión marina en tiempo real: mareas, oleaje, viento y actividad de los peces para planificar tu salida de pesca en España y Portugal." />
 <link rel="canonical" href="https://costaviva.org/" />
