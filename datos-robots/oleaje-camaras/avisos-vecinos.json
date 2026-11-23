@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-23T18:07:26.920Z",
+ "actualizado": "2026-11-23T18:37:25.829Z",
  "dias": 7,
  "repetidos": [
   {
@@ -21,9 +21,17 @@
   {
    "clave": "hondarribia",
    "alto": 4,
-   "bajo": 6,
+   "bajo": 7,
    "spots": [
     "hondarribia"
+   ]
+  },
+  {
+   "clave": "zumaia",
+   "alto": 3,
+   "bajo": 0,
+   "spots": [
+    "zumaia"
    ]
   }
  ],
@@ -1287,6 +1295,33 @@
    "antes": 0.1,
    "referencia": null,
    "visto": "2026-11-23T15:39:53.403Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-24T18:00",
+   "antes": 1,
+   "referencia": 0.8,
+   "visto": "2026-11-23T18:37:25.829Z"
+  },
+  {
+   "slug": "zumaia",
+   "camara": "zumaia",
+   "tipo": "alto",
+   "horaISO": "2026-11-24T18:00",
+   "antes": 0.6,
+   "referencia": 0.5,
+   "visto": "2026-11-23T18:37:25.829Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-24T18:00",
+   "antes": 0.1,
+   "referencia": null,
+   "visto": "2026-11-23T18:37:25.829Z"
   }
  ]
 }
