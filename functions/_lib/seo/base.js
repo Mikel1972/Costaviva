@@ -36,6 +36,17 @@ export const TTL_FIJA_S = 3600;
 export const ESPERA_MAX_DATOS_MS = 4000;
 export const TTL_SIN_DATOS_S = 300;
 
+// Título para buscadores sin « | Costaviva» al final (2026-11-23, Mikel:
+// «quítalo»). Bing avisaba de títulos largos (73-93 caracteres, recomienda
+// ~70) y cortaba justo la marca; Google ya enseña el nombre de la web encima
+// del resultado. Solo en <title>: og:title, twitter:title y JSON-LD la
+// conservan. Si no queda nada delante, se deja como está.
+export function tituloBuscador(titulo) {
+  const t = String(titulo ?? "");
+  const sin = t.replace(/\s*\|\s*Costaviva\s*$/, "");
+  return sin.trim() ? sin : t;
+}
+
 export function esc(texto) {
   return String(texto ?? "")
     .replace(/&/g, "&amp;")
@@ -155,7 +166,7 @@ export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo =
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(titulo)}</title>
+<title>${esc(tituloBuscador(titulo))}</title>
 <meta name="description" content="${esc(descripcion)}">
 ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${esc(url)}">`}
 ${hreflang ? `${hreflang}\n` : ""}<meta property="og:type" content="${ogTipo}">
