@@ -1,26 +1,18 @@
 {
- "actualizado": "2026-11-23T03:07:37.589Z",
+ "actualizado": "2026-11-23T03:37:27.455Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "mundaka",
-   "alto": 5,
+   "alto": 4,
    "bajo": 0,
    "spots": [
     "mundaka"
    ]
   },
   {
-   "clave": "bakio",
-   "alto": 7,
-   "bajo": 0,
-   "spots": [
-    "bakio"
-   ]
-  },
-  {
    "clave": "orio",
-   "alto": 8,
+   "alto": 7,
    "bajo": 4,
    "spots": [
     "orio"
@@ -28,10 +20,18 @@
   },
   {
    "clave": "hondarribia",
-   "alto": 7,
+   "alto": 8,
    "bajo": 4,
    "spots": [
     "hondarribia"
+   ]
+  },
+  {
+   "clave": "bakio",
+   "alto": 6,
+   "bajo": 0,
+   "spots": [
+    "bakio"
    ]
   }
  ],
@@ -1214,6 +1214,15 @@
    "antes": 0.2,
    "referencia": null,
    "visto": "2026-11-23T00:37:25.922Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "alto",
+   "horaISO": "2026-11-23T09:00",
+   "antes": 0.5,
+   "referencia": 0.4,
+   "visto": "2026-11-23T03:37:27.455Z"
   }
  ]
 }
