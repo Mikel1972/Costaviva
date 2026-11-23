@@ -568,7 +568,32 @@ jobs:
         continue-on-error: true
         # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
-      - name: Captación (semanal, los lunes)
+      - name: Efectividad de los cambios y visitas (diario)
+        # Añadido 2026-11-23 (Mikel: «controlar en tiempo real los clicks y la
+        # efectividad de las medidas… sin esperar dos semanas», «en el email
+        # de actividad diaria, que incluya toda la información»). Sin IA:
+        # visitas de ayer y de hoy (visitas_publicas), Google día a día y el
+        # antes/después de cada cambio de datos-robots/seo/medidas.json.
+        id: efectividad
+        continue-on-error: true
+        working-directory: scripts/seo
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          [ -d node_modules ] || npm ci --no-audit --no-fund
+          set +e
+          TEXTO=$(node efectividad.mjs)
+          CODIGO=$?
+          set -e
+          echo "$TEXTO"
+          {
+            echo "resultado<<FIN_EFECTIVIDAD"
+            echo "$TEXTO"
+            echo "FIN_EFECTIVIDAD"
+          } >> "$GITHUB_OUTPUT"
+          exit "$CODIGO"
+
+      - name: Captación (diario desde 2026-11-23; antes solo los lunes)
         # Añadido 2026-10-09 (fase de captación de Mikel): visitas por
         # fuente, altas, prueba -> pago (la métrica principal), invitaciones,
         # amigos y retención. Sin IA: metricas_captacion() + formato en
@@ -579,11 +604,8 @@ jobs:
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          # Hora de Madrid a propósito (ZONA_NEGOCIO): lunes de España.
-          if [ "$(TZ=Europe/Madrid date +%u)" != "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "resultado=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          # Desde 2026-11-23 todos los días (Mikel: «que incluya toda la
+          # información» en el email diario); antes, solo los lunes.
           set +e
           TEXTO=$(node scripts/captacion/informe-captacion.mjs)
           CODIGO=$?
@@ -605,11 +627,8 @@ jobs:
         id: cobro
         continue-on-error: true
         run: |
-          # Hora de Madrid a propósito (ZONA_NEGOCIO): lunes de España.
-          if [ "$(TZ=Europe/Madrid date +%u)" != "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "resultado=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          # Desde 2026-11-23 todos los días (Mikel: «que incluya toda la
+          # información» en el email diario); antes, solo los lunes.
           TEXTO=$(node -e 'import("./scripts/precios/generar-md.mjs").then(async (m) => { const { leerConfig } = await import("./scripts/precios/fuentes.mjs"); process.stdout.write(m.generarResumen(leerConfig()).replace(/`/g, "")); })')
           echo "$TEXTO"
           {
@@ -788,11 +807,13 @@ jobs:
               `${{ steps.seo.outputs.resultado }}`,
               `- Search Console (rendimiento real de búsqueda):`,
               `${{ steps.searchconsole.outputs.resultado }}`,
+              `- Efectividad de los cambios y visitas (diario):`,
+              `${{ steps.efectividad.outputs.resultado || '  - No se pudo calcular esta pasada.' }}`,
               `- Indexación en Google (URLs del sitemap)${lineaIndexacion}:`,
               `${{ steps.indexacion.outputs.resultado || '  - No se pudo consultar esta pasada (ver el paso de autenticación con Google).' }}`,
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
-              ...(`${{ steps.captacion.outputs.resultado }}`.trim() ? [`- Captación (semanal):`, `${{ steps.captacion.outputs.resultado }}`] : []),
+              ...(`${{ steps.captacion.outputs.resultado }}`.trim() ? [`- Captación (semanas):`, `${{ steps.captacion.outputs.resultado }}`] : []),
               ...(`${{ steps.cobro.outputs.resultado }}`.trim() ? [`- Cobro y precios (semanal):`, `${{ steps.cobro.outputs.resultado }}`] : []),
               lineaKpi,
               "",
@@ -857,6 +878,7 @@ jobs:
             auth_google=${{ steps.auth_google.outcome }}
             searchconsole=${{ steps.searchconsole.outcome }}
             indexacion=${{ steps.indexacion.outcome }}
+            efectividad=${{ steps.efectividad.outcome }}
             camaras=${{ steps.camaras.outcome }}
             marketing=${{ steps.marketing.outcome }}
             captacion=${{ steps.captacion.outcome }}
