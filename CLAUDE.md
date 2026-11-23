@@ -6181,3 +6181,13 @@ lee de los primeros caracteres. El robot usa las mismas fuentes que la web
 (`OPEN_METEO_API_KEY` y las variables `FUENTE_*` del repo, que deben coincidir
 con las de Cloudflare) y sale en rojo sin subir nada si más de la mitad de
 los spots vienen con error. Pruebas: `test/prevision-precalculada.test.js`.
+
+## Preguntas frecuentes en las páginas de región (2026-11-23, pedido de Mikel)
+
+`functions/_lib/seo/faq-region.js`: /mareas/region/<r> (próxima pleamar,
+próxima bajamar y diferencia entre las dos, de la misma tabla) y
+/spots/region/<r> (qué se pesca este mes), en es/en/pt con FAQPage. Sin texto
+inventado: todo sale de los datos de la página (si la diferencia máxima es
+menor de 0,5 m dice «marea pequeña», p. ej. el Mediterráneo). Motivo: el pico
+de impresiones del 14/11 vino de las páginas de región. Prueba:
+`test/faq-region.test.js`.
