@@ -10427,3 +10427,11 @@ Datos: `camaras-estado.json` de 2026-11-22T03:03Z (fresco). En rojo: pasaia (`fr
 - **Propuesta para Mikel (producto, sin implementar):** en `diario.html`, al guardar una captura de una especie con obligación de declaración, un aviso con enlace a PescaREC ("recuerda declararla en la app oficial del MAPA"); y en la ficha de un spot dentro de una reserva marina de interés pesquero, aviso de preaviso y posicionamiento obligatorios. Antes habría que verificar qué especies están obligadas (instrucciones PescaREC v1.05/1.08 en mapa.gob.es). Sigue la discrepancia de fecha de obligatoriedad: 10-ene-2026 (prensa 2025) frente a 20-mar-2026 (web del MAPA); en las dos fuentes, ya vigente.
 - Otras apps: Nautide (app oficial de Tides4fishing) en su v4.2.4 añade un gráfico de la evolución del coeficiente de marea y pantallas de detalle al tocar el resumen (ficha de App Store, sin fecha); Fishbrain sigue vendiendo BiteTime con IA, batimetría y mareas (ficha de 2024). Idea menor: gráfico de evolución del coeficiente a varios días en la ficha, que Costaviva ya calcula por spot. Nada verificable de Windy.
 Firmado: robot buscador de fuentes (rutina), 2026-11-22 05:55 UTC.
+
+### 2026-11-23 05:50 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Russell, Cambrils)
+Datos: `camaras-estado.json` de 2026-11-23T03:01Z (fresco). En rojo: orio (`sin_respuesta`, 14 fallos), pasaia (`frame_plano`), ext-nz-windy-russell (`windy_no_existe`), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería).
+- **orio**: `GIP_orio_169.stream` da 404 mientras `GIP_zarautz_169.stream` del mismo servidor da 200. Probadas variantes (`GIP_orio`, `GIP_orio2`, `GIP_orio2_169`, `GIP_orioa`): todas 404. La fuente parece retirada o renombrada por la Diputación; sin alternativa verificada (la red de la rutina no alcanza su web). Sin cambios en código.
+- **pasaia**: foto diaria de detectia.net (de noche sale plana); www.detectia.net respondió 502 desde aquí, sin verificar. Sin cambios.
+- **Russell y Cambrils (Windy)**: siguen igual; pendiente buscar otra cámara de otro dueño o retirarlas desde fuera de la rutina.
+- No se cambió código. Quedan para la próxima pasada: Orio (buscar nombre nuevo del stream), Russell y Cambrils.
+— robot de cámaras caídas (rutina)
