@@ -44,10 +44,15 @@ test("lineasVisitas: ayer, por origen, hoy y la semana", () => {
     { dia: "2026-11-23", pagina: "spots", fuente: "google", visitas: 2 },
   ];
   const l = lineasVisitas(filas, "2026-11-23").join("\n");
-  assert.match(l, /Ayer \(22\/11\): 9 visitas \(\+200 %\) frente al mismo día de la semana anterior \(3\)/);
+  // El 15/11 el contador aún contaba robots: sin comparación, y los días
+  // anteriores al 21/11 salen con *.
+  assert.match(l, /Ayer \(22\/11\): 9 visitas \(el mismo día de la semana anterior, 3, aún contaba robots: sin comparación\)/);
+  assert.match(l, /20\/11: 0\* · 21\/11: 0 · 22\/11: 9 \(\* antes del 21\/11/);
+  const l2 = lineasVisitas([{ dia: "2026-12-01", pagina: "spots", fuente: "google", visitas: 6 }, { dia: "2026-11-24", pagina: "spots", fuente: "google", visitas: 3 }], "2026-12-02").join("\n");
+  assert.match(l2, /Ayer \(1\/12\): 6 visitas \(\+100 %\) frente al mismo día de la semana anterior \(3\)/);
+  assert.doesNotMatch(l2, /robots/);
   assert.match(l, /por origen: google 5, directo 4/);
   assert.match(l, /Hoy hasta ahora \(23\/11\): 2 visitas/);
-  assert.match(l, /16\/11: 0 · .* · 22\/11: 9/);
 });
 
 test("lineasDias ordena por fecha", () => {
