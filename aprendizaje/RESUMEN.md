@@ -29,7 +29,8 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Síntesis del informe diario: último dato hace 46 h (se espera cada 24 h)
+- Salud de las cámaras: último dato hace 12 h (se espera cada 6 h)
+- Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
 - la calibración de deba/principal empeora: error 49 % → 100 %
 

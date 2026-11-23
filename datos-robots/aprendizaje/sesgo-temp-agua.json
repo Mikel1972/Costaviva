@@ -1,5 +1,5 @@
 {
- "generado_en": "2026-11-23T04:41:51.080Z",
+ "generado_en": "2026-11-23T15:20:42.774Z",
  "semana": "2026-W48",
  "nota": "Sesgo del modelo de temperatura del agua: media de (sonda − modelo) en °C por zona y modelo (Open-Meteo de la serie de la salida, capa IBI de Copernicus, boya). Solo grupos de 5 personas distintas o más; los del dueño solo, en admin. Barreras: aprendizaje/config.json → sesgo_temp_agua. Código: scripts/aprendizaje/sesgo-temp-agua.mjs.",
  "medidas": 3,

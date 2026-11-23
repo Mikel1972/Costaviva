@@ -1,5 +1,5 @@
 {
- "generado_en": "2026-11-23T04:41:51.080Z",
+ "generado_en": "2026-11-23T15:20:42.774Z",
  "semana": "2026-W48",
  "fuentes": [
   {
@@ -17,49 +17,49 @@
   {
    "nombre": "Etiquetas de olas de Claude (rutina diaria)",
    "estado": "ok",
-   "horas": 4,
+   "horas": 15,
    "cadencia_h": 48
   },
   {
    "nombre": "Salud de las cámaras",
-   "estado": "ok",
-   "horas": 2,
+   "estado": "retrasada",
+   "horas": 12,
    "cadencia_h": 6
   },
   {
    "nombre": "Patrones de uso (viernes)",
    "estado": "ok",
-   "horas": 50,
+   "horas": 60,
    "cadencia_h": 168
   },
   {
    "nombre": "Experiencia de usuario (domingo)",
    "estado": "ok",
-   "horas": 3,
+   "horas": 13,
    "cadencia_h": 168
   },
   {
    "nombre": "Observaciones abiertas GBIF (martes)",
    "estado": "ok",
-   "horas": 134,
+   "horas": 144,
    "cadencia_h": 168
   },
   {
    "nombre": "Síntesis del informe diario",
-   "estado": "retrasada",
-   "horas": 46,
+   "estado": "ok",
+   "horas": 9,
    "cadencia_h": 24
   },
   {
    "nombre": "Presión real por spot (cada hora)",
-   "estado": "ok",
-   "horas": 3,
+   "estado": "retrasada",
+   "horas": 5,
    "cadencia_h": 2
   },
   {
    "nombre": "Turbidez de las webcams (diaria)",
    "estado": "ok",
-   "horas": 10,
+   "horas": 21,
    "cadencia_h": 24
   },
   {
@@ -81,8 +81,8 @@
   {
    "boya": "Bilbao-coast-buoy",
    "nombre": "Bilbao II (costera)",
-   "semana": "2026-W47",
-   "n": 208,
+   "semana": "2026-W48",
+   "n": 27,
    "modelo_entre_boya": 0.835,
    "corregido_entre_boya": 0.835
   },
@@ -97,10 +97,10 @@
   {
    "boya": "PasaiaII-coast-buoy",
    "nombre": "Pasaia II (costera)",
-   "semana": "2026-W47",
-   "n": 373,
-   "modelo_entre_boya": 0.667,
-   "corregido_entre_boya": 0.92
+   "semana": "2026-W48",
+   "n": 44,
+   "modelo_entre_boya": 0.757,
+   "corregido_entre_boya": 1.044
   }
  ],
  "avisos_boyas": [
@@ -116,18 +116,18 @@
  "camaras": [
   {
    "camara": "bakio/principal",
-   "n": 152,
+   "n": 154,
    "etiquetas": 37,
-   "dias": 42,
+   "dias": 43,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "berria/dinamico",
-   "n": 531,
+   "n": 534,
    "etiquetas": 143,
-   "dias": 45,
+   "dias": 46,
    "error": 1,
    "error_antes": 1,
    "empeora": false
@@ -161,9 +161,9 @@
   },
   {
    "camara": "deba/rompiente",
-   "n": 339,
+   "n": 350,
    "etiquetas": 86,
-   "dias": 43,
+   "dias": 44,
    "error": 1,
    "error_antes": 1,
    "empeora": false
@@ -197,18 +197,18 @@
   },
   {
    "camara": "hondarribia/bocana",
-   "n": 46,
+   "n": 47,
    "etiquetas": 7,
-   "dias": 28,
+   "dias": 29,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "hondarribia/principal",
-   "n": 367,
+   "n": 370,
    "etiquetas": 93,
-   "dias": 44,
+   "dias": 45,
    "error": 1,
    "error_antes": 1,
    "empeora": false
@@ -251,7 +251,7 @@
   },
   {
    "camara": "nz-riverton/principal",
-   "n": 1158,
+   "n": 1164,
    "etiquetas": 78,
    "dias": 44,
    "error": 1,
@@ -269,18 +269,18 @@
   },
   {
    "camara": "sopelana/principal",
-   "n": 207,
+   "n": 212,
    "etiquetas": 45,
-   "dias": 31,
+   "dias": 32,
    "error": 1,
    "error_antes": 0.99,
    "empeora": false
   },
   {
    "camara": "zarautz/dinamico",
-   "n": 1015,
+   "n": 1027,
    "etiquetas": 254,
-   "dias": 46,
+   "dias": 47,
    "error": 1,
    "error_antes": 1,
    "empeora": false
@@ -336,7 +336,11 @@
  "avisos": [
   {
    "tipo": "fuente",
-   "texto": "Síntesis del informe diario: último dato hace 46 h (se espera cada 24 h)"
+   "texto": "Salud de las cámaras: último dato hace 12 h (se espera cada 6 h)"
+  },
+  {
+   "tipo": "fuente",
+   "texto": "Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)"
   },
   {
    "tipo": "boya",
