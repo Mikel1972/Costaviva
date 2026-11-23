@@ -11,6 +11,7 @@
 // MPI), aviso de rāhui, atribución literal de LINZ (en inglés, es la fórmula
 // que exige su licencia) y nada interno. Los nombres propios (zonas, áreas de
 // MPI, puertos) se quedan como en Nueva Zelanda.
+import { preguntasSpotsRegion, preguntasMareasRegion, faqHtml, faqLd } from "./faq-region.js";
 import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, ctaPt, imagenOg } from "./base.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
@@ -305,7 +306,8 @@ ${zona ? `<p><a href="${esc(rZonaSpots(zona.slug))}">${esc(S.todos(zona.nombre))
     const titulo = Z.titulo(zona.nombre, del.length);
     const descripcion = Z.desc(zona.nombre, del.length, mesLargo(mes), deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", "));
     const migas = [{ nombre: T.spot.migas, ruta: p("/spots") }, { nombre: zona.nombre, ruta: rZonaSpots(zona.slug) }];
-    const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rZonaSpots(zona.slug)}`, inLanguage: T.lang, about: { "@type": "Place", name: `${zona.nombre}, ${T.nz}` } }, migasJsonLd(migas)];
+    const preguntas = preguntasSpotsRegion({ deTemporada, regionSlug: zona.slug, lugar: zona.nombre, mes: mesLargo(mes), idioma });
+    const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rZonaSpots(zona.slug)}`, inLanguage: T.lang, about: { "@type": "Place", name: `${zona.nombre}, ${T.nz}` } }, migasJsonLd(migas), ...(preguntas.length ? [faqLd(preguntas, T.lang)] : [])];
     const cuerpo = `${migasHtml(migas, idioma)}
 <h1>${esc(Z.h1(zona.nombre))}</h1>
 <p class="intro">${Z.intro(del.length, esc(zona.nombre), esc(rZonaMareas(zona.slug)))}</p>
@@ -313,6 +315,7 @@ ${listaSpots(del, rSpot)}
 <section aria-labelledby="t-temp"><h2 id="t-temp">${esc(Z.temporada(mesLargo(mes)))}</h2>
 <ul class="chips">${deTemporada.map((e) => `<li><a href="${esc(rEspecie(e.slug))}">${esc(e.nombre)}</a></li>`).join("")}</ul></section>
 ${[...areas].map((a) => bloqueNormativa(a)).slice(0, 1).join("")}
+${faqHtml(preguntas, idioma)}
 ${T.cta()}
 <p><a href="${esc(p("/spots"))}">${Z.todaNz}</a></p>`;
     return { titulo, html: doc({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("spots"), imagenAlt: T.spot.imagenAlt(zona.nombre) }) };
@@ -363,7 +366,7 @@ ${zona ? `<p><a href="${esc(rZonaMareas(zona.slug))}">${esc(M.todaZona(zona.nomb
     return { titulo, html: doc({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: M.imagenAlt(spot.nombre) }) };
   }
 
-  function paginaZonaMareas(zonaNz, todos) {
+  function paginaZonaMareas(zonaNz, todos, spotsPrev = []) {
     const zona = zonaT(zonaNz);
     const Z = T.zona;
     const del = spotsNZ(todos).filter((s) => s.zona === zona.zona);
@@ -371,12 +374,16 @@ ${zona ? `<p><a href="${esc(rZonaMareas(zona.slug))}">${esc(M.todaZona(zona.nomb
     const titulo = Z.mareasTitulo(zona.nombre, del.length);
     const descripcion = Z.mareasDesc(zona.nombre, del.length);
     const migas = [{ nombre: T.mareas.migas, ruta: p(`/${T.rutaMareas}`) }, { nombre: zona.nombre, ruta: rZonaMareas(zona.slug) }];
-    const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rZonaMareas(zona.slug)}`, inLanguage: T.lang, about: { "@type": "Place", name: `${zona.nombre}, ${T.nz}` } }, migasJsonLd(migas)];
+    // Preguntas frecuentes con las mareas de LINZ de los spots de la zona.
+    const slugs = new Set(del.map((s) => s.slug));
+    const preguntas = preguntasMareasRegion({ spots: (spotsPrev || []).filter((s) => slugs.has(s.slug)), regionSlug: zona.slug, lugar: zona.nombre, idioma, conTabla: false });
+    const ld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${rZonaMareas(zona.slug)}`, inLanguage: T.lang, about: { "@type": "Place", name: `${zona.nombre}, ${T.nz}` } }, migasJsonLd(migas), ...(preguntas.length ? [faqLd(preguntas, T.lang)] : [])];
     const cuerpo = `${migasHtml(migas, idioma)}
 <h1>${esc(Z.mareasH1(zona.nombre))}</h1>
 <p class="intro">${Z.mareasIntro(del.length, esc(zona.nombre), esc(rZonaSpots(zona.slug)))}</p>
 ${listaSpots(del, rMarea)}
 <p class="nota">${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>
+${faqHtml(preguntas, idioma)}
 ${T.cta()}
 <p><a href="${esc(p(`/${T.rutaMareas}`))}">${Z.todaNz}</a></p>`;
     return { titulo, html: doc({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: Z.mareasH1(zona.nombre) }) };

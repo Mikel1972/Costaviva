@@ -22,9 +22,11 @@ const TEXTOS = {
   es: {
     manana: "mañana a las ", a: "a las ",
     pleamarQ: (l) => `¿A qué hora es la pleamar hoy ${l}?`,
-    pleamarA: (lista) => `Próxima pleamar: ${lista}. Cada spot tiene su hora: en la tabla de esta página están todos.`,
+    pleamarA: (lista, fin) => `Próxima pleamar: ${lista}. ${fin}`,
     bajamarQ: (l) => `¿A qué hora es la bajamar hoy ${l}?`,
-    bajamarA: (lista) => `Próxima bajamar: ${lista}. Cada spot tiene su hora: en la tabla de esta página están todos.`,
+    bajamarA: (lista, fin) => `Próxima bajamar: ${lista}. ${fin}`,
+    finTabla: "Cada spot tiene su hora: en la tabla de esta página están todos.",
+    finLista: "Cada spot tiene su hora: en la página de cada uno están sus mareas de hoy y mañana.",
     carreraQ: (l) => `¿Cuánto sube y baja la marea ${l}?`,
     carreraUno: (x, s) => `En la marea de ahora, entre la pleamar y la bajamar hay ${x} m de diferencia ${s}.`,
     carreraVarios: (a, sa, b, sb) => `En la marea de ahora, entre la pleamar y la bajamar hay de ${a} m (${sa}) a ${b} m (${sb}) de diferencia, según el spot.`,
@@ -38,9 +40,11 @@ const TEXTOS = {
   en: {
     manana: "tomorrow at ", a: "at ",
     pleamarQ: (l) => `What time is high tide today ${l}?`,
-    pleamarA: (lista) => `Next high tide: ${lista}. Each spot has its own time: they are all in the table on this page.`,
+    pleamarA: (lista, fin) => `Next high tide: ${lista}. ${fin}`,
     bajamarQ: (l) => `What time is low tide today ${l}?`,
-    bajamarA: (lista) => `Next low tide: ${lista}. Each spot has its own time: they are all in the table on this page.`,
+    bajamarA: (lista, fin) => `Next low tide: ${lista}. ${fin}`,
+    finTabla: "Each spot has its own time: they are all in the table on this page.",
+    finLista: "Each spot has its own time: each spot's page has its tides for today and tomorrow.",
     carreraQ: (l) => `How big is the tidal range ${l}?`,
     carreraUno: (x, s) => `In the current tide, the difference between high and low water is ${x} m ${s}.`,
     carreraVarios: (a, sa, b, sb) => `In the current tide, the difference between high and low water ranges from ${a} m (${sa}) to ${b} m (${sb}), depending on the spot.`,
@@ -54,9 +58,11 @@ const TEXTOS = {
   pt: {
     manana: "amanhã às ", a: "às ",
     pleamarQ: (l) => `A que horas é a preia-mar hoje ${l}?`,
-    pleamarA: (lista) => `Próxima preia-mar: ${lista}. Cada pesqueiro tem a sua hora: estão todos na tabela desta página.`,
+    pleamarA: (lista, fin) => `Próxima preia-mar: ${lista}. ${fin}`,
     bajamarQ: (l) => `A que horas é a baixa-mar hoje ${l}?`,
-    bajamarA: (lista) => `Próxima baixa-mar: ${lista}. Cada pesqueiro tem a sua hora: estão todos na tabela desta página.`,
+    bajamarA: (lista, fin) => `Próxima baixa-mar: ${lista}. ${fin}`,
+    finTabla: "Cada pesqueiro tem a sua hora: estão todos na tabela desta página.",
+    finLista: "Cada pesqueiro tem a sua hora: na página de cada um estão as marés de hoje e amanhã.",
     carreraQ: (l) => `Quanto sobe e desce a maré ${l}?`,
     carreraUno: (x, s) => `Na maré de agora, entre a preia-mar e a baixa-mar há ${x} m de diferença ${s}.`,
     carreraVarios: (a, sa, b, sb) => `Na maré de agora, entre a preia-mar e a baixa-mar há de ${a} m (${sa}) a ${b} m (${sb}) de diferença, conforme o pesqueiro.`,
@@ -103,7 +109,9 @@ function listaTexto(partes, t) {
 
 // Mareas de la región: próxima pleamar, próxima bajamar y diferencia entre
 // las dos (de la misma tabla de la página).
-export function preguntasMareasRegion({ spots, regionSlug, lugar, idioma = "es", nombreDe = (s) => s.nombre }) {
+// conTabla: la página tiene la tabla con todos los spots (España y Portugal);
+// las zonas de NZ solo tienen la lista con enlaces.
+export function preguntasMareasRegion({ spots, regionSlug, lugar, idioma = "es", nombreDe = (s) => s.nombre, conTabla = true }) {
   const t = T(idioma);
   const validos = (spots || []).filter((s) => !s.error);
   const out = [];
@@ -114,7 +122,7 @@ export function preguntasMareasRegion({ spots, regionSlug, lugar, idioma = "es",
       const e = evento(s, tipo);
       return `${nombreDe(s)} ${e.manana ? t.manana : t.a}${e.hora} (${numero(e.altura, idioma)} m)`;
     });
-    out.push({ pregunta: q(enLugar(idioma, regionSlug, lugar)), respuesta: a(listaTexto(partes, t)) });
+    out.push({ pregunta: q(enLugar(idioma, regionSlug, lugar)), respuesta: a(listaTexto(partes, t), conTabla ? t.finTabla : t.finLista) });
   }
   const carreras = validos
     .map((s) => {

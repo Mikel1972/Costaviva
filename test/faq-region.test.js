@@ -105,3 +105,33 @@ test("páginas de región en inglés y portugués llevan sus preguntas", () => {
   const pt = IB.pt.paginaRegionMareas("cantabria", CANTABRIA).html;
   assert.match(pt, /A que horas é a preia-mar hoje na Cantábria\?/);
 });
+
+// Nueva Zelanda (2026-11-23): mareas de LINZ por zona, en/es/pt, y las
+// páginas de zona no tienen tabla (solo lista): la respuesta no la menciona.
+import { NZ } from "../functions/_lib/seo/paginas-nz.js";
+import { paginaZonaMareasNZ, paginaZonaSpotsNZ } from "../functions/_lib/seo/paginas-en.js";
+import { SPOTS } from "../functions/_lib/seo/carga-en.js";
+import { ZONAS_NZ } from "../functions/_lib/nz/zonas-nz.js";
+
+test("NZ: preguntas de mareas por zona con los datos de LINZ, sin hablar de tabla", () => {
+  const zona = ZONAS_NZ[0];
+  const del = SPOTS.filter((s) => s.zona === zona.zona).slice(0, 2);
+  assert.ok(del.length, "la zona tiene spots");
+  const prev = del.map((s) => spot(s.slug, s.nombre, ["10:00", 2.6], ["16:10", 0.4]));
+  const en = paginaZonaMareasNZ(zona, SPOTS, prev).html;
+  assert.match(en, /What time is high tide today in /);
+  assert.match(en, /FAQPage/);
+  assert.doesNotMatch(en, /in the table on this page/);
+  const es = NZ.es.paginaZonaMareas(zona, SPOTS, prev).html;
+  assert.match(es, /¿A qué hora es la pleamar hoy en /);
+  assert.match(es, /en la página de cada uno están sus mareas/);
+  // Sin datos de la previsión, la página sale igual pero sin preguntas.
+  assert.doesNotMatch(NZ.pt.paginaZonaMareas(zona, SPOTS).html, /t-preg/);
+});
+
+test("NZ: qué se pesca en la zona este mes", () => {
+  const zona = ZONAS_NZ[0];
+  const esp = { especies: [{ id: "nz-snapper", nombres: { en: "Snapper", es: "Pargo de Nueva Zelanda" }, pais: "nz", presencia: Object.fromEntries(SPOTS.filter((s) => s.zona === zona.zona).map((s) => [s.region, { meses: [11] }])) }] };
+  const html = paginaZonaSpotsNZ(zona, SPOTS, esp, 11).html;
+  assert.match(html, /What can you catch in .* in November\?/);
+});

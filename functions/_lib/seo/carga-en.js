@@ -28,7 +28,7 @@ function leerPrivado(context, ruta) {
   return leerAssetJson(context.env, new URL(ruta, context.request.url).toString());
 }
 
-const previsionNZ = (context) => pedirConLimite(new URL("/prevision?region=nz", context.request.url).toString(), undefined, context);
+export const previsionNZ = (context) => pedirConLimite(new URL("/prevision?region=nz", context.request.url).toString(), undefined, context);
 const delSpot = (prev, spot) => prev?.spots?.find((s) => s.slug === spot.slug && !s.error) || null;
 
 export async function datosSpotNZ(context, spot) {
