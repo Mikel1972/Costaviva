@@ -422,6 +422,24 @@ test("respaldo de /prevision: 429 con varias coordenadas → instantánea de MET
   vaciarMemoriaInstantaneas();
 });
 
+// 2026-11-23: Open-Meteo sin respuesta («fetch failed», sin código HTTP)
+// también tira del respaldo (el robot de la previsión dejaba 105 spots en error).
+test("respaldo de /prevision: Open-Meteo sin respuesta → instantánea de MET con aviso", async () => {
+  vaciarMemoriaInstantaneas();
+  const serie = serieDesdeMet(MET);
+  const inst = { generado_en: "2026-10-08T00:10:00Z", rejilla: { paso: 1 }, puntos: [
+    { id: "mundaka", tipo: "spot", lat: 43.4047, lon: -2.6989, serie },
+    { id: "bakio", tipo: "spot", lat: 43.4297, lon: -2.8103, serie },
+  ] };
+  const fetchImpl = async (url) => { if (String(url).includes("open-meteo.com")) throw new TypeError("fetch failed"); return respuestaJSON(inst); };
+  const d = await pedirDatosMeteo("forecast", "latitude=43.4047,43.4297&longitude=-2.6989,-2.8103&timezone=GMT&forecast_days=1&hourly=windspeed_10m&windspeed_unit=ms", {
+    env: { ...CONTACTO }, fetchImpl, ahora: AHORA_MET,
+  });
+  assert.equal(d.length, 2);
+  assert.equal(d[1].aviso_respaldo, "Open-Meteo sin respuesta: fuentes gratuitas");
+  vaciarMemoriaInstantaneas();
+});
+
 // 2026-11-04: MET Norway cortó conexiones ("fetch failed") y mandó cuerpos
 // truncados; el robot no los reintentaba y salió en rojo.
 test("instantánea MET: reintenta cortes de red y JSON truncado", async () => {

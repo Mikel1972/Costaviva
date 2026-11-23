@@ -207,11 +207,13 @@ export async function pedirDatosMeteo(api, consulta, opciones = {}) {
     // de las cajas de Copernicus. Antes /prevision se quedaba con los 105
     // spots "sin dato" mientras Open-Meteo daba 429. La comparativa con las
     // boyas (datos-robots/fuentes/COMPARATIVA.md) da errores casi iguales.
-    if (!ESTADOS_RESPALDO.has(e.status) || !GRUPOS[api] || yaGratuitas) throw e;
+    // También sin respuesta (fetch failed, 2026-11-23): el robot de la
+    // previsión se quedaba con los 105 spots en error.
+    if (!(ESTADOS_RESPALDO.has(e.status) || e.sinRespuesta) || !GRUPOS[api] || yaGratuitas) throw e;
     try {
       const datos = await pedirDatosMeteoSinRespaldo(api, consulta, { ...opciones, env: envConFuenteForzada(env, "gratuitas") });
       for (const o of Array.isArray(datos) ? datos : [datos]) {
-        if (o && typeof o === "object") o.aviso_respaldo = `Open-Meteo ${e.status}: fuentes gratuitas`;
+        if (o && typeof o === "object") o.aviso_respaldo = `Open-Meteo ${e.status || "sin respuesta"}: fuentes gratuitas`;
       }
       return datos;
     } catch {
