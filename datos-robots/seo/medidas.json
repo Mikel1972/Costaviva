@@ -1,0 +1,47 @@
+{
+  "descripcion": "Cambios de SEO y de la web con fecha y páginas afectadas. El informe diario (scripts/seo/efectividad.mjs) compara en Search Console los 7 días anteriores con los días desde el cambio. Cada cambio nuevo que toque páginas públicas se añade aquí (2026-11-23, Mikel: «controlar la efectividad de las medidas sin esperar dos semanas»). paginas: expresiones regulares sobre la ruta (sin dominio).",
+  "medidas": [
+    {
+      "id": "portada-login",
+      "fecha": "2026-11-23",
+      "titulo": "Portada y login más rápidos (vídeo de 12,8 a 2 MB, salto al login en el servidor)",
+      "pr": [606, 607, 608],
+      "paginas": ["^/$", "^/login$"]
+    },
+    {
+      "id": "faq-calamar",
+      "fecha": "2026-11-22",
+      "titulo": "Calamar: pregunta chipirón/calamar y peces de la zona en en/pt",
+      "pr": [597],
+      "paginas": ["^(/en|/pt)?/(especies|species)/calamar$"]
+    },
+    {
+      "id": "faq-lubina",
+      "fecha": "2026-11-23",
+      "titulo": "Lubina: ¿agua dulce o salada? (FAO)",
+      "pr": [609],
+      "paginas": ["^(/en|/pt)?/(especies|species)/lubina$"]
+    },
+    {
+      "id": "faq-regiones",
+      "fecha": "2026-11-23",
+      "titulo": "Preguntas frecuentes en las páginas de región de España y Portugal",
+      "pr": [610],
+      "paginas": ["^(/en|/pt)?/(spots|mareas|tides)/region/(pais-vasco|cantabria|asturias|galicia|portugal|mediterraneo|golfo-de-cadiz|canarias)$"]
+    },
+    {
+      "id": "faq-zonas-nz",
+      "fecha": "2026-11-23",
+      "titulo": "Preguntas frecuentes en las zonas de Nueva Zelanda",
+      "pr": [611],
+      "paginas": ["^(/en|/pt)?/(spots|mareas|tides)/region/(?!pais-vasco$|cantabria$|asturias$|galicia$|portugal$|mediterraneo$|golfo-de-cadiz$|canarias$)[a-z-]+$"]
+    },
+    {
+      "id": "titulos-sin-marca",
+      "fecha": "2026-11-23",
+      "titulo": "Títulos sin « | Costaviva» (toda la web: mirar el CTR)",
+      "pr": [612],
+      "paginas": [".*"]
+    }
+  ]
+}

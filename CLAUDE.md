@@ -6209,3 +6209,16 @@ mano. Sin cookies (no hace falta aviso), ~6 KB, gratis. Sustituye a la idea de
 Google Analytics (descartada: cookies + aviso, 100 KB, PageSpeed). Se ve en
 Cloudflare → Analytics & Logs → Web Analytics (filtro «Last 30 minutes»).
 `test/seo-paginas.test.js` admite ese script y ninguno más.
+
+## Efectividad de los cambios en el informe diario (2026-11-23, pedido de Mikel)
+
+El email del informe diario (`daily-report.yml`) lleva todos los días el
+bloque «Efectividad de los cambios y visitas» (`scripts/seo/efectividad.mjs`,
+sin IA): visitas de ayer y de hoy por origen y tipo de página
+(`visitas_publicas`), Google día a día (Search Console con `dataState: all`)
+y, por cada cambio de `datos-robots/seo/medidas.json`, los 7 días antes
+frente a los días desde el cambio (impresiones/día, clics/día, CTR y
+posición). **Cada cambio nuevo que toque páginas públicas se apunta en
+`medidas.json`** (fecha, título, PR y patrones de ruta) en la misma PR.
+La captación (`metricas_captacion`) también sale a diario desde ese día.
+Prueba: `test/efectividad.test.js`.
