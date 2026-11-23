@@ -2,14 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
-<script src="/assets/i18n/es.js"></script>
-<script src="/assets/i18n/en.js"></script>
-<script src="/assets/i18n/pt.js"></script>
-<script src="/assets/js/i18n.js"></script>
-<script>
-  // Justo tras los idiomas (test/i18n.test.js) y antes del mapa. Sin sesión guardada, al login YA (2026-11-23, PageSpeed): antes se bajaba
+<script id="sin-sesion">
+  // Lo primero de todo, antes incluso de los idiomas (test/i18n.test.js lo permite por su id). Sin sesión guardada, al login YA (2026-11-23, PageSpeed): antes se bajaba
   // todo el mapa (MapLibre, Leaflet, capas...) y el módulo de Supabase
   // redirigía después, ~9 s perdidos en móvil. Misma regla que ese módulo (que
   // sigue ahí para sesiones caducadas); los robots de buscadores no se
@@ -21,6 +15,12 @@
     } catch (e) {}
   })();
 </script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
+<script src="/assets/js/i18n.js"></script>
 <title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Previsión marina en tiempo real: mareas, oleaje, viento y actividad de los peces para planificar tu salida de pesca en España y Portugal." />
 <link rel="canonical" href="https://costaviva.org/" />
