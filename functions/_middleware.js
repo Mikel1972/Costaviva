@@ -28,6 +28,7 @@ import { visitaAContar, conOrigenEnCta, conScriptVisita } from "./_lib/visitas.j
 import { ORIGENES_IFRAME_NZ } from "../assets/js/camaras-nz.js";
 import { ORIGEN_IFRAME_WINDY } from "../assets/js/camaras-externas.js";
 import { conClaveLinz } from "./_lib/linz-basemaps.js";
+import { redireccionPortada } from "./_lib/portada-sesion.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
@@ -38,6 +39,10 @@ export async function onRequest(context) {
   // páginas privadas con X-Robots-Tag: noindex. Ver _lib/seo/indexacion.js.
   const seo = decisionIndexacion(request.url, request.method);
   if (seo.redirigir) return Response.redirect(seo.redirigir, 301);
+  // Portada sin sesión → /login sin mandar los 446 KB de index.html
+  // (2026-11-23, PageSpeed). Ver _lib/portada-sesion.js.
+  const aLogin = redireccionPortada(request);
+  if (aLogin) return new Response(null, { status: 302, headers: { Location: aLogin, "cache-control": "no-store" } });
   let original = await next();
   // Contador propio de visitas a páginas públicas (2026-10-09): un recuento
   // agregado por día/página/fuente, en segundo plano y sin datos de la

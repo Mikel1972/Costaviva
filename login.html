@@ -2,6 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
+<script id="sin-sesion">
+  // Marca de sesión para el servidor (2026-11-23, functions/_lib/portada-sesion.js).
+  // Se pone ANTES de que el login mande a «/» si ya hay sesión: así nunca hay
+  // un bucle portada ↔ login.
+  (function () {
+    try {
+      var t = localStorage.getItem("sb-imncbmizxkorotpeisic-auth-token");
+      // Marca para el servidor (functions/_lib/portada-sesion.js): con ella la
+      // portada se sirve; sin ella, el servidor manda al login sin bajar nada.
+      document.cookie = t ? "cv_sesion=1; path=/; max-age=31536000; SameSite=Lax; Secure" : "cv_sesion=; path=/; max-age=0; SameSite=Lax; Secure";
+    } catch (e) {}
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
