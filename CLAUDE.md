@@ -6190,4 +6190,4 @@ próxima bajamar y diferencia entre las dos, de la misma tabla) y
 inventado: todo sale de los datos de la página (si la diferencia máxima es
 menor de 0,5 m dice «marea pequeña», p. ej. el Mediterráneo). Motivo: el pico
 de impresiones del 14/11 vino de las páginas de región. Prueba:
-`test/faq-region.test.js`.
+`test/faq-region.test.js`. Nueva Zelanda igual (mismo día): mareas de LINZ por zona (`/prevision?region=nz`), sin «tabla» en la respuesta porque esas páginas solo tienen la lista.

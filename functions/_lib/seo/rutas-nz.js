@@ -5,7 +5,7 @@
 // Sustituye a redireccion-nz.js (antes, 301 a la página inglesa).
 import { conCache, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "./base.js";
 import { NZ } from "./paginas-nz.js";
-import { SPOTS, spotNZ, datosSpotNZ, datosMareaNZ, cargarEspeciesNZ, mesNZ } from "./carga-en.js";
+import { SPOTS, spotNZ, datosSpotNZ, datosMareaNZ, cargarEspeciesNZ, mesNZ, previsionNZ } from "./carga-en.js";
 import { zonaPorSlug } from "../nz/zonas-nz.js";
 import { idDeSlugEspecie } from "./datos.js";
 
@@ -36,7 +36,11 @@ export function zonaSpotsNZRespuesta(context, idioma, slug) {
 export function zonaMareasNZRespuesta(context, idioma, slug) {
   const zona = zonaPorSlug(slug);
   if (!zona) return null;
-  return conCache(context, async () => ({ html: NZ[idioma].paginaZonaMareas(zona, SPOTS).html }));
+  // Con la previsión de NZ (mareas de LINZ) para las preguntas frecuentes.
+  return conCache(context, async () => {
+    const prev = await previsionNZ(context);
+    return { html: NZ[idioma].paginaZonaMareas(zona, SPOTS, prev?.spots || []).html, ttl: prev ? TTL_CON_DATOS_S : TTL_SIN_DATOS_S };
+  });
 }
 
 // Especies de NZ: slug «nz-…». Si el slug no es de NZ, null.
