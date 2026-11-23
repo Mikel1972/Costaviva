@@ -11,9 +11,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { fechaCorta, sumarDias, diasEntre, totalesPaginas, lineaMedida, lineasDias, lineasVisitas } from "./efectividad-lib.mjs";
+import { sumarDias, diasEntre, totalesPaginas, filaMedida, COLUMNAS_MEDIDAS, tablaMd, tablaDias, tablaVisitas } from "./efectividad-lib.mjs";
 
-const fechaCortaHoy = (hoy) => fechaCorta(hoy);
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const URL_SUPABASE = "https://imncbmizxkorotpeisic.supabase.co";
 const VENTANA_MEDIDAS_DIAS = 60;
@@ -32,7 +31,7 @@ async function visitas(lineas) {
       signal: AbortSignal.timeout(20000),
     });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    lineas.push(...lineasVisitas(await r.json(), hoy));
+    lineas.push(...tablaVisitas(await r.json(), hoy));
   } catch (e) {
     lineas.push(`    - N/D (no se pudo leer el contador: ${e.message})`);
     process.exitCode = 1;
@@ -75,23 +74,25 @@ async function google(lineas) {
     // Último día COMPLETO con datos: ayer como mucho (hoy va a medias).
     const ultimo = dias.map((f) => f.keys[0]).filter((d) => d < hoy).sort().pop();
     lineas.push(`  - Google día a día (Search Console; los 2 últimos días aún son provisionales y suben):`);
-    lineas.push(...(dias.length ? lineasDias(dias.slice(-8)).map((l) => (l.includes(` ${fechaCortaHoy(hoy)}:`) ? `${l} (hoy, a medias)` : l)) : ["    - Sin datos en los últimos 10 días."]));
+    lineas.push(...(dias.length ? tablaDias(dias.slice(-8), hoy) : ["    - Sin datos en los últimos 10 días."]));
 
     const { medidas = [] } = JSON.parse(readFileSync(join(RAIZ, "datos-robots/seo/medidas.json"), "utf8"));
     const recientes = medidas.filter((m) => m.fecha >= sumarDias(hoy, -VENTANA_MEDIDAS_DIAS)).sort((a, b) => b.fecha.localeCompare(a.fecha));
     lineas.push(`  - Efectividad de los cambios (7 días antes frente a los días completos desde el día siguiente al cambio, media por día):`);
     if (!recientes.length) lineas.push("    - Ningún cambio apuntado en los últimos 60 días (datos-robots/seo/medidas.json).");
+    const filas = [];
     for (const m of recientes) {
       try {
         const antes = totalesPaginas(await consulta(sumarDias(m.fecha, -7), sumarDias(m.fecha, -1), ["page"]), m.paginas);
         const desde = sumarDias(m.fecha, 1);
         const n = ultimo && ultimo >= desde ? diasEntre(desde, ultimo) : 0;
         const despues = n ? totalesPaginas(await consulta(desde, ultimo, ["page"]), m.paginas) : null;
-        lineas.push(lineaMedida(m, antes, despues, n));
+        filas.push(filaMedida(m, antes, despues, n));
       } catch (e) {
-        lineas.push(`    - ${m.titulo}: N/D (${e.message})`);
+        filas.push([m.titulo, m.fecha, "–", "–", "–", "–", "–", `N/D (${e.message})`]);
       }
     }
+    if (filas.length) lineas.push(...tablaMd(COLUMNAS_MEDIDAS, filas));
   } catch (e) {
     lineas.push(`  - Google: N/D (${e.message})`);
     process.exitCode = 1;
