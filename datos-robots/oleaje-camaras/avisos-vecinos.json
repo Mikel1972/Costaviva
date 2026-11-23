@@ -1,37 +1,37 @@
 {
- "actualizado": "2026-11-23T11:39:45.777Z",
+ "actualizado": "2026-11-23T12:09:47.296Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "bakio",
-   "alto": 4,
-   "bajo": 0,
-   "spots": [
-    "bakio"
-   ]
-  },
-  {
-   "clave": "orio",
-   "alto": 5,
-   "bajo": 2,
-   "spots": [
-    "orio"
-   ]
-  },
-  {
-   "clave": "hondarribia",
-   "alto": 6,
-   "bajo": 4,
-   "spots": [
-    "hondarribia"
-   ]
-  },
   {
    "clave": "sopelana",
    "alto": 3,
    "bajo": 0,
    "spots": [
     "sopelana"
+   ]
+  },
+  {
+   "clave": "orio",
+   "alto": 4,
+   "bajo": 1,
+   "spots": [
+    "orio"
+   ]
+  },
+  {
+   "clave": "hondarribia",
+   "alto": 5,
+   "bajo": 4,
+   "spots": [
+    "hondarribia"
+   ]
+  },
+  {
+   "clave": "bakio",
+   "alto": 3,
+   "bajo": 0,
+   "spots": [
+    "bakio"
    ]
   }
  ],
