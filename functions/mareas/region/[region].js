@@ -9,6 +9,7 @@
 import { REGIONES, tituloMareasRegion } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
 import { zonaMareasNZRespuesta } from "../../_lib/seo/rutas-nz.js";
+import { preguntasMareasRegion, faqHtml, faqLd, lugarRegionEs } from "../../_lib/seo/faq-region.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -73,6 +74,10 @@ export async function onRequestGet(context) {
       { "@type": "ListItem", position: 2, name: region.nombre, item: url },
     ],
   }).replace(/</g, "\\u003c");
+  // Preguntas frecuentes (2026-11-23): de los mismos datos que la tabla.
+  const preguntas = preguntasMareasRegion({ spots, regionSlug: region.slug, lugar: lugarRegionEs(region), idioma: "es" });
+  const faq = faqLd(preguntas, "es");
+  const faqJson = faq ? JSON.stringify(faq).replace(/</g, "\\u003c") : "";
 
   const html = `<!doctype html>
 <html lang="es">
@@ -98,6 +103,7 @@ ${enlacesHreflang(`/mareas/region/${region.slug}`, "https://costaviva.org", ["es
 <meta name="twitter:title" content="Mareas y oleaje en ${nombre} | Costaviva" />
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
 <script type="application/ld+json">${jsonLd}</script>
+${faqJson ? `<script type="application/ld+json">${faqJson}</script>` : ""}
 <style>
   .nav-cv { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
   .nav-cv a { font: 700 13.5px Arial, sans-serif; text-decoration: none; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid #e3d9c6; color: #0B2532; }
@@ -123,6 +129,8 @@ ${enlacesHreflang(`/mareas/region/${region.slug}`, "https://costaviva.org", ["es
   .tabla th small a { color: ${DORADO}; font-weight: normal; }
   h2 { font-family: Georgia, serif; font-size: 20px; margin: 24px 0 8px; }
   .nota { color: ${GRIS}; font-size: 12px; }
+  #t-preg + h3, .tarjeta h3 { font-size: 16px; margin: 16px 0 4px; }
+  .tarjeta p { margin: 0 0 8px; line-height: 1.5; }
   .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -24px 0 32px; }
 </style>
 </head>
@@ -155,6 +163,7 @@ ${enlacesHreflang(`/mareas/region/${region.slug}`, "https://costaviva.org", ["es
       </tbody>
     </table></div>
     <p class="nota">Horas locales de cada spot, calculadas con los mismos datos que la app (Open-Meteo, CC BY 4.0). Orientativo: no sirve para navegar.</p>
+    ${faqHtml(preguntas, "es")}
     <p class="cta-sub"><a href="/spots/region/${region.slug}">Qué se pesca en ${nombre}: especies y temporada por spot →</a></p>
   </div>
 </body>

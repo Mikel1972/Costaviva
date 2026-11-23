@@ -23,6 +23,7 @@ import * as VA from "../../../assets/js/ventana-actividad.js";
 import { textoFondo } from "../../../assets/js/capa-tipo-fondo.js";
 import { zonaDeSpot } from "../../../assets/js/regiones.js";
 import { I18n } from "../../../assets/js/i18n-modulo.js";
+import { preguntasSpotsRegion, preguntasMareasRegion, faqHtml, faqLd } from "./faq-region.js";
 
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
 // Las de España y Portugal están en los tres idiomas.
@@ -467,10 +468,12 @@ ${region ? `<p><a href="${esc(rRegionSpots(region.slug))}">${esc(T.spot.todos(no
       .sort((a, b) => a.nombre.localeCompare(b.nombre, T.locale));
     const titulo = T.region.titulo(nombreR, del.length);
     const descripcion = T.region.desc(nombreR, del.length, mesLargo(mes), deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", "));
+    const preguntas = preguntasSpotsRegion({ deTemporada, regionSlug: reg.slug, lugar: nombreR, mes: mesLargo(mes), idioma });
     const migas = [{ nombre: T.spot.migas, ruta: p(ruta) }];
     const ld = [
       { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${p(ruta)}`, inLanguage: T.lang, about: { "@type": "Place", name: nombreRegion(reg.slug) }, publisher: ORG_LD },
       migasJsonLd(migas),
+      ...(preguntas.length ? [faqLd(preguntas, T.lang)] : []),
     ];
     const cuerpo = `${migasHtml(migas, idioma)}
 <h1>${esc(T.region.h1(nombreR))}</h1>
@@ -481,6 +484,7 @@ ${region ? `<p><a href="${esc(rRegionSpots(region.slug))}">${esc(T.spot.todos(no
 ${peces.length ? `<section aria-labelledby="t-peces"><h2 id="t-peces">${esc(T.region.peces(nombreR))}</h2>
 <p class="nota">${esc(T.region.pecesNota(peces.length, nombreR))}</p>
 <ul class="especies">${peces.map((e) => `<li${e.ahora ? ' class="temporada"' : ""}><a href="${esc(rEspecie(e.slug))}">${esc(e.nombre)}</a> <span class="meses">${esc(e.meses)}</span></li>`).join("")}</ul></section>` : ""}
+${faqHtml(preguntas, idioma)}
 ${enlacesRegiones(reg.slug, rRegionSpots)}
 ${T.cta()}`;
     return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ...opciones, imagen: imagenOgRegion(reg), imagenAlt: T.spot.imagenAlt(nombreR) }) };
@@ -679,6 +683,8 @@ ${region ? `<p><a href="${esc(rRegionMareas(region.slug))}">${esc(M.todaCosta(no
       migasJsonLd(migas),
     ];
     const ev = (s, tipo) => (s.marea?.proximas || []).find((e) => e.tipo === tipo);
+    const preguntas = preguntasMareasRegion({ spots: del, regionSlug: reg.slug, lugar: nombreR, idioma, nombreDe: (s) => nombreCortoSpot(s.nombre) });
+    if (preguntas.length) ld.push(faqLd(preguntas, T.lang));
     const cuerpo = `${migasHtml(migas, idioma)}
 <h1>${esc(M.h1Region(nombreR))}</h1>
 <p class="intro">${esc(descripcion)}</p>
@@ -691,6 +697,7 @@ ${del.map((s) => {
   }).join("\n")}
 </tbody></table></div>
 <p class="nota">${M.notaRegion}</p></section>
+${faqHtml(preguntas, idioma)}
 ${enlacesRegiones(reg.slug, rRegionMareas)}
 <p><a href="${esc(rRegionSpots(reg.slug))}">${esc(M.queSePesca(nombreR))}</a></p>`;
     return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ...opciones, imagen: imagenOgRegion(reg), imagenAlt: M.h1Region(nombreR) }) };

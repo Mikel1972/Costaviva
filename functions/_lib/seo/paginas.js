@@ -17,6 +17,7 @@ import {
 import { NOMBRE_MODALIDAD, MODALIDADES, textoMeses } from "../../../assets/js/ventana-actividad.js";
 import { zonaDeSpot } from "../../../assets/js/regiones.js";
 import { tituloPescaRegion } from "../../mareas/_regiones.js";
+import { preguntasSpotsRegion, faqHtml, faqLd, lugarRegionEs } from "./faq-region.js";
 
 const nombreRegion = (r) => r.nombre.split(" (")[0];
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
@@ -193,10 +194,13 @@ export function paginaRegionSpots(region, spots, especiesDatos, mes) {
   // pos. 8,7 y "pesca en portugal" pos. 17,7, sin clics.
   const titulo = tituloPescaRegion(region, del.length) || `Pesca en ${nombre}: ${del.length} spots, especies y temporada | Costaviva`;
   const descripcion = `Dónde pescar hoy en ${nombre}: índice de pesca de hoy en ${del.length} spots y los peces de ${nombre} con su temporada. En ${mesLargo(mes)}: ${deTemporada.slice(0, 5).map((e) => e.nombre.toLowerCase()).join(", ")}. Fondo, profundidad y condiciones en tiempo real.`;
+  // Preguntas frecuentes (2026-11-23): de los mismos datos que la página.
+  const preguntas = preguntasSpotsRegion({ deTemporada, regionSlug: region.slug, lugar: lugarRegionEs(region, "spots"), mes: mesLargo(mes), idioma: "es" });
   const migas = [{ nombre: "Spots", ruta: "/spots" }, { nombre, ruta }];
   const ld = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${ruta}`, inLanguage: "es", about: { "@type": "Place", name: nombre } },
     migasJsonLd(migas),
+    ...(preguntas.length ? [faqLd(preguntas, "es")] : []),
   ];
   const cuerpo = `${migasHtml(migas)}
 <h1>Pesca en ${esc(nombre)}</h1>
@@ -207,6 +211,7 @@ ${listaSpots(del)}
 ${peces.length ? `<section aria-labelledby="t-peces"><h2 id="t-peces">Peces de ${esc(nombre)}: qué se pesca y cuándo</h2>
 <p class="nota">${peces.length} especies que se pescan en ${esc(nombre)}, con los meses en que se dan. Resaltadas, las de temporada ahora.</p>
 <ul class="especies">${peces.map((e) => `<li${e.ahora ? ' class="temporada"' : ""}><a href="/especies/${esc(e.slug)}">${esc(e.nombre)}</a> <span class="meses">${esc(e.meses)}</span></li>`).join("")}</ul></section>` : ""}
+${faqHtml(preguntas, "es")}
 ${cta()}
 <p><a href="/spots">Todas las regiones →</a></p>`;
   const alternos = ["es", "en", "pt"];
