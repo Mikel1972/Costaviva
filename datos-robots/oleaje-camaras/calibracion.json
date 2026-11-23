@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-23T00:37:20.232Z",
- "lineasHistorial": 12526,
- "etiquetas": 1405,
- "etiquetasClaude": 260,
+ "fecha": "2026-11-23T01:07:22.082Z",
+ "lineasHistorial": 12529,
+ "etiquetas": 1407,
+ "etiquetasClaude": 262,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1749,
@@ -390,11 +390,11 @@
    "correlacion": 0.5
   },
   "nz-riverton/principal": {
-   "a": 6.9387,
+   "a": 6.9044,
    "p": 0.5,
-   "n": 1149,
+   "n": 1151,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 77,
+   "nEtiquetasClaude": 78,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -614,7 +614,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 974
+    "pares": 975
    }
   }
  },
@@ -662,7 +662,7 @@
    "cerca": 0.484
   },
   "nz-riverton": {
-   "n": 93,
+   "n": 94,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -689,11 +689,11 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.908,
-    "n": 66,
-    "peso": 64.6,
-    "mae": 0.19,
-    "maeCorregido": 0.19
+    "factor": 0.911,
+    "n": 68,
+    "peso": 66.6,
+    "mae": 0.18,
+    "maeCorregido": 0.18
    },
    "6-24": {
     "factor": 0.686,
@@ -703,18 +703,18 @@
     "maeCorregido": 0.21
    },
    "0-6": {
-    "factor": 1.015,
-    "n": 6,
-    "peso": 6,
-    "mae": 0.05,
-    "maeCorregido": 0.05
+    "factor": 1.017,
+    "n": 8,
+    "peso": 8,
+    "mae": 0.04,
+    "maeCorregido": 0.04
    },
    "48-72": {
-    "factor": 1.018,
-    "n": 2,
-    "peso": 2,
-    "mae": 0.03,
-    "maeCorregido": 0.03
+    "factor": 1.013,
+    "n": 4,
+    "peso": 4,
+    "mae": 0.02,
+    "maeCorregido": 0.02
    }
   },
   "camaras": {
@@ -834,11 +834,11 @@
    },
    "nz-aramoana": {
     "24-48": {
-     "factor": 0.966,
-     "n": 1,
-     "peso": 1,
-     "mae": 0.14,
-     "maeCorregido": 0.13
+     "factor": 0.969,
+     "n": 2,
+     "peso": 2,
+     "mae": 0.07,
+     "maeCorregido": 0.07
     },
     "6-24": {
      "factor": 0.981,
@@ -846,13 +846,27 @@
      "peso": 1,
      "mae": 0.07,
      "maeCorregido": 0.06
+    },
+    "48-72": {
+     "factor": 1,
+     "n": 1,
+     "peso": 1,
+     "mae": 0,
+     "maeCorregido": 0
+    },
+    "0-6": {
+     "factor": 1,
+     "n": 1,
+     "peso": 1,
+     "mae": 0,
+     "maeCorregido": 0
     }
    },
    "nz-riverton": {
     "0-6": {
-     "factor": 1.015,
-     "n": 6,
-     "peso": 6,
+     "factor": 1.018,
+     "n": 7,
+     "peso": 7,
      "mae": 0.05,
      "maeCorregido": 0.05
     },
@@ -864,18 +878,18 @@
      "maeCorregido": 0.04
     },
     "24-48": {
-     "factor": 1.026,
-     "n": 9,
-     "peso": 9,
+     "factor": 1.028,
+     "n": 10,
+     "peso": 10,
      "mae": 0.06,
      "maeCorregido": 0.06
     },
     "48-72": {
-     "factor": 1.018,
-     "n": 2,
-     "peso": 2,
-     "mae": 0.03,
-     "maeCorregido": 0.03
+     "factor": 1.014,
+     "n": 3,
+     "peso": 3,
+     "mae": 0.02,
+     "maeCorregido": 0.02
     }
    }
   }
