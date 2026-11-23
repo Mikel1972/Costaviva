@@ -1,10 +1,10 @@
-# Aprendizaje de Costaviva — semana 2026-W47
+# Aprendizaje de Costaviva — semana 2026-W48
 
-Generado el 2026-11-16 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
+Generado el 2026-11-23 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
 
 ## Estado del bucle
 
-- Aprendizaje semanal: corrió el 2026-11-16 (ok). Salidas usadas: 10.
+- Aprendizaje semanal: corrió el 2026-11-23 (ok). Salidas usadas: 10.
 - Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 10 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
 - Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
@@ -29,11 +29,9 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)
-- Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
+- Síntesis del informe diario: último dato hace 46 h (se espera cada 24 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el modelo da -28 % frente a la boya Bilbao II (costera) (13 lecturas)
-- el sesgo frente a Pasaia II (costera) ha cambiado: de 1.06 a 0.80
+- la calibración de deba/principal empeora: error 49 % → 100 %
 
 ## Retadores en la sombra
 
@@ -44,7 +42,7 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 ## Frentes, clorofila y corrientes (en la sombra)
 
 Se mira, para cada modalidad y cada especie, si pescar cerca de un borde de clorofila, de un cambio de temperatura, de una corriente que junta el agua (o con agua azul, verdosa o con floración, o con corriente fuerte) cambia lo que ya decía el índice, sin suponer de antemano si ayuda o estorba. No toca el índice en vivo.
-- Salidas con la capa de su día: 9 de 10. 4 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
+- Salidas con la capa de su día: 10 de 10. 3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
 - Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.
 
 ## Temperatura del agua: sonda frente al modelo
@@ -55,7 +53,7 @@ Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que de
 
 ## Para etiquetar (lo que más enseña)
 
-- Cámara mutriku (principal), 2026-11-11 08:08 UTC: cámara y modelo discrepan mucho.
+Nada pendiente.
 
 Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 

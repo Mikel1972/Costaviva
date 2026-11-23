@@ -1,8 +1,10 @@
 {
- "generado_en": "2026-11-16T13:08:10.241Z",
- "semana": "2026-W47",
+ "generado_en": "2026-11-23T04:41:51.080Z",
+ "semana": "2026-W48",
  "nota": "Momentos de actividad: cada picada (picadas_pesca, con marea y condiciones de esa hora) y cada captura con hora, contados por marea (subiendo/bajando), franja de 3 h, fase de luna y tendencia de la presión. Solo grupos de 3 personas distintas o más; nunca lugar ni fecha. Código: scripts/aprendizaje/momentos.mjs.",
  "total_momentos": 12,
  "grupos": [],
- "grupos_retenidos": 17
+ "grupos_retenidos": 18,
+ "por_especie": [],
+ "especies_retenidas": 5
 }
