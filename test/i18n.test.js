@@ -134,7 +134,8 @@ for (const pagina of PAGINAS_I18N) {
     const p = src.indexOf('<script src="/assets/i18n/pt.js"></script>');
     const k = src.indexOf('<script src="/assets/js/i18n.js"></script>');
     assert.ok(i > 0 && i < j && j < p && p < k, "orden es.js, en.js, pt.js, i18n.js");
-    assert.equal(src.slice(0, i).indexOf("<script"), -1, "hay un <script> antes de los idiomas");
+    // Única excepción: el salto al login sin sesión de index.html (2026-11-23, PageSpeed).
+    assert.equal(src.slice(0, i).replace(/<script id="sin-sesion">[\s\S]*?<\/script>/, "").indexOf("<script"), -1, "hay un <script> antes de los idiomas");
     if (!SIN_SELECTOR.has(pagina)) assert.match(src, /<div[^>]* data-i18n-selector><\/div>/, "falta el selector de idioma");
     assert.doesNotMatch(src, /\son[a-z]{3,}\s*=\s*["'`]/i, "sin on*= (CSP)");
   });
