@@ -7,6 +7,9 @@
 // email de actividad diaria, que incluya toda la información».
 
 const DIA_MS = 86400000;
+// El contador visitas_publicas solo es fiable desde el 21/11 (antes contaba
+// robots como «directo»: 666 el 16/11, 1096 el 20/11).
+export const CONTADOR_FIABLE_DESDE = "2026-11-21";
 
 export const sumarDias = (fecha, n) => new Date(Date.parse(`${fecha}T00:00:00Z`) + n * DIA_MS).toISOString().slice(0, 10);
 export const diasEntre = (desde, hasta) => Math.round((Date.parse(`${hasta}T00:00:00Z`) - Date.parse(`${desde}T00:00:00Z`)) / DIA_MS) + 1;
@@ -44,11 +47,13 @@ export function totalesPaginas(filas, patrones) {
   return { clics, impresiones, posicion: impresiones ? posPond / impresiones : NaN, paginas };
 }
 
-// Una medida: antes (7 días antes del cambio) frente a después (desde el día
-// del cambio hasta el último día con datos), en media por día.
+// Una medida: antes (los 7 días anteriores al día del cambio) frente a
+// después (desde el día siguiente al cambio hasta ayer: solo días completos;
+// el día del cambio va a medias y el de hoy aún no ha terminado), en media
+// por día.
 export function lineaMedida(m, antes, despues, diasDespues) {
   const cab = `${m.titulo} (${fechaCorta(m.fecha)}${m.pr?.length ? `, PR ${m.pr.join(", ")}` : ""})`;
-  if (!(diasDespues > 0)) return `    - ${cab}: aún sin datos de después (Google los da con 1-2 días de retraso).`;
+  if (!(diasDespues > 0)) return `    - ${cab}: aún sin datos de después: se cuentan los días completos desde el día siguiente al cambio (el primero sale pasado mañana).`;
   const dA = 7;
   const iA = antes.impresiones / dA, iD = despues.impresiones / diasDespues;
   const cA = antes.clics / dA, cD = despues.clics / diasDespues;
@@ -84,12 +89,17 @@ export function lineasVisitas(filas, hoy) {
     return [...m].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(", ") || "–";
   };
   const tAyer = total(ayer), tSem = total(semanaAntes);
-  const ultimos7 = Array.from({ length: 7 }, (_, i) => sumarDias(ayer, -6 + i)).map((d) => `${fechaCorta(d)}: ${total(d)}`).join(" · ");
+  const marca = (d) => (d < CONTADOR_FIABLE_DESDE ? "*" : "");
+  const dias7 = Array.from({ length: 7 }, (_, i) => sumarDias(ayer, -6 + i));
+  const ultimos7 = dias7.map((d) => `${fechaCorta(d)}: ${total(d)}${marca(d)}`).join(" · ");
+  const notaRobots = dias7.some((d) => marca(d)) || marca(semanaAntes) ? ` (* antes del ${fechaCorta(CONTADOR_FIABLE_DESDE)} el contador incluía robots)` : "";
   return [
-    `    - Ayer (${fechaCorta(ayer)}): ${tAyer} visitas${pct(tAyer, tSem)} frente al mismo día de la semana anterior (${tSem})`,
+    marca(semanaAntes)
+      ? `    - Ayer (${fechaCorta(ayer)}): ${tAyer} visitas (el mismo día de la semana anterior, ${tSem}, aún contaba robots: sin comparación)`
+      : `    - Ayer (${fechaCorta(ayer)}): ${tAyer} visitas${pct(tAyer, tSem)} frente al mismo día de la semana anterior (${tSem})`,
     `    - Ayer por origen: ${agrupar(ayer, "fuente")}`,
     `    - Ayer por tipo de página: ${agrupar(ayer, "pagina")}`,
     `    - Hoy hasta ahora (${fechaCorta(hoy)}): ${total(hoy)} visitas (${agrupar(hoy, "fuente")})`,
-    `    - Últimos 7 días: ${ultimos7}`,
+    `    - Últimos 7 días: ${ultimos7}${notaRobots}`,
   ];
 }
