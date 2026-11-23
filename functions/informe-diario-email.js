@@ -20,6 +20,7 @@
 
 import { secretoValido } from "./_lib/secreto.js";
 import { enviarEmail } from "./_lib/email.js";
+import { informeAHtml } from "./_lib/informe-html.js";
 
 export async function onRequestPost(context) {
   const { env } = context;
@@ -60,6 +61,8 @@ export async function onRequestPost(context) {
     to: adminEmail,
     subject: `Costaviva: informe diario — ${hoy}`,
     text: cuerpo,
+    // Con tablas de verdad (2026-11-23, Mikel: «los temas en cuadros»).
+    html: informeAHtml(cuerpo),
   });
   if (!envio.ok) {
     // Sin el detalle de Resend (queda en el log de Cloudflare).

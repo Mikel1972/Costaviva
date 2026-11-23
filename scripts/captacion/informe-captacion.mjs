@@ -3,7 +3,8 @@
 // (daily-report.yml, 2026-10-09). Sin IA: llama a metricas_captacion() con
 // SUPABASE_SERVICE_ROLE_KEY y lo formatea con assets/js/metricas-captacion.js.
 // Escribe el texto en stdout; si algo falla lo dice (nunca un cero mudo).
-import { lineasInforme } from "../../assets/js/metricas-captacion.js";
+import { lineasInforme, filasTabla } from "../../assets/js/metricas-captacion.js";
+import { tablaMd } from "../seo/efectividad-lib.mjs";
 
 const URL_SUPABASE = "https://imncbmizxkorotpeisic.supabase.co";
 const clave = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -24,7 +25,12 @@ async function main() {
     process.exitCode = r.status === 404 ? 0 : 1;
     return;
   }
-  console.log(lineasInforme(await r.json()).join("\n"));
+  const m = await r.json();
+  // Tabla semana a semana para ver la evolución (2026-11-23, Mikel: «los
+  // temas en cuadros para que pueda ver las evoluciones»).
+  const cols = ["Semana", "Visitas", "Altas (conf.)", "Invitaciones", "Amigos (pagan)", "Prueba→pago", "Activos s2", "Activos s4"];
+  const filas = filasTabla(m).map((f) => [f[0], f[1], f[3], f[5], f[6], f[7], f[8], f[9]]);
+  console.log([...lineasInforme(m), ...(filas.length ? tablaMd(cols, filas) : [])].join("\n"));
 }
 
 main().catch((e) => {

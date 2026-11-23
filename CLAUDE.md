@@ -6221,4 +6221,4 @@ frente a los días desde el cambio (impresiones/día, clics/día, CTR y
 posición). **Cada cambio nuevo que toque páginas públicas se apunta en
 `medidas.json`** (fecha, título, PR y patrones de ruta) en la misma PR.
 La captación (`metricas_captacion`) también sale a diario desde ese día.
-Prueba: `test/efectividad.test.js`.
+Prueba: `test/efectividad.test.js`. Desde el mismo día (Mikel: «los temas en cuadros»), visitas, Google y efectividad salen como tablas Markdown (`tablaMd`) y el email las pinta como `<table>` (`functions/_lib/informe-html.js`); la captación lleva su tabla semana a semana.
