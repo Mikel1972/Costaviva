@@ -22,7 +22,7 @@ import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { mareaNZRespuesta } from "../_lib/seo/rutas-nz.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
-import { conCache, pedirConLimite, tituloBuscador, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "../_lib/seo/base.js";
+import { conCache, pedirConLimite, tituloBuscador, BEACON_CF, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "../_lib/seo/base.js";
 import { esSpotIberia } from "../_lib/seo/paginas-ib.js";
 
 const DORADO = "#A8792A";
@@ -295,6 +295,7 @@ ${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", [
     <p class="nota"><a href="/spots/${spot.slug}">Pesca en ${nombre}: especies, temporada, fondo y profundidad →</a></p>
     <p class="nota"><a href="/mareas">Ver todos los spots →</a></p>
   </div>
+${BEACON_CF}
 </body>
 </html>`;
 }

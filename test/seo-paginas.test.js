@@ -3,6 +3,7 @@
 // datos salen del repo y de test/fixtures/seo-*.json (respuestas reales de
 // /prevision y /meteo/* de Bakio del 2026-10-08). Corre en tests.yml.
 
+import { BEACON_CF } from "../functions/_lib/seo/base.js";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -84,10 +85,13 @@ function etiquetasObligatorias(h, canonical) {
   for (const m of ["og:title", "og:description", "og:image", "og:locale"]) assert.ok(h.includes(`property="${m}"`), m);
   assert.ok(h.includes('name="twitter:card"'));
   assert.equal((h.match(/<h1[ >]/g) || []).length, 1, "un solo h1");
-  // Ningún on*= (la CSP con nonce los bloquearía) ni scripts que no sean JSON-LD.
+  // Ningún on*= (la CSP con nonce los bloquearía) ni scripts que no sean
+  // JSON-LD, salvo el beacon de Cloudflare Web Analytics (2026-11-23).
   assert.doesNotMatch(h, /\son[a-z]+\s*=/i);
   const scripts = h.match(/<script\b[^>]*>/g) || [];
-  for (const s of scripts) assert.equal(s, '<script type="application/ld+json">');
+  const beacon = BEACON_CF.match(/<script\b[^>]*>/)[0];
+  for (const s of scripts) assert.ok(s === '<script type="application/ld+json">' || s === beacon, s);
+  assert.equal(scripts.filter((s) => s === beacon).length, 1, "un beacon de Cloudflare");
   const lds = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
   assert.ok(lds.some((x) => x["@type"] === "BreadcrumbList"), "BreadcrumbList");
   assert.doesNotMatch(h, /noindex/);

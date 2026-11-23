@@ -6200,3 +6200,12 @@ del final solo en `<title>` (documento() y las páginas de mareas escritas a
 mano); og:title, twitter:title y JSON-LD conservan la marca. Los títulos se
 siguen escribiendo con la marca: no hace falta tocarlos uno a uno.
 Prueba: `test/titulos.test.js`.
+
+## Cloudflare Web Analytics en las páginas públicas (2026-11-23, Mikel: «ponla»)
+
+`BEACON_CF` de `functions/_lib/seo/base.js` (el mismo token que index.html y
+login.html) va al final de `documento()` y de las páginas de mareas escritas a
+mano. Sin cookies (no hace falta aviso), ~6 KB, gratis. Sustituye a la idea de
+Google Analytics (descartada: cookies + aviso, 100 KB, PageSpeed). Se ve en
+Cloudflare → Analytics & Logs → Web Analytics (filtro «Last 30 minutes»).
+`test/seo-paginas.test.js` admite ese script y ninguno más.

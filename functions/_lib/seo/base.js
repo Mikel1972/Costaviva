@@ -41,6 +41,12 @@ export const TTL_SIN_DATOS_S = 300;
 // ~70) y cortaba justo la marca; Google ya enseña el nombre de la web encima
 // del resultado. Solo en <title>: og:title, twitter:title y JSON-LD la
 // conservan. Si no queda nada delante, se deja como está.
+// Cloudflare Web Analytics en las páginas públicas (2026-11-23, Mikel:
+// métricas casi en tiempo real sin Google Analytics). El mismo beacon que ya
+// llevan index.html y login.html: sin cookies (no hace falta aviso), ~6 KB,
+// gratis. El nonce de la CSP se lo pone el middleware.
+export const BEACON_CF = `<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script>`;
+
 export function tituloBuscador(titulo) {
   const t = String(titulo ?? "");
   const sin = t.replace(/\s*\|\s*Costaviva\s*$/, "");
@@ -206,6 +212,7 @@ ${cuerpo}
   <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/aprende">Aprende a pescar</a> · <a href="/en/spots" lang="en">New Zealand (English)</a> · <a href="/pt/spots/region/portugal" lang="pt-PT">Portugal (português)</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Datos de mar y tiempo: Open-Meteo (CC BY 4.0). Profundidad: EMODnet Bathymetry (CC BY 4.0). Tipo de fondo: EMODnet Seabed Habitats (CC BY 4.0) y © colaboradores de OpenStreetMap (ODbL). Orientativo: no sirve para navegar. Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial.</p>
 </footer>`}
+${BEACON_CF}
 </body>
 </html>`;
 }
