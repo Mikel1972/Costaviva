@@ -11,6 +11,7 @@ import { REGIONES } from "./_regiones.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
 import { ZONAS_NZ } from "../_lib/nz/zonas-nz.js";
 import { SPOTS } from "../prevision.js";
+import { BEACON_CF } from "../_lib/seo/base.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -112,6 +113,7 @@ ${enlacesHreflang("/mareas", "https://costaviva.org", ["es", "en", "pt"])}
       ${spots.map((s) => `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a></li>`).join("\n      ")}
     </ul>
   </div>
+${BEACON_CF}
 </body>
 </html>`;
 

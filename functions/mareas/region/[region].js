@@ -8,7 +8,7 @@
 
 import { REGIONES, tituloMareasRegion } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
-import { tituloBuscador } from "../../_lib/seo/base.js";
+import { tituloBuscador, BEACON_CF } from "../../_lib/seo/base.js";
 import { zonaMareasNZRespuesta } from "../../_lib/seo/rutas-nz.js";
 import { preguntasMareasRegion, faqHtml, faqLd, lugarRegionEs } from "../../_lib/seo/faq-region.js";
 
@@ -167,6 +167,7 @@ ${faqJson ? `<script type="application/ld+json">${faqJson}</script>` : ""}
     ${faqHtml(preguntas, "es")}
     <p class="cta-sub"><a href="/spots/region/${region.slug}">Qué se pesca en ${nombre}: especies y temporada por spot →</a></p>
   </div>
+${BEACON_CF}
 </body>
 </html>`;
 
