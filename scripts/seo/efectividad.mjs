@@ -16,6 +16,8 @@ import { sumarDias, diasEntre, totalesPaginas, lineaMedida, lineasDias, lineasVi
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const URL_SUPABASE = "https://imncbmizxkorotpeisic.supabase.co";
 const VENTANA_MEDIDAS_DIAS = 60;
+// Hora de Madrid a propósito: el informe sale a las 08:13 de España y «hoy»
+// es el día de España (como el contador visitas_publicas).
 const hoyMadrid = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date());
 
 async function visitas(lineas) {
