@@ -789,6 +789,16 @@
    "cita": "Mercasa, ficha del calamar",
    "fecha_consulta": "2026-11-22",
    "nota": "«Calamar, calamar europeo o chipirón: Loligo vulgaris». Otras denominaciones: chipirón (Andalucía, Asturias), lura (Galicia), txipirón (País Vasco). Calibres: «Entero pequeño o chipirón: 6-8 pzas/kg (-300 g)». «Calamares enanos o Puntillas (Allotheuthis): adultos de pequeño tamaño»."
+  },
+  "fao_lubina": {
+   "titulo": "Cultured Aquatic Species Information Programme — Dicentrarchus labrax (Linnaeus, 1758)",
+   "url": "https://www.fao.org/fishery/docs/CDrom/aquaculture/I1129m/file/en/en_europeanseabass.htm",
+   "editor": "FAO (Organización de las Naciones Unidas para la Alimentación y la Agricultura), texto de Bagni, M., 2009",
+   "tipo": "oficial",
+   "licencia": "Solo se usan los datos (tolerancia a la salinidad y hábitat), citados con enlace; no se reproduce el texto",
+   "cita": "FAO, ficha de la lubina (Cultured Aquatic Species)",
+   "fecha_consulta": "2026-11-23",
+   "nota": "«euryhaline (3‰ to full strength sea water)»; «occur in estuaries and brackishwater lagoons»; «Sometimes they venture upstream into freshwater»; frezan «near to river mouths and estuaries or in littoral areas»."
   }
  },
  "jurisdicciones": {
@@ -1645,7 +1655,20 @@
      "nombre_en": "Soft plastic or minnow"
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "preguntas": [
+    {
+     "pregunta": "¿La lubina es de agua dulce o salada?",
+     "respuesta": "Es un pez de mar, pero aguanta muy bien el agua poco salada: según la FAO tolera desde un 3 ‰ de sal hasta el agua de mar normal. Por eso entra en estuarios, rías y lagunas salobres, y a veces remonta los ríos hasta el agua dulce. Pero lo de entrar en agua dulce es ocasional: freza cerca de las desembocaduras y estuarios o en la costa.",
+     "pregunta_en": "Is sea bass a freshwater or saltwater fish?",
+     "respuesta_en": "It is a sea fish, but it copes very well with low-salinity water: according to FAO it tolerates from 3 ‰ salt up to full-strength seawater. That is why it enters estuaries, rias and brackish lagoons, and sometimes swims upriver into fresh water. But fresh water is only an occasional visit: it spawns near river mouths and estuaries or along the coast.",
+     "pregunta_pt": "O robalo é de água doce ou salgada?",
+     "respuesta_pt": "É um peixe de mar, mas aguenta muito bem água pouco salgada: segundo a FAO tolera desde 3 ‰ de sal até à água do mar normal. Por isso entra em estuários, rias e lagoas salobras, e por vezes sobe os rios até à água doce. Mas a água doce é só uma visita ocasional: desova perto das fozes e estuários ou na costa.",
+     "fuentes": [
+      "fao_lubina"
+     ]
+    }
+   ]
   },
   {
    "id": "sargo",
