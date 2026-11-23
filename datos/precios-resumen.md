@@ -8,4 +8,4 @@
 | Nueva Zelanda | NZD | 11,99 / 97,99 / 83,99 | 17,99 / 146,99 / 125,99 | 6,00 € |
 | Resto del mundo | EUR | 3,99 / 34,99 / 29,99 | 5,99 / 52,99 / 44,99 | 3,99 € |
 
-Cambio BCE del 2026-11-13. Detalle: PRECIOS.md.
+Cambio BCE del 2026-11-20. Detalle: PRECIOS.md.
