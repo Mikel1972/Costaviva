@@ -121,7 +121,9 @@ export function preguntasMareasRegion({ spots, regionSlug, lugar, idioma = "es",
       const p = evento(s, "pleamar"), b = evento(s, "bajamar");
       return p && b ? { s, m: Math.abs(Number(p.altura) - Number(b.altura)) } : null;
     })
-    .filter(Boolean)
+    // Menos de 5 cm no es una marea que se pueda dar por buena (curva casi
+    // plana, p. ej. Guardamar el 2026-11-23 daba 0,0 m): no se cita.
+    .filter((x) => x && x.m >= 0.05)
     .sort((x, y) => x.m - y.m);
   if (carreras.length) {
     const min = carreras[0], max = carreras[carreras.length - 1];
@@ -141,7 +143,8 @@ export function preguntasSpotsRegion({ deTemporada, regionSlug, lugar, mes, idio
   const t = T(idioma);
   const lista = (deTemporada || []).map((e) => e.nombre).filter(Boolean);
   if (!lista.length) return [];
-  const primeras = lista.slice(0, 8).map((n, i) => (i === 0 ? n : n.toLowerCase()));
+  // Sin pasar a minúsculas: «Pez de San Pedro», «European sea bass».
+  const primeras = lista.slice(0, 8);
   const mas = lista.length > 8 ? t.mas(lista.length - 8) : "";
   return [{ pregunta: t.temporadaQ(enLugar(idioma, regionSlug, lugar), mes), respuesta: t.temporadaA(mes, lista.length, primeras.join(", "), mas) }];
 }

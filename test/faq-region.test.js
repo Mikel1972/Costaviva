@@ -44,6 +44,11 @@ test("mareas: en el Mediterráneo dice que hay marea pero pequeña (de los datos
 test("mareas: spots con error o sin datos no cuentan; sin datos, sin preguntas", () => {
   assert.deepEqual(preguntasMareasRegion({ spots: [{ slug: "x", nombre: "X", error: "sin datos" }], regionSlug: "cantabria", lugar: "Cantabria" }), []);
   assert.deepEqual(preguntasMareasRegion({ spots: [{ slug: "x", nombre: "X", marea: { proximas: [] } }], regionSlug: "cantabria", lugar: "Cantabria" }), []);
+  // Una diferencia de menos de 5 cm (curva plana) no se cita como mínimo.
+  const plano = [...MEDI, spot("guardamardelsegura", "Guardamar del Segura", ["12:00", 0.12], ["18:00", 0.1])];
+  const q = preguntasMareasRegion({ spots: plano, regionSlug: "mediterraneo", lugar: "el Mediterráneo" });
+  assert.doesNotMatch(q[2].respuesta, /Guardamar/);
+  assert.match(q[2].respuesta, /de 0,2 m \(Dénia\)/);
   assert.equal(faqLd([]), null);
   assert.equal(faqHtml([]), "");
 });
@@ -65,7 +70,7 @@ test("spots: qué se pesca este mes, de la lista de temporada", () => {
   const dt = ["Abadejo", "Besugo", "Calamar"].map((nombre) => ({ nombre }));
   const q = preguntasSpotsRegion({ deTemporada: dt, regionSlug: "galicia", lugar: "Galicia", mes: "noviembre" });
   assert.equal(q[0].pregunta, "¿Qué se pesca en Galicia en noviembre?");
-  assert.equal(q[0].respuesta, "En noviembre están de temporada 3 especies: Abadejo, besugo, calamar. En esta página están todas, con los meses de cada una.");
+  assert.equal(q[0].respuesta, "En noviembre están de temporada 3 especies: Abadejo, Besugo, Calamar. En esta página están todas, con los meses de cada una.");
   const muchas = Array.from({ length: 11 }, (_, i) => ({ nombre: `Pez${i}` }));
   assert.match(preguntasSpotsRegion({ deTemporada: muchas, regionSlug: "galicia", lugar: "Galicia", mes: "noviembre" })[0].respuesta, /y 3 más\./);
   assert.deepEqual(preguntasSpotsRegion({ deTemporada: [], lugar: "Galicia", mes: "noviembre" }), []);
