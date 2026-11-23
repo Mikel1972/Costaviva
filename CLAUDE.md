@@ -6191,3 +6191,12 @@ inventado: todo sale de los datos de la página (si la diferencia máxima es
 menor de 0,5 m dice «marea pequeña», p. ej. el Mediterráneo). Motivo: el pico
 de impresiones del 14/11 vino de las páginas de región. Prueba:
 `test/faq-region.test.js`. Nueva Zelanda igual (mismo día): mareas de LINZ por zona (`/prevision?region=nz`), sin «tabla» en la respuesta porque esas páginas solo tienen la lista.
+
+## Títulos sin « | Costaviva» (2026-11-23, Mikel: «quítalo»)
+
+Bing Site Scan: 781 avisos «Title too long» (73-93 caracteres; recomienda
+~70). `tituloBuscador()` de `functions/_lib/seo/base.js` quita « | Costaviva»
+del final solo en `<title>` (documento() y las páginas de mareas escritas a
+mano); og:title, twitter:title y JSON-LD conservan la marca. Los títulos se
+siguen escribiendo con la marca: no hace falta tocarlos uno a uno.
+Prueba: `test/titulos.test.js`.

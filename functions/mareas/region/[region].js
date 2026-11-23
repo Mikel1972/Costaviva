@@ -8,6 +8,7 @@
 
 import { REGIONES, tituloMareasRegion } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
+import { tituloBuscador } from "../../_lib/seo/base.js";
 import { zonaMareasNZRespuesta } from "../../_lib/seo/rutas-nz.js";
 import { preguntasMareasRegion, faqHtml, faqLd, lugarRegionEs } from "../../_lib/seo/faq-region.js";
 
@@ -84,7 +85,7 @@ export async function onRequestGet(context) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${escaparHtml(tituloMareasRegion(region))}</title>
+<title>${escaparHtml(tituloBuscador(tituloMareasRegion(region)))}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 ${enlacesHreflang(`/mareas/region/${region.slug}`, "https://costaviva.org", ["es", "en", "pt"])}\n

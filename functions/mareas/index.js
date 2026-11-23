@@ -44,7 +44,7 @@ export async function onRequestGet(context) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva</title>
+<title>Mareas hoy en España y Portugal: pleamar, bajamar y oleaje</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 ${enlacesHreflang("/mareas", "https://costaviva.org", ["es", "en", "pt"])}

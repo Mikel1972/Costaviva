@@ -22,7 +22,7 @@ import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { mareaNZRespuesta } from "../_lib/seo/rutas-nz.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
-import { conCache, pedirConLimite, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "../_lib/seo/base.js";
+import { conCache, pedirConLimite, tituloBuscador, TTL_CON_DATOS_S, TTL_SIN_DATOS_S } from "../_lib/seo/base.js";
 import { esSpotIberia } from "../_lib/seo/paginas-ib.js";
 
 const DORADO = "#A8792A";
@@ -174,7 +174,7 @@ export function renderizarPagina(spot, todos) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${escaparHtml(titulo)}</title>
+<title>${escaparHtml(tituloBuscador(titulo))}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 ${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "en", "pt"])}\n` : ""}<meta property="og:type" content="website" />
