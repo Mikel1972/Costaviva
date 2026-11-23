@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
@@ -181,6 +181,9 @@
     font-family: var(--f-texto); font-size: 13px;
   }
   input:focus { outline: none; border-color: var(--acento); }
+  /* Sin user-scalable=no (accesibilidad, 2026-11-23): con 16 px el iPhone no
+     hace zoom al tocar un campo. */
+  @media (max-width: 760px) { input:not([type="checkbox"]) { font-size: 16px; } }
   button {
     width: 100%; margin-top: 8px; padding: 8px; border-radius: 7px; border: none;
     background: var(--degradado-fuerte); color: var(--sobre-acento); font-weight: 800; font-size: 13px;
@@ -234,7 +237,7 @@
 <body>
 
 <video class="video-fondo" autoplay muted loop playsinline poster="/assets/hero-peces-poster.jpg">
-  <source media="(max-width: 760px)" srcset="/assets/hero-peces-movil.mp4" type="video/mp4" />
+  <source media="(max-width: 760px)" src="/assets/hero-peces-movil.mp4" type="video/mp4" />
   <source src="/assets/hero-peces.webm" type="video/webm" />
   <source src="/assets/hero-peces.mp4" type="video/mp4" />
 </video>
