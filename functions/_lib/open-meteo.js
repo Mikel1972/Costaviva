@@ -84,7 +84,11 @@ export async function pedirOpenMeteo(api, consulta, { apiKey = "", fetchImpl = f
   try {
     resp = await fetchImpl(url, { ...init, headers: { "User-Agent": USER_AGENT, ...(init.headers || {}) } });
   } catch (e) {
-    throw new Error(`Open-Meteo (${api}) sin respuesta: ${urlSinClave(String(e?.message || e))}`);
+    const err = new Error(`Open-Meteo (${api}) sin respuesta: ${urlSinClave(String(e?.message || e))}`);
+    // Sin código HTTP (red caída, «fetch failed»): fuentes.js también tira
+    // del respaldo (2026-11-23: 5 de 22 pasadas del robot de la previsión).
+    err.sinRespuesta = true;
+    throw err;
   }
   if (!resp.ok) {
     const err = new Error(`Open-Meteo (${api}) HTTP ${resp.status} (${urlSinClave(url)})`);
