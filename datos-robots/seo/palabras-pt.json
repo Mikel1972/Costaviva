@@ -1,6 +1,6 @@
 {
-  "generado": "2026-11-16T12:54:48.938Z",
-  "semana": "2026-11-02",
+  "generado": "2026-11-23T14:55:37.282Z",
+  "semana": "2026-11-09",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
     {
@@ -8,10 +8,10 @@
       "mercado": "pt",
       "grupo": "marea",
       "puntuacion": 69,
-      "tendencia": "baja",
-      "tendencia_pct": -41,
+      "tendencia": "sube",
+      "tendencia_pct": 65,
       "estacionalidad": {
-        "indice_mes_actual": 1.2,
+        "indice_mes_actual": 1.21,
         "picos": [
           1,
           3,
@@ -39,7 +39,7 @@
       "grupo": "tecnica",
       "puntuacion": 44,
       "tendencia": "estable",
-      "tendencia_pct": -9,
+      "tendencia_pct": -2,
       "estacionalidad": null,
       "url": null,
       "gsc_posicion": null
@@ -64,7 +64,7 @@
       "tendencia_pct": -11,
       "estacionalidad": null,
       "url": "/especies/lubina",
-      "gsc_posicion": 76
+      "gsc_posicion": 98
     },
     {
       "termino": "surfcasting",
@@ -72,10 +72,21 @@
       "grupo": "tecnica",
       "puntuacion": 28,
       "tendencia": "sube",
-      "tendencia_pct": 19,
+      "tendencia_pct": 39,
       "estacionalidad": null,
       "url": null,
       "gsc_posicion": null
+    },
+    {
+      "termino": "pescas",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 26,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 86
     },
     {
       "termino": "pesca ao robalo",
@@ -83,7 +94,7 @@
       "grupo": "especie",
       "puntuacion": 26,
       "tendencia": "baja",
-      "tendencia_pct": -30,
+      "tendencia_pct": -31,
       "estacionalidad": {
         "indice_mes_actual": 1.03,
         "picos": [
@@ -95,23 +106,12 @@
       "gsc_posicion": null
     },
     {
-      "termino": "pescas",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 25,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 86
-    },
-    {
       "termino": "pesca à dourada",
       "mercado": "pt",
       "grupo": "especie",
       "puntuacion": 22,
       "tendencia": "baja",
-      "tendencia_pct": -20,
+      "tendencia_pct": -21,
       "estacionalidad": {
         "indice_mes_actual": 0.96,
         "picos": [
@@ -142,18 +142,18 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 8.3
+      "gsc_posicion": 7.9
     },
     {
-      "termino": "pesca em portugal",
+      "termino": "pesqueiros portugal",
       "mercado": "pt",
-      "grupo": "region",
+      "grupo": "descubierto",
       "puntuacion": 19,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 58.8
+      "gsc_posicion": 8.7
     },
     {
       "termino": "pesca ao sargo",
@@ -161,7 +161,7 @@
       "grupo": "especie",
       "puntuacion": 19,
       "tendencia": "baja",
-      "tendencia_pct": -19,
+      "tendencia_pct": -20,
       "estacionalidad": {
         "indice_mes_actual": 0.92,
         "picos": [
@@ -175,10 +175,21 @@
       "gsc_posicion": null
     },
     {
+      "termino": "pesca em portugal",
+      "mercado": "pt",
+      "grupo": "region",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 58.8
+    },
+    {
       "termino": "pescado portugal",
       "mercado": "pt",
       "grupo": "descubierto",
-      "puntuacion": 18,
+      "puntuacion": 17,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
@@ -186,21 +197,10 @@
       "gsc_posicion": 80.3
     },
     {
-      "termino": "pesqueiros portugal",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 7.7
-    },
-    {
       "termino": "mareas portugal",
       "mercado": "pt",
       "grupo": "descubierto",
-      "puntuacion": 15,
+      "puntuacion": 16,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
@@ -227,15 +227,15 @@
       "gsc_posicion": null
     },
     {
-      "termino": "lubinas",
+      "termino": "costaviva",
       "mercado": "pt",
       "grupo": "descubierto",
       "puntuacion": 14,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/especies/lubina",
-      "gsc_posicion": 69
+      "url": "/",
+      "gsc_posicion": 3
     },
     {
       "termino": "maree portugal",
@@ -247,6 +247,17 @@
       "estacionalidad": null,
       "url": "/mareas/region/portugal",
       "gsc_posicion": 76
+    },
+    {
+      "termino": "nomes de peixes portugueses",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 14,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 61
     },
     {
       "termino": "peixe da costa portuguesa",
@@ -348,25 +359,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "pesca à linha",
-      "mercado": "pt",
-      "grupo": "tecnica",
-      "puntuacion": 11,
-      "tendencia": "baja",
-      "tendencia_pct": -39,
-      "estacionalidad": {
-        "indice_mes_actual": 1.38,
-        "picos": [
-          1,
-          3,
-          11
-        ],
-        "estacional": false
-      },
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": null
-    },
-    {
       "termino": "pesca à lula",
       "mercado": "pt",
       "grupo": "especie",
@@ -382,6 +374,25 @@
         "estacional": false
       },
       "url": "/pt/especies/calamar",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca à linha",
+      "mercado": "pt",
+      "grupo": "tecnica",
+      "puntuacion": 8,
+      "tendencia": "baja",
+      "tendencia_pct": -44,
+      "estacionalidad": {
+        "indice_mes_actual": 1.39,
+        "picos": [
+          1,
+          3,
+          11
+        ],
+        "estacional": false
+      },
+      "url": "/pt/spots/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -415,6 +426,17 @@
       "gsc_posicion": null
     },
     {
+      "termino": "hora das mares faro",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/mareas/faro",
+      "gsc_posicion": null
+    },
+    {
       "termino": "licença de pesca lúdica",
       "mercado": "pt",
       "grupo": "normativa",
@@ -423,6 +445,17 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mare baixa  lagos",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/mareas/lagos",
       "gsc_posicion": null
     },
     {
@@ -569,6 +602,17 @@
       "gsc_posicion": null
     },
     {
+      "termino": "mares sines preia mar outubro 2026",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/mareas/sines",
+      "gsc_posicion": null
+    },
+    {
       "termino": "marés Tróia",
       "mercado": "pt",
       "grupo": "spot",
@@ -686,7 +730,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/pt/spots/aveiro",
+      "url": "/pt/spots",
       "gsc_posicion": null
     },
     {
@@ -844,6 +888,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "preia mar dia 14 peniche",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/mareas/peniche",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "preia mar faro",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/mareas/faro",
+      "gsc_posicion": null
+    },
+    {
       "termino": "preia-mar",
       "mercado": "pt",
       "grupo": "marea",
@@ -862,7 +928,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/pt/spots/aveiro",
+      "url": "/pt/spots",
       "gsc_posicion": null
     },
     {

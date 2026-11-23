@@ -1,6 +1,6 @@
 {
-  "generado": "2026-11-16T12:54:48.938Z",
-  "semana": "2026-11-02",
+  "generado": "2026-11-23T14:55:37.282Z",
+  "semana": "2026-11-09",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
     {
@@ -8,8 +8,8 @@
       "mercado": "nz",
       "grupo": "marea",
       "puntuacion": 80,
-      "tendencia": "sube",
-      "tendencia_pct": 67,
+      "tendencia": "estable",
+      "tendencia_pct": 0,
       "estacionalidad": {
         "indice_mes_actual": 1.08,
         "picos": [
@@ -24,7 +24,7 @@
       "termino": "tarakihi",
       "mercado": "nz",
       "grupo": "especie",
-      "puntuacion": 50,
+      "puntuacion": 46,
       "tendencia": "sube",
       "tendencia_pct": 60,
       "estacionalidad": {
@@ -38,17 +38,6 @@
       },
       "url": "/en/species/nz-tarakihi",
       "gsc_posicion": null
-    },
-    {
-      "termino": "fishing spots near me",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 30,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/spots",
-      "gsc_posicion": 98
     },
     {
       "termino": "kingfish fishing",
@@ -68,23 +57,12 @@
       "gsc_posicion": null
     },
     {
-      "termino": "high tide today",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 25,
-      "tendencia": "baja",
-      "tendencia_pct": -14,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
-    {
       "termino": "kahawai fishing",
       "mercado": "nz",
       "grupo": "especie",
       "puntuacion": 25,
       "tendencia": "estable",
-      "tendencia_pct": -7,
+      "tendencia_pct": -8,
       "estacionalidad": {
         "indice_mes_actual": 0.98,
         "picos": [
@@ -102,7 +80,7 @@
       "grupo": "tecnica",
       "puntuacion": 22,
       "tendencia": "baja",
-      "tendencia_pct": -17,
+      "tendencia_pct": -20,
       "estacionalidad": {
         "indice_mes_actual": 1.04,
         "picos": [
@@ -114,6 +92,17 @@
       "gsc_posicion": null
     },
     {
+      "termino": "kina beach tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 29.3
+    },
+    {
       "termino": "ocean fun tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -123,6 +112,17 @@
       "estacionalidad": null,
       "url": "/en/tides/nz-halfmoon-bay",
       "gsc_posicion": 60.3
+    },
+    {
+      "termino": "aramoana tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 51
     },
     {
       "termino": "bay of islands tides",
@@ -147,7 +147,7 @@
       "gsc_posicion": 87
     },
     {
-      "termino": "kina beach tides",
+      "termino": "high tide paihia",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 20,
@@ -155,7 +155,7 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 29
+      "gsc_posicion": 37.5
     },
     {
       "termino": "mangawhai tides",
@@ -180,6 +180,17 @@
       "gsc_posicion": 95
     },
     {
+      "termino": "moeraki tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 44.5
+    },
+    {
       "termino": "ngawi tides today",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -191,17 +202,6 @@
       "gsc_posicion": 87
     },
     {
-      "termino": "oceanfun tides",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 20,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/nz-halfmoon-bay",
-      "gsc_posicion": 56
-    },
-    {
       "termino": "okiwi bay tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -211,6 +211,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 49
+    },
+    {
+      "termino": "opito bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 33.5
     },
     {
       "termino": "otaki tide times",
@@ -246,7 +257,18 @@
       "gsc_posicion": 58.5
     },
     {
-      "termino": "tides pohara",
+      "termino": "snapper",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/nz-snapper",
+      "gsc_posicion": 60.5
+    },
+    {
+      "termino": "tata beach tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 20,
@@ -254,10 +276,21 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 35
+      "gsc_posicion": 60.5
     },
     {
-      "termino": "waimamaku tides",
+      "termino": "tides tolaga bay",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-tolaga-bay-wharf",
+      "gsc_posicion": 17.5
+    },
+    {
+      "termino": "warrington tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 20,
@@ -265,32 +298,23 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 38
+      "gsc_posicion": 34
     },
     {
-      "termino": "waitaki tides",
+      "termino": "snapper fishing",
       "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 20,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 67.5
-    },
-    {
-      "termino": "soft bait fishing",
-      "mercado": "nz",
-      "grupo": "tecnica",
+      "grupo": "especie",
       "puntuacion": 20,
       "tendencia": "baja",
-      "tendencia_pct": -11,
+      "tendencia_pct": -12,
       "estacionalidad": {
-        "indice_mes_actual": 0.96,
-        "picos": [],
+        "indice_mes_actual": 1.04,
+        "picos": [
+          1
+        ],
         "estacional": false
       },
-      "url": null,
+      "url": "/en/species/nz-snapper",
       "gsc_posicion": null
     },
     {
@@ -327,7 +351,7 @@
       "gsc_posicion": 70
     },
     {
-      "termino": "aramoana tides",
+      "termino": "beach tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -335,7 +359,7 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 71
+      "gsc_posicion": 31
     },
     {
       "termino": "blueskin bay tides",
@@ -426,6 +450,17 @@
       "gsc_posicion": 89
     },
     {
+      "termino": "clarks beach tide",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 5
+    },
+    {
       "termino": "fishing and tide times",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -448,6 +483,39 @@
       "gsc_posicion": 90
     },
     {
+      "termino": "fishing hot spots",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots",
+      "gsc_posicion": 51
+    },
+    {
+      "termino": "fishing species",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species",
+      "gsc_posicion": 59
+    },
+    {
+      "termino": "fishing spots near me",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots",
+      "gsc_posicion": 98
+    },
+    {
       "termino": "fishing spots new zealand",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -457,6 +525,28 @@
       "estacionalidad": null,
       "url": "/en/spots",
       "gsc_posicion": 50
+    },
+    {
+      "termino": "french bay tide",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 3
+    },
+    {
+      "termino": "glinks gully tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 76
     },
     {
       "termino": "goat island tide times",
@@ -514,6 +604,17 @@
       "gsc_posicion": 37
     },
     {
+      "termino": "helensville tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 34
+    },
+    {
       "termino": "high and low tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -547,7 +648,7 @@
       "gsc_posicion": 36
     },
     {
-      "termino": "high tide paihia",
+      "termino": "high tide kaiapoi",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -555,7 +656,7 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 64
+      "gsc_posicion": 47
     },
     {
       "termino": "high tide takaka",
@@ -657,7 +758,7 @@
       "gsc_posicion": 89
     },
     {
-      "termino": "kairaki tides",
+      "termino": "kaiapoi tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -665,7 +766,40 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 47
+      "gsc_posicion": 24
+    },
+    {
+      "termino": "kaiaua tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 38
+    },
+    {
+      "termino": "kaipara tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 76
+    },
+    {
+      "termino": "kaipara tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 90
     },
     {
       "termino": "kennedy bay tides",
@@ -745,6 +879,17 @@
       "gsc_posicion": 75
     },
     {
+      "termino": "low tide paraparaumu",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 5
+    },
+    {
       "termino": "low tide tutukaka",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -789,17 +934,6 @@
       "gsc_posicion": 83
     },
     {
-      "termino": "moeraki tides today",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 79
-    },
-    {
       "termino": "monkey island tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -820,6 +954,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 30
+    },
+    {
+      "termino": "new zealand snapper",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/nz-snapper",
+      "gsc_posicion": 74
     },
     {
       "termino": "niwa tides",
@@ -844,6 +989,17 @@
       "gsc_posicion": 29
     },
     {
+      "termino": "oceanfun tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 77
+    },
+    {
       "termino": "ofu tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -864,17 +1020,6 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 99
-    },
-    {
-      "termino": "ohope tide times",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 56
     },
     {
       "termino": "okahu bay tides",
@@ -908,17 +1053,6 @@
       "estacionalidad": null,
       "url": "/en/tides/nz-halfmoon-bay",
       "gsc_posicion": 24
-    },
-    {
-      "termino": "opito bay tides",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 35
     },
     {
       "termino": "opotiki tides",
@@ -1031,6 +1165,17 @@
       "gsc_posicion": 40
     },
     {
+      "termino": "pohara tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 28
+    },
+    {
       "termino": "port albert tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -1051,6 +1196,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 98
+    },
+    {
+      "termino": "pukenui tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 35
     },
     {
       "termino": "rabbit island tides",
@@ -1119,6 +1275,17 @@
       "gsc_posicion": 91
     },
     {
+      "termino": "snapper new zealand",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/nz-snapper",
+      "gsc_posicion": 12
+    },
+    {
       "termino": "snapper season nz",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -1185,28 +1352,6 @@
       "gsc_posicion": 95
     },
     {
-      "termino": "tata beach tides",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 94
-    },
-    {
-      "termino": "tawharanui tide times",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 34
-    },
-    {
       "termino": "tawharanui tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -1227,6 +1372,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 74
+    },
+    {
+      "termino": "tide charts nz",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 38
     },
     {
       "termino": "tide paihia",
@@ -1271,17 +1427,6 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 58
-    },
-    {
-      "termino": "tide times foxton",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 45
     },
     {
       "termino": "tide times kaiapoi",
@@ -1405,6 +1550,17 @@
       "gsc_posicion": 46
     },
     {
+      "termino": "tides haumoana",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 35
+    },
+    {
       "termino": "tides houhora",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -1414,6 +1570,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 98
+    },
+    {
+      "termino": "tides kaipara harbour",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 95
     },
     {
       "termino": "tides kawau island",
@@ -1427,6 +1594,28 @@
       "gsc_posicion": 67
     },
     {
+      "termino": "tides marokopa",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 31
+    },
+    {
+      "termino": "tides mt maunganui",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 6
+    },
+    {
       "termino": "tides opotiki",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -1436,6 +1625,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 86
+    },
+    {
+      "termino": "tides ruakaka",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 2
     },
     {
       "termino": "tides schedule",
@@ -1458,17 +1658,6 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 46
-    },
-    {
-      "termino": "tides tolaga bay",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/nz-tolaga-bay-wharf",
-      "gsc_posicion": 16
     },
     {
       "termino": "tides tutukaka",
@@ -1592,7 +1781,7 @@
       "gsc_posicion": 6
     },
     {
-      "termino": "whangaparaoa tide",
+      "termino": "waitaki tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -1600,7 +1789,18 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 34
+      "gsc_posicion": 66
+    },
+    {
+      "termino": "waitarere tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 85
     },
     {
       "termino": "whangaparaoa tide times",
@@ -1612,6 +1812,17 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 72
+    },
+    {
+      "termino": "whangaparaoa tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 59
     },
     {
       "termino": "whangaparaoa tides today",
@@ -1636,20 +1847,29 @@
       "gsc_posicion": 43
     },
     {
-      "termino": "snapper fishing",
+      "termino": "soft bait fishing",
       "mercado": "nz",
-      "grupo": "especie",
+      "grupo": "tecnica",
       "puntuacion": 18,
       "tendencia": "baja",
-      "tendencia_pct": -11,
+      "tendencia_pct": -14,
       "estacionalidad": {
-        "indice_mes_actual": 1.04,
-        "picos": [
-          1
-        ],
+        "indice_mes_actual": 0.96,
+        "picos": [],
         "estacional": false
       },
-      "url": "/en/species/nz-snapper",
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "high tide today",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 17,
+      "tendencia": "baja",
+      "tendencia_pct": -17,
+      "estacionalidad": null,
+      "url": "/en/tides",
       "gsc_posicion": null
     },
     {
@@ -1658,13 +1878,13 @@
       "grupo": "tecnica",
       "puntuacion": 15,
       "tendencia": "baja",
-      "tendencia_pct": -27,
+      "tendencia_pct": -38,
       "estacionalidad": {
-        "indice_mes_actual": 1.09,
+        "indice_mes_actual": 1.11,
         "picos": [],
         "estacional": false
       },
-      "url": null,
+      "url": "/en/aprende/equipo-jigging",
       "gsc_posicion": null
     },
     {
@@ -1673,7 +1893,7 @@
       "grupo": "tecnica",
       "puntuacion": 10,
       "tendencia": "baja",
-      "tendencia_pct": -34,
+      "tendencia_pct": -37,
       "estacionalidad": {
         "indice_mes_actual": 0.9,
         "picos": [
@@ -1681,7 +1901,7 @@
         ],
         "estacional": false
       },
-      "url": null,
+      "url": "/en/aprende/equipo-surfcasting",
       "gsc_posicion": null
     },
     {
@@ -1690,9 +1910,9 @@
       "grupo": "tecnica",
       "puntuacion": 8,
       "tendencia": "baja",
-      "tendencia_pct": -20,
+      "tendencia_pct": -22,
       "estacionalidad": {
-        "indice_mes_actual": 0.79,
+        "indice_mes_actual": 0.8,
         "picos": [
           8,
           7,
@@ -1709,9 +1929,9 @@
       "grupo": "especie",
       "puntuacion": 5,
       "tendencia": "sube",
-      "tendencia_pct": 50,
+      "tendencia_pct": 45,
       "estacionalidad": {
-        "indice_mes_actual": 0.87,
+        "indice_mes_actual": 0.88,
         "picos": [
           1
         ],
@@ -1726,15 +1946,114 @@
       "grupo": "tecnica",
       "puntuacion": 3,
       "tendencia": "baja",
-      "tendencia_pct": -51,
+      "tendencia_pct": -52,
       "estacionalidad": {
-        "indice_mes_actual": 1.02,
+        "indice_mes_actual": 1.03,
         "picos": [
           9
         ],
         "estacional": true
       },
       "url": "/en/spots",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "+what is the best day to go boatfishing of taranaki",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/taranaki",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "+what is the best day to go boatfishing of taranaki coming week",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/taranaki",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "a que hora es bajamar hoy en bakio ?",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/bakio",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "abade fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/abade",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "abadejo fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/abadejo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "aligote fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/aligote",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "aligote hay en el editerraneo",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/aligote",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "anjova fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/anjova",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "are there any good fishing spots landbased around picton this time fo year",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-picton",
       "gsc_posicion": null
     },
     {
@@ -1749,6 +2068,50 @@
       "gsc_posicion": null
     },
     {
+      "termino": "atun rojo fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/atun-rojo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "bacoreta fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/bacoreta",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "bajamar santander mañana",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/santander",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "bajamar y pleamar santander",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/santander",
+      "gsc_posicion": null
+    },
+    {
       "termino": "best time to fish",
       "mercado": "nz",
       "grupo": "prevision",
@@ -1757,6 +2120,28 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "besugo fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/besugo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "bicuda fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/bicuda",
       "gsc_posicion": null
     },
     {
@@ -1782,6 +2167,39 @@
       "gsc_posicion": null
     },
     {
+      "termino": "bocinegro fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/bocinegro",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "bonito norte fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/bonito-norte",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "breca fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/breca",
+      "gsc_posicion": null
+    },
+    {
       "termino": "butterfish fishing",
       "mercado": "nz",
       "grupo": "especie",
@@ -1790,6 +2208,237 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/species/nz-butterfish",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "caballa fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/caballa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "cabracho fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/cabracho",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "cabrilla fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/cabrilla",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "calamar fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/calamar",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "chicharro canario fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/chicharro-canario",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "chopa fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/chopa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "congrio fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/congrio",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "coromandel good day for fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-coromandel-town",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "coromandel town fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-coromandel-town",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "corvina fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/corvina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "cuándo es temporada de cabracho",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/cabracho",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "cuando se pesca la sepia en costa",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/equipo-spinning-costa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "cuando sera la bajamar hoy en malaga",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/malaga",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "denton fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/denton",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "does cape reinga nz have good fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-cape-reinga",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "donde se pesac el conngrio",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/donde-no-fondear",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "donde se pesca el atun alalunga",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/donde-no-fondear",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "donde se pesca la merluza",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/donde-no-fondear",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "dorada fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/dorada",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "faneca fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/faneca",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing asturias",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/asturias",
       "gsc_posicion": null
     },
     {
@@ -1815,6 +2464,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "fishing canarias",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/canarias",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing cantabria",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/cantabria",
+      "gsc_posicion": null
+    },
+    {
       "termino": "fishing canterbury",
       "mercado": "nz",
       "grupo": "region",
@@ -1823,6 +2494,28 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/spots/region/canterbury",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing castlepoint nz",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-castlepoint",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing conditions tauranga today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-tauranga",
       "gsc_posicion": null
     },
     {
@@ -1859,6 +2552,17 @@
       "gsc_posicion": null
     },
     {
+      "termino": "fishing galicia",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/galicia",
+      "gsc_posicion": null
+    },
+    {
       "termino": "fishing gisborne hawkes bay",
       "mercado": "nz",
       "grupo": "region",
@@ -1867,6 +2571,28 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/spots/region/gisborne-hawkes-bay",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing golfo de cadiz",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/golfo-de-cadiz",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing mediterraneo",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/mediterraneo",
       "gsc_posicion": null
     },
     {
@@ -1903,6 +2629,39 @@
       "gsc_posicion": null
     },
     {
+      "termino": "fishing pais vasco",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/pais-vasco",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing portugal",
+      "mercado": "nz",
+      "grupo": "region",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/portugal",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing rating for today new plymouth port",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-new-plymouth",
+      "gsc_posicion": null
+    },
+    {
       "termino": "fishing rules nz",
       "mercado": "nz",
       "grupo": "normativa",
@@ -1922,6 +2681,17 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/spots/region/southland",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing spots mangawhai",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-mangawhai-heads",
       "gsc_posicion": null
     },
     {
@@ -1980,6 +2750,39 @@
       "gsc_posicion": null
     },
     {
+      "termino": "french pass tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-french-pass",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fshing spots mangawhai",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-mangawhai-heads",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "gallo fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/gallo",
+      "gsc_posicion": null
+    },
+    {
       "termino": "hapuku fishing",
       "mercado": "nz",
       "grupo": "especie",
@@ -1988,6 +2791,39 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/species/nz-hapuku",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "herrera fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/herrera",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "hora das mares faro",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/faro",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "horas marea baja san vicente de la barquera",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/nudo-san-diego-jam",
       "gsc_posicion": null
     },
     {
@@ -2002,6 +2838,39 @@
       "gsc_posicion": null
     },
     {
+      "termino": "jurel fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/jurel",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "kaiteriteri beach shore fishing rocks fishing restrictions swimming boat zone",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-ninety-mile-beach",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "la mar en comillas hoy",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/comillas",
+      "gsc_posicion": null
+    },
+    {
       "termino": "land based fishing",
       "mercado": "nz",
       "grupo": "tecnica",
@@ -2010,6 +2879,325 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/spots",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lenguado fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/lenguado",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lisa fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/lisa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "llampuga fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/llampuga",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "low tides auckland hauraki gulf",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/region/auckland-hauraki-gulf",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lubina fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/lubina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lure for maragota",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/maragota",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mapa de mareas de almeria",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/almeria",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mara zarautz hoy",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/zarautz",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "maragota",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/maragota",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "maragota al hor",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/maragota",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "maragota fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/maragota",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "maragota pescado",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/maragota",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "maragota pez",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/montaje-deriva-pez-plano",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mare baixa  lagos",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/lagos",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "marea hoy en zarautz",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/zarautz",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mareas  malaga",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/malaga",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mareas en mareas en getxo",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/getxo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mareas málaga hoy pleamar bajamar",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/malaga",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mareas ondarroa",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/ondarroa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mares sines preia mar outubro 2026",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/sines",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "medregal fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/medregal",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mejores zonas de pesca palma mallorca en embarcacion",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/palma",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "merluza fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/merluza",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mero fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/mero",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "meses pesca atun rojo en cantabrico",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/atun-rojo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mojarra fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/mojarra",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "oblada fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/oblada",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "opunake beach fishin",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-ninety-mile-beach",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "palometa fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/palometa",
       "gsc_posicion": null
     },
     {
@@ -2024,256 +3212,168 @@
       "gsc_posicion": null
     },
     {
-      "termino": "red cod fishing",
+      "termino": "pesca de chopa",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/chopa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca de corvina americana",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/corvina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pescado abade canarias",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/canarias",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pescado de fondo habitual de cadiz",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/region/golfo-de-cadiz",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pez limon al orio",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/pez-limon",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pez limon donde españa",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/pez-limon",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pez limon fishing",
       "mercado": "nz",
       "grupo": "especie",
       "puntuacion": 0,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/en/species/nz-red-cod",
+      "url": "/en/species/pez-limon",
       "gsc_posicion": null
     },
     {
-      "termino": "red gurnard fishing",
+      "termino": "pez maragota",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/aprende/montaje-deriva-pez-plano",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "picton fishing species",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-picton",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "picton fishing spots new zealand",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 0,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots/nz-picton",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pintarroja fishing",
       "mercado": "nz",
       "grupo": "especie",
       "puntuacion": 0,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/en/species/nz-red-gurnard",
+      "url": "/en/species/pintarroja",
       "gsc_posicion": null
     },
     {
-      "termino": "rock lobster fishing",
+      "termino": "pleamar  malaga",
       "mercado": "nz",
-      "grupo": "especie",
+      "grupo": "descubierto",
       "puntuacion": 0,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/en/species/nz-rock-lobster",
+      "url": "/en/spots/malaga",
       "gsc_posicion": null
     },
     {
-      "termino": "sand flounder fishing",
+      "termino": "pleamares hoy en zarautz",
       "mercado": "nz",
-      "grupo": "especie",
+      "grupo": "descubierto",
       "puntuacion": 0,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/en/species/nz-sand-flounder",
+      "url": "/en/spots/zarautz",
       "gsc_posicion": null
     },
     {
-      "termino": "solunar fishing times",
+      "termino": "preia mar dia 14 peniche",
       "mercado": "nz",
-      "grupo": "prevision",
+      "grupo": "descubierto",
       "puntuacion": 0,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": null,
+      "url": "/en/spots/peniche",
       "gsc_posicion": null
     },
     {
-      "termino": "tarakihi fishing",
+      "termino": "preia mar faro",
       "mercado": "nz",
-      "grupo": "especie",
+      "grupo": "descubierto",
       "puntuacion": 0,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/en/species/nz-tarakihi",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide chart nz",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times auckland hauraki gulf",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/auckland-hauraki-gulf",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times bay of plenty",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/bay-of-plenty",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times canterbury",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/canterbury",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times coromandel",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/coromandel",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times fiordland",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/fiordland",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times gisborne hawkes bay",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/gisborne-hawkes-bay",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times nelson marlborough",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/nelson-marlborough",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times northland",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/northland",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times otago",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/otago",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times southland",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/southland",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times taranaki",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/taranaki",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times waikato west coast",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/waikato-west-coast",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times wellington",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/wellington",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times west coast",
-      "mercado": "nz",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides/region/west-coast",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "trevally fishing",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-trevally",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "yellowbelly flounder fishing",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-yellowbelly-flounder",
+      "url": "/en/spots/faro",
       "gsc_posicion": null
     }
   ]
