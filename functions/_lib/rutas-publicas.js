@@ -64,6 +64,7 @@ const ARCHIVOS_PUBLICOS = new Set([
 
   // Estáticos de la raíz.
   "/icon.svg",
+  "/favicon.ico", // los navegadores y Google lo piden aunque haya icon.svg (2026-11-23, 404 en Search Console)
   "/manifest.json",
   "/sw.js", // service worker del diario sin cobertura (2026-11-19)
   "/robots.txt",
