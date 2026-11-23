@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-23T15:37:53.271Z",
- "lineasHistorial": 12716,
+ "fecha": "2026-11-23T17:37:20.095Z",
+ "lineasHistorial": 12717,
  "etiquetas": 1407,
  "etiquetasClaude": 262,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.103
   },
   "zarautz/dinamico": {
-   "a": 2.8578,
+   "a": 2.8573,
    "p": 0.5,
-   "n": 1027,
+   "n": 1028,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
