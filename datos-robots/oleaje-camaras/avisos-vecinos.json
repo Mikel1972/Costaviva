@@ -1,15 +1,7 @@
 {
- "actualizado": "2026-11-23T12:09:47.296Z",
+ "actualizado": "2026-11-23T12:40:05.706Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "sopelana",
-   "alto": 3,
-   "bajo": 0,
-   "spots": [
-    "sopelana"
-   ]
-  },
   {
    "clave": "orio",
    "alto": 4,
@@ -21,7 +13,7 @@
   {
    "clave": "hondarribia",
    "alto": 5,
-   "bajo": 4,
+   "bajo": 6,
    "spots": [
     "hondarribia"
    ]
@@ -1250,6 +1242,33 @@
    "antes": 1.1,
    "referencia": 1,
    "visto": "2026-11-23T10:40:22.813Z"
+  },
+  {
+   "slug": "zumaia",
+   "camara": "zumaia",
+   "tipo": "alto",
+   "horaISO": "2026-11-24T12:00",
+   "antes": 0.6,
+   "referencia": 0.5,
+   "visto": "2026-11-23T12:40:05.706Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-24T09:00",
+   "antes": 0.1,
+   "referencia": null,
+   "visto": "2026-11-23T12:40:05.706Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-24T12:00",
+   "antes": 0.1,
+   "referencia": null,
+   "visto": "2026-11-23T12:40:05.706Z"
   }
  ]
 }
