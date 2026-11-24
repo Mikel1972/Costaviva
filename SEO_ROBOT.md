@@ -67,3 +67,13 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - Huecos dejados: "spinning" y demás técnicas, sin datos reales con fuente en la app; NZ ("fishing spots near me", mareas por bahía): sin páginas con datos para ello esta pasada.
 - PARTE A y B: ninguna; sin datos que lo justifiquen. PARTE D (DeepL): día 20, no aplica; KPIs solo martes.
 - Esperado próxima pasada: PR fusionada; 34 indexadas o más; "Descubierta" a la baja; primeros s1 de los términos de /spots.
+
+## 2026-11-24 06:4x UTC (martes)
+- Aviso: SEO_ESTADO.md es del 2026-11-20 21:12 UTC (no de hoy). Números de esa fecha: indexadas 39 de 500 inspeccionadas (8 %; antes 34: +5); sitemap 558 URLs leído por Google; 285 "Google no reconoce esta URL" y 176 "Descubierta: sin indexar"; 461 sin rastrear nunca.
+- País priorizado: España (pais_foco, el más lejos de su objetivo; PT y NZ también en rojo sin huecos trabajables esta pasada).
+- PARTE C (rama robot/palabras-2026-11-24-especies-pescados, commit c9b51f9; la PR la abre robot-diseno-pr.yml): /especies cambia título ("Pescados y especies de pesca de España y Portugal: …") y descripción ("N pescados y peces de pesca recreativa…"); h1 y texto igual. Término: pescados de españa (pos. 24,5, puntuación 18). Sirve al punto 1. Medición en comun seo/palabras/costaviva-es-cambios.json.
+- No toqué las páginas de región (FAQ y títulos cambiados el 23-nov, #611-#612), ni /especies/lubina ni calamar (cambio del 23-oct en medición), ni /mareas/denia (su título depende de la plantilla de los spots, retocada ayer). Técnicas: sin datos reales con fuente.
+- Veredictos: 12-oct pendiente; 23-oct s1 y s2 mejoran (pos. 58,4 → 46,6 / 49,1); 20-nov pendiente. Nada que revertir.
+- KPIs: país en foco España; paso más en rojo, altas (visita → alta). Evaluación de cambios anteriores: sin cambios evaluables todavía. Cambios nuevos: ninguno (con visitas cerca del objetivo y altas a cero, el problema no parece de texto; ver propuesta). Propuesta para Mikel: costaviva-kpis-bajo-suelo (medir clics al botón de prueba gratis por página antes de tocar textos).
+- PARTE A y B: ninguna; sin datos que lo justifiquen. PARTE D (DeepL): día 24, no aplica.
+- Esperado próxima pasada: PR fusionada; 40 o más indexadas; primer s1 de /spots (cambio del 20-nov).
