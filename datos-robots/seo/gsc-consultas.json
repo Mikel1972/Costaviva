@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-24T14:06:33.364Z",
+ "generado": "2026-11-24T14:38:29.723Z",
  "propiedad": "sc-domain:costaviva.org",
  "hasta": "2026-11-21",
  "semanas": [
@@ -58,6 +58,14 @@
    "posicion": 27.9
   }
  ],
+ "semana_en_curso": {
+  "semana": "2026-11-16",
+  "dias": 6,
+  "hasta": "2026-11-21",
+  "clics": 3,
+  "impresiones": 549,
+  "posicion": 27.1
+ },
  "semanas_por_pais": {
   "esp": [
    {
