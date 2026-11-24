@@ -1,10 +1,10 @@
 // Generado por scripts/fuentes/periodo-boyas.mjs. No editar a mano.
 export default {
- "generado": "2026-11-21T14:55:00.069Z",
+ "generado": "2026-11-24T18:14:49.818Z",
  "dias": 30,
  "global": {
-  "pico": 0.988,
-  "medio": 1.285
+  "pico": 0.984,
+  "medio": 1.278
  },
  "boyas": [
   {
@@ -12,71 +12,71 @@ export default {
    "nombre": "Gijón",
    "lat": 43.62,
    "lon": -5.66,
-   "n": 689,
-   "pico": 0.959,
-   "medio": 1.292
+   "n": 691,
+   "pico": 0.956,
+   "medio": 1.29
   },
   {
    "codigo": 1101,
    "nombre": "Pasaia II",
    "lat": 43.36,
    "lon": -1.89,
-   "n": 721,
-   "pico": 0.99,
-   "medio": 1.31
+   "n": 720,
+   "pico": 0.985,
+   "medio": 1.304
   },
   {
    "codigo": 1103,
    "nombre": "AP Bilbao",
    "lat": 43.4,
    "lon": -3.13,
-   "n": 718,
+   "n": 717,
    "pico": 0.956,
-   "medio": 1.297
+   "medio": 1.301
   },
   {
    "codigo": 1239,
    "nombre": "Langosteira (A Coruña)",
    "lat": 43.35,
    "lon": -8.56,
-   "n": 721,
-   "pico": 0.969,
-   "medio": 1.296
+   "n": 720,
+   "pico": 0.966,
+   "medio": 1.279
   },
   {
    "codigo": 1414,
    "nombre": "Las Palmas Este",
    "lat": 28.05,
    "lon": -15.39,
-   "n": 706,
+   "n": 705,
    "pico": null,
-   "medio": 1.257
+   "medio": 1.268
   },
   {
    "codigo": 1421,
    "nombre": "Sta. Cruz de Tenerife",
    "lat": 28.46,
    "lon": -16.23,
-   "n": 720,
+   "n": 719,
    "pico": null,
-   "medio": 1.233
+   "medio": 1.245
   },
   {
    "codigo": 1500,
    "nombre": "Tarifa",
    "lat": 36,
    "lon": -5.59,
-   "n": 721,
-   "pico": 0.786,
-   "medio": 0.768
+   "n": 720,
+   "pico": 0.76,
+   "medio": 0.763
   },
   {
    "codigo": 1504,
    "nombre": "Algeciras-Pta. Carnero",
    "lat": 36.07,
    "lon": -5.42,
-   "n": 719,
-   "pico": 0.857,
+   "n": 720,
+   "pico": 0.883,
    "medio": 0.693
   },
   {
@@ -84,26 +84,26 @@ export default {
    "nombre": "Ceuta",
    "lat": 35.9,
    "lon": -5.33,
-   "n": 716,
-   "pico": 0.887,
-   "medio": 1.007
+   "n": 715,
+   "pico": 0.905,
+   "medio": 1.02
   },
   {
    "codigo": 1514,
    "nombre": "Málaga",
    "lat": 36.69,
    "lon": -4.42,
-   "n": 714,
+   "n": 713,
    "pico": 1.011,
-   "medio": 1.266
+   "medio": 1.268
   },
   {
    "codigo": 1712,
    "nombre": "Tarragona",
    "lat": 41.07,
    "lon": 1.19,
-   "n": 720,
-   "pico": 1.009,
+   "n": 719,
+   "pico": 1,
    "medio": 1.28
   },
   {
@@ -111,9 +111,9 @@ export default {
    "nombre": "Barcelona II",
    "lat": 41.32,
    "lon": 2.2,
-   "n": 710,
-   "pico": 1.02,
-   "medio": 1.316
+   "n": 709,
+   "pico": 1.019,
+   "medio": 1.317
   },
   {
    "codigo": 2136,
@@ -122,7 +122,7 @@ export default {
    "lon": -3.04,
    "n": 712,
    "pico": 0.985,
-   "medio": 1.302
+   "medio": 1.286
   },
   {
    "codigo": 2242,
@@ -130,8 +130,8 @@ export default {
    "lat": 43.72,
    "lon": -6.16,
    "n": 712,
-   "pico": 0.998,
-   "medio": 1.315
+   "pico": 0.996,
+   "medio": 1.302
   },
   {
    "codigo": 2244,
@@ -139,8 +139,8 @@ export default {
    "lat": 43.79,
    "lon": -7.69,
    "n": 713,
-   "pico": 0.984,
-   "medio": 1.287
+   "pico": 0.981,
+   "medio": 1.275
   },
   {
    "codigo": 2246,
@@ -148,17 +148,17 @@ export default {
    "lat": 43.16,
    "lon": -9.21,
    "n": 710,
-   "pico": 0.976,
-   "medio": 1.284
+   "pico": 0.971,
+   "medio": 1.277
   },
   {
    "codigo": 2248,
    "nombre": "Cabo Silleiro",
    "lat": 42.11,
    "lon": -8.9,
-   "n": 673,
-   "pico": 0.998,
-   "medio": 1.316
+   "n": 597,
+   "pico": 0.984,
+   "medio": 1.309
   },
   {
    "codigo": 2342,
@@ -166,8 +166,8 @@ export default {
    "lat": 36.48,
    "lon": -7,
    "n": 710,
-   "pico": 0.943,
-   "medio": 1.236
+   "pico": 0.946,
+   "medio": 1.229
   },
   {
    "codigo": 2442,
@@ -176,7 +176,7 @@ export default {
    "lon": -15.6,
    "n": 713,
    "pico": null,
-   "medio": 1.287
+   "medio": 1.294
   },
   {
    "codigo": 2446,
@@ -185,7 +185,7 @@ export default {
    "lon": -16.6,
    "n": 712,
    "pico": null,
-   "medio": 0.977
+   "medio": 0.984
   },
   {
    "codigo": 2548,
@@ -202,8 +202,8 @@ export default {
    "lat": 37.63,
    "lon": -0.7,
    "n": 713,
-   "pico": 1.027,
-   "medio": 1.318
+   "pico": 1.044,
+   "medio": 1.355
   },
   {
    "codigo": 2720,
@@ -211,8 +211,8 @@ export default {
    "lat": 40.68,
    "lon": 1.47,
    "n": 713,
-   "pico": 1.001,
-   "medio": 1.255
+   "pico": 1,
+   "medio": 1.257
   },
   {
    "codigo": 2798,
@@ -220,8 +220,8 @@ export default {
    "lat": 41.95,
    "lon": 3.23,
    "n": 715,
-   "pico": 0.996,
-   "medio": 1.312
+   "pico": 0.987,
+   "medio": 1.303
   },
   {
    "codigo": 2820,
@@ -229,8 +229,8 @@ export default {
    "lat": 39.58,
    "lon": 2.32,
    "n": 715,
-   "pico": 0.993,
-   "medio": 1.268
+   "pico": 1,
+   "medio": 1.267
   },
   {
    "codigo": 2838,
@@ -238,8 +238,8 @@ export default {
    "lat": 39.87,
    "lon": 4.29,
    "n": 717,
-   "pico": 1.046,
-   "medio": 1.333
+   "pico": 1.044,
+   "medio": 1.33
   }
  ]
 };
