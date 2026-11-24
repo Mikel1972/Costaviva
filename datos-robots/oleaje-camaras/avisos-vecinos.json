@@ -1,19 +1,11 @@
 {
- "actualizado": "2026-11-24T12:40:03.239Z",
+ "actualizado": "2026-11-24T13:09:56.621Z",
  "dias": 7,
  "repetidos": [
   {
-   "clave": "zumaia",
-   "alto": 3,
-   "bajo": 0,
-   "spots": [
-    "zumaia"
-   ]
-  },
-  {
    "clave": "hondarribia",
    "alto": 0,
-   "bajo": 6,
+   "bajo": 4,
    "spots": [
     "hondarribia"
    ]
@@ -28,7 +20,7 @@
   },
   {
    "clave": "bakio",
-   "alto": 4,
+   "alto": 5,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -40,6 +32,14 @@
    "bajo": 0,
    "spots": [
     "orio"
+   ]
+  },
+  {
+   "clave": "zarautz",
+   "alto": 3,
+   "bajo": 0,
+   "spots": [
+    "zarautz"
    ]
   },
   {
@@ -1518,6 +1518,24 @@
    "antes": 0.2,
    "referencia": null,
    "visto": "2026-11-24T12:40:03.239Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-24T21:00",
+   "antes": 0.9,
+   "referencia": 0.8,
+   "visto": "2026-11-24T13:09:56.621Z"
+  },
+  {
+   "slug": "zarautz",
+   "camara": "zarautz",
+   "tipo": "alto",
+   "horaISO": "2026-11-24T15:00",
+   "antes": 0.9,
+   "referencia": 0.6,
+   "visto": "2026-11-24T13:09:56.621Z"
   }
  ]
 }
