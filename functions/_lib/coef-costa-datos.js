@@ -1,11 +1,11 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-21T10:39:29.998Z",
- "n": 1348,
+ "generado": "2026-11-24T00:37:26.657Z",
+ "n": 1355,
  "k": 8,
  "global": {
   "coef": 0.29,
-  "n": 1348
+  "n": 1355
  },
  "camaras": {
   "zarautz": {
@@ -75,7 +75,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.247,
+     "coef": 0.246,
      "n": 28,
      "periodos": {
       "corto": {
@@ -215,11 +215,11 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.19,
+     "coef": 0.189,
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.186,
+       "coef": 0.185,
        "n": 1
       },
       "largo": {
@@ -229,7 +229,7 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.19,
+     "coef": 0.189,
      "n": 6,
      "periodos": {
       "largo": {
@@ -352,7 +352,7 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.269,
+     "coef": 0.268,
      "n": 9,
      "periodos": {
       "largo": {
@@ -372,11 +372,11 @@ export default {
      "n": 9,
      "periodos": {
       "corto": {
-       "coef": 0.613,
+       "coef": 0.614,
        "n": 8
       },
       "largo": {
-       "coef": 0.667,
+       "coef": 0.668,
        "n": 1
       }
      }
@@ -390,7 +390,7 @@ export default {
        "n": 8
       },
       "largo": {
-       "coef": 0.5,
+       "coef": 0.499,
        "n": 2
       }
      }
@@ -412,15 +412,15 @@ export default {
    "n": 33,
    "tamanos": {
     "pequeno": {
-     "coef": 0.503,
+     "coef": 0.504,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.502,
+       "coef": 0.503,
        "n": 1
       },
       "largo": {
-       "coef": 0.547,
+       "coef": 0.548,
        "n": 2
       }
      }
@@ -514,7 +514,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.417,
+     "coef": 0.416,
      "n": 3,
      "periodos": {
       "largo": {
@@ -524,11 +524,11 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.336,
+     "coef": 0.335,
      "n": 1,
      "periodos": {
       "largo": {
-       "coef": 0.344,
+       "coef": 0.343,
        "n": 1
       }
      }
@@ -576,31 +576,31 @@ export default {
    }
   },
   "nz-aramoana": {
-   "coef": 0.28,
-   "n": 13,
+   "coef": 0.281,
+   "n": 14,
    "tamanos": {
     "pequeno": {
-     "coef": 0.315,
-     "n": 11,
+     "coef": 0.314,
+     "n": 12,
      "periodos": {
       "corto": {
-       "coef": 0.309,
-       "n": 11
+       "coef": 0.308,
+       "n": 12
       }
      }
     },
     "medio": {
-     "coef": 0.203,
+     "coef": 0.202,
      "n": 2,
      "periodos": {
       "corto": {
-       "coef": 0.192,
+       "coef": 0.191,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.179,
+     "coef": 0.178,
      "n": 0,
      "periodos": {}
     }
@@ -621,31 +621,31 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.481,
+     "coef": 0.48,
      "n": 0,
      "periodos": {}
     },
     "grande": {
-     "coef": 0.396,
+     "coef": 0.395,
      "n": 0,
      "periodos": {}
     }
    }
   },
   "nz-riverton": {
-   "coef": 0.178,
-   "n": 72,
+   "coef": 0.185,
+   "n": 78,
    "tamanos": {
     "pequeno": {
-     "coef": 0.274,
-     "n": 16,
+     "coef": 0.283,
+     "n": 22,
      "periodos": {
       "corto": {
-       "coef": 0.284,
-       "n": 13
+       "coef": 0.293,
+       "n": 19
       },
       "largo": {
-       "coef": 0.274,
+       "coef": 0.28,
        "n": 3
       }
      }
@@ -659,21 +659,21 @@ export default {
        "n": 43
       },
       "largo": {
-       "coef": 0.158,
+       "coef": 0.159,
        "n": 7
       }
      }
     },
     "grande": {
-     "coef": 0.109,
+     "coef": 0.11,
      "n": 6,
      "periodos": {
       "corto": {
-       "coef": 0.101,
+       "coef": 0.102,
        "n": 3
       },
       "largo": {
-       "coef": 0.101,
+       "coef": 0.102,
        "n": 3
       }
      }
@@ -682,13 +682,13 @@ export default {
   }
  },
  "efectoTamano": {
-  "pequeno": 1.384,
-  "medio": 0.909,
-  "grande": 0.749
+  "pequeno": 1.386,
+  "medio": 0.908,
+  "grande": 0.748
  },
  "globalTamanos": {
-  "pequeno": 0.447,
-  "medio": 0.265,
+  "pequeno": 0.448,
+  "medio": 0.264,
   "grande": 0.203
  }
 };
