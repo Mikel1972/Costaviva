@@ -8,6 +8,7 @@
 //
 // Escribe datos-robots/seo/gsc-consultas.json (privado: datos-robots/ está
 // fuera de la lista blanca de rutas públicas):
+//   semana_en_curso: la semana sin cerrar todavía, con los días que lleva.
 //   semanas: clics, impresiones y posición por semana (lunes a domingo) de
 //            las últimas 16 semanas completas; semanas_por_pais, lo mismo
 //            por país de Search Console ("esp", "prt", "nzl"...).
@@ -48,6 +49,22 @@ export function agruparSemanas(filas, hasta, iFecha = 0) {
     .map((x) => ({ semana: x.semana, clics: x.clics, impresiones: x.impresiones, posicion: x.impresiones ? +(x.posPond / x.impresiones).toFixed(1) : null }));
 }
 
+// La semana que aún no ha acabado (Mikel 2026-11-24: «falta la semana
+// pasada»): Google tarda ~3 días, así que la última semana tarda en cerrarse.
+// Se da aparte, con los días que lleva, para no mezclarla con las completas.
+export function semanaEnCurso(filas, hasta, iFecha = 0) {
+  const completas = new Set(agruparSemanas(filas, hasta, iFecha).map((x) => x.semana));
+  const sem = {};
+  for (const r of filas) {
+    const s = lunesDe(r.keys[iFecha]);
+    if (completas.has(s) || r.keys[iFecha] > hasta) continue;
+    const x = (sem[s] ||= { semana: s, clics: 0, impresiones: 0, posPond: 0, dias: 0 });
+    x.clics += r.clicks; x.impresiones += r.impressions; x.posPond += r.position * r.impressions; x.dias++;
+  }
+  const x = Object.values(sem).sort((a, b) => a.semana.localeCompare(b.semana)).at(-1);
+  return x ? { semana: x.semana, dias: x.dias, hasta, clics: x.clics, impresiones: x.impresiones, posicion: x.impresiones ? +(x.posPond / x.impresiones).toFixed(1) : null } : null;
+}
+
 const ruta = (u) => String(u).replace(/^https?:\/\/[^/]+/, "").replace(/\/$/, "") || "/";
 export const filaConsulta = (r) => ({ query: r.keys[0], pagina: ruta(r.keys[1]), pais: r.keys[2] ?? null, clics: r.clicks, impresiones: r.impressions, posicion: +r.position.toFixed(1) });
 
@@ -76,12 +93,13 @@ async function main() {
   const hasta = iso(hoy - 3 * DIA); // Google tarda ~2-3 días en asentar
   const diarias = await consulta({ startDate: iso(hoy - 120 * DIA), endDate: hasta, dimensions: ["date"], rowLimit: 200 });
   const semanas = agruparSemanas(diarias, hasta).slice(-16);
+  const enCurso = semanaEnCurso(diarias, hasta);
   const porPais = semanasPorPais(await consulta({ startDate: iso(hoy - 120 * DIA), endDate: hasta, dimensions: ["date", "country"], rowLimit: 5000 }), hasta);
   const consultas = (await consulta({ startDate: iso(hoy - 30 * DIA), endDate: hasta, dimensions: ["query", "page", "country"], rowLimit: 2000 })).map(filaConsulta);
   const ult = semanas.at(-1)?.semana;
   const consultasSemana = ult ? (await consulta({ startDate: ult, endDate: iso(Date.parse(`${ult}T00:00:00Z`) + 6 * DIA), dimensions: ["query", "page", "country"], rowLimit: 2000 })).map(filaConsulta) : [];
   mkdirSync(dirname(SALIDA), { recursive: true });
-  writeFileSync(SALIDA, JSON.stringify({ generado: new Date().toISOString(), propiedad: sitio, hasta, semanas, semanas_por_pais: porPais, consultas, consultas_semana: ult ? { semana: ult, filas: consultasSemana } : null }, null, 1) + "\n");
+  writeFileSync(SALIDA, JSON.stringify({ generado: new Date().toISOString(), propiedad: sitio, hasta, semanas, semana_en_curso: enCurso, semanas_por_pais: porPais, consultas, consultas_semana: ult ? { semana: ult, filas: consultasSemana } : null }, null, 1) + "\n");
   console.log(`Search Console para palabras clave: ${semanas.length} semanas, ${consultas.length} búsquedas (28 días), ${consultasSemana.length} en la semana ${ult ?? "—"}.`);
 }
 
