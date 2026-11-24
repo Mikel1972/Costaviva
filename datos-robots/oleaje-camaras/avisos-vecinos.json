@@ -1,21 +1,21 @@
 {
- "actualizado": "2026-11-24T08:40:14.333Z",
+ "actualizado": "2026-11-24T09:10:07.202Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "hondarribia",
-   "alto": 0,
-   "bajo": 7,
-   "spots": [
-    "hondarribia"
-   ]
-  },
   {
    "clave": "zumaia",
    "alto": 3,
    "bajo": 0,
    "spots": [
     "zumaia"
+   ]
+  },
+  {
+   "clave": "hondarribia",
+   "alto": 0,
+   "bajo": 5,
+   "spots": [
+    "hondarribia"
    ]
   },
   {
@@ -1395,6 +1395,15 @@
    "antes": 0.7,
    "referencia": 0.4,
    "visto": "2026-11-24T06:37:24.187Z"
+  },
+  {
+   "slug": "zarautz",
+   "camara": "zarautz",
+   "tipo": "alto",
+   "horaISO": "2026-11-24T09:00",
+   "antes": 0.9,
+   "referencia": 0.7,
+   "visto": "2026-11-24T09:10:07.202Z"
   }
  ]
 }
