@@ -97,3 +97,11 @@ test("Search Console por país para los informes de comun", async () => {
   assert.deepEqual(p.nzl, [{ semana: "2026-09-28", clics: 0, impresiones: 6, posicion: 40 }]);
   assert.equal(filaConsulta({ keys: ["tide times", "https://costaviva.org/en/tides", "nzl"], clicks: 0, impressions: 1, position: 9 }).pais, "nzl");
 });
+
+test("semanaEnCurso: la semana sin cerrar, con sus días (Mikel 2026-11-24: «falta la semana pasada»)", async () => {
+  const { semanaEnCurso, agruparSemanas } = await import("../scripts/seo/gsc-palabras.mjs");
+  const fila = (d, c, i, p) => ({ keys: [d], clicks: c, impressions: i, position: p });
+  const filas = [fila("2026-11-09", 1, 10, 20), fila("2026-11-15", 0, 10, 30), fila("2026-11-16", 2, 50, 10), fila("2026-11-21", 1, 30, 20)];
+  assert.deepEqual(agruparSemanas(filas, "2026-11-21").map((x) => x.semana), ["2026-11-09"]);
+  assert.deepEqual(semanaEnCurso(filas, "2026-11-21"), { semana: "2026-11-16", dias: 2, hasta: "2026-11-21", clics: 3, impresiones: 80, posicion: 13.8 });
+});

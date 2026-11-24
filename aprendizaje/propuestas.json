@@ -60,6 +60,7 @@
     "impacto": 4,
     "esfuerzo": "medio",
     "origen": "rutina-kpis",
-    "clave": "kpis-bajo-suelo"
+    "clave": "kpis-bajo-suelo",
+    "pr": null
   }
 ]
