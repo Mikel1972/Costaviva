@@ -10459,3 +10459,10 @@ Datos: `camaras-estado.json` de 2026-11-24T03:03Z (fresco). En rojo: orio (`sin_
 - **pasaia**: foto diaria de detectia.net, plana de noche; sin cambios.
 - No se cambió código. Quedan para la próxima pasada: Orio, y buscar otras cámaras para Russell, Cambrils y Roses (o retirarlas) desde fuera de la rutina.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-24 05:55 UTC — robot buscador de fuentes (rutina): martes, caudal de ríos y estaciones de monte
+- Sin cambios en código ni novedades integrables.
+- **Portugal (SNIRH/APA)**: `snirh.apambiente.pt` da 403 desde esta red (no se da por caído). Según búsqueda, SNIRH no tiene API oficial; el caudal sale como dato diario por exportación CSV (el nivel, horario), y dados.gov.pt (`rede-de-estacoes-hidrometricas-snirh`) solo publica la red de estaciones y un WMS, sin licencia visible. No sirve para tiempo real. Propuesta (decisión de Mikel): escribir a APA (`sniamb@apambiente.pt`, contacto de la ficha) con `datos@costaviva.org` para pedir feed en tiempo real y condiciones de reutilización.
+- `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` 200 (clave de `estadoActual` sigue pendiente de Mikel); `api.euskadi.eus` 403; `saihebro.com` y `mapama.gob.es/app/saih` sin respuesta; `chj.es` 302. Ninguno se da por caído.
+- Pendientes de Mikel sin cambios: clave MeteoGalicia, acceso SAI Cantábrico, Euskalmet.
+Firmado: robot buscador de fuentes (rutina), 2026-11-24 05:55 UTC.
