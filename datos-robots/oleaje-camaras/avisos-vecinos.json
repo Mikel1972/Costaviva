@@ -1,7 +1,15 @@
 {
- "actualizado": "2026-11-24T09:39:46.126Z",
+ "actualizado": "2026-11-24T10:09:54.596Z",
  "dias": 7,
  "repetidos": [
+  {
+   "clave": "sopelana",
+   "alto": 1,
+   "bajo": 2,
+   "spots": [
+    "sopelana"
+   ]
+  },
   {
    "clave": "zumaia",
    "alto": 3,
@@ -1447,6 +1455,24 @@
    "antes": 0.8,
    "referencia": 0.4,
    "visto": "2026-11-24T09:39:46.126Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "bajo",
+   "horaISO": "2026-11-24T12:00",
+   "antes": 0.9,
+   "referencia": null,
+   "visto": "2026-11-24T10:09:54.596Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "bajo",
+   "horaISO": "2026-11-24T21:00",
+   "antes": 0.8,
+   "referencia": null,
+   "visto": "2026-11-24T10:09:54.596Z"
   }
  ]
 }
