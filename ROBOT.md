@@ -10451,3 +10451,11 @@ Datos: `camaras-estado.json` de 2026-11-23T03:01Z (fresco). En rojo: orio (`sin_
 - **Russell y Cambrils (Windy)**: siguen igual; pendiente buscar otra cámara de otro dueño o retirarlas desde fuera de la rutina.
 - No se cambió código. Quedan para la próxima pasada: Orio (buscar nombre nuevo del stream), Russell y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-24 05:50 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Russell, Cambrils, Roses)
+Datos: `camaras-estado.json` de 2026-11-24T03:03Z (fresco). En rojo: orio (`sin_respuesta`, 15 fallos), pasaia (`frame_plano`), ext-nz-windy-russell (`windy_no_existe`), ext-windy-1232544942 (Cambrils) y ext-windy-1600352745 (Roses, nueva, `windy_inactiva`), cangas y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería).
+- **orio**: `GIP_orio_169.stream` sigue en 404 y `GIP_zarautz_169.stream` del mismo servidor da 200. Probadas en la web de la Diputación (gipuzkoa.eus, 2 páginas): ninguna lista nombres de stream. Sin nombre nuevo encontrado; sin cambios en código.
+- **Roses (Windy 1600352745)**: la página pública de Windy da 404 y el estado dice inactiva; mismo caso que Cambrils y Russell. Sin alternativa encontrada (la red de la rutina no alcanza buscadores de webcams).
+- **pasaia**: foto diaria de detectia.net, plana de noche; sin cambios.
+- No se cambió código. Quedan para la próxima pasada: Orio, y buscar otras cámaras para Russell, Cambrils y Roses (o retirarlas) desde fuera de la rutina.
+— robot de cámaras caídas (rutina)
