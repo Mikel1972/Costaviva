@@ -292,8 +292,8 @@ export function paginaIndiceEspecies(especiesDatos, mes) {
   const lista = especiesDatos.especies
     .map((e) => ({ slug: slugEspecie(e.id), nombre: e.nombres?.es || e.id, cientifico: e.cientifico, emoji: e.emoji || "🐟", ahora: Object.values(e.presencia || {}).some((p) => p?.meses?.includes(mes)) }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  const titulo = `Especies de pesca en España y Portugal: temporada, tallas y cebos | Costaviva`;
-  const descripcion = `${lista.length} especies de pesca recreativa en España y Portugal: temporada por zonas, talla mínima con su norma, modalidades, cebos y dónde pescarlas.`;
+  const titulo = `Pescados y especies de pesca de España y Portugal: temporada, tallas y cebos | Costaviva`;
+  const descripcion = `${lista.length} pescados y peces de pesca recreativa en España y Portugal: temporada por zonas, talla mínima con su norma, modalidades, cebos y dónde pescarlas.`;
   const migas = [{ nombre: "Especies", ruta }];
   const ld = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: titulo, url: `${DOMINIO}${ruta}`, inLanguage: "es", publisher: ORG_LD },
