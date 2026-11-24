@@ -3,13 +3,13 @@
 Generado por `scripts/observaciones/descargar.mjs`. Cada registro guarda su `gbifID` (`id`), su conjunto de
 datos (`ds`), su licencia (`lic`) y, si la licencia lo exige (CC BY), su autor (`autor`).
 
-Cita general: GBIF.org — búsquedas de ocurrencias por especie, España y Portugal, 2026-11-17.
+Cita general: GBIF.org — búsquedas de ocurrencias por especie, España y Portugal, 2026-11-24.
 Para una cita formal con DOI hay que pedir una descarga de GBIF (API de descargas, con cuenta).
 
 | Conjunto de datos | Publicador | Licencia del conjunto (cada registro lleva la suya en `lic`) | Registros guardados |
 |---|---|---|---|
-| [iNaturalist Research-grade Observations](https://www.gbif.org/dataset/50c9509d-22c7-4a22-a47d-8c48425ef4a7) (doi:10.15468/ab3s5x) | iNaturalist.org | http://creativecommons.org/licenses/by-nc/4.0/legalcode | 10767 |
-| [Observation.org, Nature data from around the World](https://www.gbif.org/dataset/8a863029-f435-446a-821e-275f4f641165) (doi:10.15468/5nilie) | Observation.org | http://creativecommons.org/licenses/by-nc/4.0/legalcode | 277 |
+| [iNaturalist Research-grade Observations](https://www.gbif.org/dataset/50c9509d-22c7-4a22-a47d-8c48425ef4a7) (doi:10.15468/ab3s5x) | iNaturalist.org | http://creativecommons.org/licenses/by-nc/4.0/legalcode | 10839 |
+| [Observation.org, Nature data from around the World](https://www.gbif.org/dataset/8a863029-f435-446a-821e-275f4f641165) (doi:10.15468/5nilie) | Observation.org | http://creativecommons.org/licenses/by-nc/4.0/legalcode | 278 |
 | [Banco de Datos de la Biodiversidad de la Comunitat Valenciana](https://www.gbif.org/dataset/95e635d4-f762-11e1-a439-00145eb45e9a) (doi:10.15468/b4yqdy) | Biodiversity data bank of Generalitat Valenciana | http://creativecommons.org/licenses/by-nc/4.0/legalcode | 99 |
 | [Great Eggcase Hunt - global citizen science observations of chondrichthyian eggcases](https://www.gbif.org/dataset/3410af95-8fc6-4122-876d-d2ce503910ca) (doi:10.15468/v3ugzp) | Shark Trust | http://creativecommons.org/licenses/by/4.0/legalcode | 66 |
 | [NABU/naturgucker](https://www.gbif.org/dataset/6ac3f774-d9fb-4796-b3e9-92bf6c81c084) (doi:10.15468/uc1apo) | naturgucker.de | http://creativecommons.org/licenses/by/4.0/legalcode | 7 |
