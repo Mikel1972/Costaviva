@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-24T11:10:12.749Z",
+ "actualizado": "2026-11-24T11:39:50.135Z",
  "dias": 7,
  "repetidos": [
   {
@@ -40,6 +40,14 @@
    "bajo": 0,
    "spots": [
     "orio"
+   ]
+  },
+  {
+   "clave": "sopelana",
+   "alto": 0,
+   "bajo": 3,
+   "spots": [
+    "sopelana"
    ]
   }
  ],
@@ -1465,6 +1473,15 @@
    "antes": 0.8,
    "referencia": null,
    "visto": "2026-11-24T10:09:54.596Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "bajo",
+   "horaISO": "2026-11-24T18:00",
+   "antes": 0.6,
+   "referencia": null,
+   "visto": "2026-11-24T11:39:50.135Z"
   }
  ]
 }
