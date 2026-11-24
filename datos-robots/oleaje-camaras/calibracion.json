@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-24T15:12:56.970Z",
- "lineasHistorial": 12954,
+ "fecha": "2026-11-24T15:37:57.720Z",
+ "lineasHistorial": 12964,
  "etiquetas": 1409,
  "etiquetasClaude": 264,
  "calibracion": {
@@ -583,8 +583,8 @@
    "sustituye": true,
    "motivo": "127 etiquetas",
    "ruido": {
-    "ruido": 0.8,
-    "pares": 233
+    "ruido": 0.814,
+    "pares": 234
    }
   },
   "castrourdiales": {
