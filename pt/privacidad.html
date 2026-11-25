@@ -122,7 +122,7 @@
   que recebe o seu email, o seu nome, a sua morada de faturação e os dados do cartão. Nós nunca vemos nem guardamos o número do cartão.
   Com a sua conta guardamos apenas o necessário para lhe prestar o serviço e cumprir as obrigações perante o fisco: o identificador de cliente e de subscrição da Stripe,
   o plano (mensal ou anual, regional ou Mundial, fundador), o respetivo estado e datas, a moeda, o país de faturação (determina o IVA), a zona de preços
-  e o código promocional que tenha usado. As faturas são conservadas pela Stripe, e nós conservamos os dados de faturação durante os prazos exigidos pela lei fiscal.</p>
+  e o código promocional que tenha usado. Para lhe cobrar o preço da sua zona guardamos também o país emissor do seu cartão (dado pela Stripe; nunca o número) e, enquanto pagar com cartão, o país (apenas o código de 2 letras, nunca o IP nem a localização) a partir do qual abre a app em cada dia, só dos últimos 14 dias; se o seu cartão ou o seu uso continuado forem de outra zona, avisamo-lo por email e a partir da renovação seguinte paga o preço dessa zona. As faturas são conservadas pela Stripe, e nós conservamos os dados de faturação durante os prazos exigidos pela lei fiscal.</p>
   <p>Os emails sobre o seu período de teste grátis (boas-vindas, aviso 3 dias antes e fim do período de teste) e sobre a sua subscrição (aviso antes da renovação anual)
   são avisos de serviço da sua própria conta, não publicidade. As condições da subscrição, a renovação automática, o cancelamento e o direito de livre resolução
   constam dos <a href="/terminos">termos e condições</a>.</p>

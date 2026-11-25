@@ -11,9 +11,16 @@
 // funciones sesiones_usuario / cerrar_sesion_usuario (migración
 // 20261109120000, sin EXECUTE para nadie más). Los administradores no tienen
 // límite. Nunca se devuelve la IP.
+//
+// Zona de precio por uso (2026-11-25, CLAUDE.md "Zona de precio por el país
+// de la tarjeta"): al listar, y después de responder (waitUntil), se apunta
+// el país de la conexión de hoy (request.cf.country, 2 letras; nunca la IP)
+// en la fila de suscripciones de quien paga con tarjeta, y si lleva días
+// usando la app desde otra zona se le avisa (_lib/corregir-zona.js).
 
 import { requireSesion, SUPABASE_URL, SUPABASE_ANON_KEY } from "./_lib/admin.js";
 import { decidir, LIMITE_DISPOSITIVOS } from "../assets/js/dispositivos.js";
+import { apuntarUsoYCorregir } from "./_lib/corregir-zona.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -63,7 +70,8 @@ async function estado(env, userId, actual, limite) {
   return { limite, dispositivos: d.dispositivos, exceso: d.exceso && !d.actualCerrada, actual_cerrada: d.actualCerrada };
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
+  const { request, env } = context;
   const sesion = await requireSesion(request);
   if (!sesion.ok) return json(sesion.status, { error: sesion.error });
   if (!env.SUPABASE_SERVICE_ROLE_KEY) return json(503, { error: "sin_configurar" });
@@ -77,7 +85,17 @@ export async function onRequestPost({ request, env }) {
       if (!UUID.test(cuerpo.sesion || "") || cuerpo.sesion === actual) return json(400, { error: "sesión no válida" });
       await rpc(env, "cerrar_sesion_usuario", { p_user: sesion.user.id, p_sesion: cuerpo.sesion });
     }
-    return json(200, await estado(env, sesion.user.id, actual, limite));
+    const respuesta = json(200, await estado(env, sesion.user.id, actual, limite));
+    // Los administradores no pagan: no se apunta nada.
+    if (limite !== null && cuerpo.accion !== "cerrar" && typeof context.waitUntil === "function") {
+      const pais = String(request.cf?.country || request.headers.get("CF-IPCountry") || "").toUpperCase();
+      context.waitUntil(apuntarUsoYCorregir({
+        env, serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY, userId: sesion.user.id, pais,
+        para: sesion.user.email, idioma: sesion.user.user_metadata?.idioma,
+      }).then((r) => { if (r.accion !== "nada") console.log(`dispositivos: zona por uso: ${r.accion}${r.motivo ? ` (${r.motivo})` : ""}`); })
+        .catch((e) => console.error("dispositivos: zona por uso:", e?.message)));
+    }
+    return respuesta;
   } catch (e) {
     console.error("dispositivos:", e?.message);
     return json(503, { error: "no disponible" });

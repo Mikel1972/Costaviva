@@ -619,6 +619,27 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           exit "$CODIGO"
 
+      - name: Tarjetas de otra zona (diario)
+        # Añadido 2026-11-25 (Mikel: zona de precio por el país de la
+        # tarjeta y por el uso). Sin IA: solo recuentos y zonas, nunca
+        # emails, nombres ni ids (repo y logs públicos).
+        id: zonas_tarjeta
+        continue-on-error: true
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set +e
+          TEXTO=$(node scripts/precios/informe-zonas-tarjeta.mjs)
+          CODIGO=$?
+          set -e
+          echo "$TEXTO"
+          {
+            echo "resultado<<FIN_ZONAS_TARJETA"
+            echo "$TEXTO"
+            echo "FIN_ZONAS_TARJETA"
+          } >> "$GITHUB_OUTPUT"
+          exit "$CODIGO"
+
       - name: Cobro y precios (semanal, los lunes)
         # Añadido 2026-10-11 (cobro activo sin alta fiscal, decisión de
         # Mikel): cada lunes, sin IA, el aviso del alta fiscal mientras
@@ -814,6 +835,7 @@ jobs:
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
               ...(`${{ steps.captacion.outputs.resultado }}`.trim() ? [`- Captación (semanas):`, `${{ steps.captacion.outputs.resultado }}`] : []),
+              ...(`${{ steps.zonas_tarjeta.outputs.resultado }}`.trim() ? [`- Tarjetas de otra zona (y uso desde otra zona):`, `${{ steps.zonas_tarjeta.outputs.resultado }}`] : []),
               ...(`${{ steps.cobro.outputs.resultado }}`.trim() ? [`- Cobro y precios (semanal):`, `${{ steps.cobro.outputs.resultado }}`] : []),
               lineaKpi,
               "",
@@ -882,6 +904,7 @@ jobs:
             camaras=${{ steps.camaras.outcome }}
             marketing=${{ steps.marketing.outcome }}
             captacion=${{ steps.captacion.outcome }}
+            zonas_tarjeta=${{ steps.zonas_tarjeta.outcome }}
         run: |
           fallidos=""
           for r in $RESULTADOS; do

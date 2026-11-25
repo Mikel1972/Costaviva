@@ -6,6 +6,43 @@ Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
 
+## Zona de precio por el país de la tarjeta y por el uso (2026-11-25, Mikel: «móntalo ya»)
+
+La zona se cobra por el país de la conexión al pagar; con una VPN se pagaba
+la zona barata. Ahora (lógica pura en `functions/_lib/pais-tarjeta.js`, red
+en `functions/_lib/corregir-zona.js`, test `test/pais-tarjeta.test.js`):
+
+- **Tarjeta**: en `checkout.session.completed` (suscripción) y en
+  **`invoice.paid`** (evento nuevo: Mikel lo añade en Stripe → Webhooks) se
+  lee `card.country` de la tarjeta por defecto (un GET de la suscripción con
+  `expand`; sin Radar ni productos de pago) y se guarda
+  `suscripciones.pais_tarjeta` / `zona_tarjeta` (`zonaDePais`).
+- **Uso**: `/dispositivos` (cada apertura de la app), tras responder, apunta
+  en `suscripciones.paises_uso` el país de la conexión de hoy (`request.cf`,
+  2 letras, nunca la IP), solo para suscripciones de tarjeta vivas y solo 14
+  días. Umbral `DIAS_OTRA_ZONA` = 3 días distintos en `VENTANA_USO_DIAS` = 14
+  desde otra zona y **ninguno** desde la pagada (un viaje no cuenta).
+- **Si la zona real no es la cobrada**: el pago de hoy no se toca. Mismo plan
+  (ámbito, periodo, fundador) con el precio de la zona real
+  (`precioParaZona` + `lookup_key`, nunca ids a mano),
+  `proration_behavior=none` → vale desde la próxima factura; a la vez, email
+  en es/en/pt («desde tu próxima renovación, X»). **Una vez por suscripción**
+  (`zona_correccion_sub`), reserva con PATCH condicional, `Idempotency-Key`
+  en Stripe; si el email falla, el reintento solo manda el email. Sin
+  `RESEND_API_KEY` no se cambia nada (nunca sin avisar).
+- **Otra moneda (EUR ↔ NZD) no se intenta**: la API de Stripe no deja
+  cambiar la moneda de una suscripción ya creada (`currency` solo existe al
+  crearla). Con el sí de Mikel (2026-11-25): la suscripción **no se renueva al acabar lo pagado** (`cancel_at_period_end`) y le llega un email (es/en/pt) para volver a suscribirse al precio de su país (`zona_correccion='no_renovar_moneda'`). Sin email configurado no se toca nada.
+  **Hoy es el único caso real** (zonas activas: UE/EEE y resto en EUR a 1,0,
+  que dan el mismo precio y no se tocan, y NZ en NZD). Con un cambio de plan
+  programado (schedule): `revisar_programado`.
+- Bizum, admin/permanente/invitación (sin suscripción de Stripe) y pagos sin
+  país: nada. Informe diario: paso «Tarjetas de otra zona»
+  (`scripts/precios/informe-zonas-tarjeta.mjs`), solo recuentos y zonas.
+- Migración `20261125220000_pais_tarjeta.sql` (solo columnas + checks en
+  `suscripciones`, sin tablas ni RLS nuevas). Sin aplicar, todo responde sin
+  hacer nada. Privacidad (es/en/pt) lo explica.
+
 
 ## Olas: una lectura de cámara dudosa nunca baja la ola (2026-11-25, Mikel: «haz la A»)
 
