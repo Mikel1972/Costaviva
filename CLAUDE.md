@@ -6,6 +6,59 @@ Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
 
+## Pagar 1 año con Bizum (2026-11-25, aprobado por Mikel; APAGADO hasta que Stripe apruebe Bizum)
+
+Bizum en Stripe es **solo de pago único**: sin suscripciones, sin
+`setup_future_usage`, solo EUR (0,50–5.000 €), clientes de España, B2C, y hay
+que pedirlo en el Dashboard. Por eso "anual con Bizum" = **un pago único que
+da 12 meses de Premium** + emails de aviso para renovarlo (no se renueva solo).
+
+- **Interruptor `BIZUM_ACTIVO`** (Cloudflare Pages, solo el texto `true`;
+  `bizumActivo()` de `functions/_lib/bizum.js`). Apagado: `/precios-zona` da
+  `bizum_activo: false`, el botón «Pagar 1 año con Bizum» no sale y
+  `/crear-checkout-stripe` con `metodo: "bizum"` responde 403
+  `bizum_no_activo` sin tocar Stripe. Encendido, el botón sale solo con
+  `COBRO_ACTIVO` y conexión desde España (`bizumDisponible`).
+- **Checkout** (`crear-checkout-stripe.js`, `{ metodo: "bizum", ambito, plan: "anual" }`,
+  función `checkoutBizum`): `mode=payment`, `payment_method_types[]=bizum`,
+  `price_data` en EUR por **el anual de la zona UE/EEE** (`precioBizum`, que
+  sale de `precioParaZona`: 34,99 € regional, 52,99 € Mundial; nunca otro
+  importe). Rechaza el mensual y el fundador (el fundador va ligado a seguir
+  suscrito), otras zonas (403 `bizum_solo_espana`) y a quien ya paga con
+  tarjeta (409 `ya_suscrito_tarjeta`). **Sin descuentos**: ni Black Friday
+  (400 `bizum_sin_codigo`), ni códigos de Stripe, ni cupón de invitación, ni
+  meses de «Invita a un amigo» (siguen pendientes para un pago con tarjeta).
+  Casilla con texto propio (`TEXTOS.*.bizum` de `consentimiento.js`, misma
+  `VERSION`). Metadatos: `supabase_user_id`, `metodo=bizum`, `periodo=anual`,
+  zona, ámbito, región, `lookup_key` y la aceptación.
+- **Webhook**: `checkout.session.completed` con `payment_status=paid` (o
+  `checkout.session.async_payment_succeeded`) → fila `active`, `anual`,
+  `metodo_pago='bizum'`, sin `stripe_subscription_id`, y
+  `periodo_actual_fin` = 12 meses desde hoy **o desde el fin de Bizum aún
+  vigente** (renovar antes alarga). Idempotente por `event.id` y por
+  `bizum_sesion_id`. Email de confirmación con «activo hasta el …, no se
+  renueva solo». Un evento de una suscripción de tarjeta no activa no pisa
+  un año de Bizum vigente; una de tarjeta activa sí (y vuelve a `tarjeta`).
+- **Acceso** (`mi_estado_suscripcion()`, migración
+  `20261125200000_bizum_anual.sql`): antes solo miraba `estado`; ahora con
+  `metodo_pago='bizum'` el acceso acaba en `periodo_actual_fin` (estado
+  `caducada`, plan gratis) y devuelve `metodo_pago`. La página enseña «pagado
+  con Bizum hasta el …» y solo ofrece renovarlo con Bizum.
+- **Avisos** (`functions/avisar-renovacion-bizum.js`, `X-Cron-Secret`;
+  `.github/workflows/aviso-renovacion-bizum.yml` cada día; sin IA): 7 días
+  antes y el último día, en es/en/pt (`user_metadata.idioma`), una vez por
+  periodo (`renovacion_avisada_fin` / `renovacion_ultimo_dia_fin` guardan el
+  fin avisado). Sin la migración aplicada responde 200 sin hacer nada.
+- **Lo que tiene que hacer Mikel para encenderlo**: (1) aprobar y aplicar la
+  migración `20261125200000_bizum_anual.sql`; (2) pedir Bizum en Stripe →
+  Settings → Payment methods (Stripe pide DNI/NIF y el número de registro
+  mercantil, que debe verse en la web); (3) en el webhook de Stripe añadir los
+  eventos `checkout.session.async_payment_succeeded` y
+  `checkout.session.async_payment_failed`; (4) poner `BIZUM_ACTIVO=true` en
+  Cloudflare Pages **Production** y redeploy (trampa 1). Nunca encenderlo
+  antes de aplicar la migración.
+- Lógica pura y tests: `functions/_lib/bizum.js`, `test/bizum.test.js`.
+
 ## Base por IP: la zona de pesca de cada usuario (2026-11-25, idea de Mikel)
 
 Sin código postal en el alta, la app propone la zona al entrar:

@@ -182,6 +182,9 @@
       <p class="precio"><span id="precioAnual"></span> <span class="unidad" data-i18n="prec.por_ano">/ año</span></p>
       <p class="detalle" id="equivaleAnual"></p>
       <button type="button" class="btn-comprar" data-ambito="regional" data-plan="anual" data-i18n="prec.elegir_anual">Elegir anual</button>
+      <!-- Bizum (2026-11-25): pago único de un año, solo con BIZUM_ACTIVO
+           (lo dice /precios-zona) y conexión desde España. -->
+      <button type="button" class="btn-comprar secundario btn-bizum" data-ambito="regional" data-plan="anual" data-metodo="bizum" hidden data-i18n="prec.pagar_bizum">Pagar 1 año con Bizum</button>
     </div>
     <div class="plan" id="planFundador" hidden>
       <span class="etiqueta-fundador" id="plazasFundador"></span>
@@ -199,7 +202,7 @@
       <summary data-i18n="prec.mundial_titulo">¿Pescas en varias regiones? Plan Mundial</summary>
       <p class="detalle" id="mundialExplica"></p>
       <div class="filas-mundial">
-        <div class="fila-mundial"><span id="mundialAnual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="anual" data-i18n="prec.anual">Anual</button></div>
+        <div class="fila-mundial"><span id="mundialAnual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="anual" data-i18n="prec.anual">Anual</button><button type="button" class="btn-comprar secundario btn-bizum" data-ambito="mundial" data-plan="anual" data-metodo="bizum" hidden data-i18n="prec.pagar_bizum">Pagar 1 año con Bizum</button></div>
         <div class="fila-mundial" id="filaMundialFundador" hidden><span id="mundialFundador"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="fundador_anual" data-i18n="prec.fundador">Fundador</button></div>
         <div class="fila-mundial"><span id="mundialMensual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="mensual" data-i18n="prec.mensual">Mensual</button></div>
       </div>
@@ -217,6 +220,7 @@
       </label>
       <p class="nota-legal" id="textoSiCerramos"></p>
       <button type="button" id="btnPagar" disabled data-i18n="prec.ir_al_pago">Ir al pago</button>
+      <p class="nota-legal" id="notaBizum" hidden data-i18n="prec.bizum_nota">Con Bizum pagas un año de una vez, al precio normal del plan anual. No se renueva solo: te avisaremos antes de que termine para que lo renueves si quieres. Los descuentos, el Black Friday y los meses de «Invita a un amigo» se aplican pagando con tarjeta.</p>
       <p class="nota-legal" id="notaCobroNoActivo" hidden data-i18n="prec.cobro_no_activo">Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.</p>
       <p class="nota-legal"><a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a></p>
     </div>
@@ -309,17 +313,18 @@ async function registrarEvento(tipo, detalle) {
 
 const IDIOMA_ACEPTACION = idiomaAceptacion(I18n.idioma(), navigator.languages || [navigator.language || ""]);
 
-async function iniciarCheckout(ambito, plan) {
-  registrarEvento("iniciar_checkout", { ambito, plan });
+async function iniciarCheckout(ambito, plan, metodo = "tarjeta") {
+  registrarEvento("iniciar_checkout", { ambito, plan, metodo });
   const { data: { session } } = await supabase.auth.getSession();
   const resp = await fetch("/crear-checkout-stripe", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
     body: JSON.stringify({
       ambito, plan, idioma: I18n.idioma(),
+      ...(metodo === "bizum" ? { metodo: "bizum" } : {}),
       // Aceptación expresa de la casilla: el servidor la exige y la guarda.
       aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: checkLegal.checked },
-      ...(codigoBfVisible() && document.getElementById("codigoBf").value.trim() ? { codigo_bf: document.getElementById("codigoBf").value.trim() } : {}),
+      ...(metodo !== "bizum" && codigoBfVisible() && document.getElementById("codigoBf").value.trim() ? { codigo_bf: document.getElementById("codigoBf").value.trim() } : {}),
     }),
   });
   let resultado = {};
@@ -328,7 +333,7 @@ async function iniciarCheckout(ambito, plan) {
     window.location.href = resultado.url;
   } else {
     mostrarMensaje(resultado.error || I18n.t("susc.error_pago"), "error");
-    btnPagar.disabled = !cobroAbierto || !checkLegal.checked;
+    btnPagar.disabled = !pagoAbierto() || !checkLegal.checked;
   }
 }
 
@@ -394,15 +399,22 @@ let preciosZona = null;
 // Interruptor COBRO_ACTIVO (lo dice /precios-zona): apagado, el botón de
 // pago dice "Próximamente" y no se activa nunca.
 let cobroAbierto = false;
-function elegirPlan(ambito, plan) {
-  planElegido = { ambito, plan };
+// Interruptor BIZUM_ACTIVO (también de /precios-zona, 2026-11-25).
+let bizumAbierto = false;
+function pagoAbierto() {
+  return planElegido?.metodo === "bizum" ? cobroAbierto && bizumAbierto : cobroAbierto;
+}
+function elegirPlan(ambito, plan, metodo = "tarjeta") {
+  planElegido = { ambito, plan, metodo };
+  const conBizum = metodo === "bizum";
   checkLegal.checked = false;
   btnPagar.disabled = true;
-  btnPagar.textContent = I18n.t(cobroAbierto ? "prec.ir_al_pago" : "prec.proximamente");
-  checkLegal.closest("label").hidden = !cobroAbierto;
-  document.getElementById("textoSiCerramos").hidden = !cobroAbierto;
+  btnPagar.textContent = I18n.t(!pagoAbierto() ? "prec.proximamente" : conBizum ? "prec.ir_al_pago_bizum" : "prec.ir_al_pago");
+  checkLegal.closest("label").hidden = !pagoAbierto();
+  document.getElementById("textoSiCerramos").hidden = !pagoAbierto();
   document.getElementById("notaCobroNoActivo").hidden = cobroAbierto;
-  document.getElementById("textoAceptacion").textContent = textoAceptacion(plan, IDIOMA_ACEPTACION);
+  document.getElementById("notaBizum").hidden = !conBizum;
+  document.getElementById("textoAceptacion").textContent = textoAceptacion(plan, IDIOMA_ACEPTACION, metodo);
   document.getElementById("textoSiCerramos").textContent = textoSiCerramos(IDIOMA_ACEPTACION);
   const cent = preciosZona?.planes?.[ambito]?.[plan];
   const nombre = `${ambito === "mundial" ? I18n.t("prec.mundial") + " · " : ""}${I18n.t(`prec.${plan === "fundador_anual" ? "fundador" : plan}`)}`;
@@ -410,15 +422,15 @@ function elegirPlan(ambito, plan) {
   confirmarPago.hidden = false;
   confirmarPago.scrollIntoView({ behavior: "smooth", block: "center" });
 }
-checkLegal.addEventListener("change", () => { btnPagar.disabled = !cobroAbierto || !checkLegal.checked || !planElegido; });
+checkLegal.addEventListener("change", () => { btnPagar.disabled = !pagoAbierto() || !checkLegal.checked || !planElegido; });
 document.getElementById("bloquePaywall").addEventListener("click", (e) => {
   const b = e.target.closest(".btn-comprar");
-  if (b) elegirPlan(b.dataset.ambito, b.dataset.plan);
+  if (b) elegirPlan(b.dataset.ambito, b.dataset.plan, b.dataset.metodo === "bizum" ? "bizum" : "tarjeta");
 });
 btnPagar.addEventListener("click", () => {
-  if (!cobroAbierto || !planElegido || !checkLegal.checked) return;
+  if (!pagoAbierto() || !planElegido || !checkLegal.checked) return;
   btnPagar.disabled = true;
-  iniciarCheckout(planElegido.ambito, planElegido.plan);
+  iniciarCheckout(planElegido.ambito, planElegido.plan, planElegido.metodo);
 });
 document.getElementById("btnGestionar").addEventListener("click", (e) => {
   e.target.disabled = true;
@@ -557,6 +569,8 @@ async function plazasFundador() {
 function pintarPrecios(p, plazas) {
   preciosZona = p;
   cobroAbierto = p?.cobro_activo === true;
+  bizumAbierto = cobroAbierto && p?.bizum_activo === true;
+  for (const b of document.querySelectorAll(".btn-bizum")) b.hidden = !bizumAbierto;
   if (!p) {
     mostrarMensaje(I18n.t("prec.sin_precios"), "error");
     for (const b of document.querySelectorAll(".btn-comprar")) b.hidden = true;
@@ -618,7 +632,10 @@ async function iniciar() {
   }
 
   const [estado, precios, plazas] = await Promise.all([comprobarEstado(), cargarPrecios(), plazasFundador()]);
-  const suscrito = !!(estado && estado.periodo && ["trialing", "active", "past_due"].includes(estado.estado));
+  // Año pagado con Bizum (2026-11-25): no hay suscripción de Stripe que
+  // gestionar; se enseña hasta cuándo y la opción de renovarlo con Bizum.
+  const conBizum = !!(estado && estado.metodo_pago === "bizum" && estado.plan === "premium");
+  const suscrito = !conBizum && !!(estado && estado.periodo && ["trialing", "active", "past_due"].includes(estado.estado));
   if (estado && estado.estado === "admin") {
     subEstadoEl.textContent = I18n.t("susc.admin");
   } else if (estado && estado.estado === "invitacion") {
@@ -627,6 +644,9 @@ async function iniciar() {
       : I18n.t("susc.invitacion_siempre");
   } else if (estado && estado.estado === "permanente") {
     subEstadoEl.textContent = I18n.t("susc.permanente");
+  } else if (conBizum) {
+    const ambito = estado.ambito === "mundial" ? I18n.t("prec.mundial") : nombreRegion(estado.region_contenido || "es");
+    subEstadoEl.textContent = I18n.t("prec.tu_plan_bizum", { ambito, fecha: formatearFecha(estado.periodo_actual_fin) || "—" });
   } else if (suscrito) {
     const periodo = I18n.existe(`susc.periodo.${estado.periodo}`) ? I18n.t(`susc.periodo.${estado.periodo}`) : estado.periodo;
     const ambito = estado.ambito === "mundial" ? I18n.t("prec.mundial") : nombreRegion(estado.region_contenido || "es");
@@ -645,7 +665,13 @@ async function iniciar() {
   if (!suscrito) {
     bloquePaywall.style.display = "block";
     pintarPrecios(precios, plazas);
-    await mostrarDescuentoInvitacion();
+    // Con el año de Bizum en marcha solo se ofrece renovarlo con Bizum (una
+    // suscripción con tarjeta empezaría hoy y solaparía el año pagado).
+    if (conBizum) {
+      for (const b of document.querySelectorAll(".btn-comprar:not(.btn-bizum)")) b.hidden = true;
+    } else {
+      await mostrarDescuentoInvitacion();
+    }
   }
   await mostrarInvitarAmigo();
   await mostrarTusDatos(sesionInicial.session.user.id);

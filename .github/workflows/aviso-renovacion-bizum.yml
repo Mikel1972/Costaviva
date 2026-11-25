@@ -1,0 +1,39 @@
+name: Aviso de renovación Bizum
+
+# 2026-11-25 (CLAUDE.md "Pagar 1 año con Bizum"). Sin IA. Llama una vez al
+# día a /avisar-renovacion-bizum, que manda el email de renovación a quien
+# pagó su año con Bizum: 7 días antes y el último día, una sola vez por
+# periodo (lo apunta la base de datos). Bizum en Stripe no admite cobros
+# recurrentes, así que el año no se renueva solo.
+#
+# Reutiliza el secret PRESION_CRON_SECRET (mismo valor que CRON_SECRET en
+# Cloudflare Pages), como notificar-altas.yml. Sin la migración
+# 20261125200000 aplicada, el endpoint responde 200 sin hacer nada.
+
+on:
+  schedule:
+    - cron: "41 9 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: aviso-renovacion-bizum
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  avisar:
+    # Interruptor de pausa (comun pruebas-y-alertas.md P8).
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Sin reintento: cada aviso se apunta tras confirmarlo Resend y lo que
+      # quede pendiente lo recoge la pasada de mañana.
+      - name: Llamar a /avisar-renovacion-bizum
+        run: |
+          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
+            --max-time 90 "https://costaviva.org/avisar-renovacion-bizum")
+          echo "HTTP $code"; cat /tmp/resp.json; echo
+          [ "$code" = "200" ]

@@ -108,6 +108,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/stripe-webhook",
   "/notificar-altas",
   "/avisar-fin-prueba",
+  "/avisar-renovacion-bizum", // aviso del año con Bizum (2026-11-25), X-Cron-Secret
   "/registrar-presion",
   "/registrar-turbidez",
   "/registrar-estado-camaras",

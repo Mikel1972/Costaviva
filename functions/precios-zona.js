@@ -5,6 +5,7 @@
 // precios. El país sale de Cloudflare (request.cf.country); el precio final
 // lo confirma el checkout de Stripe con el país de facturación.
 import { zonaDePais, tablaZona, cobroActivo } from "./_lib/precios.js";
+import { bizumDisponible } from "./_lib/bizum.js";
 import { REGIONES_ACTIVAS } from "./_lib/regiones-activas.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 
@@ -19,6 +20,9 @@ export async function onRequestGet({ request, env }) {
     plazas_fundador_total: CONFIG_PRECIOS.plazas_fundador,
     // Interruptor COBRO_ACTIVO: sin él, la página dice "Próximamente".
     cobro_activo: cobroActivo(env),
+    // Interruptor BIZUM_ACTIVO (2026-11-25): botón "Pagar 1 año con Bizum"
+    // solo con él encendido, el cobro abierto y conexión desde España.
+    bizum_activo: bizumDisponible(env, pais, cobroActivo(env)),
   }), {
     headers: { "content-type": "application/json", "cache-control": "private, max-age=300", vary: "CF-IPCountry" },
   });

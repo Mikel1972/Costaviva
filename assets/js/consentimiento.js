@@ -23,14 +23,17 @@ export const TEXTOS = Object.freeze({
   es: {
     anual: "Solicito el acceso inmediato a Premium y acepto que, al empezar, pierdo mi derecho de desistimiento. El plan anual no se reembolsa: si cancelas, sigue activo hasta el final del periodo pagado y no se renueva.",
     mensual: "Solicito el acceso inmediato a Premium y acepto que, al empezar, pierdo mi derecho de desistimiento. El mes pagado no se reembolsa: si cancelas, sigue activo hasta el final del mes pagado y no se renueva.",
+    bizum: "Solicito el acceso inmediato a Premium durante 1 año y acepto que, al empezar, pierdo mi derecho de desistimiento. El año pagado con Bizum no se reembolsa y no se renueva solo: te avisaremos antes de que termine.",
   },
   en: {
     anual: "I request immediate access to Premium and accept that, once it starts, I lose my right of withdrawal. The annual plan is non-refundable: if you cancel, it stays active until the end of the paid period and does not renew.",
     mensual: "I request immediate access to Premium and accept that, once it starts, I lose my right of withdrawal. The paid month is non-refundable: if you cancel, it stays active until the end of the paid month and does not renew.",
+    bizum: "I request immediate access to Premium for 1 year and accept that, once it starts, I lose my right of withdrawal. The year paid with Bizum is non-refundable and does not renew automatically: we will remind you before it ends.",
   },
   pt: {
     anual: "Solicito o acesso imediato ao Premium e aceito que, ao começar, perco o meu direito de livre resolução. O plano anual não é reembolsável: se cancelares, continua ativo até ao fim do período pago e não se renova.",
     mensual: "Solicito o acesso imediato ao Premium e aceito que, ao começar, perco o meu direito de livre resolução. O mês pago não é reembolsável: se cancelares, continua ativo até ao fim do mês pago e não se renova.",
+    bizum: "Solicito o acesso imediato ao Premium durante 1 ano e aceito que, ao começar, perco o meu direito de livre resolução. O ano pago com Bizum não é reembolsável e não se renova sozinho: avisamos-te antes de terminar.",
   },
 });
 
@@ -51,8 +54,11 @@ export function tipoDePlan(plan) {
   return plan === "mensual" ? "mensual" : "anual";
 }
 
-export function textoAceptacion(plan, idioma = "es") {
+// metodo "bizum" (2026-11-25): pago único de un año, sin renovación
+// automática; mismo VERSION porque los textos de tarjeta no cambian.
+export function textoAceptacion(plan, idioma = "es", metodo = "tarjeta") {
   const t = TEXTOS[IDIOMAS.includes(idioma) ? idioma : "es"];
+  if (metodo === "bizum") return t.bizum;
   return t[tipoDePlan(plan)];
 }
 

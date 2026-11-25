@@ -79,6 +79,7 @@ test("los endpoints de functions/ llegan a su propio código", () => {
     "/stripe-webhook",
     "/notificar-altas",
     "/avisar-fin-prueba",
+    "/avisar-renovacion-bizum",
     "/registrar-presion",
     "/registrar-turbidez",
     "/registrar-estado-camaras",

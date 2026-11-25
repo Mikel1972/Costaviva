@@ -6,7 +6,15 @@
 //   checkout.session.completed, customer.subscription.created,
 //   customer.subscription.updated, customer.subscription.deleted,
 //   invoice.payment_failed, invoice.upcoming (aviso de renovación anual,
-//   2026-10-11: scripts/stripe/crear-precios.mjs --portal lo añade)
+//   2026-10-11: scripts/stripe/crear-precios.mjs --portal lo añade),
+//   checkout.session.async_payment_succeeded y
+//   checkout.session.async_payment_failed (Bizum, 2026-11-25)
+//
+// Bizum (2026-11-25, CLAUDE.md "Pagar 1 año con Bizum"): pago único con
+// metadata.metodo = "bizum". Al cobrarse, la fila de suscripciones pasa a
+// active/anual/bizum y periodo_actual_fin se alarga 12 meses desde hoy o
+// desde el fin aún vigente (_lib/bizum.js). Idempotente por event.id y,
+// además, por bizum_sesion_id (el mismo pago nunca suma dos años).
 //
 // Captación (2026-10-09): cuando una suscripción pasa a "active" (primer
 // cobro real tras la prueba) se apunta suscripciones.primer_pago_en (métrica
@@ -39,6 +47,7 @@ import { premiarReferido, abonarMesesPendientes } from "./_lib/referidos.js";
 import { datosDePrecio, zonaDePais, zonaPorId, precioParaZona } from "./_lib/precios.js";
 import { enviarEmail } from "./_lib/email.js";
 import { textoAceptacion, textoSiCerramos, VERSION as VERSION_ACEPTACION } from "../assets/js/consentimiento.js";
+import { esPagoBizum, filaPagoBizum } from "./_lib/bizum.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -133,6 +142,17 @@ async function userIdPorClienteStripe(serviceRoleKey, stripeCustomerId) {
   if (!resp.ok) return null;
   const filas = await resp.json();
   return filas[0]?.user_id || null;
+}
+
+// Fila actual de suscripciones (service_role). select=* para no depender de
+// columnas que una migración aún sin aplicar no tenga.
+async function filaSuscripcion(serviceRoleKey, userId) {
+  if (!uuidValido(userId)) return null;
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/suscripciones?select=*&user_id=eq.${userId}`, {
+    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
+  });
+  if (!r.ok) throw new Error(`suscripciones HTTP ${r.status}: ${await r.text()}`);
+  return (await r.json())[0] || null;
 }
 
 // Idempotencia por event.id (comun stripe.md S3). Devuelve:
@@ -263,11 +283,12 @@ function textoRenovacion(inv, idioma) {
 // pago, un email con el plan, el texto de la renuncia que se aceptó y el
 // enlace a los términos. Idempotente por el registro de eventos.
 const TXT_CONFIRMACION = {
-  es: { asunto: "Confirmación de tu suscripción a Costaviva Premium", hola: "Hola,", gracias: "Gracias por suscribirte a Costaviva Premium. Este email es la confirmación de tu contrato.", plan: "Plan", importe: "Importe (IVA incluido)", fecha: "Fecha", aceptaste: "Antes de pagar aceptaste expresamente lo siguiente", version: "versión", renovacion: "La suscripción se renueva automáticamente al final de cada periodo hasta que la canceles desde Mi suscripción (https://costaviva.org/suscripcion). Si cancelas, sigue activa hasta el final del periodo pagado y no se renueva.", terminos: "Términos y condiciones" },
-  en: { asunto: "Your Costaviva Premium subscription confirmation", hola: "Hi,", gracias: "Thanks for subscribing to Costaviva Premium. This email confirms your contract.", plan: "Plan", importe: "Amount (tax included)", fecha: "Date", aceptaste: "Before paying you expressly accepted the following", version: "version", renovacion: "The subscription renews automatically at the end of each period until you cancel it from My subscription (https://costaviva.org/suscripcion). If you cancel, it stays active until the end of the paid period and does not renew.", terminos: "Terms and conditions" },
-  pt: { asunto: "Confirmação da tua subscrição Costaviva Premium", hola: "Olá,", gracias: "Obrigado por subscreveres o Costaviva Premium. Este email confirma o teu contrato.", plan: "Plano", importe: "Montante (IVA incluído)", fecha: "Data", aceptaste: "Antes de pagar aceitaste expressamente o seguinte", version: "versão", renovacion: "A subscrição renova-se automaticamente no fim de cada período até a cancelares em A minha subscrição (https://costaviva.org/suscripcion). Se cancelares, continua ativa até ao fim do período pago e não se renova.", terminos: "Termos e condições" },
+  es: { renovacion_bizum: "Pago único con Bizum: Premium activo hasta el {fin}. No se renueva solo; te avisaremos por email 7 días antes y el último día para que puedas renovarlo.", asunto: "Confirmación de tu suscripción a Costaviva Premium", hola: "Hola,", gracias: "Gracias por suscribirte a Costaviva Premium. Este email es la confirmación de tu contrato.", plan: "Plan", importe: "Importe (IVA incluido)", fecha: "Fecha", aceptaste: "Antes de pagar aceptaste expresamente lo siguiente", version: "versión", renovacion: "La suscripción se renueva automáticamente al final de cada periodo hasta que la canceles desde Mi suscripción (https://costaviva.org/suscripcion). Si cancelas, sigue activa hasta el final del periodo pagado y no se renueva.", terminos: "Términos y condiciones" },
+  en: { renovacion_bizum: "One-off payment with Bizum: Premium active until {fin}. It does not renew automatically; we'll email you 7 days before and on the last day so you can renew it.", asunto: "Your Costaviva Premium subscription confirmation", hola: "Hi,", gracias: "Thanks for subscribing to Costaviva Premium. This email confirms your contract.", plan: "Plan", importe: "Amount (tax included)", fecha: "Date", aceptaste: "Before paying you expressly accepted the following", version: "version", renovacion: "The subscription renews automatically at the end of each period until you cancel it from My subscription (https://costaviva.org/suscripcion). If you cancel, it stays active until the end of the paid period and does not renew.", terminos: "Terms and conditions" },
+  pt: { renovacion_bizum: "Pagamento único com Bizum: Premium ativo até {fin}. Não se renova sozinho; avisamos-te por email 7 dias antes e no último dia para o poderes renovar.", asunto: "Confirmação da tua subscrição Costaviva Premium", hola: "Olá,", gracias: "Obrigado por subscreveres o Costaviva Premium. Este email confirma o teu contrato.", plan: "Plano", importe: "Montante (IVA incluído)", fecha: "Data", aceptaste: "Antes de pagar aceitaste expressamente o seguinte", version: "versão", renovacion: "A subscrição renova-se automaticamente no fim de cada período até a cancelares em A minha subscrição (https://costaviva.org/suscripcion). Se cancelares, continua ativa até ao fim do período pago e não se renova.", terminos: "Termos e condições" },
 };
-export function emailConfirmacionPago(sesion) {
+// finBizum (ISO): con Bizum, la fecha hasta la que queda pagado.
+export function emailConfirmacionPago(sesion, finBizum = null) {
   const md = sesion.metadata || {};
   const idioma = TXT_CONFIRMACION[md.aceptacion_idioma] ? md.aceptacion_idioma : (md.idioma === "en" ? "en" : "es");
   const T = TXT_CONFIRMACION[idioma];
@@ -278,15 +299,19 @@ export function emailConfirmacionPago(sesion) {
   const fecha = new Date((sesion.created || Date.now() / 1000) * 1000).toLocaleString(locale, { timeZone: "Europe/Madrid" }); // a propósito (ZONA_NEGOCIO)
   const plan = [md.ambito === "mundial" ? "Premium Mundial" : "Premium", md.plan || ""].join(" · ");
   const version = md.aceptacion_version || VERSION_ACEPTACION;
+  const conBizum = md.metodo === "bizum";
+  const renovacion = conBizum
+    ? T.renovacion_bizum.replace("{fin}", finBizum ? new Date(finBizum).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" }) : "—") // a propósito (ZONA_NEGOCIO)
+    : T.renovacion;
   return {
     subject: T.asunto,
     text: [
       T.hola, "", T.gracias, "",
       `${T.plan}: ${plan}`, `${T.importe}: ${importe}`, `${T.fecha}: ${fecha}`, "",
       `${T.aceptaste} (${T.version} ${version}, ${md.aceptacion_fecha || fecha}):`,
-      `«${textoAceptacion(md.plan, idioma)}»`, "",
+      `«${textoAceptacion(md.plan, idioma, conBizum ? "bizum" : "tarjeta")}»`, "",
       textoSiCerramos(idioma), "",
-      T.renovacion, "",
+      renovacion, "",
       `${T.terminos}: https://costaviva.org/terminos`, "",
       "— Costaviva",
     ].join("\n"),
@@ -344,7 +369,31 @@ export async function onRequestPost(context) {
   try {
     const obj = evento.data?.object || {};
 
-    if (evento.type === "checkout.session.completed") {
+    if (String(evento.type || "").startsWith("checkout.session.") && obj.mode === "payment" && obj.metadata?.metodo === "bizum") {
+      // Pagar 1 año con Bizum. completed con payment_status "unpaid" = pago
+      // aún en curso: se espera a async_payment_succeeded.
+      if (esPagoBizum(evento)) {
+        const userId = obj.client_reference_id || obj.metadata?.supabase_user_id;
+        if (!uuidValido(userId)) {
+          console.error(`stripe-webhook: pago Bizum ${obj.id} sin supabase_user_id válido`);
+        } else {
+          const fila = filaPagoBizum(obj, await filaSuscripcion(serviceRoleKey, userId));
+          if (!fila) {
+            console.log(`stripe-webhook: pago Bizum ${obj.id} ya aplicado`);
+          } else {
+            await upsertSuscripcion(serviceRoleKey, fila);
+            await apuntarPrimerPago(serviceRoleKey, userId);
+            const para = obj.customer_details?.email || obj.customer_email;
+            if (para) {
+              const envio = await enviarEmail(env, { to: para, ...emailConfirmacionPago(obj, fila.periodo_actual_fin) });
+              if (!envio.ok) console.error(`stripe-webhook: confirmación Bizum ${obj.id}: ${envio.error}`);
+            }
+          }
+        }
+      } else if (evento.type === "checkout.session.async_payment_failed") {
+        console.warn(`stripe-webhook: pago Bizum ${obj.id} fallido`);
+      }
+    } else if (evento.type === "checkout.session.completed") {
       // Solo vincula cliente/suscripción al user_id — el objeto Session
       // no trae de forma fiable el periodo/estado real de la
       // suscripción, eso llega en customer.subscription.created justo
@@ -399,6 +448,16 @@ export async function onRequestPost(context) {
       }
       const item = obj.items?.data?.[0];
       const estado = evento.type === "customer.subscription.deleted" ? "canceled" : obj.status;
+      // Con un año de Bizum vigente, un evento de una suscripción de tarjeta
+      // que no está activa (p. ej. la antigua, ya cancelada) no lo pisa. Si
+      // la de tarjeta está activa, manda ella y la fila vuelve a "tarjeta".
+      let actual = null;
+      try { actual = await filaSuscripcion(serviceRoleKey, userId); } catch (e) { console.error("stripe-webhook: no se pudo leer la fila actual:", e); }
+      const bizumVigente = actual?.metodo_pago === "bizum" && Date.parse(actual.periodo_actual_fin) > Date.now();
+      if (bizumVigente && !["active", "trialing"].includes(estado)) {
+        console.log(`stripe-webhook: ${evento.type} ${obj.id} (${estado}) ignorado: año de Bizum vigente`);
+        return new Response(JSON.stringify({ received: true }), { headers: { "content-type": "application/json" } });
+      }
       // Verificado en real contra un evento de prueba (2026-09-15): en
       // esta versión de la API de Stripe, current_period_end YA NO vive
       // en el objeto Subscription de nivel superior (venía null) — se
@@ -422,6 +481,9 @@ export async function onRequestPost(context) {
         periodo_actual_fin: finPeriodoUnix
           ? new Date(finPeriodoUnix * 1000).toISOString()
           : null,
+        // Solo si la fila venía de Bizum (así no depende de la columna
+        // mientras la migración 20261125200000 no esté aplicada).
+        ...(actual?.metodo_pago === "bizum" ? { metodo_pago: "tarjeta" } : {}),
         actualizado_en: new Date().toISOString(),
       });
       if (precio.fundador && estado !== "incomplete" && estado !== "incomplete_expired") {
