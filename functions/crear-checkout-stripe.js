@@ -23,11 +23,18 @@
 // Opcionales (texto "1"): STRIPE_TAX_AUTOMATICO (automatic_tax, cuando Stripe
 // Tax tenga los registros hechos) y STRIPE_TOS_EN_CHECKOUT (casilla de
 // términos de Stripe; exige la URL de términos en el Dashboard).
+//
+// Bizum (2026-11-25, ver CLAUDE.md "Pagar 1 año con Bizum"): con
+// { metodo: "bizum", ambito, plan: "anual" } se crea un pago ÚNICO (Stripe no
+// admite Bizum en suscripciones) por el importe del anual de la zona UE/EEE,
+// que el webhook convierte en 12 meses de Premium. Interruptor BIZUM_ACTIVO
+// ("true"; por defecto apagado: 403 "bizum_no_activo" sin tocar Stripe).
 
 import { motivoCodigoBf, MARCA_BF } from "./_lib/black-friday.js";
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
 import { zonaDePais, precioParaZona, leerPlan, cobroActivo } from "./_lib/precios.js";
 import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
+import { bizumActivo, precioBizum, tieneSuscripcionTarjeta } from "./_lib/bizum.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 import STRIPE_IDS from "./_lib/stripe-ids.json";
 
@@ -207,6 +214,17 @@ export async function onRequestPost(context) {
     }), { status: 400, headers: { "content-type": "application/json" } });
   }
   const idiomaAcept = IDIOMAS_ACEPTACION.includes(aceptacion.idioma) ? aceptacion.idioma : idioma;
+
+  // Pagar 1 año con Bizum: va por su propio camino (pago único).
+  if (body?.metodo === "bizum") {
+    if (!bizumActivo(env)) {
+      return new Response(JSON.stringify({
+        error: idioma === "en" ? "Bizum payments are coming soon. You can pay by card now." : "El pago con Bizum llega pronto. Ya puedes pagar con tarjeta.",
+        codigo: "bizum_no_activo",
+      }), { status: 403, headers: { "content-type": "application/json" } });
+    }
+    return checkoutBizum({ request, stripeKey, env, token, body, pedido, idioma, idiomaAcept });
+  }
 
   try {
     const usuario = await usuarioDesdeToken(token);
@@ -398,5 +416,121 @@ export async function onRequestPost(context) {
       status: 500,
       headers: { "content-type": "application/json" },
     });
+  }
+}
+
+// ---- Pagar 1 año con Bizum (2026-11-25) ----
+// Pago único (mode=payment) solo con Bizum, por el anual de la zona UE/EEE
+// (precioBizum de _lib/bizum.js: nunca otro importe). Sin códigos de
+// descuento: ni Black Friday, ni códigos de Stripe, ni cupón de invitación,
+// ni meses de "Invita a un amigo" (siguen pendientes para un pago con
+// tarjeta). Se rechaza si ya paga con tarjeta (no cobrar dos veces).
+
+async function filaSuscripcion(token, userId) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/suscripciones?select=*&user_id=eq.${userId}`, {
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+  });
+  if (!resp.ok) throw new Error(`suscripciones HTTP ${resp.status}`);
+  return (await resp.json())[0] || null;
+}
+
+const TXT_BIZUM = {
+  es: { ya_suscrito_tarjeta: "Ya tienes Premium con tarjeta. Puedes gestionarlo desde Mi suscripción.", bizum_sin_codigo: "Los códigos de descuento se usan con el pago con tarjeta.", bizum_solo_anual: "Con Bizum se paga el plan anual.", bizum_solo_espana: "El pago con Bizum está disponible en España.", bizum_importe: MENSAJE_GENERICO, plan_invalido: "Plan no válido." },
+  en: { ya_suscrito_tarjeta: "You already have Premium by card. You can manage it from My subscription.", bizum_sin_codigo: "Discount codes work with card payments.", bizum_solo_anual: "Bizum is for the annual plan.", bizum_solo_espana: "Bizum payments are available in Spain.", bizum_importe: "We couldn't open the payment right now. Please try again in a few minutes.", plan_invalido: "Invalid plan." },
+};
+
+async function checkoutBizum({ request, stripeKey, env, token, body, pedido, idioma, idiomaAcept }) {
+  const T = TXT_BIZUM[idioma] || TXT_BIZUM.es;
+  const responder = (codigo, status) => new Response(JSON.stringify({ error: T[codigo], codigo }), { status, headers: { "content-type": "application/json" } });
+  try {
+    if (body?.codigo_bf !== undefined && String(body.codigo_bf).trim() !== "") return responder("bizum_sin_codigo", 400);
+    const paisIp = String(request.cf?.country || request.headers.get("CF-IPCountry") || "").toUpperCase();
+    const precio = precioBizum(CONFIG_PRECIOS, paisIp, pedido.ambito, pedido.plan);
+    if (precio.error) return responder(precio.error, precio.error === "bizum_solo_espana" ? 403 : 400);
+
+    const usuario = await usuarioDesdeToken(token);
+    const fila = await filaSuscripcion(token, usuario.id);
+    if (tieneSuscripcionTarjeta(fila)) return responder("ya_suscrito_tarjeta", 409);
+    const clienteExistente = fila?.stripe_customer_id || null;
+    const origen = new URL(request.url).origin;
+
+    const params = new URLSearchParams();
+    params.append("mode", "payment");
+    params.append("payment_method_types[0]", "bizum");
+    params.append("line_items[0][price_data][currency]", "eur");
+    params.append("line_items[0][price_data][unit_amount]", String(precio.importe));
+    params.append("line_items[0][price_data][tax_behavior]", "inclusive");
+    params.append("line_items[0][price_data][product_data][name]",
+      pedido.ambito === "mundial" ? "Costaviva Premium Mundial: 1 año" : "Costaviva Premium: 1 año");
+    params.append("line_items[0][quantity]", "1");
+    params.append("locale", idiomaAcept);
+    params.append("billing_address_collection", "required");
+    const textoAcept = `${textoAceptacion("anual", idiomaAcept, "bizum")} ${textoSiCerramos(idiomaAcept)}`;
+    if (env.STRIPE_TOS_EN_CHECKOUT === "1") {
+      params.append("consent_collection[terms_of_service]", "required");
+      params.append("custom_text[terms_of_service_acceptance][message]", `${textoAcept} [${ENLACE_TERMINOS.replace("https://", "")}](${ENLACE_TERMINOS})`);
+    } else {
+      params.append("custom_text[submit][message]", `${textoAcept} ${ENLACE_TERMINOS.replace("https://", "")}`);
+    }
+    if (env.STRIPE_TAX_AUTOMATICO === "1") params.append("automatic_tax[enabled]", "true");
+    const datos = {
+      supabase_user_id: usuario.id, metodo: "bizum", periodo: "anual",
+      zona: precio.zona, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: "anual",
+      region_contenido: precio.region_contenido, fundador: "false", lookup_key: precio.lookup_key,
+      aceptacion_version: VERSION_ACEPTACION, aceptacion_idioma: idiomaAcept,
+      aceptacion_fecha: new Date().toISOString(), idioma,
+    };
+    for (const [k, v] of Object.entries(datos)) {
+      params.append(`metadata[${k}]`, v);
+      params.append(`payment_intent_data[metadata][${k}]`, v);
+    }
+    await guardarAceptacion(token, usuario.id, {
+      version: VERSION_ACEPTACION, idioma: idiomaAcept, plan: "anual", ambito: pedido.ambito,
+      zona: precio.zona, fecha: datos.aceptacion_fecha, metodo: "bizum",
+    });
+    params.append("client_reference_id", usuario.id);
+    params.append("success_url", `${origen}/suscripcion.html?exito=1`);
+    params.append("cancel_url", `${origen}/suscripcion.html?cancelado=1`);
+    params.append("managed_payments[enabled]", "false");
+    if (clienteExistente) {
+      params.append("customer", clienteExistente);
+      params.append("customer_update[address]", "auto");
+    } else {
+      params.append("customer_email", usuario.email);
+      params.append("customer_creation", "always");
+    }
+
+    const crearSesion = (cuerpo) => fetch("https://api.stripe.com/v1/checkout/sessions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${stripeKey}`, "Content-Type": "application/x-www-form-urlencoded" },
+      body: cuerpo.toString(),
+    });
+    let resp = await crearSesion(params);
+    // Cliente guardado que ya no existe (trampa 2): un reintento sin él.
+    if (!resp.ok && clienteExistente) {
+      let falloDeCliente = false;
+      try {
+        const e = JSON.parse(await resp.clone().text());
+        falloDeCliente = e?.error?.code === "resource_missing" && e?.error?.param === "customer";
+      } catch { falloDeCliente = false; }
+      if (falloDeCliente) {
+        console.error(`crear-checkout-stripe (bizum): el cliente guardado ${clienteExistente} no existe; reintentando sin él`);
+        params.delete("customer");
+        params.delete("customer_update[address]");
+        params.append("customer_email", usuario.email);
+        params.append("customer_creation", "always");
+        resp = await crearSesion(params);
+      }
+    }
+    if (!resp.ok) {
+      // El detalle de Stripe solo al log (trampa 3).
+      console.error(`crear-checkout-stripe (bizum): Stripe HTTP ${resp.status}: ${await resp.text()}`);
+      return new Response(JSON.stringify({ error: MENSAJE_GENERICO, codigo: "fallo_stripe" }), { status: 502, headers: { "content-type": "application/json" } });
+    }
+    const sesion = await resp.json();
+    return new Response(JSON.stringify({ url: sesion.url }), { headers: { "content-type": "application/json" } });
+  } catch (e) {
+    console.error(`crear-checkout-stripe (bizum): fallo inesperado: ${String(e)}`);
+    return new Response(JSON.stringify({ error: MENSAJE_GENERICO, codigo: "fallo_stripe" }), { status: 500, headers: { "content-type": "application/json" } });
   }
 }

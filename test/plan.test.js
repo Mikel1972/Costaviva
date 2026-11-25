@@ -99,9 +99,11 @@ test("aceptación: casilla sin marcar y botón de pago desactivado sin ella", ()
   const html = readFileSync(new URL("../suscripcion.html", import.meta.url), "utf8");
   assert.match(html, /<input type="checkbox" id="checkLegal" \/>/, "la casilla no puede venir marcada");
   assert.match(html, /<button type="button" id="btnPagar" disabled/);
-  assert.match(html, /btnPagar\.disabled = !cobroAbierto \|\| !checkLegal\.checked \|\| !planElegido/);
-  assert.match(html, /if \(!cobroAbierto \|\| !planElegido \|\| !checkLegal\.checked\) return;/);
-  assert.match(html, /textoAceptacion\(plan, IDIOMA_ACEPTACION\)/);
+  // pagoAbierto(): COBRO_ACTIVO y, con Bizum, también BIZUM_ACTIVO (2026-11-25).
+  assert.match(html, /btnPagar\.disabled = !pagoAbierto\(\) \|\| !checkLegal\.checked \|\| !planElegido/);
+  assert.match(html, /if \(!pagoAbierto\(\) \|\| !planElegido \|\| !checkLegal\.checked\) return;/);
+  assert.match(html, /return planElegido\?\.metodo === "bizum" \? cobroAbierto && bizumAbierto : cobroAbierto;/);
+  assert.match(html, /textoAceptacion\(plan, IDIOMA_ACEPTACION, metodo\)/);
   assert.match(html, /data-i18n="prec.prueba_antes"/);
 });
 
@@ -141,8 +143,8 @@ test("COBRO_ACTIVO: por defecto cerrado; solo 'true' abre los pagos", () => {
   const zona = readFileSync(new URL("../functions/precios-zona.js", import.meta.url), "utf8");
   assert.match(zona, /cobro_activo: cobroActivo\(env\)/);
   const html = readFileSync(new URL("../suscripcion.html", import.meta.url), "utf8");
-  assert.match(html, /I18n\.t\(cobroAbierto \? "prec\.ir_al_pago" : "prec\.proximamente"\)/);
-  assert.match(html, /btnPagar\.disabled = !cobroAbierto \|\| !checkLegal\.checked/);
+  assert.match(html, /I18n\.t\(!pagoAbierto\(\) \? "prec\.proximamente" : conBizum \? "prec\.ir_al_pago_bizum" : "prec\.ir_al_pago"\)/);
+  assert.match(html, /btnPagar\.disabled = !pagoAbierto\(\) \|\| !checkLegal\.checked/);
   for (const idioma of ["es", "en", "pt"]) {
     const dic = readFileSync(new URL(`../assets/i18n/${idioma}.js`, import.meta.url), "utf8");
     assert.match(dic, /"prec\.proximamente": "(Próximamente|Coming soon|Em breve)"/, idioma);
