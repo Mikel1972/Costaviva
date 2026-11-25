@@ -42,6 +42,13 @@
       "titulo": "Títulos sin « | Costaviva» (toda la web: mirar el CTR)",
       "pr": [612],
       "paginas": [".*"]
+    },
+    {
+      "id": "pueblos-mareas",
+      "fecha": "2026-11-25",
+      "titulo": "Mareas por pueblo en las regiones, Bilbao/Gran Canaria/Loredo/Noja y 5 pueblos de NZ",
+      "pr": [625],
+      "paginas": ["^/mareas/region/", "^/mareas/(getxo|laspalmas|santander|santona)$", "^/en/tides/region/", "^/en/tides/nz-(mount-maunganui|opotiki|otaki|helensville|clarks-beach)$"]
     }
   ]
 }
