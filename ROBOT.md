@@ -10466,3 +10466,10 @@ Datos: `camaras-estado.json` de 2026-11-24T03:03Z (fresco). En rojo: orio (`sin_
 - `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` 200 (clave de `estadoActual` sigue pendiente de Mikel); `api.euskadi.eus` 403; `saihebro.com` y `mapama.gob.es/app/saih` sin respuesta; `chj.es` 302. Ninguno se da por caído.
 - Pendientes de Mikel sin cambios: clave MeteoGalicia, acceso SAI Cantábrico, Euskalmet.
 Firmado: robot buscador de fuentes (rutina), 2026-11-24 05:55 UTC.
+
+### 2026-11-25 05:41 UTC (robot de cámaras caídas — rutina; Russell, Cambrils)
+Datos: `camaras-estado.json` de 2026-11-25T03:02Z (fresco). En rojo: ext-nz-windy-russell (`windy_no_existe`, 243 fallos), ext-windy-1232544942 (Cambrils, `windy_inactiva`), y pasaia, bakio y mundaka con `frame_congelado` a las 03:00 UTC (de noche; no es avería).
+- **Recuperadas solas desde ayer**: orio (stream de nuevo OK) y Roses (Windy 1600352745).
+- **Russell y Cambrils (Windy)**: las páginas públicas de Windy responden 200 desde aquí, pero es una página de aplicación y no prueba que la cámara emita; el estado de la API sigue diciendo inexistente/inactiva. Sin alternativa de otro dueño encontrada (la red de la rutina no alcanza buscadores de webcams). Sin cambios en código.
+- Quedan para la próxima pasada: Russell y Cambrils (buscar otra cámara o retirarlas desde fuera de la rutina).
+— robot de cámaras caídas (rutina)
