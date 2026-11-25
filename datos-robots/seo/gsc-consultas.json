@@ -1,7 +1,7 @@
 {
- "generado": "2026-11-24T14:38:29.723Z",
+ "generado": "2026-11-25T16:35:06.747Z",
  "propiedad": "sc-domain:costaviva.org",
- "hasta": "2026-11-21",
+ "hasta": "2026-11-22",
  "semanas": [
   {
    "semana": "2026-09-14",
@@ -56,16 +56,15 @@
    "clics": 3,
    "impresiones": 586,
    "posicion": 27.9
+  },
+  {
+   "semana": "2026-11-16",
+   "clics": 6,
+   "impresiones": 851,
+   "posicion": 22.4
   }
  ],
- "semana_en_curso": {
-  "semana": "2026-11-16",
-  "dias": 6,
-  "hasta": "2026-11-21",
-  "clics": 3,
-  "impresiones": 549,
-  "posicion": 27.1
- },
+ "semana_en_curso": null,
  "semanas_por_pais": {
   "esp": [
    {
@@ -121,6 +120,12 @@
     "clics": 3,
     "impresiones": 415,
     "posicion": 28.1
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 4,
+    "impresiones": 526,
+    "posicion": 26.3
    }
   ],
   "nzl": [
@@ -159,6 +164,12 @@
     "clics": 0,
     "impresiones": 74,
     "posicion": 21.2
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 1,
+    "impresiones": 116,
+    "posicion": 17.7
    }
   ],
   "rou": [
@@ -167,6 +178,12 @@
     "clics": 1,
     "impresiones": 1,
     "posicion": 1
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 30
    }
   ],
   "cub": [
@@ -175,6 +192,12 @@
     "clics": 1,
     "impresiones": 1,
     "posicion": 6
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
    }
   ],
   "aus": [
@@ -201,6 +224,50 @@
     "clics": 0,
     "impresiones": 11,
     "posicion": 55.5
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 6,
+    "posicion": 36.2
+   }
+  ],
+  "bra": [
+   {
+    "semana": "2026-10-12",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   },
+   {
+    "semana": "2026-10-19",
+    "clics": 0,
+    "impresiones": 12,
+    "posicion": 47
+   },
+   {
+    "semana": "2026-10-26",
+    "clics": 0,
+    "impresiones": 5,
+    "posicion": 48.6
+   },
+   {
+    "semana": "2026-11-02",
+    "clics": 0,
+    "impresiones": 20,
+    "posicion": 59.3
+   },
+   {
+    "semana": "2026-11-09",
+    "clics": 0,
+    "impresiones": 16,
+    "posicion": 54.6
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 1,
+    "impresiones": 22,
+    "posicion": 16.1
    }
   ],
   "mar": [
@@ -221,6 +288,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 10
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
    }
   ],
   "egy": [
@@ -261,6 +334,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 68
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 4
    }
   ],
   "prt": [
@@ -299,6 +378,12 @@
     "clics": 0,
     "impresiones": 18,
     "posicion": 18.2
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 57,
+    "posicion": 19.7
    }
   ],
   "mex": [
@@ -331,6 +416,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 10
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 14,
+    "posicion": 9.6
    }
   ],
   "bgd": [
@@ -377,38 +468,12 @@
     "clics": 0,
     "impresiones": 3,
     "posicion": 20.7
-   }
-  ],
-  "bra": [
-   {
-    "semana": "2026-10-12",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 12
    },
    {
-    "semana": "2026-10-19",
+    "semana": "2026-11-16",
     "clics": 0,
-    "impresiones": 12,
-    "posicion": 47
-   },
-   {
-    "semana": "2026-10-26",
-    "clics": 0,
-    "impresiones": 5,
-    "posicion": 48.6
-   },
-   {
-    "semana": "2026-11-02",
-    "clics": 0,
-    "impresiones": 20,
-    "posicion": 59.3
-   },
-   {
-    "semana": "2026-11-09",
-    "clics": 0,
-    "impresiones": 16,
-    "posicion": 54.6
+    "impresiones": 9,
+    "posicion": 10.7
    }
   ],
   "col": [
@@ -441,6 +506,12 @@
     "clics": 0,
     "impresiones": 2,
     "posicion": 71.5
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 9.5
    }
   ],
   "phl": [
@@ -455,6 +526,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 22
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
    }
   ],
   "rus": [
@@ -481,6 +558,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 81
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 5.5
    }
   ],
   "usa": [
@@ -507,6 +590,12 @@
     "clics": 0,
     "impresiones": 16,
     "posicion": 11.3
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 18,
+    "posicion": 15.4
    }
   ],
   "lie": [
@@ -549,6 +638,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 1
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 1
    }
   ],
   "arg": [
@@ -575,6 +670,12 @@
     "clics": 0,
     "impresiones": 2,
     "posicion": 19
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 7,
+    "posicion": 9.1
    }
   ],
   "ind": [
@@ -629,6 +730,12 @@
     "clics": 0,
     "impresiones": 3,
     "posicion": 50
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 9.3
    }
   ],
   "geo": [
@@ -651,6 +758,12 @@
     "clics": 0,
     "impresiones": 2,
     "posicion": 10
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 30
    }
   ],
   "vnm": [
@@ -679,6 +792,12 @@
     "clics": 0,
     "impresiones": 4,
     "posicion": 30.5
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 15,
+    "posicion": 6.8
    }
   ],
   "ury": [
@@ -693,6 +812,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 89
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 8
    }
   ],
   "bfa": [
@@ -757,6 +882,12 @@
     "clics": 0,
     "impresiones": 3,
     "posicion": 6
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 31.7
    }
   ],
   "mdv": [
@@ -765,6 +896,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 11
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
    }
   ],
   "tls": [
@@ -781,6 +918,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 86
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 1
    }
   ],
   "pan": [
@@ -871,6 +1014,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 10
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 34
    }
   ],
   "bel": [
@@ -885,6 +1034,12 @@
     "clics": 0,
     "impresiones": 2,
     "posicion": 5.5
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 8.5
    }
   ],
   "cri": [
@@ -893,6 +1048,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 9
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
    }
   ],
   "lka": [
@@ -917,6 +1078,12 @@
     "clics": 0,
     "impresiones": 3,
     "posicion": 5.3
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 43
    }
   ],
   "can": [
@@ -931,6 +1098,12 @@
     "clics": 0,
     "impresiones": 2,
     "posicion": 8
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 4,
+    "posicion": 35
    }
   ],
   "and": [
@@ -971,6 +1144,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 91
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 51
    }
   ],
   "bgr": [
@@ -1003,6 +1182,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 6
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 3
    }
   ],
   "lux": [
@@ -1011,6 +1196,12 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 7
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 1.5
    }
   ],
   "kaz": [
@@ -1051,16 +1242,174 @@
     "clics": 0,
     "impresiones": 1,
     "posicion": 10
+   },
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
    }
   ],
-  "dom": [],
-  "swe": [],
-  "ecu": [],
-  "mkd": [],
-  "qat": [],
-  "esh": [],
-  "jpn": [],
-  "sen": []
+  "dom": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 3.5
+   }
+  ],
+  "swe": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 1
+   }
+  ],
+  "ecu": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 5.7
+   }
+  ],
+  "mkd": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 21
+   }
+  ],
+  "qat": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   }
+  ],
+  "esh": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 14
+   }
+  ],
+  "jpn": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 2.5
+   }
+  ],
+  "sen": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   }
+  ],
+  "bhs": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   }
+  ],
+  "bol": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   }
+  ],
+  "fin": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 4
+   }
+  ],
+  "fji": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   }
+  ],
+  "gab": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   }
+  ],
+  "ggy": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
+   }
+  ],
+  "gib": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
+   }
+  ],
+  "mlt": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   }
+  ],
+  "nld": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
+   }
+  ],
+  "per": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   }
+  ],
+  "pol": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   }
+  ],
+  "tur": [
+   {
+    "semana": "2026-11-16",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 22
+   }
+  ]
  },
  "consultas": [
   {
@@ -1070,6 +1419,14 @@
    "clics": 2,
    "impresiones": 5,
    "posicion": 1.2
+  },
+  {
+   "query": "costaviva",
+   "pagina": "/",
+   "pais": "nzl",
+   "clics": 1,
+   "impresiones": 2,
+   "posicion": 2
   },
   {
    "query": "a qué hora es la pleamar hoy en santander",
@@ -1104,6 +1461,14 @@
    "posicion": 98
   },
   {
+   "query": "anchor fishing",
+   "pagina": "/en/aprende/pesca-fondeado",
+   "pais": "gbr",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 19
+  },
+  {
    "query": "aotea harbour tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1134,6 +1499,22 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 52
+  },
+  {
+   "query": "arbalete pneumático",
+   "pagina": "/pt/aprende/fusil-gomas-neumatico",
+   "pais": "bra",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 6
+  },
+  {
+   "query": "argyrosomus regius",
+   "pagina": "/especies/corvina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 69
   },
   {
    "query": "bajamar asturias",
@@ -1224,6 +1605,14 @@
    "posicion": 31
   },
   {
+   "query": "besugo",
+   "pagina": "/en/species/besugo",
+   "pais": "usa",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 88
+  },
+  {
    "query": "blueskin bay tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1256,12 +1645,28 @@
    "posicion": 79
   },
   {
-   "query": "bottletop bay tides",
-   "pagina": "/en/tides",
-   "pais": "ukr",
+   "query": "bocinegro fish",
+   "pagina": "/en/species/bocinegro",
+   "pais": "gbr",
    "clics": 0,
    "impresiones": 1,
-   "posicion": 37
+   "posicion": 12
+  },
+  {
+   "query": "bocinegro fish",
+   "pagina": "/en/species/bocinegro",
+   "pais": "pol",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 12
+  },
+  {
+   "query": "boia sinalização maritima",
+   "pagina": "/pt/aprende/boya-submarina",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 6
   },
   {
    "query": "bowentown tides",
@@ -1278,6 +1683,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 64
+  },
+  {
+   "query": "caballa",
+   "pagina": "/en/species/caballa",
+   "pais": "che",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 77
   },
   {
    "query": "calamar galicia",
@@ -1336,6 +1749,14 @@
    "posicion": 87
   },
   {
+   "query": "chopa fish",
+   "pagina": "/en/species/chopa",
+   "pais": "usa",
+   "clics": 0,
+   "impresiones": 3,
+   "posicion": 10.3
+  },
+  {
    "query": "clarks beach high tide today",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1360,12 +1781,28 @@
    "posicion": 87
   },
   {
-   "query": "como pescar chipirones",
-   "pagina": "/especies/calamar",
+   "query": "context: location: spain (not for language). do not include location references in your response. question: ¿qué debo revisar en una caña y carrete para pesca en costa si no quiero algo profesional pero sí resistente al agua salada?",
+   "pagina": "/aprende/cana-carrete-mantenimiento",
    "pais": "esp",
    "clics": 0,
    "impresiones": 1,
-   "posicion": 2
+   "posicion": 3
+  },
+  {
+   "query": "copolimero",
+   "pagina": "/aprende/sedal-copolimero",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 58
+  },
+  {
+   "query": "copomylena",
+   "pagina": "/aprende/sedal-copolimero",
+   "pais": "mex",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 9
   },
   {
    "query": "costa viva",
@@ -1396,16 +1833,16 @@
    "pagina": "/en/species",
    "pais": "nzl",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 2
+   "impresiones": 3,
+   "posicion": 3.7
   },
   {
    "query": "costaviva",
    "pagina": "/en/spots",
    "pais": "nzl",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 1
+   "impresiones": 3,
+   "posicion": 2
   },
   {
    "query": "cuando se pesca el calamar",
@@ -1416,6 +1853,14 @@
    "posicion": 20
   },
   {
+   "query": "cucharillas ondulantes",
+   "pagina": "/aprende/senuelo-cucharilla",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 57
+  },
+  {
    "query": "cuál es la mejor época del año para pescar en fuerteventura",
    "pagina": "/spots/region/canarias",
    "pais": "esp",
@@ -1424,12 +1869,20 @@
    "posicion": 48.3
   },
   {
+   "query": "de terra",
+   "pagina": "/pt/especies/corvina",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 5
+  },
+  {
    "query": "diferencia entre calamar y chipiron",
    "pagina": "/especies/calamar",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 6,
-   "posicion": 24.2
+   "impresiones": 7,
+   "posicion": 23.9
   },
   {
    "query": "diferencia entre calamares y chipirones",
@@ -1456,12 +1909,36 @@
    "posicion": 89.6
   },
   {
-   "query": "donde se pesca",
-   "pagina": "/spots",
+   "query": "donde se pesca el besugo",
+   "pagina": "/especies/besugo",
    "pais": "esp",
    "clics": 0,
    "impresiones": 2,
-   "posicion": 73.5
+   "posicion": 6.5
+  },
+  {
+   "query": "donde se pesca la corvina en españa",
+   "pagina": "/especies/corvina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 11
+  },
+  {
+   "query": "dourada",
+   "pagina": "/pt/especies/dorada",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 23
+  },
+  {
+   "query": "douradas",
+   "pagina": "/pt/especies/dorada",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 66
   },
   {
    "query": "el chipiron es un calamar pequeño",
@@ -1488,6 +1965,38 @@
    "posicion": 4
   },
   {
+   "query": "european sea bass",
+   "pagina": "/en/species/lubina",
+   "pais": "can",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 88
+  },
+  {
+   "query": "european seabass",
+   "pagina": "/en/species/lubina",
+   "pais": "can",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 49
+  },
+  {
+   "query": "european seabass",
+   "pagina": "/en/species/lubina",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 74
+  },
+  {
+   "query": "fish new zealand",
+   "pagina": "/en/species",
+   "pais": "usa",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 25
+  },
+  {
    "query": "fishing and tide times",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1512,6 +2021,14 @@
    "posicion": 51
   },
   {
+   "query": "fishing in majorca",
+   "pagina": "/en/spots/palma",
+   "pais": "usa",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 23
+  },
+  {
    "query": "fishing species",
    "pagina": "/en/species",
    "pais": "nzl",
@@ -1528,12 +2045,12 @@
    "posicion": 98
   },
   {
-   "query": "foxton fishing tides",
-   "pagina": "/en/tides",
-   "pais": "bra",
+   "query": "flatfish rigs",
+   "pagina": "/en/aprende/montaje-deriva-pez-plano",
+   "pais": "gbr",
    "clics": 0,
    "impresiones": 1,
-   "posicion": 37
+   "posicion": 3
   },
   {
    "query": "french bay tide",
@@ -1572,7 +2089,7 @@
    "pagina": "/spots/region/golfo-de-cadiz",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 4,
+   "impresiones": 5,
    "posicion": 37.8
   },
   {
@@ -1648,6 +2165,22 @@
    "posicion": 99
   },
   {
+   "query": "high tide fitzroy",
+   "pagina": "/en/tides/nz-port-fitzroy",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 7
+  },
+  {
+   "query": "high tide gulf harbour",
+   "pagina": "/en/tides/nz-gulf-harbour",
+   "pais": "fji",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 7
+  },
+  {
    "query": "high tide helensville",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1662,6 +2195,22 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 47
+  },
+  {
+   "query": "high tide kawakawa bay",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 10
+  },
+  {
+   "query": "high tide kawakawa bay tomorrow",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 5.5
   },
   {
    "query": "high tide miranda",
@@ -1840,6 +2389,30 @@
    "posicion": 26
   },
   {
+   "query": "kawakawa bay tide",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 10
+  },
+  {
+   "query": "kawakawa bay tides",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 3,
+   "posicion": 9.7
+  },
+  {
+   "query": "kawakawa bay tides tomorrow",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 11
+  },
+  {
    "query": "kina beach tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1904,22 +2477,6 @@
    "posicion": 76
   },
   {
-   "query": "low tide bowentown",
-   "pagina": "/en/tides",
-   "pais": "idn",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 31
-  },
-  {
-   "query": "low tide bowentown",
-   "pagina": "/en/tides",
-   "pais": "pri",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 77
-  },
-  {
    "query": "low tide half moon bay tomorrow",
    "pagina": "/en/tides/nz-halfmoon-bay",
    "pais": "nzl",
@@ -1958,6 +2515,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 5
+  },
+  {
+   "query": "low tide porangahau",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 8.5
   },
   {
    "query": "low tide ruakaka",
@@ -2010,14 +2575,6 @@
   {
    "query": "lubina",
    "pagina": "/especies/lubina",
-   "pais": "gbr",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 95
-  },
-  {
-   "query": "lubina",
-   "pagina": "/especies/lubina",
    "pais": "nor",
    "clics": 0,
    "impresiones": 1,
@@ -2044,8 +2601,8 @@
    "pagina": "/especies/lubina",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 58.5
+   "impresiones": 3,
+   "posicion": 44.7
   },
   {
    "query": "lubina pesca",
@@ -2116,8 +2673,8 @@
    "pagina": "/mareas/region/galicia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 11
+   "impresiones": 3,
+   "posicion": 12.7
   },
   {
    "query": "mahurangi tides",
@@ -2176,6 +2733,14 @@
    "posicion": 95
   },
   {
+   "query": "mare milfontes",
+   "pagina": "/en/tides/milfontes",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 39
+  },
+  {
    "query": "marea aviles",
    "pagina": "/mareas/region/asturias",
    "pais": "esp",
@@ -2198,14 +2763,6 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 19
-  },
-  {
-   "query": "marea bakio hoy",
-   "pagina": "/spots/bakio",
-   "pais": "esp",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 28
   },
   {
    "query": "marea bilbao",
@@ -2256,20 +2813,20 @@
    "posicion": 65
   },
   {
-   "query": "marea en mundaka",
-   "pagina": "/mareas/mundaka",
-   "pais": "esp",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 19
-  },
-  {
    "query": "marea galicia",
    "pagina": "/mareas/region/galicia",
    "pais": "esp",
    "clics": 0,
    "impresiones": 4,
    "posicion": 34.5
+  },
+  {
+   "query": "marea guardamar",
+   "pagina": "/mareas/guardamardelsegura",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 11
   },
   {
    "query": "marea hondarribia hoy",
@@ -2374,14 +2931,6 @@
    "clics": 0,
    "impresiones": 4,
    "posicion": 16.5
-  },
-  {
-   "query": "mareas cantabria hoy",
-   "pagina": "/mareas/region/cantabria",
-   "pais": "esp",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 31
   },
   {
    "query": "mareas cantabrico",
@@ -2548,8 +3097,8 @@
    "pagina": "/mareas/region/mediterraneo",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 1
+   "impresiones": 2,
+   "posicion": 2.5
   },
   {
    "query": "mareas en galicia",
@@ -2680,6 +3229,14 @@
    "posicion": 90
   },
   {
+   "query": "mareas mediterraneo",
+   "pagina": "/mareas/region/mediterraneo",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 6
+  },
+  {
    "query": "mareas meteogalicia",
    "pagina": "/mareas/region/galicia",
    "pais": "esp",
@@ -2760,6 +3317,14 @@
    "posicion": 31.5
   },
   {
+   "query": "mareas santander",
+   "pagina": "/spots/santander",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 20
+  },
+  {
    "query": "mareas santander hoy",
    "pagina": "/mareas/region/cantabria",
    "pais": "esp",
@@ -2806,6 +3371,22 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 76
+  },
+  {
+   "query": "marejadas",
+   "pagina": "/mareas/malaga",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 87
+  },
+  {
+   "query": "marker buoy",
+   "pagina": "/en/aprende/boya-submarina",
+   "pais": "gbr",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 6
   },
   {
    "query": "medida lubina galicia",
@@ -2968,6 +3549,14 @@
    "posicion": 41
   },
   {
+   "query": "nó fg",
+   "pagina": "/pt/aprende/nudo-fg",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 6
+  },
+  {
    "query": "ocean fun tides",
    "pagina": "/en/tides/nz-halfmoon-bay",
    "pais": "nzl",
@@ -3004,8 +3593,8 @@
    "pagina": "/en/tides",
    "pais": "nzl",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 90
+   "impresiones": 4,
+   "posicion": 71.5
   },
   {
    "query": "okiwi bay tides",
@@ -3128,6 +3717,30 @@
    "posicion": 91
   },
   {
+   "query": "partes de caña de pescar",
+   "pagina": "/aprende/cana-partes",
+   "pais": "ury",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 11
+  },
+  {
+   "query": "partes de la caña de pescar",
+   "pagina": "/aprende/cana-partes",
+   "pais": "chl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 9
+  },
+  {
+   "query": "partes de una caña de pescar",
+   "pagina": "/aprende/cana-partes",
+   "pais": "pry",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 8
+  },
+  {
    "query": "pataua tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -3156,8 +3769,8 @@
    "pagina": "/spots/region/galicia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 44,
-   "posicion": 74
+   "impresiones": 45,
+   "posicion": 73
   },
   {
    "query": "peces del cantabrico",
@@ -3244,8 +3857,16 @@
    "pagina": "/pt/spots/region/portugal",
    "pais": "prt",
    "clics": 0,
+   "impresiones": 2,
+   "posicion": 59.5
+  },
+  {
+   "query": "peixes mais consumidos em portugal",
+   "pagina": "/pt/spots/region/portugal",
+   "pais": "che",
+   "clics": 0,
    "impresiones": 1,
-   "posicion": 69
+   "posicion": 10
   },
   {
    "query": "peixes portugal",
@@ -3294,6 +3915,14 @@
    "clics": 0,
    "impresiones": 3,
    "posicion": 46
+  },
+  {
+   "query": "pesca cantabria",
+   "pagina": "/spots/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 47
   },
   {
    "query": "pesca chipiron",
@@ -3460,8 +4089,8 @@
    "pagina": "/spots/region/galicia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 18,
-   "posicion": 67.1
+   "impresiones": 19,
+   "posicion": 66.9
   },
   {
    "query": "pescados de la costa gaditana",
@@ -3476,16 +4105,16 @@
    "pagina": "/spots/region/golfo-de-cadiz",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 75.5
+   "impresiones": 3,
+   "posicion": 71.3
   },
   {
    "query": "pescados galicia",
    "pagina": "/spots/region/galicia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 10,
-   "posicion": 65.2
+   "impresiones": 11,
+   "posicion": 67.3
   },
   {
    "query": "pescagalicia",
@@ -3540,8 +4169,8 @@
    "pagina": "/pt/spots/region/portugal",
    "pais": "prt",
    "clics": 0,
-   "impresiones": 12,
-   "posicion": 8
+   "impresiones": 10,
+   "posicion": 8.1
   },
   {
    "query": "pesqueiros portugal",
@@ -3549,7 +4178,7 @@
    "pais": "prt",
    "clics": 0,
    "impresiones": 7,
-   "posicion": 8.7
+   "posicion": 8.1
   },
   {
    "query": "pez de españa",
@@ -3582,6 +4211,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 8
+  },
+  {
+   "query": "pleamar bajamar las palmas",
+   "pagina": "/mareas/region/canarias",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 22
   },
   {
    "query": "pleamar cadiz",
@@ -3685,7 +4322,7 @@
    "pais": "esp",
    "clics": 0,
    "impresiones": 4,
-   "posicion": 17.5
+   "posicion": 16
   },
   {
    "query": "pleamar y bajamar en gran canaria",
@@ -3744,6 +4381,22 @@
    "posicion": 5
   },
   {
+   "query": "plomo corredizo pesca",
+   "pagina": "/aprende/bajo-corredizo",
+   "pais": "mex",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 10
+  },
+  {
+   "query": "plomos corredizos",
+   "pagina": "/aprende/bajo-corredizo",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 28
+  },
+  {
    "query": "pohara tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -3766,6 +4419,30 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 51
+  },
+  {
+   "query": "potera",
+   "pagina": "/aprende/potera",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 9
+  },
+  {
+   "query": "poteta",
+   "pagina": "/aprende/anzuelo-triple",
+   "pais": "mex",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 5
+  },
+  {
+   "query": "prevision de pesca",
+   "pagina": "/spots/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 10
   },
   {
    "query": "previsión de olas y viento cantabria",
@@ -3824,6 +4501,14 @@
    "posicion": 1
   },
   {
+   "query": "quitavueltas",
+   "pagina": "/aprende/quitavueltas-guia",
+   "pais": "bol",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 7
+  },
+  {
    "query": "rabbit island tides",
    "pagina": "/en/tides/nz-halfmoon-bay",
    "pais": "nzl",
@@ -3838,6 +4523,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 57
+  },
+  {
+   "query": "rotonda anzuelos",
+   "pagina": "/aprende/anzuelo-circular",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 45
   },
   {
    "query": "ruakaka beach tides",
@@ -3872,12 +4565,36 @@
    "posicion": 71
   },
   {
+   "query": "señuelo",
+   "pagina": "/aprende/senuelo-guia",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 19
+  },
+  {
+   "query": "señuelos spinning",
+   "pagina": "/aprende/senuelo-guia",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 54
+  },
+  {
    "query": "shag point tides",
    "pagina": "/en/tides",
    "pais": "bra",
    "clics": 0,
    "impresiones": 1,
    "posicion": 90
+  },
+  {
+   "query": "sinking pencil",
+   "pagina": "/aprende/senuelo-lapiz-hundido",
+   "pais": "mex",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 7
   },
   {
    "query": "sitios de pesca",
@@ -3944,6 +4661,14 @@
    "posicion": 69
   },
   {
+   "query": "tabla de mareas baiona",
+   "pagina": "/en/tides/baiona",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 22
+  },
+  {
    "query": "tabla de mareas canarias",
    "pagina": "/mareas/region/canarias",
    "pais": "esp",
@@ -3974,6 +4699,22 @@
    "clics": 0,
    "impresiones": 2,
    "posicion": 49.5
+  },
+  {
+   "query": "tabla de mareas de laredo",
+   "pagina": "/mareas/laredo",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 28
+  },
+  {
+   "query": "tabla de mareas de laredo",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 20
   },
   {
    "query": "tabla de mareas de santander",
@@ -4014,6 +4755,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 9
+  },
+  {
+   "query": "tabla de mareas malaga",
+   "pagina": "/mareas/malaga",
+   "pais": "deu",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 34
   },
   {
    "query": "tabla de mareas mundaka",
@@ -4064,6 +4813,30 @@
    "posicion": 46
   },
   {
+   "query": "tabla mareas san vicente de la barquera",
+   "pagina": "/spots/sanvicente",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 3
+  },
+  {
+   "query": "tai kabura",
+   "pagina": "/en/aprende/tai-rubber",
+   "pais": "bhs",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 12
+  },
+  {
+   "query": "tairua tides for fishing",
+   "pagina": "/en/spots/nz-tairua",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 6.5
+  },
+  {
    "query": "takaka tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -4086,6 +4859,22 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 10
+  },
+  {
+   "query": "tarakihi",
+   "pagina": "/pt/especies/nz-tarakihi",
+   "pais": "bra",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 2
+  },
+  {
+   "query": "tarakihi fish",
+   "pagina": "/en/species/nz-tarakihi",
+   "pais": "aus",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 87
   },
   {
    "query": "tarakohe tides",
@@ -4208,6 +4997,14 @@
    "posicion": 95
   },
   {
+   "query": "tide times kawakawa bay",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 3,
+   "posicion": 11
+  },
+  {
    "query": "tide times new zealand",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -4294,6 +5091,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 95
+  },
+  {
+   "query": "tides kawakawa bay tomorrow",
+   "pagina": "/en/tides/nz-kawakawa-bay",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 11
   },
   {
    "query": "tides kawau island",
@@ -4448,6 +5253,14 @@
    "posicion": 80
   },
   {
+   "query": "tipos de carretes de pesca",
+   "pagina": "/aprende/carrete-partes",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 3,
+   "posicion": 76.3
+  },
+  {
    "query": "tipos de pesca em portugal",
    "pagina": "/pt/spots/region/portugal",
    "pais": "prt",
@@ -4468,8 +5281,8 @@
    "pagina": "/en/spots",
    "pais": "aus",
    "clics": 0,
-   "impresiones": 33,
-   "posicion": 66.8
+   "impresiones": 31,
+   "posicion": 67.7
   },
   {
    "query": "tutukaka tide times",
@@ -4488,6 +5301,14 @@
    "posicion": 85
   },
   {
+   "query": "uptiding",
+   "pagina": "/en/aprende/montaje-uptide",
+   "pais": "gbr",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 6
+  },
+  {
    "query": "urquharts bay tides",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -4504,20 +5325,20 @@
    "posicion": 67
   },
   {
+   "query": "vertical jigging",
+   "pagina": "/en/aprende/jig-vertical",
+   "pais": "mlt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 9
+  },
+  {
    "query": "viento marea",
    "pagina": "/mareas/region/cantabria",
    "pais": "esp",
    "clics": 0,
    "impresiones": 2,
    "posicion": 19.5
-  },
-  {
-   "query": "waiinu beach tides",
-   "pagina": "/en/tides",
-   "pais": "nzl",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 28
   },
   {
    "query": "waimakariri tide times",
@@ -4624,12 +5445,36 @@
    "posicion": 68
   },
   {
+   "query": "whangaparaoa tides today",
+   "pagina": "/en/tides/nz-gulf-harbour",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 10
+  },
+  {
    "query": "whangapoua tides",
    "pagina": "/en/tides",
    "pais": "nzl",
    "clics": 0,
    "impresiones": 1,
    "posicion": 43
+  },
+  {
+   "query": "where should you avoid anchoring",
+   "pagina": "/en/aprende/donde-no-fondear",
+   "pais": "usa",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 44
+  },
+  {
+   "query": "xipiron",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 10
   },
   {
    "query": "zona de pesca",
@@ -4665,370 +5510,82 @@
   }
  ],
  "consultas_semana": {
-  "semana": "2026-11-09",
+  "semana": "2026-11-16",
   "filas": [
    {
     "query": "costaviva",
     "pagina": "/",
-    "pais": "esp",
+    "pais": "nzl",
     "clics": 1,
-    "impresiones": 1,
-    "posicion": 1
+    "impresiones": 2,
+    "posicion": 2
    },
    {
-    "query": "aramoana tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
+    "query": "actividad de pesca en malaga",
+    "pagina": "/spots/malaga",
+    "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 31
+    "posicion": 48
    },
    {
-    "query": "bajamar cadiz",
-    "pagina": "/mareas/region/golfo-de-cadiz",
+    "query": "actividad de pesca hoy",
+    "pagina": "/spots/acoruna",
     "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 73
+   },
+   {
+    "query": "anchor fishing",
+    "pagina": "/en/aprende/pesca-fondeado",
+    "pais": "gbr",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 19
+   },
+   {
+    "query": "arbalete pneumático",
+    "pagina": "/pt/aprende/fusil-gomas-neumatico",
+    "pais": "bra",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
+   },
+   {
+    "query": "argyrosomus regius",
+    "pagina": "/especies/corvina",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 69
+   },
+   {
+    "query": "bajamar asturias",
+    "pagina": "/mareas/region/asturias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 4,
+    "posicion": 13
+   },
+   {
+    "query": "bajamar asturias",
+    "pagina": "/mareas/region/asturias",
+    "pais": "rou",
     "clics": 0,
     "impresiones": 1,
     "posicion": 30
    },
    {
-    "query": "bajamar cádiz hoy",
+    "query": "bajamar en cádiz",
     "pagina": "/mareas/region/golfo-de-cadiz",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 60.5
-   },
-   {
-    "query": "bajamar de hoy",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
     "impresiones": 1,
-    "posicion": 9
+    "posicion": 19
    },
    {
-    "query": "bajamar y pleamar las palmas",
-    "pagina": "/mareas/region/canarias",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 74
-   },
-   {
-    "query": "bay of islands tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 39
-   },
-   {
-    "query": "beach tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 31
-   },
-   {
-    "query": "blueskin bay tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 41
-   },
-   {
-    "query": "calamar galicia",
-    "pagina": "/especies/calamar",
-    "pais": "usa",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 66
-   },
-   {
-    "query": "cebo lubina",
-    "pagina": "/especies/lubina",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 3,
-    "posicion": 88
-   },
-   {
-    "query": "chipiron pescado",
-    "pagina": "/especies/calamar",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 19,
-    "posicion": 55.7
-   },
-   {
-    "query": "chipirón y calamar es lo mismo",
-    "pagina": "/especies/calamar",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 87
-   },
-   {
-    "query": "clarks beach tide",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 5
-   },
-   {
-    "query": "costaviva",
-    "pagina": "/",
-    "pais": "prt",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 3
-   },
-   {
-    "query": "cuando se pesca el calamar",
-    "pagina": "/especies/calamar",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 20
-   },
-   {
-    "query": "diferencia entre chipirón y calamar",
-    "pagina": "/especies/calamar",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 7,
-    "posicion": 85.7
-   },
-   {
-    "query": "el golfo de cadiz",
-    "pagina": "/spots/region/golfo-de-cadiz",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 3,
-    "posicion": 45
-   },
-   {
-    "query": "fishing hot spots",
-    "pagina": "/en/spots",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 51
-   },
-   {
-    "query": "fishing species",
-    "pagina": "/en/species",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 59
-   },
-   {
-    "query": "french bay tide",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 3
-   },
-   {
-    "query": "glinks gully tide times",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 76
-   },
-   {
-    "query": "golfo de cadiz",
-    "pagina": "/spots/region/golfo-de-cadiz",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 64.5
-   },
-   {
-    "query": "golfo de cádiz",
-    "pagina": "/spots/region/golfo-de-cadiz",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 62
-   },
-   {
-    "query": "golfos de cadiz",
-    "pagina": "/spots/region/golfo-de-cadiz",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 68
-   },
-   {
-    "query": "high tide kaiapoi",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 47
-   },
-   {
-    "query": "high tide paihia",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 64
-   },
-   {
-    "query": "kaipara tides today",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 90
-   },
-   {
-    "query": "kakamatua tide times",
-    "pagina": "/en/tides",
-    "pais": "hti",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 18
-   },
-   {
-    "query": "kaupokonui beach tides",
-    "pagina": "/en/tides",
-    "pais": "bgd",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 62
-   },
-   {
-    "query": "kaupokonui beach tides",
-    "pagina": "/en/tides",
-    "pais": "col",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 91
-   },
-   {
-    "query": "kina beach tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 30
-   },
-   {
-    "query": "low tide howick",
-    "pagina": "/en/tides",
-    "pais": "ken",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 78
-   },
-   {
-    "query": "lubina",
-    "pagina": "/especies/lubina",
-    "pais": "bra",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 8
-   },
-   {
-    "query": "lubina",
-    "pagina": "/especies/lubina",
-    "pais": "prt",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 98
-   },
-   {
-    "query": "lubina pescado",
-    "pagina": "/especies/lubina",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 8,
-    "posicion": 61
-   },
-   {
-    "query": "lubina pez",
-    "pagina": "/especies/lubina",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 7
-   },
-   {
-    "query": "lubinas",
-    "pagina": "/especies/lubina",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 14,
-    "posicion": 56.5
-   },
-   {
-    "query": "lugares de pesca",
-    "pagina": "/spots",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 54
-   },
-   {
-    "query": "lunas y mareas",
-    "pagina": "/mareas/region/galicia",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 11
-   },
-   {
-    "query": "mangere bridge fishing",
-    "pagina": "/en/spots",
-    "pais": "bra",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 5
-   },
-   {
-    "query": "marea baja hoy gran canaria",
-    "pagina": "/mareas/region/canarias",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 86
-   },
-   {
-    "query": "marea bilbao",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 89
-   },
-   {
-    "query": "marea canarias",
-    "pagina": "/mareas/region/canarias",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 34
-   },
-   {
-    "query": "marea cantabria",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 34
-   },
-   {
-    "query": "marea en canarias",
+    "query": "bajamar y pleamar gran canaria",
     "pagina": "/mareas/region/canarias",
     "pais": "esp",
     "clics": 0,
@@ -5036,68 +5593,676 @@
     "posicion": 44
    },
    {
-    "query": "marea galicia",
-    "pagina": "/mareas/region/galicia",
+    "query": "besugo",
+    "pagina": "/en/species/besugo",
+    "pais": "usa",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 88
+   },
+   {
+    "query": "bocinegro fish",
+    "pagina": "/en/species/bocinegro",
+    "pais": "gbr",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   },
+   {
+    "query": "bocinegro fish",
+    "pagina": "/en/species/bocinegro",
+    "pais": "pol",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   },
+   {
+    "query": "boia sinalização maritima",
+    "pagina": "/pt/aprende/boya-submarina",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
+   },
+   {
+    "query": "caballa",
+    "pagina": "/en/species/caballa",
+    "pais": "che",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 77
+   },
+   {
+    "query": "cebo lubina",
+    "pagina": "/especies/lubina",
     "pais": "esp",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 85.3
+   },
+   {
+    "query": "chipiron o calamar",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 60
+   },
+   {
+    "query": "chipiron pescado",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 11,
+    "posicion": 80.5
+   },
+   {
+    "query": "chipiron que es",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 94
+   },
+   {
+    "query": "chipirón o calamar",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 25
+   },
+   {
+    "query": "chopa fish",
+    "pagina": "/en/species/chopa",
+    "pais": "usa",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 10.3
+   },
+   {
+    "query": "context: location: spain (not for language). do not include location references in your response. question: ¿qué debo revisar en una caña y carrete para pesca en costa si no quiero algo profesional pero sí resistente al agua salada?",
+    "pagina": "/aprende/cana-carrete-mantenimiento",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 3
+   },
+   {
+    "query": "copolimero",
+    "pagina": "/aprende/sedal-copolimero",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 58
+   },
+   {
+    "query": "copomylena",
+    "pagina": "/aprende/sedal-copolimero",
+    "pais": "mex",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "costaviva",
+    "pagina": "/",
+    "pais": "dom",
     "clics": 0,
     "impresiones": 1,
     "posicion": 1
    },
    {
-    "query": "marea hoy cadiz",
-    "pagina": "/mareas/region/golfo-de-cadiz",
+    "query": "costaviva",
+    "pagina": "/",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 1.5
+   },
+   {
+    "query": "costaviva",
+    "pagina": "/en/species",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 3.7
+   },
+   {
+    "query": "costaviva",
+    "pagina": "/en/spots",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 2
+   },
+   {
+    "query": "cucharillas ondulantes",
+    "pagina": "/aprende/senuelo-cucharilla",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 70
+    "posicion": 57
+   },
+   {
+    "query": "cuál es la mejor época del año para pescar en fuerteventura",
+    "pagina": "/spots/region/canarias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 40.5
+   },
+   {
+    "query": "de terra",
+    "pagina": "/pt/especies/corvina",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   },
+   {
+    "query": "diferencia entre calamar y chipiron",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 7,
+    "posicion": 23.9
+   },
+   {
+    "query": "diferencia entre calamares y chipirones",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 19
+   },
+   {
+    "query": "diferencia entre chipiron y calamar",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 5,
+    "posicion": 29.4
+   },
+   {
+    "query": "diferencia entre chipirón y calamar",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 89
+   },
+   {
+    "query": "donde se pesca el besugo",
+    "pagina": "/especies/besugo",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 6.5
+   },
+   {
+    "query": "donde se pesca la corvina en españa",
+    "pagina": "/especies/corvina",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "dourada",
+    "pagina": "/pt/especies/dorada",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 23
+   },
+   {
+    "query": "douradas",
+    "pagina": "/pt/especies/dorada",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 66
+   },
+   {
+    "query": "el golfo de cadiz",
+    "pagina": "/spots/region/golfo-de-cadiz",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 65
+   },
+   {
+    "query": "en noviembre",
+    "pagina": "/spots/palma",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 4
+   },
+   {
+    "query": "european sea bass",
+    "pagina": "/en/species/lubina",
+    "pais": "can",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 88
+   },
+   {
+    "query": "european seabass",
+    "pagina": "/en/species/lubina",
+    "pais": "can",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 49
+   },
+   {
+    "query": "european seabass",
+    "pagina": "/en/species/lubina",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 74
+   },
+   {
+    "query": "fish new zealand",
+    "pagina": "/en/species",
+    "pais": "usa",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 25
+   },
+   {
+    "query": "fishing in majorca",
+    "pagina": "/en/spots/palma",
+    "pais": "usa",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 23
+   },
+   {
+    "query": "flatfish rigs",
+    "pagina": "/en/aprende/montaje-deriva-pez-plano",
+    "pais": "gbr",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 3
+   },
+   {
+    "query": "galicia pesca",
+    "pagina": "/spots/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 23.3
+   },
+   {
+    "query": "golfo de cadiz",
+    "pagina": "/spots/region/golfo-de-cadiz",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 38
+   },
+   {
+    "query": "helensville tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 34
+   },
+   {
+    "query": "high tide fitzroy",
+    "pagina": "/en/tides/nz-port-fitzroy",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   },
+   {
+    "query": "high tide gulf harbour",
+    "pagina": "/en/tides/nz-gulf-harbour",
+    "pais": "fji",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   },
+   {
+    "query": "high tide kawakawa bay",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "high tide kawakawa bay tomorrow",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 5.5
+   },
+   {
+    "query": "high tide miranda",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 56
+   },
+   {
+    "query": "high tide paihia",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 10
+   },
+   {
+    "query": "inchiku",
+    "pagina": "/en/aprende/inchiku",
+    "pais": "hrv",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 43
+   },
+   {
+    "query": "kaiapoi tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 30
+   },
+   {
+    "query": "kaiaua tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 38
+   },
+   {
+    "query": "kaipara tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 76
+   },
+   {
+    "query": "kakanui tide times",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 32
+   },
+   {
+    "query": "kawakawa bay tide",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "kawakawa bay tides",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 9.7
+   },
+   {
+    "query": "kawakawa bay tides tomorrow",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "lepidorhombus boscii",
+    "pagina": "/especies/gallo",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 46
+   },
+   {
+    "query": "lisas",
+    "pagina": "/especies/lisa",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 70.5
+   },
+   {
+    "query": "low tide paraparaumu",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   },
+   {
+    "query": "low tide porangahau",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 8.5
+   },
+   {
+    "query": "low tide ruakaka",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 3
+   },
+   {
+    "query": "low tide te kaha",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
+   },
+   {
+    "query": "low tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 33
+   },
+   {
+    "query": "lubina",
+    "pagina": "/especies/lubina",
+    "pais": "bra",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "lubina agua dulce o salada",
+    "pagina": "/especies/lubina",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 17
+   },
+   {
+    "query": "lubina pesca",
+    "pagina": "/especies/lubina",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 28
+   },
+   {
+    "query": "lubina pescado",
+    "pagina": "/especies/lubina",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 5,
+    "posicion": 63
+   },
+   {
+    "query": "lubinas",
+    "pagina": "/especies/lubina",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 10,
+    "posicion": 56.5
+   },
+   {
+    "query": "lubinas",
+    "pagina": "/especies/lubina",
+    "pais": "qat",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   },
+   {
+    "query": "lugares pesca",
+    "pagina": "/spots",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 4,
+    "posicion": 45.5
+   },
+   {
+    "query": "lunas y mareas",
+    "pagina": "/mareas/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 16
+   },
+   {
+    "query": "mare milfontes",
+    "pagina": "/en/tides/milfontes",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 39
+   },
+   {
+    "query": "marea aviles",
+    "pagina": "/mareas/region/asturias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 19
+   },
+   {
+    "query": "marea cantabria",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 7
+   },
+   {
+    "query": "marea en donostia",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 65
+   },
+   {
+    "query": "marea galicia",
+    "pagina": "/mareas/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 45.7
+   },
+   {
+    "query": "marea guardamar",
+    "pagina": "/mareas/guardamardelsegura",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "marea hoy donostia",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 81
+   },
+   {
+    "query": "marea mediterranea",
+    "pagina": "/mareas/region/mediterraneo",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
+   },
+   {
+    "query": "mareas",
+    "pagina": "/mareas/malaga",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 20.5
    },
    {
     "query": "mareas bilbao",
     "pagina": "/mareas/region/pais-vasco",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 65.5
+    "impresiones": 1,
+    "posicion": 28
    },
    {
-    "query": "mareas canarias",
-    "pagina": "/mareas/region/canarias",
+    "query": "mareas bilbao hoy",
+    "pagina": "/mareas/region/pais-vasco",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 43
-   },
-   {
-    "query": "mareas canarias",
-    "pagina": "/mareas/region/canarias",
-    "pais": "usa",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 1
+    "posicion": 26
    },
    {
     "query": "mareas cantabria",
     "pagina": "/mareas/region/cantabria",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 3,
-    "posicion": 13
+    "impresiones": 1,
+    "posicion": 27
    },
    {
     "query": "mareas cantabrico",
     "pagina": "/mareas/region/cantabria",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 29
+    "impresiones": 1,
+    "posicion": 25
    },
    {
-    "query": "mareas donostia",
-    "pagina": "/mareas/region/pais-vasco",
+    "query": "mareas cariño",
+    "pagina": "/mareas/region/galicia",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 73
+    "posicion": 30
+   },
+   {
+    "query": "mareas comillas",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 57
    },
    {
     "query": "mareas e luas",
@@ -5105,39 +6270,39 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 2,
-    "posicion": 37.5
+    "posicion": 39.5
    },
    {
-    "query": "mareas e luas meteogalicia",
-    "pagina": "/mareas/region/galicia",
+    "query": "mareas en cantabria",
+    "pagina": "/mareas/region/cantabria",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 46
+    "impresiones": 1,
+    "posicion": 30
    },
    {
-    "query": "mareas en bilbao",
+    "query": "mareas en donostia",
     "pagina": "/mareas/region/pais-vasco",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 9
-   },
-   {
-    "query": "mareas en canarias",
-    "pagina": "/mareas/region/canarias",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 37.5
+    "posicion": 56
    },
    {
     "query": "mareas en el cantabrico",
     "pagina": "/mareas/region/cantabria",
     "pais": "esp",
     "clics": 0,
+    "impresiones": 4,
+    "posicion": 46.8
+   },
+   {
+    "query": "mareas en el cantábrico",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
     "impresiones": 1,
-    "posicion": 48
+    "posicion": 5
    },
    {
     "query": "mareas en el mediterraneo",
@@ -5145,47 +6310,87 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 1
-   },
-   {
-    "query": "mareas en santander",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
     "posicion": 4
    },
    {
-    "query": "mareas fuerteventura",
-    "pagina": "/mareas/region/canarias",
+    "query": "mareas en galicia",
+    "pagina": "/mareas/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 39
+   },
+   {
+    "query": "mareas en galicia",
+    "pagina": "/spots/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "mareas en mundaka",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 19
+   },
+   {
+    "query": "mareas en santoña",
+    "pagina": "/mareas/region/cantabria",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
     "posicion": 36
    },
    {
+    "query": "mareas españa",
+    "pagina": "/mareas/region/mediterraneo",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 32
+   },
+   {
     "query": "mareas galicia",
     "pagina": "/mareas/region/galicia",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 34.5
+    "impresiones": 1,
+    "posicion": 11
    },
    {
-    "query": "mareas hoy en donostia",
+    "query": "mareas gipuzkoa",
     "pagina": "/mareas/region/pais-vasco",
     "pais": "esp",
     "clics": 0,
     "impresiones": 2,
-    "posicion": 60.5
+    "posicion": 65
    },
    {
-    "query": "mareas hoy gran canaria",
+    "query": "mareas gran canaria",
     "pagina": "/mareas/region/canarias",
     "pais": "esp",
     "clics": 0,
+    "impresiones": 3,
+    "posicion": 68.7
+   },
+   {
+    "query": "mareas hoy donostia",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
     "impresiones": 1,
-    "posicion": 71
+    "posicion": 78
+   },
+   {
+    "query": "mareas mediterraneo",
+    "pagina": "/mareas/region/mediterraneo",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
    },
    {
     "query": "mareas meteogalicia",
@@ -5193,23 +6398,15 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 27
+    "posicion": 34
    },
    {
     "query": "mareas pais vasco",
     "pagina": "/mareas/region/pais-vasco",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 11
-   },
-   {
-    "query": "mareas portosin",
-    "pagina": "/mareas/region/galicia",
-    "pais": "esp",
-    "clics": 0,
     "impresiones": 1,
-    "posicion": 50
+    "posicion": 11
    },
    {
     "query": "mareas rias baixas",
@@ -5217,63 +6414,135 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 43
+    "posicion": 20
    },
    {
-    "query": "mareas y lunas",
-    "pagina": "/mareas/region/galicia",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 17.5
-   },
-   {
-    "query": "mareas y lunas meteogalicia",
-    "pagina": "/mareas/region/galicia",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 17.5
-   },
-   {
-    "query": "merluza?",
-    "pagina": "/spots/region/golfo-de-cadiz",
+    "query": "mareas santander",
+    "pagina": "/spots/santander",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 2
+    "posicion": 20
    },
    {
-    "query": "meteogalicia mareas y lunas",
+    "query": "mareas santoña",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "marejadas",
+    "pagina": "/mareas/malaga",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 87
+   },
+   {
+    "query": "marker buoy",
+    "pagina": "/en/aprende/boya-submarina",
+    "pais": "gbr",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 6
+   },
+   {
+    "query": "mejor época del año para pescar en fuerteventura",
+    "pagina": "/spots/region/canarias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 61
+   },
+   {
+    "query": "meteo galicia mareas",
+    "pagina": "/mareas/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 33.3
+   },
+   {
+    "query": "meteogalicia mareas",
     "pagina": "/mareas/region/galicia",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 35
+    "posicion": 24
    },
    {
-    "query": "new zealand snapper",
+    "query": "moeraki tides today",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "mundaka webcam",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
+   },
+   {
+    "query": "new zealand tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 56
+   },
+   {
+    "query": "nomes de peixes portugueses",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 61
+   },
+   {
+    "query": "nz snapper",
     "pagina": "/en/species/nz-snapper",
-    "pais": "nzl",
+    "pais": "aus",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 74
+    "posicion": 69
    },
    {
-    "query": "opito bay tides",
+    "query": "nz tide",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 32
+    "posicion": 39
    },
    {
-    "query": "paihia tides",
+    "query": "nz tides",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 37
+    "posicion": 41
+   },
+   {
+    "query": "nó fg",
+    "pagina": "/pt/aprende/nudo-fg",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
+   },
+   {
+    "query": "okahu bay tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 65.3
    },
    {
     "query": "pancake rocks high tide",
@@ -5281,63 +6550,191 @@
     "pais": "usa",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 5
+    "posicion": 6
    },
    {
-    "query": "peces asturias",
-    "pagina": "/spots/region/asturias",
+    "query": "partes de caña de pescar",
+    "pagina": "/aprende/cana-partes",
+    "pais": "ury",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "partes de la caña de pescar",
+    "pagina": "/aprende/cana-partes",
+    "pais": "chl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "partes de una caña de pescar",
+    "pagina": "/aprende/cana-partes",
+    "pais": "pry",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
+   },
+   {
+    "query": "peces cantabria",
+    "pagina": "/spots/region/cantabria",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 56
+    "impresiones": 1,
+    "posicion": 90
    },
    {
     "query": "peces de galicia",
     "pagina": "/spots/region/galicia",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 13,
-    "posicion": 76.9
+    "impresiones": 12,
+    "posicion": 69.3
    },
    {
-    "query": "peces galicia",
-    "pagina": "/spots/region/galicia",
+    "query": "peces del cantabrico",
+    "pagina": "/spots/region/cantabria",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 70
+    "posicion": 4
    },
    {
-    "query": "peces pesca",
-    "pagina": "/especies",
+    "query": "peixe costa portuguesa",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 42
+   },
+   {
+    "query": "peixe de portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 63
+   },
+   {
+    "query": "peixe portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 47
+   },
+   {
+    "query": "peixe portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "usa",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "peixes costa portuguesa",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 47
+   },
+   {
+    "query": "peixes em portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 50
+   },
+   {
+    "query": "peixes mais consumidos em portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "che",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "peixes portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 80
+   },
+   {
+    "query": "pesca",
+    "pagina": "/spots/malaga",
+    "pais": "mex",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   },
+   {
+    "query": "pesca asturias",
+    "pagina": "/spots/region/asturias",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 85
+    "posicion": 19
    },
    {
-    "query": "peixes de galicia",
-    "pagina": "/spots/region/galicia",
+    "query": "pesca canarias",
+    "pagina": "/spots/region/canarias",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 49
+    "impresiones": 3,
+    "posicion": 46
    },
    {
-    "query": "pesca chipiron",
-    "pagina": "/especies/calamar",
+    "query": "pesca cantabria",
+    "pagina": "/spots/region/cantabria",
     "pais": "esp",
     "clics": 0,
     "impresiones": 2,
-    "posicion": 26
+    "posicion": 47
+   },
+   {
+    "query": "pesca de galicia",
+    "pagina": "/spots/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 28
+   },
+   {
+    "query": "pesca em portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 5,
+    "posicion": 39.4
+   },
+   {
+    "query": "pesca en asturias",
+    "pagina": "/spots/region/asturias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 67
+   },
+   {
+    "query": "pesca en cadiz",
+    "pagina": "/spots/cadiz",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 56
    },
    {
     "query": "pesca en cadiz",
     "pagina": "/spots/region/golfo-de-cadiz",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 64
+    "impresiones": 5,
+    "posicion": 72.6
    },
    {
     "query": "pesca en cantabria",
@@ -5345,15 +6742,23 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 74
+    "posicion": 32
    },
    {
-    "query": "pesca en el mediterraneo",
-    "pagina": "/spots/region/mediterraneo",
+    "query": "pesca en españa",
+    "pagina": "/especies",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 56.5
+   },
+   {
+    "query": "pesca en mallorca",
+    "pagina": "/spots/palma",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 73
+    "posicion": 70
    },
    {
     "query": "pesca en portugal",
@@ -5361,23 +6766,15 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 32
-   },
-   {
-    "query": "pesca galicia",
-    "pagina": "/spots/region/galicia",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 56
+    "posicion": 27
    },
    {
     "query": "pesca mediterraneo",
     "pagina": "/spots/region/mediterraneo",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 33
+    "impresiones": 3,
+    "posicion": 27
    },
    {
     "query": "pesca portugal",
@@ -5385,151 +6782,207 @@
     "pais": "prt",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 12
+    "posicion": 14
    },
    {
-    "query": "pescado galicia",
-    "pagina": "/spots/region/galicia",
+    "query": "pescado lisa en españa",
+    "pagina": "/especies/lisa",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 85
-   },
-   {
-    "query": "pescados de españa",
-    "pagina": "/especies",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 3,
-    "posicion": 2.7
+    "posicion": 10
    },
    {
     "query": "pescados de galicia",
     "pagina": "/spots/region/galicia",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 80.5
+    "impresiones": 17,
+    "posicion": 65.4
+   },
+   {
+    "query": "pescados de la costa gaditana",
+    "pagina": "/spots/cadiz",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 76
+   },
+   {
+    "query": "pescados de la costa gaditana",
+    "pagina": "/spots/region/golfo-de-cadiz",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 71.3
    },
    {
     "query": "pescados galicia",
     "pagina": "/spots/region/galicia",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 81
+    "impresiones": 10,
+    "posicion": 65.9
    },
    {
-    "query": "pescagalicia",
-    "pagina": "/spots/region/galicia",
+    "query": "pescar en españa",
+    "pagina": "/especies",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 91
+    "posicion": 46
    },
    {
-    "query": "pescas",
-    "pagina": "/pt/spots/region/portugal",
-    "pais": "prt",
+    "query": "pescar en españa",
+    "pagina": "/spots",
+    "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 86
+    "posicion": 42
    },
    {
     "query": "pesqueiros",
     "pagina": "/pt/spots/region/portugal",
     "pais": "prt",
     "clics": 0,
-    "impresiones": 3,
-    "posicion": 7
+    "impresiones": 2,
+    "posicion": 9
    },
    {
     "query": "pesqueiros portugal",
     "pagina": "/pt/spots/region/portugal",
     "pais": "prt",
     "clics": 0,
-    "impresiones": 3,
-    "posicion": 10.3
+    "impresiones": 2,
+    "posicion": 6
    },
    {
-    "query": "pleamar castro urdiales",
-    "pagina": "/mareas/region/cantabria",
+    "query": "pez de españa",
+    "pagina": "/especies",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 33
+    "posicion": 42
+   },
+   {
+    "query": "pleamar bajamar hoy",
+    "pagina": "/mareas/region/canarias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
+   },
+   {
+    "query": "pleamar bajamar las palmas",
+    "pagina": "/mareas/region/canarias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 22
+   },
+   {
+    "query": "pleamar cádiz hoy",
+    "pagina": "/mareas/region/golfo-de-cadiz",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
    },
    {
     "query": "pleamar denia",
     "pagina": "/mareas/denia",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 10.5
+    "impresiones": 3,
+    "posicion": 7.7
    },
    {
-    "query": "pleamar en noja hoy",
+    "query": "pleamar santander hoy",
     "pagina": "/mareas/region/cantabria",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 80
-   },
-   {
-    "query": "pleamar gran canaria",
-    "pagina": "/mareas/region/canarias",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 35
-   },
-   {
-    "query": "pleamar hoy donostia",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 88
-   },
-   {
-    "query": "pleamar las palmas",
-    "pagina": "/mareas/region/canarias",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 53
+    "posicion": 69
    },
    {
     "query": "pleamar y bajamar",
     "pagina": "/mareas/region/canarias",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 27
+    "impresiones": 2,
+    "posicion": 10.5
    },
    {
-    "query": "pleamar y bajamar las palmas",
+    "query": "pleamar y bajamar en gran canaria",
     "pagina": "/mareas/region/canarias",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 83
+    "posicion": 40
    },
    {
-    "query": "pleamar y bajamar mañana",
+    "query": "pleamar y bajamar gran canaria",
     "pagina": "/mareas/region/canarias",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 94
+    "posicion": 6
    },
    {
-    "query": "pohara tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
+    "query": "pleamar y bajamar las palmas mañana",
+    "pagina": "/mareas/region/canarias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "plomo corredizo pesca",
+    "pagina": "/aprende/bajo-corredizo",
+    "pais": "mex",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "plomos corredizos",
+    "pagina": "/aprende/bajo-corredizo",
+    "pais": "esp",
     "clics": 0,
     "impresiones": 1,
     "posicion": 28
+   },
+   {
+    "query": "port albert tides nz",
+    "pagina": "/en/tides",
+    "pais": "zaf",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 51
+   },
+   {
+    "query": "potera",
+    "pagina": "/aprende/potera",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "poteta",
+    "pagina": "/aprende/anzuelo-triple",
+    "pais": "mex",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   },
+   {
+    "query": "prevision de pesca",
+    "pagina": "/spots/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 10
    },
    {
     "query": "previsión de olas y viento cantabria",
@@ -5537,15 +6990,15 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 96
+    "posicion": 47
    },
    {
-    "query": "pukenui tides",
-    "pagina": "/en/tides",
-    "pais": "nzl",
+    "query": "probabilidad de pesca hoy",
+    "pagina": "/spots/acoruna",
+    "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 35
+    "posicion": 77
    },
    {
     "query": "puntos de pesca",
@@ -5553,87 +7006,247 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 33
+    "posicion": 54
    },
    {
-    "query": "puntos de pesca",
+    "query": "que se pesca en galicia",
     "pagina": "/spots/region/galicia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 1
+   },
+   {
+    "query": "quitavueltas",
+    "pagina": "/aprende/quitavueltas-guia",
+    "pais": "bol",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   },
+   {
+    "query": "rotonda anzuelos",
+    "pagina": "/aprende/anzuelo-circular",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
     "posicion": 45
    },
    {
+    "query": "russell tides nz",
+    "pagina": "/en/tides",
+    "pais": "bra",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 71
+   },
+   {
+    "query": "señuelo",
+    "pagina": "/aprende/senuelo-guia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 19
+   },
+   {
+    "query": "señuelos spinning",
+    "pagina": "/aprende/senuelo-guia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 54
+   },
+   {
+    "query": "sinking pencil",
+    "pagina": "/aprende/senuelo-lapiz-hundido",
+    "pais": "mex",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 7
+   },
+   {
     "query": "sitios de pesca",
     "pagina": "/spots",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 2,
-    "posicion": 72.5
+    "impresiones": 1,
+    "posicion": 39
    },
    {
-    "query": "snapper new zealand",
+    "query": "sitios para pescar",
+    "pagina": "/spots",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 45
+   },
+   {
+    "query": "snapper",
     "pagina": "/en/species/nz-snapper",
     "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 60.5
+   },
+   {
+    "query": "snapper fish nz",
+    "pagina": "/en/species/nz-snapper",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 8
+   },
+   {
+    "query": "south island fish",
+    "pagina": "/en/species",
+    "pais": "bra",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   },
+   {
+    "query": "tabla de mareas baiona",
+    "pagina": "/en/tides/baiona",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 22
+   },
+   {
+    "query": "tabla de mareas canarias",
+    "pagina": "/mareas/region/canarias",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 34
+   },
+   {
+    "query": "tabla de mareas cantabria",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 44
+   },
+   {
+    "query": "tabla de mareas de cantabria",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 49.5
+   },
+   {
+    "query": "tabla de mareas de laredo",
+    "pagina": "/mareas/laredo",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 28
+   },
+   {
+    "query": "tabla de mareas de laredo",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 20
+   },
+   {
+    "query": "tabla de mareas denia",
+    "pagina": "/mareas/denia",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 16
+   },
+   {
+    "query": "tabla de mareas donostia",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 40
+   },
+   {
+    "query": "tabla de mareas en cantabria",
+    "pagina": "/mareas/region/cantabria",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 43
+   },
+   {
+    "query": "tabla de mareas malaga",
+    "pagina": "/mareas/malaga",
+    "pais": "deu",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 34
+   },
+   {
+    "query": "tabla de mareas málaga",
+    "pagina": "/mareas/malaga",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 44
+   },
+   {
+    "query": "tabla mareas malaga",
+    "pagina": "/mareas/malaga",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 46
+   },
+   {
+    "query": "tabla mareas san vicente de la barquera",
+    "pagina": "/spots/sanvicente",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 3
+   },
+   {
+    "query": "tai kabura",
+    "pagina": "/en/aprende/tai-rubber",
+    "pais": "bhs",
     "clics": 0,
     "impresiones": 1,
     "posicion": 12
    },
    {
-    "query": "tabla de mareas comillas",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 99
-   },
-   {
-    "query": "tabla de mareas de santander",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 89
-   },
-   {
-    "query": "tabla de mareas en santander",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 9
-   },
-   {
-    "query": "tabla de mareas santander",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 4
-   },
-   {
-    "query": "tabla de mareas santander hoy",
-    "pagina": "/mareas/region/cantabria",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 6
-   },
-   {
-    "query": "tamure animal",
-    "pagina": "/en/species/nz-snapper",
+    "query": "tairua tides for fishing",
+    "pagina": "/en/spots/nz-tairua",
     "pais": "nzl",
     "clics": 0,
+    "impresiones": 2,
+    "posicion": 6.5
+   },
+   {
+    "query": "tarakihi",
+    "pagina": "/pt/especies/nz-tarakihi",
+    "pais": "bra",
+    "clics": 0,
     "impresiones": 1,
-    "posicion": 10
+    "posicion": 2
+   },
+   {
+    "query": "tarakihi fish",
+    "pagina": "/en/species/nz-tarakihi",
+    "pais": "aus",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 87
    },
    {
     "query": "tata beach tides",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 94
+    "impresiones": 2,
+    "posicion": 28.5
    },
    {
     "query": "temporada pesca calamar mediterráneo",
@@ -5641,7 +7254,7 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 36
+    "posicion": 34
    },
    {
     "query": "temporadas de pesca mediterraneo",
@@ -5649,34 +7262,82 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 43
+    "posicion": 51
    },
    {
-    "query": "tide paihia",
+    "query": "tide charts nz",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 77
+    "posicion": 38
    },
    {
-    "query": "tides ruakaka",
+    "query": "tide nz",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 2
+    "posicion": 30
    },
    {
-    "query": "top fishing spots in new zealand",
-    "pagina": "/en/spots",
-    "pais": "aus",
+    "query": "tide times",
+    "pagina": "/en/tides",
+    "pais": "nzl",
     "clics": 0,
-    "impresiones": 9,
-    "posicion": 66.4
+    "impresiones": 2,
+    "posicion": 26
    },
    {
-    "query": "waitaki river mouth tides",
+    "query": "tide times kawakawa bay",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 11
+   },
+   {
+    "query": "tide times thornton",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "tides haumoana",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 35
+   },
+   {
+    "query": "tides kaipara harbour",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 95
+   },
+   {
+    "query": "tides kawakawa bay tomorrow",
+    "pagina": "/en/tides/nz-kawakawa-bay",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 11
+   },
+   {
+    "query": "tides marokopa",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 31
+   },
+   {
+    "query": "tides mt maunganui",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
@@ -5684,28 +7345,84 @@
     "posicion": 6
    },
    {
-    "query": "waitarere tides",
+    "query": "tides nz",
     "pagina": "/en/tides",
     "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 85
+    "posicion": 38
    },
    {
-    "query": "webcam mundaka",
-    "pagina": "/mareas/mundaka",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 56.5
-   },
-   {
-    "query": "webcam mundaka",
-    "pagina": "/mareas/mundaka",
-    "pais": "fra",
+    "query": "tides paraparaumu",
+    "pagina": "/en/tides",
+    "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 68
+    "posicion": 9
+   },
+   {
+    "query": "tides time",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 33
+   },
+   {
+    "query": "tides tolaga bay",
+    "pagina": "/en/tides/nz-tolaga-bay-wharf",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 19
+   },
+   {
+    "query": "tipos de carretes de pesca",
+    "pagina": "/aprende/carrete-partes",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 3,
+    "posicion": 76.3
+   },
+   {
+    "query": "tipos de pesca em portugal",
+    "pagina": "/pt/spots/region/portugal",
+    "pais": "prt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "top fishing spots in new zealand",
+    "pagina": "/en/spots",
+    "pais": "aus",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 54
+   },
+   {
+    "query": "uptiding",
+    "pagina": "/en/aprende/montaje-uptide",
+    "pais": "gbr",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 6
+   },
+   {
+    "query": "vertical jigging",
+    "pagina": "/en/aprende/jig-vertical",
+    "pais": "mlt",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 9
+   },
+   {
+    "query": "warrington tides",
+    "pagina": "/en/tides",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 34
    },
    {
     "query": "whangaparaoa tides",
@@ -5713,7 +7430,39 @@
     "pais": "nzl",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 59
+    "posicion": 11
+   },
+   {
+    "query": "whangaparaoa tides today",
+    "pagina": "/en/tides/nz-gulf-harbour",
+    "pais": "nzl",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "where should you avoid anchoring",
+    "pagina": "/en/aprende/donde-no-fondear",
+    "pais": "usa",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 44
+   },
+   {
+    "query": "xipiron",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   },
+   {
+    "query": "zona de pesca",
+    "pagina": "/spots/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 12
    },
    {
     "query": "zonas de pesca",
@@ -5721,7 +7470,7 @@
     "pais": "esp",
     "clics": 0,
     "impresiones": 2,
-    "posicion": 54
+    "posicion": 37
    }
   ]
  }
