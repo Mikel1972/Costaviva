@@ -43,6 +43,19 @@ en `functions/_lib/corregir-zona.js`, test `test/pais-tarjeta.test.js`):
   `suscripciones`, sin tablas ni RLS nuevas). Sin aplicar, todo responde sin
   hacer nada. Privacidad (es/en/pt) lo explica.
 
+
+## Olas: una lectura de cámara dudosa nunca baja la ola (2026-11-25, Mikel: «haz la A»)
+
+Día de mar de fondo fuerte (boyas: AP Bilbao 3,0 m, Pasaia 2,8 m, Bares 4,8 m).
+Zarautz, con 3,5–3,8 m fuera y el modelo × coeficiente en 0,8–1,0 m, bajó a
+0,5–0,6 m por una lectura de su cámara de las 16:26 con poca luz (0,42 m,
+margen 0,2–0,8: poco segura). Desde ahora, en `aplicarCamarasASpots`
+(`functions/_lib/oleaje-camaras.js`), una lectura **poco segura**
+(`lecturaPocoSegura`, margen x3 o más) solo puede **subir** la ola: si queda
+por debajo del modelo, el bloque de la lectura se queda con el modelo y el
+cociente para los demás bloques (y para los spots vecinos) es como mínimo 1.
+Las lecturas seguras siguen mandando igual, suban o bajen. Pruebas en
+`test/oleaje-camaras.test.js` (caso real de Zarautz).
 ## Pagar 1 año con Bizum (2026-11-25, aprobado por Mikel; APAGADO hasta que Stripe apruebe Bizum)
 
 Bizum en Stripe es **solo de pago único**: sin suscripciones, sin

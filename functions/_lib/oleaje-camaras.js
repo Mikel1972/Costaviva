@@ -216,7 +216,12 @@ export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now(), susp
     if (!fuente || !s.bloques?.length || !lecturaVigente(lectura, ahoraMs)) return s;
     const dudosa = lecturaPocoSegura(lectura);
     const cocienteCrudo = cocienteCamaraModelo(lectura.estimacion, lectura.modeloCamara, lectura.errorRel);
-    const cociente = cocienteCrudo !== null && dudosa ? +Math.sqrt(cocienteCrudo).toFixed(3) : cocienteCrudo;
+    // Poco segura y por DEBAJO del modelo (2026-11-25, Mikel: Zarautz con
+    // 3,5 m fuera bajó a 0,5 m por una lectura de las 16:26 con poca luz):
+    // una lectura dudosa solo puede subir la ola, nunca bajarla. Ante la
+    // duda, la ola mayor (seguridad).
+    const suavizado = cocienteCrudo !== null && dudosa ? +Math.sqrt(cocienteCrudo).toFixed(3) : cocienteCrudo;
+    const cociente = suavizado !== null && dudosa ? Math.max(1, suavizado) : suavizado;
     // Lo que se enseña como ola de la cámara: la estimación (a medio camino
     // del modelo si la lectura es poco segura), con ±10 %, no su margen.
     const estimacionUsada = dudosa && Number.isFinite(lectura.modeloCamara) && lectura.modeloCamara > 0.05
@@ -248,6 +253,9 @@ export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now(), susp
     const bloques = s.bloques.map((b, i) => {
       if (!b.altura) return b;
       if (fuente.propia && i === iCerca && dMin <= 2) {
+        const centroModelo = (b.altura[0] + b.altura[1]) / 2;
+        // Dudosa por debajo del modelo: se queda el modelo (ver arriba).
+        if (dudosa && estimacionUsada < centroModelo) return b;
         return { ...b, altura: rango(estimacionUsada), alturaModelo: b.altura, fuenteAltura: "camara" };
       }
       if (cociente === null || !b.horaISO) return b;
