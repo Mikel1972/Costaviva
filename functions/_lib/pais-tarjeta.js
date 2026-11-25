@@ -234,14 +234,14 @@ const TXT = {
         ? `Hemos visto que estos días usas Costaviva desde ${o.pais}. Para que pagues lo mismo que el resto de personas de allí, tu plan pasa al precio de esa zona.`
         : `Gracias por tu pago. Tu tarjeta es de ${o.pais}, así que tu plan pasa al precio de ese país, el mismo que paga allí todo el mundo.`,
       "",
-      `Desde tu próxima renovación${o.fecha ? `, el ${o.fecha}` : ""}, ${o.plan} costará ${o.importe} (IVA incluido).`,
+      `Desde tu próxima renovación${o.fecha ? `, el ${o.fecha}` : ""}, ${o.plan} costará ${o.importe}${o.impuesto}.`,
       "Lo que ya has pagado no cambia y no tienes que hacer nada: todo sigue igual.",
       "",
       "Si crees que no es correcto, responde a este email y lo revisamos. También puedes cancelar cuando quieras en Mi suscripción: https://costaviva.org/suscripcion",
       "",
       "— Costaviva",
     ],
-    mensual: "tu plan mensual", anual: "tu plan anual",
+    mensual: "tu plan mensual", anual: "tu plan anual", impuesto: " (IVA incluido)",
     asuntoNoRenovar: "Tu Costaviva Premium al precio de tu país",
     noRenovar: (o) => [
       "Hola,",
@@ -251,7 +251,7 @@ const TXT = {
         : `Gracias por tu pago. Tu tarjeta es de ${o.pais}, donde Premium tiene su propio precio y su moneda.`,
       "",
       `Disfruta de todo lo que ya has pagado${o.fecha ? ` hasta el ${o.fecha}` : ""}. Ese día tu suscripción terminará sin renovarse sola, así que no habrá ningún cargo más.`,
-      `Para seguir con Premium, suscríbete de nuevo desde Mi suscripción: ${o.plan} costará ${o.importe} (IVA incluido). https://costaviva.org/suscripcion`,
+      `Para seguir con Premium, suscríbete de nuevo desde Mi suscripción: ${o.plan} costará ${o.importe}${o.impuesto}. https://costaviva.org/suscripcion`,
       "",
       "Si crees que no es correcto, responde a este email y lo revisamos.",
       "",
@@ -267,14 +267,14 @@ const TXT = {
         ? `We've seen that you've been using Costaviva from ${o.pais} lately. So that you pay the same as everyone else there, your plan moves to that area's price.`
         : `Thanks for your payment. Your card is from ${o.pais}, so your plan moves to that country's price, the same one everybody pays there.`,
       "",
-      `From your next renewal${o.fecha ? ` on ${o.fecha}` : ""}, ${o.plan} will cost ${o.importe} (tax included).`,
+      `From your next renewal${o.fecha ? ` on ${o.fecha}` : ""}, ${o.plan} will cost ${o.importe}${o.impuesto}.`,
       "What you've already paid doesn't change and you don't need to do anything: everything else stays the same.",
       "",
       "If you think this isn't right, just reply to this email and we'll look into it. You can also cancel at any time from My subscription: https://costaviva.org/suscripcion",
       "",
       "— Costaviva",
     ],
-    mensual: "your monthly plan", anual: "your annual plan",
+    mensual: "your monthly plan", anual: "your annual plan", impuesto: " (tax included)",
     asuntoNoRenovar: "Your Costaviva Premium at your country's price",
     noRenovar: (o) => [
       "Hi,",
@@ -284,7 +284,7 @@ const TXT = {
         : `Thanks for your payment. Your card is from ${o.pais}, where Premium has its own price and currency.`,
       "",
       `Enjoy everything you've already paid for${o.fecha ? ` until ${o.fecha}` : ""}. On that day your subscription will end without renewing, so there will be no further charge.`,
-      `To keep Premium, subscribe again from My subscription: ${o.plan} will cost ${o.importe} (tax included). https://costaviva.org/suscripcion`,
+      `To keep Premium, subscribe again from My subscription: ${o.plan} will cost ${o.importe}${o.impuesto}. https://costaviva.org/suscripcion`,
       "",
       "If you think this isn't right, just reply to this email and we'll look into it.",
       "",
@@ -300,14 +300,14 @@ const TXT = {
         ? `Vimos que nestes dias usas o Costaviva a partir de ${o.pais}. Para pagares o mesmo que as outras pessoas daí, o teu plano passa para o preço dessa zona.`
         : `Obrigado pelo teu pagamento. O teu cartão é de ${o.pais}, por isso o teu plano passa para o preço desse país, o mesmo que todos pagam lá.`,
       "",
-      `A partir da tua próxima renovação${o.fecha ? `, a ${o.fecha}` : ""}, ${o.plan} vai custar ${o.importe} (IVA incluído).`,
+      `A partir da tua próxima renovação${o.fecha ? `, a ${o.fecha}` : ""}, ${o.plan} vai custar ${o.importe}${o.impuesto}.`,
       "O que já pagaste não muda e não tens de fazer nada: tudo o resto continua igual.",
       "",
       "Se achas que não está certo, responde a este email e vemos o caso. Também podes cancelar quando quiseres em A minha subscrição: https://costaviva.org/suscripcion",
       "",
       "— Costaviva",
     ],
-    mensual: "o teu plano mensal", anual: "o teu plano anual",
+    mensual: "o teu plano mensal", anual: "o teu plano anual", impuesto: " (IVA incluído)",
     asuntoNoRenovar: "O teu Costaviva Premium ao preço do teu país",
     noRenovar: (o) => [
       "Olá,",
@@ -317,7 +317,7 @@ const TXT = {
         : `Obrigado pelo teu pagamento. O teu cartão é de ${o.pais}, onde o Premium tem o seu próprio preço e moeda.`,
       "",
       `Aproveita tudo o que já pagaste${o.fecha ? ` até ${o.fecha}` : ""}. Nesse dia a tua subscrição termina sem se renovar, por isso não haverá mais nenhum débito.`,
-      `Para continuares com o Premium, subscreve de novo em A minha subscrição: ${o.plan} vai custar ${o.importe} (IVA incluído). https://costaviva.org/suscripcion`,
+      `Para continuares com o Premium, subscreve de novo em A minha subscrição: ${o.plan} vai custar ${o.importe}${o.impuesto}. https://costaviva.org/suscripcion`,
       "",
       "Se achas que não está certo, responde a este email e vemos o caso.",
       "",
@@ -346,7 +346,10 @@ export function emailCambioZona({ idioma, pais, precio, finPeriodo, periodo, ori
   const fecha = finPeriodo
     ? new Date(finPeriodo * 1000).toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" }) // a propósito (ZONA_NEGOCIO)
     : null;
-  const datos = { origen, pais: nombrePais, fecha, importe, plan: periodo === "mensual" ? T.mensual : T.anual };
+  // «IVA incluido» solo en euros: con NZD no se cobra GST mientras no se pase
+  // del umbral de registro de NZ (60.000 NZD/año, IRD), así que no se dice.
+  const impuesto = precio.moneda === "EUR" ? T.impuesto : "";
+  const datos = { origen, pais: nombrePais, fecha, importe, impuesto, plan: periodo === "mensual" ? T.mensual : T.anual };
   return noRenovar
     ? { subject: T.asuntoNoRenovar, text: T.noRenovar(datos).join("\n") }
     : { subject: T.asunto, text: T.cuerpo(datos).join("\n") };

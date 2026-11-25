@@ -358,6 +358,7 @@ test("flujo: cambio de moneda (tarjeta NZ, suscripción en EUR) -> no renovar al
   assert.equal(ll.emails.length, 1);
   assert.match(ll.emails[0].text, /NZD/);
   assert.match(ll.emails[0].text, /sin renovarse sola|without renewing|sem se renovar/);
+  assert.doesNotMatch(ll.emails[0].text, /IVA|tax included/);
   assert.ok(fila.zona_aviso_enviado_en);
 });
 
