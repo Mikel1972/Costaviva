@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-25T14:37:49.378Z",
- "lineasHistorial": 13203,
+ "fecha": "2026-11-25T15:07:41.327Z",
+ "lineasHistorial": 13214,
  "etiquetas": 1414,
  "etiquetasClaude": 269,
  "calibracion": {
@@ -266,9 +266,9 @@
    "correlacion": 0.103
   },
   "berria/dinamico": {
-   "a": 2.6851,
+   "a": 2.6847,
    "p": 0.5,
-   "n": 549,
+   "n": 550,
    "nEtiquetas": 127,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -287,7 +287,7 @@
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.196
+   "correlacion": 0.195
   },
   "mutriku/principal": {
    "a": 6.5823,
@@ -585,8 +585,8 @@
    "sustituye": true,
    "motivo": "127 etiquetas",
    "ruido": {
-    "ruido": 0.8,
-    "pares": 239
+    "ruido": 0.814,
+    "pares": 240
    }
   },
   "castrourdiales": {
