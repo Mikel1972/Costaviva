@@ -18,6 +18,12 @@
 // de esa zona desde la próxima factura, con un email antes
 // (_lib/corregir-zona.js). Con otra moneda no se toca: queda para revisar.
 //
+// País de residencia (2026-11-25, CLAUDE.md "País de residencia obligatorio
+// antes de pagar"): el checkout lo lleva en metadata.pais_residencia (con
+// pais_ip y zona). En checkout.session.completed (tarjeta) y en el pago de
+// Bizum se copia a suscripciones.pais_residencia. Sin la migración
+// 20261126090000 aplicada no hace nada (y no rompe el evento).
+//
 // Bizum (2026-11-25, CLAUDE.md "Pagar 1 año con Bizum"): pago único con
 // metadata.metodo = "bizum". Al cobrarse, la fila de suscripciones pasa a
 // active/anual/bizum y periodo_actual_fin se alarga 12 meses desde hoy o
@@ -57,6 +63,7 @@ import { enviarEmail } from "./_lib/email.js";
 import { textoAceptacion, textoSiCerramos, VERSION as VERSION_ACEPTACION } from "../assets/js/consentimiento.js";
 import { esPagoBizum, filaPagoBizum } from "./_lib/bizum.js";
 import { zonaTrasPagoConTarjeta } from "./_lib/corregir-zona.js";
+import { paisResidenciaValido } from "./_lib/pais-residencia.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -162,6 +169,30 @@ async function filaSuscripcion(serviceRoleKey, userId) {
   });
   if (!r.ok) throw new Error(`suscripciones HTTP ${r.status}: ${await r.text()}`);
   return (await r.json())[0] || null;
+}
+
+// País de residencia declarado (metadata.pais_residencia del checkout) ->
+// suscripciones.pais_residencia. Va aparte del upsert y nunca lanza: sin la
+// columna (migración 20261126090000 sin aplicar) PostgREST responde 400 y
+// solo queda en el log, así que el evento se procesa igual.
+export async function guardarPaisResidencia(serviceRoleKey, userId, metadata) {
+  const pais = paisResidenciaValido(String(metadata?.pais_residencia || ""));
+  if (!pais || !uuidValido(userId)) return false;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/suscripciones?user_id=eq.${userId}`, {
+      method: "PATCH",
+      headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, "content-type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ pais_residencia: pais }),
+    });
+    if (!r.ok) {
+      console.log(`stripe-webhook: pais_residencia sin guardar (HTTP ${r.status}; ¿migración 20261126090000 sin aplicar?)`);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("stripe-webhook: pais_residencia sin guardar:", e);
+    return false;
+  }
 }
 
 // Idempotencia por event.id (comun stripe.md S3). Devuelve:
@@ -391,6 +422,7 @@ export async function onRequestPost(context) {
             console.log(`stripe-webhook: pago Bizum ${obj.id} ya aplicado`);
           } else {
             await upsertSuscripcion(serviceRoleKey, fila);
+            await guardarPaisResidencia(serviceRoleKey, userId, obj.metadata);
             await apuntarPrimerPago(serviceRoleKey, userId);
             const para = obj.customer_details?.email || obj.customer_email;
             if (para) {
@@ -408,8 +440,9 @@ export async function onRequestPost(context) {
       // suscripción, eso llega en customer.subscription.created justo
       // después.
       const userId = obj.client_reference_id || obj.metadata?.supabase_user_id;
-      // País de facturación (manda para el IVA). Si su zona no es la que se
-      // cobró (la del país de la conexión), queda en el log para revisarlo.
+      // País de facturación. Si su zona no es la que se cobró (la del país de
+      // residencia declarado; antes del 2026-11-25, la de la conexión),
+      // queda en el log para revisarlo.
       const paisFact = obj.customer_details?.address?.country || null;
       if (paisFact && obj.metadata?.zona && zonaDePais(CONFIG_PRECIOS, paisFact)?.id !== obj.metadata.zona) {
         console.warn(`stripe-webhook: zona distinta en ${obj.id}: cobrada ${obj.metadata.zona}, facturación ${paisFact}`);
@@ -426,6 +459,7 @@ export async function onRequestPost(context) {
         ...(!promo && obj.metadata?.black_friday === MARCA_BF ? { codigo_promocional: CODIGO_BF } : {}),
         actualizado_en: new Date().toISOString(),
       });
+      await guardarPaisResidencia(serviceRoleKey, userId, obj.metadata);
       if (obj.metadata?.invitacion_id) {
         await marcarInvitacionAplicada(serviceRoleKey, obj.metadata.invitacion_id);
       }

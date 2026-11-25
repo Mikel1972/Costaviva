@@ -6,6 +6,42 @@ Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
 
+## País de residencia obligatorio antes de pagar (2026-11-25, aprobado por Mikel)
+
+La zona de precio ya **no** sale del país de la conexión: sale del país de
+residencia que la persona declara antes de pagar (tarjeta o Bizum). Es
+además una de las tres pruebas de residencia para el IVA (con el país de la
+tarjeta y el de la conexión/uso).
+
+- **Página** (`suscripcion.html`): selector obligatorio «País de residencia»
+  (todos los ISO-2 + XK, `assets/js/pais-residencia.js`, nombres con
+  `Intl.DisplayNames` en es/en/pt), relleno con el país de la conexión
+  (`/precios-zona` devuelve `pais_ip`). Al cambiarlo pide
+  `/precios-zona?pais=XX` (misma lógica: `zonaDePais`) y repinta los
+  precios; el plan elegido se vuelve a elegir. Nota «El precio depende de tu
+  país de residencia (impuestos y moneda locales).» (`prec.nota_residencia`).
+  Bizum solo se enseña con España.
+- **Servidor** (`crear-checkout-stripe.js`): `pais_residencia` obligatorio
+  (400 `falta_pais_residencia` / `pais_residencia_invalido`); zona y precio
+  por ese país. Metadatos del checkout (y de la suscripción o del pago):
+  `pais_residencia`, `pais_ip` (se sigue guardando) y `zona`. Bizum solo con
+  residencia `ES` (403 `bizum_solo_residentes_espana`), aunque la conexión
+  sea española. Lógica pura en `functions/_lib/pais-residencia.js`.
+- **Webhook**: `checkout.session.completed` y el pago de Bizum copian
+  `metadata.pais_residencia` a `suscripciones.pais_residencia` con un PATCH
+  aparte que nunca rompe el evento (`guardarPaisResidencia`).
+- **Tarjeta y uso** (sección siguiente): igual que antes; la zona "cobrada"
+  de referencia es `metadata.zona`, que ahora es la de la residencia.
+- **Informe diario** (`informe-zonas-tarjeta.mjs` → `lineasInforme(filas,
+  config)`): «Residencia declarada ≠ tarjeta» por zonas y las pruebas del
+  IVA (`pruebasResidencia`: ≥2 pruebas que coinciden entre residencia,
+  tarjeta y país de uso más visto), solo recuentos.
+- **Migración `20261126090000_pais_residencia.sql`** (solo la columna y su
+  check ISO-2), **sin aplicar**: hasta entonces todo funciona y la columna
+  simplemente no se escribe. Privacidad (es/en/pt) lo explica.
+- Pruebas: `test/pais-residencia.test.js` (checkout con fetch falso) y la de
+  navegador «Mi suscripción pide el país de residencia…».
+
 ## Zona de precio por el país de la tarjeta y por el uso (2026-11-25, Mikel: «móntalo ya»)
 
 La zona se cobra por el país de la conexión al pagar; con una VPN se pagaba

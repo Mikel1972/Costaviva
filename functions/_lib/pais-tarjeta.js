@@ -26,10 +26,13 @@
 //      (cancel_at_period_end) y se le avisa para volver a suscribirse al precio
 //      de su país ("no_renovar_moneda", sí de Mikel 2026-11-25); antes: 
 //      sale en el informe diario.
+//   La zona "cobrada" de referencia es metadata.zona del checkout, que desde
+//   el 2026-11-25 sale del país de residencia declarado (no de la conexión).
 //   5. Bizum (pago único, nunca con tarjeta), filas sin suscripción de
 //      Stripe (admin, permanente, invitación) y pagos sin país: nada.
 
 import { zonaDePais, zonaPorId, precioParaZona } from "./precios.js";
+import { paisResidenciaValido, paisDeUso, pruebasResidencia } from "./pais-residencia.js";
 
 // Umbral de "uso continuado desde otra zona" (no castigar un viaje).
 export const VENTANA_USO_DIAS = 14;
@@ -357,8 +360,18 @@ export function emailCambioZona({ idioma, pais, precio, finPeriodo, periodo, ori
 
 // --- Informe diario (solo recuentos y zonas, sin datos personales) -----------
 
-// filas: [{ zona_precio, zona_tarjeta, zona_correccion, zona_correccion_origen, zona_corregir_a }]
-export function lineasInforme(filas = []) {
+// filas: [{ zona_precio, zona_tarjeta, zona_correccion, zona_correccion_origen,
+//          zona_corregir_a, pais_residencia?, pais_tarjeta?, paises_uso? }]
+// config (precios-zonas.json): con él se añaden las líneas del país de
+// residencia declarado (2026-11-25): «residencia declarada ≠ tarjeta» por
+// zonas y las pruebas de residencia para el IVA, solo recuentos.
+export function lineasInforme(filas = [], config = null) {
+  const lin = lineasZona(filas);
+  if (config) lin.push(...lineasResidencia(filas, config));
+  return lin;
+}
+
+function lineasZona(filas) {
   const distintas = new Map();
   const correcciones = new Map();
   for (const f of filas) {
@@ -373,12 +386,40 @@ export function lineasInforme(filas = []) {
   }
   if (!distintas.size && !correcciones.size) return ["  - Ninguna: todas las tarjetas y el uso coinciden con la zona cobrada."];
   const lin = [];
-  const orden = (m) => [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  if (distintas.size) lin.push(`  - Tarjeta de otra zona hoy (cobrada → tarjeta): ${orden(distintas).map(([k, n]) => `${k}: ${n}`).join(" · ")}`);
-  if (correcciones.size) lin.push(`  - Correcciones (estado (origen) → zona): ${orden(correcciones).map(([k, n]) => `${k}: ${n}`).join(" · ")}`);
+  if (distintas.size) lin.push(`  - Tarjeta de otra zona hoy (cobrada → tarjeta): ${ordenMapa(distintas).map(([k, n]) => `${k}: ${n}`).join(" · ")}`);
+  if (correcciones.size) lin.push(`  - Correcciones (estado (origen) → zona): ${ordenMapa(correcciones).map(([k, n]) => `${k}: ${n}`).join(" · ")}`);
   const revisar = filas.filter((f) => String(f.zona_correccion || "").startsWith("revisar")).length;
   if (revisar) lin.push(`  - ⚠️ ${revisar} para revisar a mano (cambio de plan programado, o otra moneda sin email configurado).`);
   const noRenovar = filas.filter((f) => f.zona_correccion === "no_renovar_moneda").length;
   if (noRenovar) lin.push(`  - ${noRenovar} con otra moneda: no se renuevan al acabar lo pagado y se les ha avisado para volver a suscribirse al precio de su país.`);
+  return lin;
+}
+
+const ordenMapa = (m) => [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+// Residencia declarada frente a la tarjeta (por zonas) y pruebas para el IVA.
+// Nunca escribe países ni personas: solo zonas y números.
+export function lineasResidencia(filas, config) {
+  const conResidencia = filas.filter((f) => paisResidenciaValido(String(f.pais_residencia || "")));
+  if (!conResidencia.length) return [];
+  const distintas = new Map();
+  let suficientes = 0, conContradiccion = 0, unaSola = 0, contradicen = 0;
+  for (const f of conResidencia) {
+    const tarjeta = paisValido(f.pais_tarjeta);
+    if (tarjeta && tarjeta !== f.pais_residencia) {
+      const k = `${zonaDePaisId(config, f.pais_residencia) || "?"} → ${zonaDePaisId(config, tarjeta) || "?"}`;
+      distintas.set(k, (distintas.get(k) || 0) + 1);
+    }
+    const p = pruebasResidencia({ residencia: f.pais_residencia, tarjeta, uso: paisDeUso(f.paises_uso) });
+    if (p.suficiente) { suficientes++; if (p.contradice) conContradiccion++; }
+    else if (p.contradice) contradicen++;
+    else unaSola++;
+  }
+  const lin = [];
+  lin.push(distintas.size
+    ? `  - Residencia declarada ≠ tarjeta (zona residencia → zona tarjeta): ${ordenMapa(distintas).map(([k, n]) => `${k}: ${n}`).join(" · ")}`
+    : "  - Residencia declarada ≠ tarjeta: ninguna.");
+  lin.push(`  - Pruebas de residencia para el IVA (${conResidencia.length} con residencia declarada): ${suficientes} con 2 o más que coinciden`
+    + `${conContradiccion ? ` (${conContradiccion} con una tercera que no coincide)` : ""} · ${unaSola} con una sola · ${contradicen} que se contradicen.`);
   return lin;
 }
