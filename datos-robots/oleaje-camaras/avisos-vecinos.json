@@ -1,10 +1,10 @@
 {
- "actualizado": "2026-11-25T12:10:11.012Z",
+ "actualizado": "2026-11-25T12:39:29.919Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "mundaka",
-   "alto": 8,
+   "alto": 9,
    "bajo": 0,
    "spots": [
     "mundaka"
@@ -12,7 +12,7 @@
   },
   {
    "clave": "bakio",
-   "alto": 8,
+   "alto": 10,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -20,15 +20,15 @@
   },
   {
    "clave": "orio",
-   "alto": 4,
-   "bajo": 1,
+   "alto": 5,
+   "bajo": 2,
    "spots": [
     "orio"
    ]
   },
   {
    "clave": "hondarribia",
-   "alto": 4,
+   "alto": 5,
    "bajo": 1,
    "spots": [
     "hondarribia"
@@ -1754,6 +1754,78 @@
    "antes": 1.4,
    "referencia": 1.3,
    "visto": "2026-11-25T11:40:06.828Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T12:00",
+   "antes": 1.1,
+   "referencia": 0.9,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T06:00",
+   "antes": 1,
+   "referencia": 0.9,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T09:00",
+   "antes": 0.9,
+   "referencia": 0.8,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "bajo",
+   "horaISO": "2026-11-25T18:00",
+   "antes": 0.9,
+   "referencia": null,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T12:00",
+   "antes": 0.6,
+   "referencia": 0.4,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "donostia",
+   "camara": "donostia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-25T15:00",
+   "antes": 0.6,
+   "referencia": null,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "donostia",
+   "camara": "donostia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-26T00:00",
+   "antes": 0.6,
+   "referencia": null,
+   "visto": "2026-11-25T12:39:29.919Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "alto",
+   "horaISO": "2026-11-25T18:00",
+   "antes": 0.9,
+   "referencia": 0.5,
+   "visto": "2026-11-25T12:39:29.919Z"
   }
  ]
 }
