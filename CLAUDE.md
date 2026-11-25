@@ -32,7 +32,7 @@ en `functions/_lib/corregir-zona.js`, test `test/pais-tarjeta.test.js`):
   `RESEND_API_KEY` no se cambia nada (nunca sin avisar).
 - **Otra moneda (EUR ↔ NZD) no se intenta**: la API de Stripe no deja
   cambiar la moneda de una suscripción ya creada (`currency` solo existe al
-  crearla). Queda `zona_correccion='revisar_moneda'` para revisarlo a mano.
+  crearla). Con el sí de Mikel (2026-11-25): la suscripción **no se renueva al acabar lo pagado** (`cancel_at_period_end`) y le llega un email (es/en/pt) para volver a suscribirse al precio de su país (`zona_correccion='no_renovar_moneda'`). Sin email configurado no se toca nada.
   **Hoy es el único caso real** (zonas activas: UE/EEE y resto en EUR a 1,0,
   que dan el mismo precio y no se tocan, y NZ en NZD). Con un cambio de plan
   programado (schedule): `revisar_programado`.

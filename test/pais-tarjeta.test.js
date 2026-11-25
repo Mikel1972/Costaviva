@@ -90,13 +90,14 @@ test("zona distinta en la misma moneda: cambio al precio de la zona real (mismo 
   }
 });
 
-test("cambio de moneda (EUR <-> NZD): no se toca Stripe, se marca para revisar", () => {
+test("cambio de moneda (EUR <-> NZD): no renovar al acabar lo pagado y avisar (sí de Mikel)", () => {
   const aNz = decidirCorreccion({ config, fila: {}, subId: SUB, zonaCobrada: "ue_eee", zonaReal: "nz", ambito: "regional", plan: "anual", moneda: "EUR" });
-  assert.equal(aNz.accion, "revisar");
+  assert.equal(aNz.accion, "no_renovar");
   assert.equal(aNz.motivo, "moneda");
-  assert.equal(estadoCorreccion(aNz), "revisar_moneda");
+  assert.equal(aNz.precio.moneda, "NZD");
+  assert.equal(estadoCorreccion(aNz), "no_renovar_moneda");
   const aUe = decidirCorreccion({ config, fila: {}, subId: SUB, zonaCobrada: "nz", zonaReal: "ue_eee", ambito: "mundial", plan: "mensual", moneda: "NZD" });
-  assert.equal(aUe.accion, "revisar");
+  assert.equal(aUe.accion, "no_renovar");
   // La moneda la manda la suscripción aunque el precio sea multimoneda:
   // un NZ cobrado en EUR (moneda "EUR") hacia UE sería el mismo precio.
   assert.equal(decidirCorreccion({ config, fila: {}, subId: SUB, zonaCobrada: "nz", zonaReal: "ue_eee", ambito: "regional", plan: "anual", moneda: "EUR" }).accion, "nada");
@@ -170,7 +171,7 @@ test("uso desde otra zona sigue las mismas reglas de moneda e idempotencia", () 
   const dia = (n) => new Date(AHORA - n * DIA).toISOString().slice(0, 10);
   const uso = zonaPorUso(config, { [dia(0)]: ["NZ"], [dia(3)]: ["NZ"], [dia(6)]: ["NZ"] }, "ue_eee", AHORA);
   const d = decidirCorreccion({ config, fila: {}, subId: SUB, zonaCobrada: "ue_eee", zonaReal: uso.zona, ambito: "regional", plan: "anual", moneda: "EUR" });
-  assert.equal(d.accion, "revisar");
+  assert.equal(d.accion, "no_renovar");
   assert.equal(d.motivo, "moneda");
 });
 
@@ -340,19 +341,24 @@ test("flujo: si Stripe falla se suelta la reserva y el reintento lo hace", async
   assert.equal(ll.emails.length, 1);
 });
 
-test("flujo: cambio de moneda (tarjeta NZ, suscripción en EUR) -> solo se marca, sin Stripe ni email", async () => {
+test("flujo: cambio de moneda (tarjeta NZ, suscripción en EUR) -> no renovar al acabar y email con el precio de NZ", async () => {
   const { zonaTrasPagoConTarjeta } = await import("../functions/_lib/corregir-zona.js");
   const fila = { user_id: USER, metodo_pago: "tarjeta", pais_tarjeta: null, zona_tarjeta: null, paises_uso: null, zona_precio: "ue_eee", zona_correccion: null, zona_correccion_sub: null };
   const sub = subFalsa({ metadata: { zona: "ue_eee" }, default_payment_method: { type: "card", card: { country: "NZ" } } });
   sub.items.data[0].price.lookup_key = "cv_regional_anual_v2026_10b";
   const ll = simulador({ fila, sub });
   const r = await zonaTrasPagoConTarjeta({ env: ENV, serviceRoleKey: "srk", userId: USER, subId: SUB, para: "x@example.com" });
-  assert.equal(r.accion, "revisar");
-  assert.equal(fila.zona_correccion, "revisar_moneda");
+  assert.equal(r.accion, "no_renovar");
+  assert.equal(fila.zona_correccion, "no_renovar_moneda");
   assert.equal(fila.zona_corregir_a, "nz");
   assert.equal(fila.zona_tarjeta, "nz");
-  assert.equal(ll.stripePost.length, 0);
-  assert.equal(ll.emails.length, 0);
+  assert.equal(ll.stripePost.length, 1);
+  assert.match(JSON.stringify(ll.stripePost[0]), /cancel_at_period_end/);
+  assert.doesNotMatch(JSON.stringify(ll.stripePost[0]), /items\[0\]\[price\]/);
+  assert.equal(ll.emails.length, 1);
+  assert.match(ll.emails[0].text, /NZD/);
+  assert.match(ll.emails[0].text, /sin renovarse sola|without renewing|sem se renovar/);
+  assert.ok(fila.zona_aviso_enviado_en);
 });
 
 test("flujo: Bizum, sin país de tarjeta o sin migración -> nada", async () => {

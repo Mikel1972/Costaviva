@@ -22,7 +22,9 @@
 //   4. Stripe no deja cambiar la moneda de una suscripción ya creada (la
 //      API de actualizar una suscripción no tiene parámetro `currency`; solo
 //      la de crearla). Si la zona nueva cobra en otra moneda (EUR <-> NZD),
-//      NO se intenta: se marca para revisarlo a mano ("revisar_moneda") y
+//      NO se intenta: la suscripción no se renueva al acabar lo pagado
+//      (cancel_at_period_end) y se le avisa para volver a suscribirse al precio
+//      de su país ("no_renovar_moneda", sí de Mikel 2026-11-25); antes: 
 //      sale en el informe diario.
 //   5. Bizum (pago único, nunca con tarjeta), filas sin suscripción de
 //      Stripe (admin, permanente, invitación) y pagos sin país: nada.
@@ -118,7 +120,10 @@ export function decidirCorreccion({ config, fila, subId, zonaCobrada, zonaReal, 
   // Misma tarifa (p. ej. UE/EEE y "resto", las dos a 1,0 en EUR): nada que cambiar.
   // Mismo precio de Stripe en la misma moneda = mismo importe: nada que cambiar.
   if (destino.moneda === monedaSub && destino.lookup_key === (lookupActual || actual.lookup_key)) return nada("mismo_precio");
-  if (destino.moneda !== monedaSub) return { accion: "revisar", motivo: "moneda", zona: zonaReal, precio: destino };
+  // Otra moneda (2026-11-25, sí de Mikel): Stripe no deja cambiarla, así que
+  // la suscripción no se renueva sola al acabar lo pagado y se le avisa para
+  // que vuelva a suscribirse al precio de su país.
+  if (destino.moneda !== monedaSub) return { accion: "no_renovar", motivo: "moneda", zona: zonaReal, precio: destino };
   if (programado) return { accion: "revisar", motivo: "programado", zona: zonaReal, precio: destino };
   return { accion: "cambiar", zona: zonaReal, precio: destino };
 }
@@ -126,6 +131,7 @@ export function decidirCorreccion({ config, fila, subId, zonaCobrada, zonaReal, 
 // Valor de suscripciones.zona_correccion para cada resultado.
 export function estadoCorreccion(d) {
   if (d.accion === "cambiar") return "cambiada";
+  if (d.accion === "no_renovar") return "no_renovar_moneda";
   if (d.accion === "revisar") return d.motivo === "moneda" ? "revisar_moneda" : "revisar_programado";
   return null;
 }
@@ -145,6 +151,16 @@ export function paramsCambioZona({ itemId, priceId, zona, lookupKey, origen, reg
   };
   if (regionContenido) p["metadata[region_contenido]"] = regionContenido;
   return p;
+}
+
+// Parámetros de Stripe para no renovar (otra moneda): termina al acabar lo
+// pagado; lo ya pagado no se toca.
+export function paramsNoRenovar({ zona, origen }) {
+  return {
+    cancel_at_period_end: "true",
+    "metadata[zona_no_renovar]": zona,
+    "metadata[zona_corregida_por]": origen,
+  };
 }
 
 // --- Uso desde otra zona -----------------------------------------------------
@@ -226,6 +242,21 @@ const TXT = {
       "— Costaviva",
     ],
     mensual: "tu plan mensual", anual: "tu plan anual",
+    asuntoNoRenovar: "Tu Costaviva Premium al precio de tu país",
+    noRenovar: (o) => [
+      "Hola,",
+      "",
+      o.origen === "uso"
+        ? `Hemos visto que estos días usas Costaviva desde ${o.pais}, donde Premium tiene su propio precio y su moneda.`
+        : `Gracias por tu pago. Tu tarjeta es de ${o.pais}, donde Premium tiene su propio precio y su moneda.`,
+      "",
+      `Disfruta de todo lo que ya has pagado${o.fecha ? ` hasta el ${o.fecha}` : ""}. Ese día tu suscripción terminará sin renovarse sola, así que no habrá ningún cargo más.`,
+      `Para seguir con Premium, suscríbete de nuevo desde Mi suscripción: ${o.plan} costará ${o.importe} (IVA incluido). https://costaviva.org/suscripcion`,
+      "",
+      "Si crees que no es correcto, responde a este email y lo revisamos.",
+      "",
+      "— Costaviva",
+    ],
   },
   en: {
     asunto: "Your Costaviva Premium price from your next renewal",
@@ -244,6 +275,21 @@ const TXT = {
       "— Costaviva",
     ],
     mensual: "your monthly plan", anual: "your annual plan",
+    asuntoNoRenovar: "Your Costaviva Premium at your country's price",
+    noRenovar: (o) => [
+      "Hi,",
+      "",
+      o.origen === "uso"
+        ? `We've seen that you've been using Costaviva from ${o.pais} lately, where Premium has its own price and currency.`
+        : `Thanks for your payment. Your card is from ${o.pais}, where Premium has its own price and currency.`,
+      "",
+      `Enjoy everything you've already paid for${o.fecha ? ` until ${o.fecha}` : ""}. On that day your subscription will end without renewing, so there will be no further charge.`,
+      `To keep Premium, subscribe again from My subscription: ${o.plan} will cost ${o.importe} (tax included). https://costaviva.org/suscripcion`,
+      "",
+      "If you think this isn't right, just reply to this email and we'll look into it.",
+      "",
+      "— Costaviva",
+    ],
   },
   pt: {
     asunto: "O teu preço do Costaviva Premium a partir da próxima renovação",
@@ -262,6 +308,21 @@ const TXT = {
       "— Costaviva",
     ],
     mensual: "o teu plano mensal", anual: "o teu plano anual",
+    asuntoNoRenovar: "O teu Costaviva Premium ao preço do teu país",
+    noRenovar: (o) => [
+      "Olá,",
+      "",
+      o.origen === "uso"
+        ? `Vimos que nestes dias usas o Costaviva a partir de ${o.pais}, onde o Premium tem o seu próprio preço e moeda.`
+        : `Obrigado pelo teu pagamento. O teu cartão é de ${o.pais}, onde o Premium tem o seu próprio preço e moeda.`,
+      "",
+      `Aproveita tudo o que já pagaste${o.fecha ? ` até ${o.fecha}` : ""}. Nesse dia a tua subscrição termina sem se renovar, por isso não haverá mais nenhum débito.`,
+      `Para continuares com o Premium, subscreve de novo em A minha subscrição: ${o.plan} vai custar ${o.importe} (IVA incluído). https://costaviva.org/suscripcion`,
+      "",
+      "Se achas que não está certo, responde a este email e vemos o caso.",
+      "",
+      "— Costaviva",
+    ],
   },
 };
 const LOCALE = { es: "es-ES", en: "en-NZ", pt: "pt-PT" };
@@ -274,7 +335,7 @@ export function idiomaEmail(...candidatos) {
 // { subject, text }. pais = código ISO del país (se escribe con su nombre),
 // precio = { importe (céntimos), moneda }, finPeriodo = unix (segundos) de la
 // próxima renovación, periodo = "mensual" | "anual", origen = "tarjeta" | "uso".
-export function emailCambioZona({ idioma, pais, precio, finPeriodo, periodo, origen }) {
+export function emailCambioZona({ idioma, pais, precio, finPeriodo, periodo, origen, noRenovar = false }) {
   const id = idiomaEmail(idioma);
   const T = TXT[id];
   const loc = LOCALE[id];
@@ -285,7 +346,10 @@ export function emailCambioZona({ idioma, pais, precio, finPeriodo, periodo, ori
   const fecha = finPeriodo
     ? new Date(finPeriodo * 1000).toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" }) // a propósito (ZONA_NEGOCIO)
     : null;
-  return { subject: T.asunto, text: T.cuerpo({ origen, pais: nombrePais, fecha, importe, plan: periodo === "mensual" ? T.mensual : T.anual }).join("\n") };
+  const datos = { origen, pais: nombrePais, fecha, importe, plan: periodo === "mensual" ? T.mensual : T.anual };
+  return noRenovar
+    ? { subject: T.asuntoNoRenovar, text: T.noRenovar(datos).join("\n") }
+    : { subject: T.asunto, text: T.cuerpo(datos).join("\n") };
 }
 
 // --- Informe diario (solo recuentos y zonas, sin datos personales) -----------
@@ -310,6 +374,8 @@ export function lineasInforme(filas = []) {
   if (distintas.size) lin.push(`  - Tarjeta de otra zona hoy (cobrada → tarjeta): ${orden(distintas).map(([k, n]) => `${k}: ${n}`).join(" · ")}`);
   if (correcciones.size) lin.push(`  - Correcciones (estado (origen) → zona): ${orden(correcciones).map(([k, n]) => `${k}: ${n}`).join(" · ")}`);
   const revisar = filas.filter((f) => String(f.zona_correccion || "").startsWith("revisar")).length;
-  if (revisar) lin.push(`  - ⚠️ ${revisar} para revisar a mano (otra moneda o cambio de plan programado): Stripe no deja cambiar la moneda de una suscripción.`);
+  if (revisar) lin.push(`  - ⚠️ ${revisar} para revisar a mano (cambio de plan programado, o otra moneda sin email configurado).`);
+  const noRenovar = filas.filter((f) => f.zona_correccion === "no_renovar_moneda").length;
+  if (noRenovar) lin.push(`  - ${noRenovar} con otra moneda: no se renuevan al acabar lo pagado y se les ha avisado para volver a suscribirse al precio de su país.`);
   return lin;
 }

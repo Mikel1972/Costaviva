@@ -20,8 +20,11 @@ alter table public.suscripciones
 -- 3. Corrección de zona (una vez por suscripción de Stripe):
 --    zona_corregir_a        zona a la que pasa (o que habría que revisar);
 --    zona_correccion        'cambiada' (precio nuevo desde la próxima factura)
---                           | 'revisar_moneda' (otra moneda: Stripe no deja
---                           cambiarla; a mano) | 'revisar_programado' (tenía
+--                           | 'no_renovar_moneda' (otra moneda: Stripe no deja
+--                           cambiarla; no se renueva al acabar lo pagado y se
+--                           avisa para volver a suscribirse al precio de su
+--                           país) | 'revisar_moneda' (otra moneda sin poder
+--                           avisar; a mano) | 'revisar_programado' (tenía
 --                           un cambio de plan programado; a mano);
 --    zona_correccion_origen 'tarjeta' | 'uso';
 --    zona_correccion_sub    la suscripción de Stripe corregida;
@@ -51,6 +54,6 @@ alter table public.suscripciones
   add constraint suscripciones_zona_corregir_a_check
     check (zona_corregir_a is null or zona_corregir_a ~ '^[a-z_]{2,20}$'),
   add constraint suscripciones_zona_correccion_check
-    check (zona_correccion is null or zona_correccion in ('cambiada', 'revisar_moneda', 'revisar_programado')),
+    check (zona_correccion is null or zona_correccion in ('cambiada', 'no_renovar_moneda', 'revisar_moneda', 'revisar_programado')),
   add constraint suscripciones_zona_correccion_origen_check
     check (zona_correccion_origen is null or zona_correccion_origen in ('tarjeta', 'uso'));

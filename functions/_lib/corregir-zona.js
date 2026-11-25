@@ -22,7 +22,7 @@ import { zonaPorId, precioParaZona, datosDePrecio } from "./precios.js";
 import { enviarEmail } from "./email.js";
 import { uuidValido } from "./invitaciones.js";
 import {
-  paisDeTarjeta, zonaDePaisId, planDePrecio, decidirCorreccion, estadoCorreccion, paramsCambioZona,
+  paisDeTarjeta, zonaDePaisId, planDePrecio, decidirCorreccion, estadoCorreccion, paramsCambioZona, paramsNoRenovar,
   emailCambioZona, yaCorregida, apuntarPaisUso, zonaPorUso,
 } from "./pais-tarjeta.js";
 
@@ -100,13 +100,14 @@ export async function corregirZona({ env, serviceRoleKey, stripeKey, userId, fil
   // (metadata.zona_corregida_por): así, si dos eventos del mismo pago llegan
   // a la vez (checkout.session.completed e invoice.paid), el que no hizo la
   // reserva no manda un segundo email mientras el otro aún está cambiando.
-  if (yaCorregida(fila, sub?.id) && fila.zona_correccion === "cambiada" && !fila.zona_aviso_enviado_en && md.zona_corregida_por) {
+  if (yaCorregida(fila, sub?.id) && ["cambiada", "no_renovar_moneda"].includes(fila.zona_correccion) && !fila.zona_aviso_enviado_en && md.zona_corregida_por) {
     if (!para) return { accion: "nada", motivo: "sin_email" };
     const precio = precioParaZona(config, fila.zona_corregir_a, precioActual.ambito, plan);
     const envio = await enviarEmail(env, { to: para, ...emailCambioZona({
       idioma: idioma || md.aceptacion_idioma || md.idioma,
       pais: fila.zona_correccion_origen === "tarjeta" ? fila.pais_tarjeta || pais : pais,
       precio, finPeriodo: item?.current_period_end, periodo: precioActual.periodo, origen: fila.zona_correccion_origen || origen,
+      noRenovar: fila.zona_correccion === "no_renovar_moneda",
     }) });
     if (!envio.ok) throw new Error(`aviso de cambio de zona (reintento): ${envio.error}`);
     await patch(serviceRoleKey, `user_id=eq.${userId}`, { zona_aviso_enviado_en: new Date().toISOString() });
@@ -122,7 +123,7 @@ export async function corregirZona({ env, serviceRoleKey, stripeKey, userId, fil
     renueva: ["active", "trialing", "past_due"].includes(sub?.status) && !sub?.cancel_at_period_end && !sub?.cancel_at,
   });
   if (d.accion === "nada") return d;
-  if (d.accion === "cambiar" && !env?.RESEND_API_KEY) {
+  if ((d.accion === "cambiar" || d.accion === "no_renovar") && !env?.RESEND_API_KEY) {
     // Nunca cambiar el precio sin poder avisar antes.
     console.error(`corregir-zona: ${sub.id} pide pasar a ${d.zona} pero no hay RESEND_API_KEY; no se toca`);
     return { accion: "nada", motivo: "sin_email_configurado" };
@@ -140,14 +141,18 @@ export async function corregirZona({ env, serviceRoleKey, stripeKey, userId, fil
     return d;
   }
 
-  // 2. Stripe, desde la próxima factura.
+  // 2. Stripe, desde la próxima factura (otra moneda: no renovar al acabar).
   try {
+    if (d.accion === "no_renovar") {
+      await stripe(stripeKey, "POST", `/subscriptions/${encodeURIComponent(sub.id)}`, paramsNoRenovar({ zona: d.zona, origen }), `cv-norenovar-${sub.id}-${d.zona}`);
+    } else {
     const priceId = await idDePrecio(stripeKey, d.precio.lookup_key);
     if (!priceId) throw new Error(`no existe en Stripe el precio ${d.precio.lookup_key}`);
     await stripe(stripeKey, "POST", `/subscriptions/${encodeURIComponent(sub.id)}`, paramsCambioZona({
       itemId: item.id, priceId, zona: d.zona, lookupKey: d.precio.lookup_key, origen,
       regionContenido: precioActual.ambito === "mundial" ? "todas" : zonaPorId(config, d.zona)?.region_contenido,
     }), `cv-zona-${sub.id}-${d.zona}`);
+    }
   } catch (e) {
     await patch(serviceRoleKey, `user_id=eq.${userId}&zona_correccion_sub=eq.${encodeURIComponent(sub.id)}`,
       { zona_corregir_a: null, zona_correccion: null, zona_correccion_origen: null, zona_correccion_sub: null }).catch(() => {});
@@ -159,7 +164,7 @@ export async function corregirZona({ env, serviceRoleKey, stripeKey, userId, fil
     console.error(`corregir-zona: ${sub.id} cambiada a ${d.zona} sin email al que avisar`);
     return d;
   }
-  const envio = await enviarEmail(env, { to: para, ...emailCambioZona({ idioma: idioma || md.aceptacion_idioma || md.idioma, pais, precio: d.precio, finPeriodo: item?.current_period_end, periodo: precioActual.periodo, origen }) });
+  const envio = await enviarEmail(env, { to: para, ...emailCambioZona({ idioma: idioma || md.aceptacion_idioma || md.idioma, pais, precio: d.precio, finPeriodo: item?.current_period_end, periodo: precioActual.periodo, origen, noRenovar: d.accion === "no_renovar" }) });
   if (!envio.ok) throw new Error(`aviso de cambio de zona: ${envio.error}`);
   await patch(serviceRoleKey, `user_id=eq.${userId}`, { zona_aviso_enviado_en: new Date().toISOString() });
   console.log(`corregir-zona: ${sub.id} pasa a la zona ${d.zona} desde la próxima factura (${origen})`);
