@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-25T11:10:02.450Z",
+ "actualizado": "2026-11-25T11:40:06.828Z",
  "dias": 7,
  "repetidos": [
   {
@@ -1745,6 +1745,15 @@
    "antes": 1.1,
    "referencia": null,
    "visto": "2026-11-25T10:10:01.135Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-25T12:00",
+   "antes": 1.4,
+   "referencia": 1.3,
+   "visto": "2026-11-25T11:40:06.828Z"
   }
  ]
 }
