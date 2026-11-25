@@ -1082,7 +1082,7 @@
   "prec.ir_al_pago": "Ir al pago",
   "prec.pagar_bizum": "Pagar 1 año con Bizum",
   "prec.ir_al_pago_bizum": "Pagar con Bizum",
-  "prec.bizum_nota": "Con Bizum pagas un año de una vez. No se renueva solo: te avisaremos antes de que termine para que lo renueves si quieres.",
+  "prec.bizum_nota": "Con Bizum pagas un año de una vez, al precio normal del plan anual. No se renueva solo: te avisaremos antes de que termine para que lo renueves si quieres. Los descuentos, el Black Friday y los meses de «Invita a un amigo» se aplican pagando con tarjeta.",
   "prec.tu_plan_bizum": "Tu plan: Premium {ambito}, pagado con Bizum hasta el {fecha}. Si lo renuevas antes, el año nuevo empieza al acabar el actual.",
   "prec.prueba_antes": "Prueba 14 días gratis antes de pagar: cada cuenta nueva tiene 14 días de Premium sin tarjeta.",
   "prec.terminos": "Términos y condiciones",

@@ -1082,7 +1082,7 @@
   "prec.ir_al_pago": "Ir para o pagamento",
   "prec.pagar_bizum": "Pagar 1 ano com Bizum",
   "prec.ir_al_pago_bizum": "Pagar com Bizum",
-  "prec.bizum_nota": "Com Bizum paga um ano de uma só vez. Não se renova sozinho: avisamos antes de terminar para que o renove se quiser.",
+  "prec.bizum_nota": "Com Bizum paga um ano de uma só vez, ao preço normal do plano anual. Não se renova sozinho: avisamos antes de terminar para que o renove se quiser. Os descontos, a Black Friday e os meses de «Convide um amigo» aplicam-se pagando com cartão.",
   "prec.tu_plan_bizum": "O seu plano: Premium {ambito}, pago com Bizum até {fecha}. Se o renovar antes, o novo ano começa quando acabar o atual.",
   "prec.proximamente": "Em breve",
   "prec.cobro_no_activo": "Os pagamentos ainda não estão abertos. Entretanto, aproveite os 14 dias de Premium grátis.",

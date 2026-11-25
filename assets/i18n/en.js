@@ -1082,7 +1082,7 @@
   "prec.ir_al_pago": "Go to payment",
   "prec.pagar_bizum": "Pay 1 year with Bizum",
   "prec.ir_al_pago_bizum": "Pay with Bizum",
-  "prec.bizum_nota": "With Bizum you pay for a whole year at once. It doesn't renew automatically: we'll remind you before it ends so you can renew if you like.",
+  "prec.bizum_nota": "With Bizum you pay for a whole year at once, at the regular annual price. It doesn't renew automatically: we'll remind you before it ends so you can renew if you like. Discounts, Black Friday and “Invite a friend” months apply when paying by card.",
   "prec.tu_plan_bizum": "Your plan: Premium {ambito}, paid with Bizum until {fecha}. If you renew early, the new year starts when the current one ends.",
   "prec.prueba_antes": "Try it free for 14 days before paying: every new account gets 14 days of Premium, no card needed.",
   "prec.terminos": "Terms and conditions",
