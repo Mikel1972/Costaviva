@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-23-post-nz": {
-      "tipo": "condiciones-nz",
-      "campana": "20261023-condiciones-nz-whangamata",
-      "en": "2026-10-22T05:40:47.410Z"
-    },
     "2026-10-23-reel": {
       "tipo": "reel-peces",
       "campana": "20261023-reel-peces-suances",
@@ -199,6 +194,11 @@
       "tipo": "reel-normas",
       "campana": "20261124-reel-normas-lubina",
       "en": "2026-11-23T17:38:48.816Z"
+    },
+    "2026-11-26-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261126-reel-peces-acoruna",
+      "en": "2026-11-25T17:36:43.593Z"
     }
   },
   "ultimaFuncion": "alarma"

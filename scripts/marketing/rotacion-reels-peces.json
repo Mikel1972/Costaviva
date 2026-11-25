@@ -1,5 +1,11 @@
 {
-  "ultimoSpot": "ribadeo",
-  "ultimoClip": "pexels-peces-roca-azul.mp4",
-  "fecha": "2026-11-18T17:34:35.630Z"
+  "ultimoSpot": "acoruna",
+  "ultimoClip": "pexels-pez-roca-algas.mp4",
+  "fecha": "2026-11-25T17:36:43.593Z",
+  "historial": [
+    {
+      "slug": "acoruna",
+      "fecha": "2026-11-26"
+    }
+  ]
 }

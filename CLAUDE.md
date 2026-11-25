@@ -59,6 +59,23 @@ da 12 meses de Premium** + emails de aviso para renovarlo (no se renueva solo).
   antes de aplicar la migración.
 - Lógica pura y tests: `functions/_lib/bizum.js`, `test/bizum.test.js`.
 
+## Base por IP: la zona de pesca de cada usuario (2026-11-25, idea de Mikel)
+
+Sin código postal en el alta, la app propone la zona al entrar:
+- `functions/ubicacion-aproximada.js`: devuelve solo lo que Cloudflare ya sabe
+  de la petición (`request.cf`: ciudad, región, país y coordenadas
+  aproximadas). No guarda la IP ni llama a nadie de fuera. `no-store`.
+- `index.html` (`proponerBase`): si el perfil no tiene base ni código postal
+  y la zona cae en una región con datos, sale «📍 Parece que estás cerca de
+  X. ¿Quieres que sea tu zona de pesca?» con «Sí, es mi zona», «Elegir en
+  el mapa» (guarda el siguiente toque) y «Ahora no» (30 días sin preguntar,
+  en ese navegador). La base manda sobre el código postal al abrir el mapa.
+- Migración `20261125180000_perfiles_base.sql`: `perfiles.base_lat`,
+  `base_lon`, `base_nombre`, `base_origen` ('ip' | 'mapa') y
+  `base_fijada_en`, con checks y `grant update` solo en esas columnas (la
+  política de UPDATE de la propia fila ya existía). Sin políticas nuevas.
+- Pruebas: `test/base-ip.test.js` y la de navegador «el mapa propone la zona
+  por IP».
 ## Alta: ventajas arriba y solo el email (2026-11-25, Mikel: «revisa la pantalla de login y mejórala»)
 
 Del 21 al 25/11 llegaron visitas al alta y nadie lo intentó (ni un intento

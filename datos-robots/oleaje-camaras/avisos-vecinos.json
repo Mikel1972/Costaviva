@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-25T15:40:24.773Z",
+ "actualizado": "2026-11-25T17:37:26.171Z",
  "dias": 7,
  "repetidos": [
   {
@@ -1871,6 +1871,15 @@
    "antes": 0.2,
    "referencia": null,
    "visto": "2026-11-25T15:28:36.563Z"
+  },
+  {
+   "slug": "zarautz",
+   "camara": "zarautz",
+   "tipo": "bajo",
+   "horaISO": "2026-11-25T18:00",
+   "antes": 0.6,
+   "referencia": null,
+   "visto": "2026-11-25T17:37:26.171Z"
   }
  ]
 }

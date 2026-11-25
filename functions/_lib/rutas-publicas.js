@@ -88,6 +88,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   // Rayos en tiempo real (Xweather); exige sesión dentro del propio endpoint.
   "/rayos-cerca",
   "/geocodificar",
+  "/ubicacion-aproximada", // base por IP (2026-11-25): solo request.cf, sin guardar nada
   "/sos-alerta",
   "/identificar-captura",
   "/dispositivos",

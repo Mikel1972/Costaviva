@@ -461,6 +461,12 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.3); text-align: center;
   }
   .aviso-capa[hidden] { display: none; }
+  .propuesta-base { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 1000; width: min(420px, calc(100% - 24px)); background: var(--superficie); color: var(--tinta); border-radius: 16px; padding: 12px 14px; box-shadow: 0 12px 32px rgba(11, 30, 63, 0.35); font-size: 14px; }
+  .propuesta-base[hidden] { display: none; }
+  .propuesta-base-texto { margin: 0 0 10px; font-weight: 700; line-height: 1.35; }
+  .propuesta-base-botones { display: flex; flex-wrap: wrap; gap: 6px; }
+  .propuesta-base-botones button { flex: 1 1 auto; border: 0; border-radius: 999px; padding: 9px 12px; font-weight: 800; font-size: 13.5px; cursor: pointer; background: var(--degradado-fuerte); color: var(--sobre-acento); }
+  .propuesta-base-botones button.secundario { background: var(--superficie-2); color: var(--tinta); }
 
   /* Botones de capas en 2 columnas por tipología (2026-09-14, "que se
      vean todos"; rediseñado 2026-09-19, pedido explícito del usuario:
@@ -1447,6 +1453,15 @@
     <button class="menu-capas-toggle" id="menuCapas" type="button" aria-expanded="false" aria-controls="toggleRayos" aria-label="Mostrar las capas del mapa" title="Capas del mapa" data-i18n-aria-label="mapa.capas.menu_abrir" data-i18n-title="mapa.capas.menu"><span class="menu-capas-icono" aria-hidden="true">☰</span><span class="menu-capas-n" id="menuCapasN" hidden></span></button>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa" data-i18n-aria-label="mapa.capa.rayos_aria" data-i18n-title="mapa.capa.rayos_title">⚡<span class="capa-label" data-i18n="mapa.capa.rayos">Rayos</span></button>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
+    <!-- Base por IP (2026-11-25): ver proponerBase(). -->
+    <div class="propuesta-base" id="propuestaBase" role="dialog" aria-live="polite" hidden>
+      <p class="propuesta-base-texto"></p>
+      <div class="propuesta-base-botones">
+        <button type="button" id="baseSi" data-i18n="mapa.base.si">Sí, es mi zona</button>
+        <button type="button" id="baseOtra" class="secundario" data-i18n="mapa.base.otra">Elegir en el mapa</button>
+        <button type="button" id="baseNo" class="secundario" data-i18n="mapa.base.no">Ahora no</button>
+      </div>
+    </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna" data-i18n-aria-label="mapa.capa.luna_aria" data-i18n-title="mapa.capa.luna_title">🌙<span class="capa-label" data-i18n="mapa.capa.luna">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
       <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:var(--tinta-2); text-align:center; padding:6px 0;" data-i18n="mapa.luna.zoom">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
@@ -3044,26 +3059,98 @@ async function registrarEvento(tipo, detalle) {
 // siempre; nunca bloquea ni retrasa el resto de la carga del mapa.
 async function centrarMapaEnCodigoPostal() {
   // Con una región elegida a mano en el selector (o en la URL) manda esa
-  // elección: el código postal solo centra si cae dentro de ella.
+  // elección: la base o el código postal solo centran si caen dentro de ella.
   try {
     const { data: perfil, error } = await window.supabaseCliente
       .from("perfiles")
-      .select("codigo_postal")
+      .select("codigo_postal, base_lat, base_lon")
       .eq("id", window.usuarioIdActual)
       .single();
-    if (error || !perfil?.codigo_postal) return;
+    if (error || !perfil) return;
+    // Base elegida por el usuario (2026-11-25): manda sobre el código postal.
+    if (Number.isFinite(perfil.base_lat) && Number.isFinite(perfil.base_lon)) {
+      centrarEnZonaUsuario(perfil.base_lat, perfil.base_lon);
+      return;
+    }
+    if (!perfil.codigo_postal) {
+      proponerBase();
+      return;
+    }
 
     const resp = await fetch(`/geocodificar?cp=${perfil.codigo_postal}`);
     if (!resp.ok) return;
     const { lat, lon } = await resp.json();
-    if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      if (VISTA_INICIAL.fija && !enCajaRegion(VISTA_INICIAL.region, lat, lon)) return;
-      // Si el usuario ya se ha movido a otra región, no se le saca de ella.
-      if (!enCajaRegion(regionDatosDeVista(regionDeCentro()), lat, lon) && map.getZoom() >= ZOOM_MIN_SPOTS) return;
-      map.setView([lat, lon], 11);
-    }
+    if (Number.isFinite(lat) && Number.isFinite(lon)) centrarEnZonaUsuario(lat, lon);
   } catch (e) {
-    console.log("No se ha podido centrar el mapa por código postal:", e.message);
+    console.log("No se ha podido centrar el mapa en la zona del usuario:", e.message);
+  }
+}
+function centrarEnZonaUsuario(lat, lon) {
+  if (VISTA_INICIAL.fija && !enCajaRegion(VISTA_INICIAL.region, lat, lon)) return;
+  // Si el usuario ya se ha movido a otra región, no se le saca de ella.
+  if (!enCajaRegion(regionDatosDeVista(regionDeCentro()), lat, lon) && map.getZoom() >= ZOOM_MIN_SPOTS) return;
+  map.setView([lat, lon], 11);
+}
+
+// Base por IP (2026-11-25, Mikel: sin código postal en el alta; «ubicarlo de
+// acuerdo a la localización de la IP y preguntar si quiere que esa sea su
+// base»). Sin base ni código postal, la app propone la zona aproximada que da
+// Cloudflare (/ubicacion-aproximada) si cae en una región con datos. «Sí» la
+// guarda en perfiles.base_*; «Elegir en el mapa» guarda el siguiente toque en
+// el mapa; «Ahora no» no vuelve a preguntar en 30 días (en este navegador).
+const CLAVE_BASE_NO = "costaviva_base_no";
+async function proponerBase() {
+  try {
+    const no = Number(window.localStorage.getItem(CLAVE_BASE_NO) || 0);
+    if (Date.now() - no < 30 * 24 * 3600 * 1000) return;
+  } catch (e) { /* sin almacenamiento: se pregunta */ }
+  let u = null;
+  try {
+    const r = await fetch("/ubicacion-aproximada", { cache: "no-store" });
+    if (r.ok) u = await r.json();
+  } catch (e) { u = null; }
+  if (!u || !Number.isFinite(u.lat) || !Number.isFinite(u.lon)) return;
+  if (!Object.keys(REGIONES_DATOS).some((id) => enCajaRegion(id, u.lat, u.lon))) return;
+  const lugar = u.ciudad || u.region || u.pais || "";
+  mostrarPropuestaBase(lugar, u);
+}
+function mostrarPropuestaBase(lugar, u) {
+  const caja = document.getElementById("propuestaBase");
+  if (!caja) return;
+  caja.querySelector(".propuesta-base-texto").textContent = lugar
+    ? I18n.t("mapa.base.pregunta", { lugar })
+    : I18n.t("mapa.base.pregunta_sin_lugar");
+  caja.hidden = false;
+  const cerrar = () => { caja.hidden = true; };
+  caja.querySelector("#baseSi").onclick = async () => {
+    cerrar();
+    if (await guardarBase(u.lat, u.lon, lugar, "ip")) centrarEnZonaUsuario(u.lat, u.lon);
+  };
+  caja.querySelector("#baseOtra").onclick = () => {
+    cerrar();
+    avisoCapa(I18n.t("mapa.base.toca"));
+    map.once("click", async (ev) => {
+      const { lat, lng } = ev.latlng;
+      if (await guardarBase(lat, ((lng + 540) % 360) - 180, null, "mapa")) avisoCapa(I18n.t("mapa.base.guardada"));
+    });
+  };
+  caja.querySelector("#baseNo").onclick = () => {
+    cerrar();
+    try { window.localStorage.setItem(CLAVE_BASE_NO, String(Date.now())); } catch (e) { /* nada */ }
+  };
+}
+async function guardarBase(lat, lon, nombre, origen) {
+  try {
+    const { error } = await window.supabaseCliente
+      .from("perfiles")
+      .update({ base_lat: lat, base_lon: lon, base_nombre: nombre ? String(nombre).slice(0, 120) : null, base_origen: origen, base_fijada_en: new Date().toISOString() })
+      .eq("id", window.usuarioIdActual);
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    console.log("No se ha podido guardar la base:", e.message);
+    avisoCapa(I18n.t("mapa.base.error"));
+    return false;
   }
 }
 if (window.supabaseCliente) {
