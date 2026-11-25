@@ -361,3 +361,26 @@ otra canónica. Lo verás en `SEO_ESTADO.md` el martes y el viernes.
      dominio con autoridad.
    - **No**: comprar enlaces, intercambios, granjas de directorios o
      comentarios en blogs. Penaliza.
+
+## Pueblos: enlaces por pueblo y páginas que faltaban (2026-11-25, «monta las tres» de Mikel)
+
+Search Console: para «mareas donostia», «mareas cádiz hoy»… Google enseñaba
+la página de la región porque no tenía la del pueblo.
+
+- **Páginas de región** (`/mareas/region/<región>`): apartado «Mareas de hoy
+  por pueblo», arriba, con «Mareas en <pueblo>» enlazando a cada spot. En NZ
+  (`/en/tides/region/<zona>`), «Tide times today by town».
+- **Pueblos de España con la marea de un spot** (`PUEBLOS_ALIAS` en
+  `functions/mareas/_regiones.js`): Getxo y Bilbao, Las Palmas y Gran
+  Canaria, Santander y Somo/Loredo, Santoña y Noja. Van en título, h1 y una
+  frase que dice de dónde sale la marea (mismo mareógrafo de Puertos del
+  Estado). Avilés y Cariño no: no hay spot a menos de 50 km; harían falta
+  spots nuevos en la app.
+- **Pueblos de NZ sin spot** (`functions/_lib/nz/pueblos-nz.js`):
+  `/en/tides/nz-mount-maunganui`, `nz-opotiki`, `nz-otaki`, `nz-helensville`
+  y `nz-clarks-beach`, solo con la tabla oficial de LINZ del puerto del propio
+  pueblo (no aproximado). Sitemap, IndexNow y página de zona los incluyen.
+  `linz-mareas.yml` baja también sus tablas; mientras no estén, se calculan con
+  el secundario de LINZ sobre su puerto estándar (Clarks Beach necesita la
+  tabla de Onehunga: hasta que el robot la baje, la página dice que no hay
+  horas). Prueba: `test/pueblos-nz.test.js`.

@@ -18,7 +18,7 @@
 // (gratis, sin cuenta) y ofrece un CTA claro hacia /login para ver el
 // mapa completo, las webcams en directo, el diario de pesca, etc.
 
-import { regionDeSlug } from "./_regiones.js";
+import { regionDeSlug, nombreConPueblos, PUEBLOS_ALIAS } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { mareaNZRespuesta } from "../_lib/seo/rutas-nz.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
@@ -116,13 +116,15 @@ export function renderizarPagina(spot, todos) {
     .filter(Boolean)
     .join(", ");
   const descripcion =
-    `Mareas en ${spot.nombre} hoy: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
+    `Mareas en ${nombreConPueblos(spot)} hoy: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
     `oleaje ${oleajeTexto}, viento ${vientoTexto}${tempAgua != null ? `, agua a ${tempAgua} °C` : ""}. ` +
     `Datos reales actualizados cada hora, gratis y sin cuenta.`;
   // "tabla de mareas X", "mareas X hoy" y "pleamar X" son las búsquedas que
   // traen gente (2026-11-19, Search Console: "mareas denia" pos. 10,
   // "tabla de mareas mundaka" pos. 6, sin clics).
-  const titulo = `Tabla de mareas de ${spot.nombre} hoy y mañana: pleamar y bajamar | Costaviva`;
+  // Con los pueblos de la misma marea (PUEBLOS_ALIAS, 2026-11-25): «Getxo (Ereaga) y Bilbao».
+  const nombreBuscado = nombreConPueblos(spot);
+  const titulo = `Tabla de mareas de ${nombreBuscado} hoy y mañana: pleamar y bajamar | Costaviva`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
   // Enlaces a otros spots de la misma región (más allá de los 4 más
   // cercanos): cada página de spot enlaza a más páginas hermanas, para que
@@ -235,7 +237,8 @@ ${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", [
     <nav class="nav-cv" aria-label="Navegación"><a href="${region ? `/mareas/region/${region.slug}` : "/mareas"}">← Atrás: ${region ? escaparHtml(region.nombre) : "Mareas"}</a><a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/aprende">Aprende</a></nav>
 
     <div class="migas"><a href="/mareas">Todos los spots</a>${region ? ` → <a href="/mareas/region/${region.slug}">${escaparHtml(region.nombre)}</a>` : ""} → ${nombre}</div>
-    <h1>Mareas hoy en ${nombre}: pleamar y bajamar</h1>
+    <h1>Mareas hoy en ${escaparHtml(nombreBuscado)}: pleamar y bajamar</h1>
+    ${PUEBLOS_ALIAS[spot.slug] ? `<p class="intro">${escaparHtml(PUEBLOS_ALIAS[spot.slug].frase)}</p>` : ""}
     <div class="actualizado">Datos reales, actualizados: ${new Date(spot.actualizado).toLocaleString("es-ES", { timeZone: zonaDeSpot(spot) })}</div>
 
     ${

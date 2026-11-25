@@ -2,6 +2,7 @@
 // security.txt y caché de imágenes (2026-10-08, "todo lo gratuito que nos
 // ayude"). Sin red. Corre en tests.yml.
 
+import { PUEBLOS_NZ } from "../functions/_lib/nz/pueblos-nz.js";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -95,7 +96,8 @@ test("IndexNow: de ficheros cambiados a URLs públicas afectadas", () => {
 test("IndexNow: a diario solo las páginas de cada spot (pesca y marea)", () => {
   const hoy = urlsCondicionesHoy(sitemap).map((u) => new URL(u).pathname);
   // España y Nueva Zelanda, pesca y marea, en español y en inglés (2026-11-20).
-  assert.equal(hoy.length, (SPOTS.length + SPOTS_NZ.length) * 4);
+  // + las mareas en inglés de los pueblos de NZ sin spot (pueblos-nz.js, 2026-11-25).
+  assert.equal(hoy.length, (SPOTS.length + SPOTS_NZ.length) * 4 + PUEBLOS_NZ.length);
   assert.ok(hoy.includes("/spots/nz-leigh") && hoy.includes("/mareas/nz-leigh"));
   assert.ok(hoy.includes("/spots/bakio") && hoy.includes("/mareas/bakio"));
   assert.ok(hoy.includes("/en/spots/nz-leigh") && hoy.includes("/en/tides/nz-leigh"));

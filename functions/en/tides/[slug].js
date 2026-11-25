@@ -5,6 +5,7 @@ import { conCache, pagina404, pedirConLimite, TTL_CON_DATOS_S, TTL_SIN_DATOS_S }
 import { paginaMareaNZ } from "../../_lib/seo/paginas-en.js";
 import { SPOTS, spotNZ, datosMareaNZ } from "../../_lib/seo/carga-en.js";
 import { IB, esSpotIberia } from "../../_lib/seo/paginas-ib.js";
+import { puebloNZ } from "../../_lib/nz/pueblos-nz.js";
 
 export async function onRequestGet(context) {
   const slug = String(context.params.slug || "");
@@ -13,6 +14,17 @@ export async function onRequestGet(context) {
     return conCache(context, async () => {
       const d = await datosMareaNZ(context, nz);
       return { html: paginaMareaNZ(nz, SPOTS, d).html, ttl: d.completa ? TTL_CON_DATOS_S : TTL_SIN_DATOS_S };
+    });
+  }
+  // Pueblos de NZ sin spot (2026-11-25): solo la tabla de LINZ de su puerto.
+  const pueblo = puebloNZ(slug);
+  if (pueblo) {
+    return conCache(context, async () => {
+      // Si la tabla propia del puerto aún no está en datos/nz (la baja
+      // linz-mareas.yml), las horas del secundario de LINZ sobre su estándar.
+      let d = await datosMareaNZ(context, pueblo);
+      if (!d.dias.length && pueblo.puerto_linz.tabla) d = await datosMareaNZ(context, { ...pueblo, puerto_linz: { ...pueblo.puerto_linz, tabla: null } });
+      return { html: paginaMareaNZ(pueblo, SPOTS, { dias: d.dias }).html, ttl: d.dias.length ? TTL_CON_DATOS_S : TTL_SIN_DATOS_S };
     });
   }
   if (!esSpotIberia(slug)) return pagina404({ que: "página de mareas", volver: "/en/tides", volverTexto: "See all tides" });

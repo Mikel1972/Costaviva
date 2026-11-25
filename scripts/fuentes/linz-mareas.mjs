@@ -29,6 +29,7 @@ import {
   etiquetaLocal, ATRIBUCION_LINZ, AVISO_LINZ,
 } from "../../functions/_lib/nz/mareas-linz.js";
 import { SPOTS_NZ } from "../../functions/_lib/nz/spots-nz.js";
+import { PUEBLOS_NZ } from "../../functions/_lib/nz/pueblos-nz.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const URL_LISTA = "https://www.linz.govt.nz/products-services/tides-and-tidal-streams/tide-predictions/tide-predictions-list-view";
@@ -135,7 +136,8 @@ async function main() {
 
   // Tablas necesarias: las propias y las de los estándar de los secundarios.
   const necesarias = new Set();
-  for (const p of Object.values(asignacion)) {
+  // Y las de los pueblos con página de mareas (pueblos-nz.js, 2026-11-25).
+  for (const p of [...Object.values(asignacion), ...PUEBLOS_NZ.map((x) => x.puerto_linz)]) {
     if (!p) continue;
     if (p.tabla) necesarias.add(p.tabla);
     else necesarias.add(secundarios[secundarios[p.id].estandar].tabla);
