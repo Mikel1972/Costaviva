@@ -1,11 +1,11 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-24T00:37:26.657Z",
- "n": 1355,
+ "generado": "2026-11-25T01:37:22.277Z",
+ "n": 1361,
  "k": 8,
  "global": {
   "coef": 0.29,
-  "n": 1355
+  "n": 1361
  },
  "camaras": {
   "zarautz": {
@@ -352,7 +352,7 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.268,
+     "coef": 0.269,
      "n": 9,
      "periodos": {
       "largo": {
@@ -368,7 +368,7 @@ export default {
    "n": 20,
    "tamanos": {
     "pequeno": {
-     "coef": 0.629,
+     "coef": 0.63,
      "n": 9,
      "periodos": {
       "corto": {
@@ -474,7 +474,7 @@ export default {
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.27,
+       "coef": 0.269,
        "n": 2
       },
       "largo": {
@@ -524,7 +524,7 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.335,
+     "coef": 0.336,
      "n": 1,
      "periodos": {
       "largo": {
@@ -544,7 +544,7 @@ export default {
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.379,
+       "coef": 0.38,
        "n": 1
       },
       "largo": {
@@ -576,31 +576,31 @@ export default {
    }
   },
   "nz-aramoana": {
-   "coef": 0.281,
-   "n": 14,
+   "coef": 0.291,
+   "n": 16,
    "tamanos": {
     "pequeno": {
-     "coef": 0.314,
-     "n": 12,
+     "coef": 0.325,
+     "n": 14,
      "periodos": {
       "corto": {
-       "coef": 0.308,
-       "n": 12
+       "coef": 0.321,
+       "n": 14
       }
      }
     },
     "medio": {
-     "coef": 0.202,
+     "coef": 0.205,
      "n": 2,
      "periodos": {
       "corto": {
-       "coef": 0.191,
+       "coef": 0.194,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.178,
+     "coef": 0.181,
      "n": 0,
      "periodos": {}
     }
@@ -633,19 +633,19 @@ export default {
    }
   },
   "nz-riverton": {
-   "coef": 0.185,
-   "n": 78,
+   "coef": 0.187,
+   "n": 82,
    "tamanos": {
     "pequeno": {
-     "coef": 0.283,
-     "n": 22,
+     "coef": 0.278,
+     "n": 26,
      "periodos": {
       "corto": {
-       "coef": 0.293,
-       "n": 19
+       "coef": 0.285,
+       "n": 23
       },
       "largo": {
-       "coef": 0.28,
+       "coef": 0.277,
        "n": 3
       }
      }
@@ -688,7 +688,7 @@ export default {
  },
  "globalTamanos": {
   "pequeno": 0.448,
-  "medio": 0.264,
+  "medio": 0.265,
   "grande": 0.203
  }
 };
