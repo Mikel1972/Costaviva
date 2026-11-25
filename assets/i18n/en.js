@@ -973,8 +973,6 @@
   "login.ventaja_prueba": "14 days of Premium free: fishing index, live webcams and logbook",
   "login.ventaja_tarjeta": "No card: when it ends you keep the free plan, no charges",
   "login.ventaja_minuto": "Just your email, in one minute",
-  "login.opcional": "(optional)",
-  "login.cp_para_que": "To open the map in your area.",
   "login.codigo_postal": "Postcode",
   "login.continuar": "Continue",
   "login.ya_tengo_cuenta": "I already have an account",

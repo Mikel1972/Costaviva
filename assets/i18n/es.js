@@ -973,8 +973,6 @@
   "login.ventaja_prueba": "14 días de Premium gratis: índice de pesca, webcams en directo y diario",
   "login.ventaja_tarjeta": "Sin tarjeta: al acabar sigues con el plan gratis, sin cargos",
   "login.ventaja_minuto": "Solo tu email, en un minuto",
-  "login.opcional": "(opcional)",
-  "login.cp_para_que": "Para abrir el mapa en tu zona.",
   "login.codigo_postal": "Código postal",
   "login.continuar": "Continuar",
   "login.ya_tengo_cuenta": "Ya tengo cuenta",
