@@ -310,8 +310,11 @@ test("alta: 4 cifras en NZ, 5 en España; /geocodificar de acuerdo", () => {
   assert.equal(paisDeCodigoPostal("123"), null);
   const login = leer("login.html");
   assert.match(login, /RegionPais\.codigoPostalValido\(codigoPostal, regionAlta\)/);
-  // En España el HTML del campo no cambia.
-  assert.match(fuenteEs(login), /pattern="\[0-9\]\{5\}" maxlength="5"/);
+  // Opcional desde el 2026-11-25 (no bloquea el alta fuera de España, NZ y
+  // Portugal): sin required ni pattern; el código solo se manda si vale.
+  const campo = fuenteEs(login).match(/<input[^>]*id="codigoPostal"[^>]*>/)[0];
+  assert.doesNotMatch(campo, /required|pattern=/);
+  assert.match(login, /cpValido \? \{ codigo_postal: codigoPostal \} : \{\}/);
 });
 
 test("i18n: claves nuevas de la fase 2 en es y en", () => {

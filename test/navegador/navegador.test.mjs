@@ -339,6 +339,36 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   });
 }
 
+// Código postal opcional (2026-11-25): sin él, o con uno que no es de la
+// región (Australia desde un móvil en hora de Sídney), el alta sigue y no se
+// manda codigo_postal (el CHECK de perfiles haría fallar el alta).
+for (const [caso, cp, zona] of [["sin código postal", "", "Europe/Madrid"], ["con un código de Australia", "2000", "Australia/Sydney"], ["con un código de Portugal 1234-567", "1100-148", "Europe/Lisbon"]]) {
+  test(`móvil: el alta ${caso} sigue adelante`, async () => {
+    const ctx = await contexto({ ...MOVIL, timezoneId: zona }, { conSesion: false });
+    await ctx.addInitScript(() => { window.turnstile = { render: () => 1, getResponse: () => "token-de-prueba", reset: () => {} }; });
+    const peticiones = [];
+    await ctx.route("https://imncbmizxkorotpeisic.supabase.co/auth/v1/otp**", (route) => {
+      if (route.request().method() === "POST") peticiones.push(route.request().postDataJSON());
+      return route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*" }, body: "{}" });
+    });
+    const { pagina, errores } = await abrir(ctx, "/login?alta=1");
+    await pagina.locator("#cajaRegistroDatos").waitFor({ state: "visible" });
+    assert.ok(await pagina.locator(".ventajas-alta li").count() >= 3, "las ventajas del alta se ven");
+    await pagina.fill("#emailRegistro", "nuevo@costaviva.test");
+    if (cp) await pagina.fill("#codigoPostal", cp);
+    await pagina.click("#btnContinuarRegistro");
+    await pagina.locator("#hojaCondiciones").waitFor({ state: "visible" });
+    await pagina.check("#checkHoja");
+    await pagina.click("#btnAceptarHoja");
+    await pagina.locator("#cajaRegistroEsperando").waitFor({ state: "visible" });
+    assert.equal(peticiones.length, 1);
+    if (zona === "Europe/Lisbon") assert.equal(peticiones[0].data.codigo_postal, "1100");
+    else assert.equal("codigo_postal" in peticiones[0].data, false);
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+}
+
 // perfil: lo que devuelve /rest/v1/perfiles con las columnas nuevas
 // (migración 20261023120000).
 async function probarTusDatos(perfil, marcadaEsperada, motivo) {

@@ -187,6 +187,11 @@
     font-family: var(--f-titulo); font-size: 20px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 2px;
   }
   .caja p.sub { color: var(--tinta-2); font-size: 11.5px; margin: 0 0 10px; }
+  .ventajas-alta { list-style: none; padding: 0; margin: 2px 0 10px; display: grid; gap: 4px; font-size: 13px; color: var(--tinta); }
+  .ventajas-alta li { padding-left: 22px; position: relative; line-height: 1.35; }
+  .ventajas-alta li::before { content: "✓"; position: absolute; left: 2px; color: var(--ok, #15803D); font-weight: 800; }
+  .caja .opcional { font-weight: 400; color: var(--tinta-2); }
+  .caja .ayuda-campo { margin: 2px 0 6px; font-size: 11.5px; color: var(--tinta-2); }
   label { display: block; font-size: 11px; color: var(--tinta-2); margin: 6px 0 3px; font-family: var(--f-texto); font-weight: 500; }
   input {
     width: 100%; padding: 7px 10px; border-radius: 7px;
@@ -197,6 +202,9 @@
   /* Sin user-scalable=no (accesibilidad, 2026-11-23): con 16 px el iPhone no
      hace zoom al tocar un campo. */
   @media (max-width: 760px) { input:not([type="checkbox"]) { font-size: 16px; } }
+  /* En el móvil no tiene sentido «escanea con el móvil» (2026-11-25): fuera,
+     y lo que se ve justo debajo del alta es ya qué es Costaviva. */
+  @media (max-width: 760px) { .conseguir-app { display: none; } }
   button {
     width: 100%; margin-top: 8px; padding: 8px; border-radius: 7px; border: none;
     background: var(--degradado-fuerte); color: var(--sobre-acento); font-weight: 800; font-size: 13px;
@@ -266,7 +274,7 @@
       <li><span class="icono-servicio">🌊</span><span data-i18n-html="login.f_condiciones"><b>Condiciones en tiempo real</b> — oleaje, marea, corriente, viento, presión, temperatura del agua, nubosidad, turbidez y caudal de los ríos en cada spot de la costa.</span></li>
       <li><span class="icono-servicio">📷</span><span data-i18n-html="login.f_webcams"><b>Webcams en directo</b> — mira el estado real del mar en tu lugar de pesca (si están disponibles).</span></li>
       <li><span class="icono-servicio">🎣</span><span data-i18n-html="login.f_diario"><b>Diario de pesca</b> — registra tus salidas y capturas, con fotos e identificación de especies, con todos los datos del momento (lluvia, viento, marea, nubosidad...) para ayudarte a crear patrones.</span></li>
-      <li><span class="icono-servicio">🆘</span><span data-i18n-html="login.f_alarma"><b>Alarma SOS</b> — detección de caída y aviso automático a tus contactos con tu ubicación (no disponible todavía).</span></li>
+      <li><span class="icono-servicio">🆘</span><span data-i18n-html="login.f_alarma"><b>Alarma SOS</b> — detección de caída y aviso automático a tus contactos con tu ubicación (muy pronto).</span></li>
       <li><span class="icono-servicio">👥</span><span data-i18n-html="login.f_grupos"><b>Grupos privados</b> — comparte spots, capturas y calendario con tus amigos.</span></li>
       <li><span class="icono-servicio">🌙</span><span data-i18n-html="login.f_luna"><b>Luna y especies de temporada</b> — para saber qué esperar antes de tirar el aparejo.</span></li>
     </ul>
@@ -322,6 +330,15 @@
      para centrar el mapa de index.html la primera vez que entra. -->
 <div class="caja" id="cajaRegistroDatos" style="display:none;">
   <h1 data-i18n="login.crear_cuenta">Crear cuenta</h1>
+  <!-- Lo que gana quien se apunta, antes de pedirle nada (2026-11-25, Mikel:
+       «revisa la pantalla de login y mejórala»: llegaban al alta y se iban
+       sin intentarlo). Todo cierto: prueba de 14 días sin tarjeta y, al
+       acabar, plan gratuito sin cargos (mi_estado_suscripcion, CLAUDE.md). -->
+  <ul class="ventajas-alta">
+    <li data-i18n="login.ventaja_prueba">14 días de Premium gratis: índice de pesca, webcams en directo y diario</li>
+    <li data-i18n="login.ventaja_tarjeta">Sin tarjeta: al acabar sigues con el plan gratis, sin cargos</li>
+    <li data-i18n="login.ventaja_minuto">Solo tu email, en un minuto</li>
+  </ul>
   <p class="sub" data-i18n="login.te_mandaremos">Te mandaremos un enlace para verificar tu email.</p>
   <div id="mensajeRegistro" class="mensaje"></div>
   <!-- Invitaciones (2026-10-08): /login?alta=1&invitacion=CODIGO, desde el
@@ -330,8 +347,12 @@
   <form id="formRegistroDatos">
     <label for="emailRegistro" data-i18n="login.correo">Correo electrónico</label>
     <input type="email" id="emailRegistro" required autocomplete="email" />
-    <label for="codigoPostal" data-i18n="login.codigo_postal">Código postal</label>
-    <input type="text" id="codigoPostal" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Ej. 48001" data-i18n-placeholder="login.ej_cp" />
+    <!-- Opcional desde el 2026-11-25: obligatorio y con 5 cifras dejaba fuera a
+         quien no tiene el móvil en hora de España, NZ o Portugal (Australia,
+         Reino Unido…). Solo sirve para abrir el mapa en su zona. -->
+    <label for="codigoPostal"><span data-i18n="login.codigo_postal">Código postal</span> <span class="opcional" data-i18n="login.opcional">(opcional)</span></label>
+    <input type="text" id="codigoPostal" inputmode="numeric" maxlength="8" placeholder="Ej. 48001" data-i18n-placeholder="login.ej_cp" aria-describedby="ayudaCP" />
+    <p class="ayuda-campo" id="ayudaCP" data-i18n="login.cp_para_que">Para abrir el mapa en tu zona.</p>
 
     <div id="turnstileRegistro" style="margin-top:8px;"></div>
 
@@ -825,9 +846,6 @@ const regionAlta = RegionPais.regionActual();
 // En Portugal (desde el 2026-10-11), las 4 primeras cifras del CP4-CP3.
 if (RegionPais.esNZ(regionAlta) || RegionPais.esPT(regionAlta)) {
   const campoCP = document.getElementById("codigoPostal");
-  const cifras = RegionPais.cifrasCodigoPostal(regionAlta);
-  campoCP.setAttribute("pattern", `[0-9]{${cifras}}`);
-  campoCP.setAttribute("maxlength", String(cifras));
   campoCP.setAttribute("placeholder", I18n.t(RegionPais.esPT(regionAlta) ? "login.ej_cp_pt" : "login.ej_cp_nz"));
 }
 
@@ -838,17 +856,18 @@ formRegistroDatos.addEventListener("submit", (e) => {
 
 async function enviarAlta() {
   const email = document.getElementById("emailRegistro").value;
-  const codigoPostal = document.getElementById("codigoPostal").value.trim();
+  // Código postal opcional (2026-11-25): si no vale para la región, no se
+  // guarda y el alta sigue (el CHECK de perfiles solo admite 4-5 cifras y un
+  // valor raro haría fallar el alta entera). Portugal: «1234-567» → «1234».
+  const cpEscrito = document.getElementById("codigoPostal").value.trim();
+  const cpPortugal = RegionPais.esPT(regionAlta) ? (cpEscrito.match(/^(\d{4})-?\d{3}$/) || [])[1] : null;
+  const codigoPostal = cpPortugal || cpEscrito;
+  const cpValido = codigoPostal !== "" && RegionPais.codigoPostalValido(codigoPostal, regionAlta);
   btnContinuarRegistro.disabled = true;
   mensajeRegistroEl.className = "mensaje";
 
   // 5 cifras en España; 4 en Nueva Zelanda y Portugal (fase 2 de NZ;
   // assets/js/region-pais.js, región que conoce la app en este navegador).
-  if (!RegionPais.codigoPostalValido(codigoPostal, regionAlta)) {
-    mostrarMensajeRegistro(RegionPais.cifrasCodigoPostal(regionAlta) === 4 ? I18n.t("login.cp_4") : I18n.t("login.cp_5"), "error");
-    btnContinuarRegistro.disabled = false;
-    return;
-  }
   // Hoja de condiciones: se acepta antes de pedir el enlace del alta.
   if (!hojaAceptadaEn) {
     btnContinuarRegistro.disabled = false;
@@ -869,7 +888,7 @@ async function enviarAlta() {
       emailRedirectTo: `${window.location.origin}/login`,
       captchaToken,
       data: {
-        codigo_postal: codigoPostal,
+        ...(cpValido ? { codigo_postal: codigoPostal } : {}),
         ...metadatosAceptacion(hojaAceptadaEn, I18n.idioma()),
         ...(codigoInvitacion() ? { codigo_invitacion: codigoInvitacion() } : {}),
         ...(leerPrimerContacto() ? { origen: leerPrimerContacto() } : {}),
