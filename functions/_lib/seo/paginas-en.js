@@ -23,6 +23,7 @@ import { preguntasSpotsRegion, preguntasMareasRegion, faqHtml, faqLd } from "./f
 import { rutaIdioma } from "./idiomas.js";
 import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg } from "./base.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
+import { PUEBLOS_NZ } from "../nz/pueblos-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
 import { ATRIBUCION_LINZ, AVISO_LINZ, URL_LICENCIA_LINZ } from "../nz/mareas-linz.js";
 import { ATRIBUCION_DOC, URL_DOC_RESERVAS, sinPesca } from "../nz/reservas-doc.js";
@@ -353,6 +354,7 @@ ${dias.map((e) => `<tr${e.pasada ? ' class="nota"' : ""}><td>${e.dia === "today"
   const cercanos = cercanosNZ(todos, spot, 6);
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>${esc(spot.nombre)} tide times today</h1>
+${spot.pueblo ? `<p class="intro">High and low tides at ${esc(spot.nombre)} from the official LINZ predictions for ${esc(spot.puerto_linz.nombre)}, the tide port at ${esc(spot.nombre)} itself.</p>` : ""}
 ${m ? `<section class="tarjeta hoy" aria-labelledby="t-ahora"><h2 id="t-ahora">Tide now</h2>
 <div class="datos"><div class="dato"><span class="dato-etq">Now</span><span class="dato-val">${esc(String(m.altura))} m ${m.tendencia === "subiendo" ? "▲ rising" : m.tendencia === "bajando" ? "▼ falling" : ""}</span></div>
 ${pleamar ? `<div class="dato"><span class="dato-etq">Next high tide</span><span class="dato-val">${esc(textoEvento(pleamar))}</span></div>` : ""}
@@ -367,7 +369,9 @@ ${ctaEn()}
 <section aria-labelledby="t-cerca"><h2 id="t-cerca">Tides at nearby spots</h2>
 <ul class="chips">${cercanos.map((s) => `<li><a href="/en/tides/${esc(s.slug)}">${esc(s.nombre)}</a></li>`).join("")}</ul>
 ${zona ? `<p><a href="/en/tides/region/${esc(zona.slug)}">All tides in ${esc(zona.nombre)} →</a></p>` : ""}</section>
-<p><a href="/en/spots/${esc(spot.slug)}">Fishing at ${esc(spot.nombre)}: species, season and rules →</a></p>`;
+${spot.pueblo
+    ? `<p><a href="/en/spots/${esc(spot.spotCercano.slug)}">Nearest fishing spot: ${esc(spot.spotCercano.nombre)} (${esc(String(spot.spotCercano.km))} km): species, season and rules →</a></p>`
+    : `<p><a href="/en/spots/${esc(spot.slug)}">Fishing at ${esc(spot.nombre)}: species, season and rules →</a></p>`}`;
   return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: `${spot.nombre} tide times`, alternos: ALTERNOS_NZ_EN }) };
 }
 
@@ -404,7 +408,8 @@ export function paginaZonaMareasNZ(zona, todos, spotsPrev = []) {
   const cuerpo = `${migasHtml(migas, "en")}
 <h1>${esc(zona.nombre)} tide times today</h1>
 <p class="intro">Tides at ${del.length} fishing spots in ${esc(zona.nombre)}. Fishing guide for the area: <a href="/en/spots/region/${esc(zona.slug)}">fishing in ${esc(zona.nombre)}</a>.</p>
-${listaSpotsEn(del, "/en/tides")}
+<section aria-labelledby="t-pueblos"><h2 id="t-pueblos">Tide times today by town</h2>
+<ul class="chips">${[...del, ...PUEBLOS_NZ.filter((p) => p.zona === zona.zona)].sort((a, b) => a.nombre.localeCompare(b.nombre, "en")).map((s) => `<li><a href="/en/tides/${esc(s.slug)}">${esc(s.nombre)} tide times</a></li>`).join("")}</ul></section>
 <p class="nota">${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>
 ${faqHtml(preguntas, "en")}
 ${ctaEn()}
@@ -506,6 +511,7 @@ export function urlsEn({ spots, especies, fecha }) {
     ...zonas.map((z) => u(`/tides/region/${z.slug}`, "daily", "0.75")),
     ...nz.map((s) => u(`/spots/${s.slug}`, "daily", "0.7")),
     ...nz.map((s) => u(`/tides/${s.slug}`, "hourly", "0.7")),
+    ...PUEBLOS_NZ.map((p) => u(`/tides/${p.slug}`, "hourly", "0.6")),
     ...especiesNZ(especies).slice().sort((a, b) => a.id.localeCompare(b.id)).map((e) => u(`/species/${slugEspecie(e.id)}`, "monthly", "0.7")),
   ];
 }

@@ -4573,6 +4573,36 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/tides/nz-mount-maunganui</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-opotiki</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-otaki</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-helensville</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-clarks-beach</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/species/nz-arrow-squid</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>monthly</changefreq>

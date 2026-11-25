@@ -77,3 +77,19 @@ export const tituloPescaRegion = (r, n) => {
 export function regionDeSlug(slugSpot) {
   return REGIONES.find((r) => r.spots.has(slugSpot)) || null;
 }
+
+// Pueblos que se buscan y no tienen spot propio, pero sí la misma marea que
+// un spot cercano (2026-11-25, Search Console: «mareas bilbao», «mareas gran
+// canaria», «mareas loredo», «mareas noja»). Van en el título, el h1 y una
+// frase que explica de dónde sale la marea. Mismo mareógrafo de Puertos del
+// Estado que el spot (marea-referencias-datos.js); distancias medidas en el
+// mapa. Avilés y Cariño NO: no hay spot a menos de 50 km (harían falta spots
+// nuevos en la app).
+export const PUEBLOS_ALIAS = {
+  getxo: { nombres: "Bilbao", frase: "Getxo está en el Abra, la bahía de Bilbao: la marea es la del Abra, con el mareógrafo de Bilbao de Puertos del Estado, a 3 km." },
+  laspalmas: { nombres: "Gran Canaria", frase: "Las horas son las de Las Palmas de Gran Canaria, en el noreste de la isla, con el mareógrafo de Las Palmas de Puertos del Estado." },
+  santander: { nombres: "Somo y Loredo", frase: "Somo y Loredo están al otro lado de la bahía de Santander, a pocos kilómetros: la marea es la misma, con el mareógrafo de Santander de Puertos del Estado." },
+  santona: { nombres: "Noja", frase: "Noja está a unos 9 km de Santoña: la marea llega casi a la vez, con el mismo mareógrafo de Santander de Puertos del Estado." },
+};
+// «Getxo (Ereaga)» + alias → «Getxo (Ereaga) y Bilbao».
+export const nombreConPueblos = (spot) => (PUEBLOS_ALIAS[spot.slug] ? `${spot.nombre} y ${PUEBLOS_ALIAS[spot.slug].nombres}` : spot.nombre);

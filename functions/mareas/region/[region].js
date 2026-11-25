@@ -6,7 +6,7 @@
 // ella misma para búsquedas de ámbito regional ("mareas País Vasco",
 // "previsión marina Galicia").
 
-import { REGIONES, tituloMareasRegion } from "../_regiones.js";
+import { REGIONES, tituloMareasRegion, nombreConPueblos } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
 import { tituloBuscador, BEACON_CF } from "../../_lib/seo/base.js";
 import { zonaMareasNZRespuesta } from "../../_lib/seo/rutas-nz.js";
@@ -132,6 +132,7 @@ ${faqJson ? `<script type="application/ld+json">${faqJson}</script>` : ""}
   .nota { color: ${GRIS}; font-size: 12px; }
   #t-preg + h3, .tarjeta h3 { font-size: 16px; margin: 16px 0 4px; }
   .tarjeta p { margin: 0 0 8px; line-height: 1.5; }
+  .lista + .cta { margin-top: 24px; }
   .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -24px 0 32px; }
 </style>
 </head>
@@ -145,6 +146,11 @@ ${faqJson ? `<script type="application/ld+json">${faqJson}</script>` : ""}
     <div class="migas"><a href="/mareas">Todos los spots</a> → ${nombre}</div>
     <h1>Mareas hoy en ${nombre}</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
+
+    <!-- Enlace a cada pueblo arriba (2026-11-25, SEO local: Google enseñaba la
+         región para «mareas donostia» porque no tenía la página del pueblo). -->
+    <h2>Mareas de hoy por pueblo</h2>
+    <ul class="lista">${spots.map((s) => `<li><a href="/mareas/${s.slug}">Mareas en ${escaparHtml(nombreConPueblos(s))}</a></li>`).join("")}</ul>
 
     <a class="cta" href="/login?alta=1">Prueba Costaviva 14 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
