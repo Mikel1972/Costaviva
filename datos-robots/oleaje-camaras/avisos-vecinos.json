@@ -1,31 +1,7 @@
 {
- "actualizado": "2026-11-25T09:09:30.137Z",
+ "actualizado": "2026-11-25T09:40:00.737Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "zarautz",
-   "alto": 4,
-   "bajo": 0,
-   "spots": [
-    "zarautz"
-   ]
-  },
-  {
-   "clave": "bakio",
-   "alto": 9,
-   "bajo": 0,
-   "spots": [
-    "bakio"
-   ]
-  },
-  {
-   "clave": "orio",
-   "alto": 4,
-   "bajo": 0,
-   "spots": [
-    "orio"
-   ]
-  },
   {
    "clave": "sopelana",
    "alto": 1,
@@ -36,15 +12,31 @@
   },
   {
    "clave": "mundaka",
-   "alto": 7,
+   "alto": 8,
    "bajo": 0,
    "spots": [
     "mundaka"
    ]
   },
   {
+   "clave": "bakio",
+   "alto": 8,
+   "bajo": 0,
+   "spots": [
+    "bakio"
+   ]
+  },
+  {
+   "clave": "orio",
+   "alto": 4,
+   "bajo": 1,
+   "spots": [
+    "orio"
+   ]
+  },
+  {
    "clave": "hondarribia",
-   "alto": 3,
+   "alto": 4,
    "bajo": 1,
    "spots": [
     "hondarribia"
@@ -1716,6 +1708,42 @@
    "antes": 0.9,
    "referencia": null,
    "visto": "2026-11-25T09:09:30.137Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T09:00",
+   "antes": 1.2,
+   "referencia": 1,
+   "visto": "2026-11-25T09:40:00.737Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "bajo",
+   "horaISO": "2026-11-25T15:00",
+   "antes": 0.7,
+   "referencia": null,
+   "visto": "2026-11-25T09:40:00.737Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T09:00",
+   "antes": 0.7,
+   "referencia": 0.4,
+   "visto": "2026-11-25T09:40:00.737Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "alto",
+   "horaISO": "2026-11-25T15:00",
+   "antes": 0.8,
+   "referencia": 0.5,
+   "visto": "2026-11-25T09:40:00.737Z"
   }
  ]
 }
