@@ -727,3 +727,30 @@ test("lectura poco segura (margen x3 o más): vale la mitad y no enseña su marg
   assert.ok(b - a <= 0.3 + 1e-9 && a >= 1.1 && b <= 1.5, `${a}-${b}`);
   assert.ok(s.oleajeCamara.cociente < 1.3);
 });
+
+// Caso real (Zarautz, 2026-11-25): con 3,5–3,8 m fuera y el modelo × coeficiente
+// en 0,8–1,0 m, una lectura de las 16:26 con poca luz dio 0,42 m (margen
+// 0,2–0,8, poco segura) y la app bajó la orilla a 0,5–0,6 m. Una lectura dudosa
+// solo puede subir la ola: aquí se queda el modelo en todos los bloques.
+test("lectura poco segura por debajo del modelo: no baja la ola (seguridad)", async () => {
+  const { aplicarCamarasASpots } = await import("../functions/_lib/oleaje-camaras.js");
+  const lec = { fecha: "2026-11-25T15:26:13Z", estado: "ok", estimacion: 0.42, rangoMin: 0.2, rangoMax: 0.8, modeloCamara: 0.9 };
+  const bloques = [
+    { horaISO: "2026-11-25T18:00", altura: [0.8, 1] },
+    { horaISO: "2026-11-25T21:00", altura: [0.7, 0.9] },
+  ];
+  const [s] = aplicarCamarasASpots([{ slug: "zarautz", bloques }], { zarautz: lec }, Date.parse("2026-11-25T17:00:00Z"));
+  assert.deepEqual(s.bloques[0].altura, [0.8, 1]);
+  assert.notEqual(s.bloques[0].fuenteAltura, "camara");
+  assert.ok(s.bloques[1].altura[0] >= 0.7 && s.bloques[1].altura[1] >= 0.9, JSON.stringify(s.bloques[1].altura));
+  assert.ok(s.oleajeCamara.cociente >= 1);
+});
+
+// Segura (margen pequeño) y por debajo: sigue mandando la cámara, como siempre.
+test("lectura segura por debajo del modelo: la cámara sigue mandando", async () => {
+  const { aplicarCamarasASpots } = await import("../functions/_lib/oleaje-camaras.js");
+  const lec = { fecha: "2026-11-25T11:00:00Z", estado: "ok", estimacion: 0.6, rangoMin: 0.5, rangoMax: 0.75, modeloCamara: 0.9 };
+  const [s] = aplicarCamarasASpots([{ slug: "zarautz", bloques: [{ horaISO: "2026-11-25T12:00", altura: [0.8, 1] }] }], { zarautz: lec }, Date.parse("2026-11-25T11:30:00Z"));
+  assert.equal(s.bloques[0].fuenteAltura, "camara");
+  assert.ok(s.bloques[0].altura[1] < 0.8);
+});
