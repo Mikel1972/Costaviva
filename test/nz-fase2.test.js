@@ -308,10 +308,9 @@ test("alta: 4 cifras en NZ, 5 en España; /geocodificar de acuerdo", () => {
   assert.equal(paisDeCodigoPostal("48001"), "Spain");
   assert.equal(paisDeCodigoPostal("1010"), "New%20Zealand");
   assert.equal(paisDeCodigoPostal("123"), null);
+  // Desde el 2026-11-25 el alta no pide código postal (solo el email).
   const login = leer("login.html");
-  assert.match(login, /RegionPais\.codigoPostalValido\(codigoPostal, regionAlta\)/);
-  // En España el HTML del campo no cambia.
-  assert.match(fuenteEs(login), /pattern="\[0-9\]\{5\}" maxlength="5"/);
+  assert.doesNotMatch(login, /id="codigoPostal"|codigo_postal:/);
 });
 
 test("i18n: claves nuevas de la fase 2 en es y en", () => {
