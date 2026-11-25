@@ -339,6 +339,37 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   });
 }
 
+// Base por IP (2026-11-25): sin base ni código postal, el mapa propone la
+// zona aproximada (Cloudflare) y «Sí» la guarda en perfiles.base_*.
+test("móvil: el mapa propone la zona por IP y «Sí» la guarda como base", async () => {
+  const ctx = await contexto(MOVIL);
+  const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*" };
+  const cambios = [];
+  await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/perfiles**", (route) => {
+    const m = route.request().method();
+    if (m === "OPTIONS") return route.fulfill({ status: 200, headers: cors, body: "" });
+    if (m === "PATCH") { cambios.push(route.request().postDataJSON()); return route.fulfill({ status: 204, headers: cors, body: "" }); }
+    const sel = new URL(route.request().url()).searchParams.get("select") || "";
+    const fila = sel.includes("base_lat") ? { codigo_postal: null, base_lat: null, base_lon: null } : {};
+    const objeto = (route.request().headers()["accept"] || "").includes("vnd.pgrst.object");
+    return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: JSON.stringify(objeto ? fila : [fila]) });
+  });
+  await ctx.route("https://costaviva.test/ubicacion-aproximada", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ lat: 43.2627, lon: -2.9253, ciudad: "Bilbao", region: null, pais: "ES" }) }));
+  const { pagina, errores } = await abrir(ctx, "/");
+  const caja = pagina.locator("#propuestaBase");
+  await caja.waitFor({ state: "visible", timeout: 15000 });
+  assert.match(await caja.textContent(), /Bilbao/);
+  await pagina.click("#baseSi");
+  await pagina.waitForFunction(() => document.getElementById("propuestaBase").hidden);
+  await pagina.waitForTimeout(300);
+  assert.equal(cambios.length, 1);
+  assert.equal(cambios[0].base_lat, 43.2627);
+  assert.equal(cambios[0].base_origen, "ip");
+  assert.equal(cambios[0].base_nombre, "Bilbao");
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
+
 // perfil: lo que devuelve /rest/v1/perfiles con las columnas nuevas
 // (migración 20261023120000).
 async function probarTusDatos(perfil, marcadaEsperada, motivo) {

@@ -5,6 +5,24 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+
+## Base por IP: la zona de pesca de cada usuario (2026-11-25, idea de Mikel)
+
+Sin código postal en el alta, la app propone la zona al entrar:
+- `functions/ubicacion-aproximada.js`: devuelve solo lo que Cloudflare ya sabe
+  de la petición (`request.cf`: ciudad, región, país y coordenadas
+  aproximadas). No guarda la IP ni llama a nadie de fuera. `no-store`.
+- `index.html` (`proponerBase`): si el perfil no tiene base ni código postal
+  y la zona cae en una región con datos, sale «📍 Parece que estás cerca de
+  X. ¿Quieres que sea tu zona de pesca?» con «Sí, es mi zona», «Elegir en
+  el mapa» (guarda el siguiente toque) y «Ahora no» (30 días sin preguntar,
+  en ese navegador). La base manda sobre el código postal al abrir el mapa.
+- Migración `20261125180000_perfiles_base.sql`: `perfiles.base_lat`,
+  `base_lon`, `base_nombre`, `base_origen` ('ip' | 'mapa') y
+  `base_fijada_en`, con checks y `grant update` solo en esas columnas (la
+  política de UPDATE de la propia fila ya existía). Sin políticas nuevas.
+- Pruebas: `test/base-ip.test.js` y la de navegador «el mapa propone la zona
+  por IP».
 ## Al abrir la app, solo los spots (2026-11-07, pedido de Mikel)
 
 Mikel: "Cuando se abre la app, sale por defecto la profundidad. No debe ser
