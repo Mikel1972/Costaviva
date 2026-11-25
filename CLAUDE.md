@@ -5,6 +5,22 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+
+## Alta: ventajas arriba y solo el email (2026-11-25, Mikel: «revisa la pantalla de login y mejórala»)
+
+Del 21 al 25/11 llegaron visitas al alta y nadie lo intentó (ni un intento
+en los logs de Auth). Cambios en `login.html`:
+- Tres ventajas encima del formulario (`login.ventaja_*`): 14 días de
+  Premium, sin tarjeta y al acabar plan gratis sin cargos, solo el email.
+  Todo cierto (`mi_estado_suscripcion`); si cambia el cobro, cambiarlas.
+- **Sin código postal en el alta** (Mikel: solo servía para centrar el mapa;
+  obligatorio con 5 cifras dejaba fuera a quien no es de España, NZ o
+  Portugal). El alta pide solo el email. Los 9 perfiles que ya lo tienen siguen
+  centrando el mapa con él (`index.html`, `/geocodificar`). Siguiente paso
+  acordado: proponer la «base» dentro de la app con la ubicación aproximada
+  por IP de Cloudflare (`request.cf`) y preguntar si la quiere como su zona.
+- En el móvil no sale «Llévatela contigo» (el QR no sirve en el propio móvil).
+- Alarma SOS «(muy pronto)» en vez de «(no disponible todavía)».
 ## Al abrir la app, solo los spots (2026-11-07, pedido de Mikel)
 
 Mikel: "Cuando se abre la app, sale por defecto la profundidad. No debe ser
