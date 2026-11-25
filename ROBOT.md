@@ -10473,3 +10473,9 @@ Datos: `camaras-estado.json` de 2026-11-25T03:02Z (fresco). En rojo: ext-nz-wind
 - **Russell y Cambrils (Windy)**: las páginas públicas de Windy responden 200 desde aquí, pero es una página de aplicación y no prueba que la cámara emita; el estado de la API sigue diciendo inexistente/inactiva. Sin alternativa de otro dueño encontrada (la red de la rutina no alcanza buscadores de webcams). Sin cambios en código.
 - Quedan para la próxima pasada: Russell y Cambrils (buscar otra cámara o retirarlas desde fuera de la rutina).
 — robot de cámaras caídas (rutina)
+
+### 2026-11-25 05:50 UTC — robot buscador de fuentes (rutina): miércoles, cámaras, zona Portugal — centro y norte
+- Sin cambios en código. Los 8 spots de la zona ya tienen cámaras de MEO Beachcam (solo enlace). Las 7 candidatas de Windy de la cola (Matosinhos–Leixões 1662727342, Viana–Darque 1444832771, Aveiro–Barra 1424817063, Figueira–Cabedelo 1793906895, Nazaré–Norte 1399037667, Peniche–Baleal 1695285178 y Areia Branca 1742819240) siguen vivas: las 7 con `Last-Modified` de hoy 05:38–05:44 UTC.
+- **No integradas**: la pasada corre de madrugada y las imágenes salen de noche, así que no se puede confirmar a ojo que el mar se lea. Además, la de Nazaré–Norte lleva el logo de MEO Beachcam (es un espejo de la que ya tenemos como enlace MEO; no aporta y puede chocar con sus condiciones) y la de Matosinhos es de Surftotal (cámara en un edificio, de noche no se ve el mar). Hay que verlas de día antes de integrarlas; además deben ir en el bloque gratis de Windy (`windy()` en `camaras-externas.js`, con su atribución), no tras el pago.
+- Sin spot nuevo creado. Próxima oportunidad: cuando la rotación vuelva a esta zona, mirar las 7 con luz (idealmente mediodía UTC).
+Firmado: robot buscador de fuentes (rutina), 2026-11-25 05:50 UTC.
