@@ -206,6 +206,8 @@ if (conPortal && !soloComprobar && !errores.length) {
 const EVENTOS_WEBHOOK = [
   "checkout.session.completed", "customer.subscription.created", "customer.subscription.updated",
   "customer.subscription.deleted", "invoice.payment_failed", "invoice.upcoming",
+  // País de la tarjeta en cada renovación (2026-11-25).
+  "invoice.paid",
 ];
 try {
   const eps = await stripe("GET", "/webhook_endpoints?limit=100");

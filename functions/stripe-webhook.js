@@ -8,7 +8,15 @@
 //   invoice.payment_failed, invoice.upcoming (aviso de renovación anual,
 //   2026-10-11: scripts/stripe/crear-precios.mjs --portal lo añade),
 //   checkout.session.async_payment_succeeded y
-//   checkout.session.async_payment_failed (Bizum, 2026-11-25)
+//   checkout.session.async_payment_failed (Bizum, 2026-11-25) e
+//   invoice.paid (país de la tarjeta en cada renovación, 2026-11-25)
+//
+// País de la tarjeta (2026-11-25, CLAUDE.md "Zona de precio por el país de
+// la tarjeta"): en checkout.session.completed (suscripción) y en
+// invoice.paid se lee card.country de la tarjeta por defecto (un GET de la
+// suscripción) y, si su zona no es la cobrada, el mismo plan pasa al precio
+// de esa zona desde la próxima factura, con un email antes
+// (_lib/corregir-zona.js). Con otra moneda no se toca: queda para revisar.
 //
 // Bizum (2026-11-25, CLAUDE.md "Pagar 1 año con Bizum"): pago único con
 // metadata.metodo = "bizum". Al cobrarse, la fila de suscripciones pasa a
@@ -48,6 +56,7 @@ import { datosDePrecio, zonaDePais, zonaPorId, precioParaZona } from "./_lib/pre
 import { enviarEmail } from "./_lib/email.js";
 import { textoAceptacion, textoSiCerramos, VERSION as VERSION_ACEPTACION } from "../assets/js/consentimiento.js";
 import { esPagoBizum, filaPagoBizum } from "./_lib/bizum.js";
+import { zonaTrasPagoConTarjeta } from "./_lib/corregir-zona.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -437,6 +446,19 @@ export async function onRequestPost(context) {
           ids: obj.metadata.referidos_dias, importeMes: mes.importe, moneda: obj.currency || mes.moneda, sesionId: obj.id,
         });
       }
+      // País de la tarjeta del primer pago. Si falla no se lanza: el
+      // reintento repetiría la confirmación; invoice.paid lo vuelve a mirar.
+      if (obj.mode === "subscription" && obj.subscription) {
+        try {
+          const r = await zonaTrasPagoConTarjeta({
+            env, serviceRoleKey, userId, subId: obj.subscription, para: obj.customer_details?.email || obj.customer_email,
+            idioma: obj.metadata?.aceptacion_idioma || obj.metadata?.idioma,
+          });
+          if (r.accion !== "nada") console.log(`stripe-webhook: zona de la tarjeta en ${obj.id}: ${r.accion}${r.motivo ? ` (${r.motivo})` : ""}`);
+        } catch (e) {
+          console.error(`stripe-webhook: país de la tarjeta en ${obj.id}:`, e);
+        }
+      }
     } else if (
       evento.type === "customer.subscription.created" ||
       evento.type === "customer.subscription.updated" ||
@@ -503,6 +525,20 @@ export async function onRequestPost(context) {
         const idioma = md.idioma === "en" ? "en" : "es";
         const envio = await enviarEmail(env, { to: obj.customer_email, ...textoRenovacion(obj, idioma) });
         if (!envio.ok) throw new Error(`aviso de renovación: ${envio.error}`);
+      }
+    } else if (evento.type === "invoice.paid") {
+      // Factura de suscripción cobrada (alta o renovación): país de la
+      // tarjeta y, si toca, precio de su zona desde la próxima factura. Si
+      // algo falla se lanza (500) y Stripe reintenta solo esto.
+      const subId = obj.parent?.subscription_details?.subscription || obj.subscription || null;
+      if (subId) {
+        const md = metadatosSuscripcionDeFactura(obj);
+        const userId = md.supabase_user_id || await userIdPorClienteStripe(serviceRoleKey, obj.customer);
+        const r = await zonaTrasPagoConTarjeta({
+          env, serviceRoleKey, userId, subId: typeof subId === "string" ? subId : subId.id,
+          para: obj.customer_email, idioma: md.aceptacion_idioma || md.idioma,
+        });
+        if (r.accion !== "nada") console.log(`stripe-webhook: zona de la tarjeta en ${obj.id}: ${r.accion}${r.motivo ? ` (${r.motivo})` : ""}`);
       }
     } else if (evento.type === "invoice.payment_failed") {
       // Cobro fallido (comun stripe.md S4). No se toca el estado aquí: Stripe
