@@ -6372,12 +6372,14 @@ espejo, huecos que quedan y páginas que no responden 200.
 
 ## CPU de Cloudflare y vigía de páginas (2026-11-21)
 
+**Estado el 2026-11-26** (`cpu-cloudflare.yml`, 24 h): 10.992 peticiones correctas y 2 cortadas por recursos (0,02 %); CPU p50 3,9 ms y p99 130 ms. En verde.
+
 Plan gratis de Pages Functions: **10 ms de CPU por petición**; si se pasa, Cloudflare corta con `error code: 1102` (503). El 2026-11-21 cortaba 367 de las 1.702 URL del sitemap y 105 `/mareas/<slug>` daban 500 (61 excepciones/día), porque `/prevision` con Open-Meteo en 429 no se guardaba en caché y cada página la recalculaba (y seguía gastando la cuota de Open-Meteo). Arreglado en las PR 587 y 588. Reglas para no repetirlo:
 - **Nada de leer y parsear JSON grandes en cada petición**: `cargarJson` (seo/base.js) y `leerAssetJson` (`_lib/assets-memo.js`) memorizan por isolate; `leerInstantanea` comparte la lectura en curso. Un fichero de 2,5 MB son ~14 ms solo de `JSON.parse`.
 - **Las respuestas en error también se guardan** (poco tiempo: `/prevision` 15 min, `TTL_PREVISION_CON_ERROR_S`): no guardar nada convierte un fallo externo en un bucle de CPU y de llamadas.
 - **Páginas públicas siempre con `conCache`** y tolerantes a spots en error (sin `bloques`/`marea`).
 - Nada de `Intl.formatToParts` dentro de bucles: memorizar por minuto (`horaActualISO`).
-- `vigia-paginas.yml` (diario, sin IA, `scripts/vigia/paginas.mjs`) recorre todo el sitemap y `/prevision`: en rojo si una página falla dos veces o si la mayoría de spots están en error. `cpu-cloudflare.yml` del repo polizas-ai mide la CPU de las cuatro webs (token de Cloudflare con Account Analytics Read).
+- `vigia-paginas.yml` (diario, sin IA, `scripts/vigia/paginas.mjs`) recorre todo el sitemap y `/prevision`: en rojo si una página falla dos veces o si la mayoría de spots están en error. Se identifica como robot (`UA_VIGIA`, 2026-11-26): ve lo que ven Google y Bing; sin «bot» la portada sin sesión daba 302 al login y el vigía salía en rojo cada día (24-26/11). `cpu-cloudflare.yml` del repo polizas-ai mide la CPU de las cuatro webs (token de Cloudflare con Account Analytics Read).
 - Lo que queda por encima de 10 ms en frío es `/prevision` (~100-150 ms) y las fichas de spot la primera vez: la solución de fondo es precalcular `/prevision` en un workflow y que la Function solo la sirva.
 
 ## Previsión precalculada (2026-11-22)

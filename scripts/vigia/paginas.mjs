@@ -20,6 +20,8 @@ export function urlsDeSitemap(xml) {
 }
 
 // Qué le pasa a una respuesta: null si está bien.
+export const UA_VIGIA = "Mozilla/5.0 (compatible; costaviva-vigia-bot/1.0)";
+
 export function problema(status, cuerpo = "") {
   if (status === 200) return null;
   const m = /error code: (\d+)/.exec(cuerpo);
@@ -47,7 +49,10 @@ export function agrupar(fallos) {
 
 async function probar(url) {
   try {
-    const r = await fetch(url, { headers: { "user-agent": "costaviva-vigia-paginas" }, redirect: "manual", signal: AbortSignal.timeout(30000) });
+    // Se identifica como robot (2026-11-26): ve lo mismo que Google y Bing.
+    // Sin «bot», la portada sin sesión manda al login (302, a propósito:
+    // functions/_lib/portada-sesion.js) y el vigía salía en rojo cada día.
+    const r = await fetch(url, { headers: { "user-agent": UA_VIGIA }, redirect: "manual", signal: AbortSignal.timeout(30000) });
     const cuerpo = r.status === 200 ? "" : (await r.text()).slice(0, 300);
     return problema(r.status, cuerpo);
   } catch (e) {
