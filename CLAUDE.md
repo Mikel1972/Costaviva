@@ -6417,6 +6417,15 @@ mano); og:title, twitter:title y JSON-LD conservan la marca. Los títulos se
 siguen escribiendo con la marca: no hace falta tocarlos uno a uno.
 Prueba: `test/titulos.test.js`.
 
+**Recorte a 70 (2026-11-26):** sin la marca seguía pasando de 70 casi la
+mitad (muestra de 160 URLs del sitemap: 76). `acortarTitulo()` (dentro de
+`tituloBuscador`) recorta solo la cola: último elemento de la lista tras
+«: », luego la cola entera, luego paréntesis del final y, en último caso,
+por palabra. El principio («Pesca en X», «Mareas hoy en X») no se toca.
+En Aprende, `SUFIJO_TEMA` da títulos con sentido a normas, apnea, fondeo y
+material de submarina (antes «General rules in Spain: types, which to use
+and uses from shore and boat»).
+
 ## Cloudflare Web Analytics en las páginas públicas (2026-11-23, Mikel: «ponla»)
 
 `BEACON_CF` de `functions/_lib/seo/base.js` (el mismo token que index.html y

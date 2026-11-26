@@ -49,6 +49,13 @@
       "titulo": "Mareas por pueblo en las regiones, Bilbao/Gran Canaria/Loredo/Noja y 5 pueblos de NZ",
       "pr": [625],
       "paginas": ["^/mareas/region/", "^/mareas/(getxo|laspalmas|santander|santona)$", "^/en/tides/region/", "^/en/tides/nz-(mount-maunganui|opotiki|otaki|helensville|clarks-beach)$"]
+    },
+    {
+      "id": "titulos-70",
+      "fecha": "2026-11-26",
+      "titulo": "Títulos de más de 70 caracteres recortados por la cola (Bing: 781 páginas) y títulos con sentido en Aprende",
+      "pr": [],
+      "paginas": [".*"]
     }
   ]
 }
