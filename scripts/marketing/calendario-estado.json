@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-23-reel": {
-      "tipo": "reel-peces",
-      "campana": "20261023-reel-peces-suances",
-      "en": "2026-10-22T19:15:50.024Z"
-    },
     "2026-10-24-reel": {
       "tipo": "reel-peces",
       "campana": "20261024-reel-peces-santander",
@@ -199,6 +194,11 @@
       "tipo": "reel-peces",
       "campana": "20261126-reel-peces-acoruna",
       "en": "2026-11-25T17:36:43.593Z"
+    },
+    "2026-11-27-reel-bf": {
+      "tipo": "reel-black-friday",
+      "campana": "20261127-reel-black-friday",
+      "en": "2026-11-26T15:05:02.088Z"
     }
   },
   "ultimaFuncion": "alarma"
