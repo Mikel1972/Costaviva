@@ -1,17 +1,17 @@
-<!-- SINTESIS fecha=2026-11-25 hasta_commit=965a00180c5b22b2c89c2b037b48f458ceeaf3f1 -->
+<!-- SINTESIS fecha=2026-11-26 hasta_commit=672ca3a98f251aada2100653783f5938b0521ac2 -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-Las dos últimas pasadas fueron de cámaras. El robot de cámaras caídas (24 y 25 nov) ve en rojo solo Russell (Windy, `windy_no_existe`), Cambrils (Windy, `windy_inactiva`) y, el 24, Orio y Roses; Orio y Roses se recuperaron solas el 25. Pasaia, Bakio y Mundaka salen congeladas de madrugada (de noche, no es avería). Sin cambios en código; Russell y Cambrils quedan sin alternativa (la red de la rutina no alcanza buscadores de webcams).
-**Cámaras nuevas encontradas:** 0 (las 7 candidatas de Windy de Portugal siguen vivas pero no se integraron: pasada de noche, no se puede ver el mar; Nazaré–Norte es un espejo de MEO Beachcam y Matosinhos es de Surftotal).
-**Términos de búsqueda:** no se anotan términos nuevos; sin primeros éxitos ni tipos de dueño nuevos.
+Única entrada nueva: la pasada del robot de cámaras caídas del 26 nov (05:50 UTC). En rojo: Sopelana (IPCamLive responde pero con `streamid` vacío: cámara apagada por el dueño; se recuperará sola), Piles (`origen_404`: la imagen `webcam_mini.png` da 404 mientras OlivaPuerto y CulleraCastillo, del mismo servidor, funcionan; probados 10 nombres alternativos sin éxito y la web de la Generalitat da 403 desde la rutina, así que el nombre nuevo queda sin verificar), Pasaia (`frame_plano`), Russell y Cambrils (Windy). Bakio y Mundaka salen congeladas de noche (no es avería). Orio se recuperó sola. Sin cambios en código; quedan Piles, Pasaia, Russell y Cambrils para la próxima pasada.
+**Cámaras nuevas encontradas:** 0.
+**Términos de búsqueda:** solo variantes de "Piles"/"Playa de Piles" (sin éxito); sin primeros éxitos ni tipos de dueño nuevos.
 
 ## 🧪 Experiencia de usuario y patrones de uso
 **Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes); no hay entrada suya en este periodo.
 **Robot de patrones de uso:** no le tocaba pasar esta semana.
 
 ## 🔎 Trabajo externo (investigación de contenido)
-El 24 nov el buscador revisó caudal de ríos y estaciones de monte: sin novedades integrables. Portugal (SNIRH/APA) no tiene API en tiempo real ni licencia visible; se propone escribir a APA para pedir un feed. MeteoGalicia responde, pero sigue pendiente la clave.
-**Robot de especies:** no le tocaba pasar hoy (corre los jueves).
+Sin entradas nuevas de buenas prácticas ni estudios institucionales desde la última síntesis.
+**Robot de especies:** hoy es jueves, le toca pasar, pero todavía no hay entrada suya en ROBOT.md.
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
 Ninguna fuente nueva desde la última síntesis. Pendientes de Mikel sin cambios: clave de MeteoGalicia, acceso SAI Cantábrico, Euskalmet y, como idea, contactar con APA (Portugal).
