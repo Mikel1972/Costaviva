@@ -29,3 +29,11 @@ test("agrupar por tipo de página y problema", () => {
   ]);
   assert.deepEqual(g, [["/mareas/… · HTTP 500", 2], ["/en/spots/… · Cloudflare 1102 (CPU)", 1]]);
 });
+
+test("el vigía se identifica como robot: ve la portada como Google (sin el 302 al login)", async () => {
+  const { UA_VIGIA } = await import("../scripts/vigia/paginas.mjs");
+  const { redireccionPortada } = await import("../functions/_lib/portada-sesion.js");
+  const pedir = (ua) => ({ method: "GET", url: "https://costaviva.org/", headers: new Headers({ "user-agent": ua }) });
+  assert.equal(redireccionPortada(pedir(UA_VIGIA)), null);
+  assert.equal(redireccionPortada(pedir("costaviva-vigia-paginas")), "/login");
+});
