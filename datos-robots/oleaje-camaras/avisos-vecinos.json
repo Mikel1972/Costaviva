@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-26T00:07:35.498Z",
+ "actualizado": "2026-11-26T00:37:26.970Z",
  "dias": 7,
  "repetidos": [
   {
@@ -11,27 +11,27 @@
    ]
   },
   {
-   "clave": "bakio",
+   "clave": "orio",
    "alto": 7,
-   "bajo": 0,
+   "bajo": 4,
    "spots": [
-    "bakio"
+    "orio"
    ]
   },
   {
    "clave": "hondarribia",
-   "alto": 7,
-   "bajo": 1,
+   "alto": 6,
+   "bajo": 2,
    "spots": [
     "hondarribia"
    ]
   },
   {
-   "clave": "orio",
-   "alto": 6,
-   "bajo": 4,
+   "clave": "bakio",
+   "alto": 5,
+   "bajo": 0,
    "spots": [
-    "orio"
+    "bakio"
    ]
   }
  ],
@@ -1916,6 +1916,42 @@
    "antes": 0.7,
    "referencia": 0.6,
    "visto": "2026-11-25T18:37:24.182Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T15:00",
+   "antes": 1,
+   "referencia": 0.8,
+   "visto": "2026-11-26T00:37:26.970Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T03:00",
+   "antes": 1.1,
+   "referencia": 1,
+   "visto": "2026-11-26T00:37:26.970Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T21:00",
+   "antes": 0.5,
+   "referencia": 0.3,
+   "visto": "2026-11-26T00:37:26.970Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-26T21:00",
+   "antes": 0.2,
+   "referencia": null,
+   "visto": "2026-11-26T00:37:26.970Z"
   }
  ]
 }

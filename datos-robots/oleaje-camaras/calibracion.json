@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-26T00:07:28.029Z",
- "lineasHistorial": 13278,
- "etiquetas": 1414,
- "etiquetasClaude": 269,
+ "fecha": "2026-11-26T00:37:20.772Z",
+ "lineasHistorial": 13281,
+ "etiquetas": 1415,
+ "etiquetasClaude": 270,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1762,
@@ -390,11 +390,11 @@
    "correlacion": 0.515
   },
   "nz-riverton/principal": {
-   "a": 6.3501,
+   "a": 6.3239,
    "p": 0.5,
-   "n": 1234,
+   "n": 1236,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 83,
+   "nEtiquetasClaude": 84,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -448,9 +448,10 @@
     "2026-11-23T22",
     "2026-11-24T00",
     "2026-11-24T22",
-    "2026-11-25T00"
+    "2026-11-25T00",
+    "2026-11-26T00"
    ],
-   "dias": 46,
+   "dias": 47,
    "hMin": 0.23,
    "hMax": 4.42,
    "errorRel": 1,
@@ -618,7 +619,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 1044
+    "pares": 1045
    }
   }
  },
@@ -666,7 +667,7 @@
    "cerca": 0.205
   },
   "nz-riverton": {
-   "n": 172,
+   "n": 173,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -705,16 +706,16 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.923,
-    "n": 75,
-    "peso": 73.6,
+    "factor": 0.922,
+    "n": 76,
+    "peso": 74.6,
     "mae": 0.17,
     "maeCorregido": 0.17
    },
    "6-24": {
     "factor": 0.688,
-    "n": 205,
-    "peso": 204.3,
+    "n": 206,
+    "peso": 205.3,
     "mae": 0.27,
     "maeCorregido": 0.21
    },
@@ -887,16 +888,16 @@
      "maeCorregido": 0.06
     },
     "6-24": {
-     "factor": 1.006,
-     "n": 6,
-     "peso": 6,
+     "factor": 0.994,
+     "n": 7,
+     "peso": 7,
      "mae": 0.05,
      "maeCorregido": 0.05
     },
     "24-48": {
-     "factor": 1.006,
-     "n": 15,
-     "peso": 15,
+     "factor": 0.999,
+     "n": 16,
+     "peso": 16,
      "mae": 0.06,
      "maeCorregido": 0.06
     },
