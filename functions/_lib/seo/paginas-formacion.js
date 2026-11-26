@@ -15,6 +15,30 @@ import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, ctaPt, imagenOg }
 import { ctaEn } from "./paginas-en.js";
 import { rutaIdioma } from "./idiomas.js";
 
+// Títulos de fichas que no son material de pesca de costa y barco
+// (2026-11-26, Bing: «General rules in Spain: types, which to use and uses
+// from shore and boat» no tenía sentido): sufijo propio por tema.
+export const SUFIJO_TEMA = {
+  es: {
+    "normas-submarina": "qué está permitido y qué no",
+    "apnea-segura": "cómo hacerlo con seguridad", "boya-seguridad": "cómo hacerlo con seguridad",
+    "fondeo-deriva": "cómo y cuándo hacerlo",
+    "traje-plomos-aletas": "tipos y cuál usar en submarina", "fusil-varilla-punta": "tipos y cuál usar en submarina",
+  },
+  en: {
+    "normas-submarina": "what is allowed and what is not",
+    "apnea-segura": "how to do it safely", "boya-seguridad": "how to do it safely",
+    "fondeo-deriva": "how and when to do it",
+    "traje-plomos-aletas": "types and which to use for spearfishing", "fusil-varilla-punta": "types and which to use for spearfishing",
+  },
+  pt: {
+    "normas-submarina": "o que é permitido e o que não é",
+    "apnea-segura": "como fazer com segurança", "boya-seguridad": "como fazer com segurança",
+    "fondeo-deriva": "como e quando fazer",
+    "traje-plomos-aletas": "tipos e qual usar na caça submarina", "fusil-varilla-punta": "tipos e qual usar na caça submarina",
+  },
+};
+
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
 export const IDIOMAS_FORMACION = ["es", "en", "pt"];
 
@@ -58,7 +82,7 @@ const TEXTOS = {
     imagen: "Imagen", via: "vía",
     sirvePara: "Sirve para",
     tituloNudo: (n) => `${n}: cómo se hace paso a paso y para qué sirve | Costaviva`,
-    tituloMaterial: (f) => `${f.nombre}: ${f.colores?.length ? "características, colores" : f.tema === "anzuelos" ? "cómo es, tamaños" : f.tema === "bajos" ? "cómo es, grosor, largo" : "tipos, cuál usar"} y usos en costa y embarcación | Costaviva`,
+    tituloMaterial: (f) => `${f.nombre}: ${SUFIJO_TEMA.es[f.tema] || `${f.colores?.length ? "características, colores" : f.tema === "anzuelos" ? "cómo es, tamaños" : f.tema === "bajos" ? "cómo es, grosor, largo" : "tipos, cuál usar"} y usos en costa y embarcación`} | Costaviva`,
     cta: () => cta(),
   },
   en: {
@@ -100,7 +124,7 @@ const TEXTOS = {
     imagen: "Image", via: "via",
     sirvePara: "Useful for",
     tituloNudo: (n) => `${n}: how to tie it step by step and what it is for | Costaviva`,
-    tituloMaterial: (f) => `${f.nombre}: ${f.colores?.length ? "features, colours" : f.tema === "anzuelos" ? "types, sizes" : f.tema === "bajos" ? "types, thickness, length" : "types, which to use"} and uses from shore and boat | Costaviva`,
+    tituloMaterial: (f) => `${f.nombre}: ${SUFIJO_TEMA.en[f.tema] || `${f.colores?.length ? "features, colours" : f.tema === "anzuelos" ? "types, sizes" : f.tema === "bajos" ? "types, thickness, length" : "types, which to use"} and uses from shore and boat`} | Costaviva`,
     cta: () => ctaEn(),
   },
   pt: {
@@ -142,7 +166,7 @@ const TEXTOS = {
     imagen: "Imagem", via: "via",
     sirvePara: "Serve para",
     tituloNudo: (n) => `${n}: como se faz passo a passo e para que serve | Costaviva`,
-    tituloMaterial: (f) => `${f.nombre}: ${f.colores?.length ? "características, cores" : f.tema === "anzuelos" ? "tipos, tamanhos" : f.tema === "bajos" ? "tipos, espessura, comprimento" : "tipos, qual usar"} e usos de costa e embarcação | Costaviva`,
+    tituloMaterial: (f) => `${f.nombre}: ${SUFIJO_TEMA.pt[f.tema] || `${f.colores?.length ? "características, cores" : f.tema === "anzuelos" ? "tipos, tamanhos" : f.tema === "bajos" ? "tipos, espessura, comprimento" : "tipos, qual usar"} e usos de costa e embarcação`} | Costaviva`,
     cta: () => ctaPt(),
   },
 };

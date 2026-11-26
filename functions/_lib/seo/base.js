@@ -50,7 +50,45 @@ export const BEACON_CF = `<script type="module" src="https://static.cloudflarein
 export function tituloBuscador(titulo) {
   const t = String(titulo ?? "");
   const sin = t.replace(/\s*\|\s*Costaviva\s*$/, "");
-  return sin.trim() ? sin : t;
+  return sin.trim() ? acortarTitulo(sin) : t;
+}
+
+// Títulos de más de TITULO_MAX caracteres (2026-11-26, Bing Webmaster: 781
+// páginas con «Título demasiado largo»; avisa por encima de ~70). Se recorta
+// SOLO la cola, por este orden, hasta que quepa; el principio (lo que se
+// busca: «Pesca en X», «Mareas hoy en X») no se toca:
+//   1. quitar el último elemento de la lista tras «: » («a, b, c y d» →
+//      «a, b» → «a»);
+//   2. quitar la cola entera tras el último «: »;
+//   3. quitar paréntesis del final («(Nueva Zelanda)», «(Stewart Island)»);
+//   4. cortar por la última palabra que quepa.
+export const TITULO_MAX = 70;
+export function acortarTitulo(titulo, max = TITULO_MAX) {
+  let t = String(titulo ?? "").trim();
+  if (t.length <= max) return t;
+  const dos = t.lastIndexOf(": ");
+  if (dos > 0) {
+    const cabeza = t.slice(0, dos);
+    const partes = t.slice(dos + 2).split(", ");
+    while (partes.length > 1) {
+      partes.pop();
+      const c = `${cabeza}: ${partes.join(", ")}`;
+      if (c.length <= max) return c;
+    }
+    t = cabeza;
+    if (t.length <= max) return t;
+  }
+  while (/\s*\([^()]*\)\s*$/.test(t) && t.length > max) t = t.replace(/\s*\([^()]*\)\s*$/, "");
+  // Paréntesis en medio (antes de «, NZ»): se quita el último.
+  while (t.length > max && /\s*\([^()]*\)/.test(t)) {
+    const i = t.lastIndexOf(" (");
+    const j = t.indexOf(")", i);
+    if (i < 0 || j < 0) break;
+    t = (t.slice(0, i) + t.slice(j + 1)).replace(/\s{2,}/g, " ").trim();
+  }
+  if (t.length <= max) return t;
+  const corte = t.slice(0, max + 1).lastIndexOf(" ");
+  return t.slice(0, corte > 20 ? corte : max).replace(/[\s,:;·–-]+$/, "");
 }
 
 export function esc(texto) {
