@@ -236,3 +236,41 @@ test("visitas internas: el navegador del administrador (cookie cv_interno=1) no 
   const html = (await import("node:fs")).readFileSync(new URL("../index.html", import.meta.url), "utf8");
   assert.match(html, /document\.cookie = "cv_interno=1; Max-Age=31536000; Path=\/; Secure; SameSite=Lax"/);
 });
+
+test("pasos del embudo: clic en la llamada, alta empezada y alta enviada", () => {
+  const baliza = (cuerpo, cab = {}) => V.visitaDeBaliza(cuerpo, new Request("https://costaviva.org/contar-visita", {
+    method: "POST", headers: { origin: "https://costaviva.org", "user-agent": "Mozilla/5.0 (iPhone)", ...cab },
+  }));
+  // Clic en una ficha: campaña = tipo de página; fuente = de dónde llegó a ella.
+  assert.deepEqual(baliza({ paso: "cta", ruta: "/en/spots/raglan", referer: "https://www.google.co.nz/" }), { p_pagina: "paso_cta", p_fuente: "google", p_campana: "en_spots" });
+  // Navegando dentro de la web cuenta igual (el paso no es una visita nueva).
+  assert.equal(baliza({ paso: "cta", ruta: "/mareas/bakio", referer: "https://costaviva.org/spots" }).p_fuente, "directo");
+  // En el alta, la fuente y la campaña vienen de las UTM que pone hrefConOrigen.
+  assert.deepEqual(baliza({ paso: "alta", ruta: "/login?alta=1&utm_source=google&utm_medium=organico&utm_campaign=web-spots" }), { p_pagina: "paso_alta", p_fuente: "google", p_campana: "web-spots" });
+  assert.equal(baliza({ paso: "alta_ok", ruta: "/login?alta=1" }).p_pagina, "paso_alta_ok");
+  // Pasos desconocidos, robots, otra web o la cookie interna: nada.
+  assert.equal(baliza({ paso: "pagar", ruta: "/login" }), null);
+  assert.equal(baliza({ paso: "cta", ruta: "/spots" }, { "user-agent": "Googlebot/2.1" }), null);
+  assert.equal(baliza({ paso: "cta", ruta: "/spots" }, { origin: "https://otra.web" }), null);
+  assert.equal(baliza({ paso: "cta", ruta: "//otra.web" }), null);
+  assert.equal(baliza({ paso: "alta", ruta: "/login" }, { cookie: "cv_interno=1" }), null);
+});
+
+test("el script del contador va también al navegar dentro de la web (pasos del embudo)", () => {
+  const html = { status: 200, headers: new Headers({ "content-type": "text/html" }) };
+  assert.equal(V.conContador(new Request("https://costaviva.org/login?alta=1"), html), true);
+  assert.equal(V.conContador(new Request("https://costaviva.org/en/spots/raglan"), html), true);
+  assert.equal(V.conContador(new Request("https://costaviva.org/diario"), html), false);
+  assert.equal(V.conContador(new Request("https://costaviva.org/spots"), { status: 404, headers: html.headers }), false);
+  assert.match(leer("functions/_middleware.js"), /visita \|\| conContador\(request, original\)/);
+  assert.match(leer("login.html"), /cvPaso\?\.\("alta_ok"\)/);
+  assert.match(leer("assets/js/visita.js"), /a\[href\^="\/login\?alta=1"\]/);
+});
+
+test("botón a la app arriba en las fichas, en el idioma de la página", async () => {
+  const { ctaArriba } = await import("../functions/_lib/seo/base.js");
+  assert.match(ctaArriba("en", "spot"), /href="\/login\?alta=1">See today&#39;s fishing score|href="\/login\?alta=1">See today's fishing score/);
+  assert.match(ctaArriba("es", "marea"), /gratis 14 días/);
+  assert.match(ctaArriba("pt"), /pesqueiro/);
+  for (const f of ["paginas.js", "paginas-pt.js", "paginas-en.js"]) assert.match(leer(`functions/_lib/seo/${f}`), /ctaArriba\("(es|pt|en)"/);
+});

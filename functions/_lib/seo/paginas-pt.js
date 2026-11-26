@@ -16,7 +16,7 @@
 // tiene traducción (_pt en especies.json, assets/i18n/pt.js); lo que no la
 // tiene (hábitat, alimentación...) no sale en estas páginas.
 
-import { DOMINIO, esc, documento, migasHtml, migasJsonLd, ctaPt, imagenOg, imagenOgRegion } from "./base.js";
+import { DOMINIO, esc, documento, migasHtml, migasJsonLd, ctaPt, ctaArriba, imagenOg, imagenOgRegion } from "./base.js";
 import {
   REGIONES_MAREAS, nombreCortoSpot, slugEspecie, especiesDeSpot, profundidadDeSpot,
   camarasPublicasDeSpot, rioDeSpot, spotsCercanos, regionEspeciesDeSpot,
@@ -233,6 +233,7 @@ export function paginaSpotPt(spot, todos, d) {
 <h1>Pesca em ${esc(nombre)}</h1>
 <p class="intro">${esc(intro)}</p>
 ${bloqueHoyPt(condicionesPt(spotPrev), indice, spot, especiesDatos)}
+${ctaArriba("pt", "spot")}
 <section aria-labelledby="t-especies"><h2 id="t-especies">O que se pesca em ${esc(nombre)}</h2>
 <p class="nota">Espécies de ${esc(NOMBRE_REGION_PT[especies.region] || "a zona")} com a sua época e a modalidade em que se pescam. Em destaque, as de ${esc(mesLargoPt(mes))}.</p>
 ${tablaEspeciesPt(especies.porModalidad, especiesDatos)}</section>

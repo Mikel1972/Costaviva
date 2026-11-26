@@ -885,8 +885,12 @@ async function enviarAlta() {
     // 30 min) — no hace falta avisar nada desde aquí. El popup de
     // bienvenida tampoco necesita nada de aquí, ver index.html.
     mostrarPantalla(cajaRegistroEsperando);
+    // Embudo (2026-11-26, assets/js/visita.js): alta enviada.
+    window.cvPaso?.("alta_ok");
   }
 }
+// Embudo: empieza a escribir el email del alta (una vez por visita).
+document.getElementById("emailRegistro").addEventListener("input", () => window.cvPaso?.("alta"), { once: true });
 </script>
 
 </body>
