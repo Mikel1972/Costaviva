@@ -11,7 +11,11 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+import { readFileSync } from "node:fs";
 import { prepararContexto, abrir } from "./web.mjs";
+import { zonaDePais, tablaZona } from "../../functions/_lib/precios.js";
+
+const CONFIG_PRECIOS = JSON.parse(readFileSync(new URL("../../functions/_lib/precios-zonas.json", import.meta.url), "utf8"));
 
 const MOVIL = { viewport: { width: 390, height: 800 }, hasTouch: true, isMobile: true };
 const PC = { viewport: { width: 1280, height: 800 } };
@@ -411,6 +415,46 @@ async function probarTusDatos(perfil, marcadaEsperada, motivo) {
   assert.deepEqual(errores, []);
   await ctx.close();
 }
+
+// País de residencia (2026-11-25): el selector sale relleno con el país de
+// la conexión y, al cambiarlo, los precios son los de la zona de ese país.
+// /precios-zona se contesta con la lógica de verdad (zonaDePais + tablaZona).
+test("móvil: Mi suscripción pide el país de residencia y con NZ los precios pasan a NZD", async () => {
+  const ctx = await navegador.newContext({ locale: "es-ES", ...MOVIL, deviceScaleFactor: 2 });
+  await prepararContexto(ctx);
+  const pedidos = [];
+  await ctx.route("https://costaviva.test/precios-zona**", (route) => {
+    const pais = new URL(route.request().url()).searchParams.get("pais");
+    pedidos.push(pais);
+    const zona = zonaDePais(CONFIG_PRECIOS, pais || "ES");
+    return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({
+      pais: pais || "ES", pais_ip: "ES", ...tablaZona(CONFIG_PRECIOS, zona.id), regiones_mundial: ["es", "nz"],
+      plazas_fundador_total: CONFIG_PRECIOS.plazas_fundador, cobro_activo: true, bizum_activo: (pais || "ES") === "ES",
+    }) });
+  });
+  const { pagina, errores } = await abrir(ctx, "/suscripcion");
+  const select = pagina.locator("#paisResidencia");
+  await select.waitFor({ state: "visible", timeout: 15000 });
+  await pagina.waitForFunction(() => document.getElementById("precioAnual").textContent.length > 0);
+  assert.equal(await select.inputValue(), "ES", "relleno con el país de la conexión");
+  assert.ok(await pagina.locator("#paisResidencia option").count() > 240);
+  assert.match(await pagina.locator(".nota-residencia").textContent(), /El precio depende de tu país de residencia/);
+  assert.match(await pagina.locator("#precioAnual").textContent(), /€/);
+  assert.equal(await pagina.locator("#planAnual .btn-bizum").isVisible(), true, "Bizum con España");
+  if (process.env.CAPTURA_RESIDENCIA) {
+    await pagina.locator("#comprobandoAcceso").waitFor({ state: "detached", timeout: 10000 });
+    await pagina.locator("#bloqueResidencia").scrollIntoViewIfNeeded();
+    await pagina.evaluate(() => window.scrollBy(0, -60));
+    await pagina.screenshot({ path: process.env.CAPTURA_RESIDENCIA });
+  }
+  await select.selectOption("NZ");
+  await pagina.waitForFunction(() => /NZ/.test(document.getElementById("precioAnual").textContent));
+  assert.match(await pagina.locator("#precioAnual").textContent(), /NZ\$|NZD/);
+  assert.equal(await pagina.locator("#planAnual .btn-bizum").isVisible(), false, "sin Bizum fuera de España");
+  assert.deepEqual(pedidos, [null, "NZ"]);
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
 
 test("Mi suscripción: «Tus datos» deja oponerse a las estadísticas anónimas", async () => {
   await probarTusDatos({ consiente_uso_datos_capturas: true, aviso_condiciones_en: null, oposicion_estadisticas_en: null }, true, "por defecto, activado");

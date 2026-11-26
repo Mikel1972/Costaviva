@@ -386,8 +386,8 @@ test("España en vídeo: el robot de posts lanza el reel de la serie del día si
   const post = leer(".github/workflows/robot-marketing-instagram.yml");
   assert.match(post, /actions: write/);
   assert.match(post, /gh workflow run robot-reel-instagram\.yml --ref "\$\{GITHUB_REF_NAME\}" -f fecha="\$FECHA" -f tipo="\$TIPO" -f mercado=es/);
-  // Serie de cada día (2026-11-19): martes normas, jueves peces, viernes finde.
-  assert.match(post, /const SERIE = \{ especie: "normas", funcion: "peces", condiciones: "finde" \}/);
+  // Serie de cada día (2026-11-19; jueves región desde el 2026-11-26): martes normas, jueves región, viernes finde.
+  assert.match(post, /const SERIE = \{ especie: "normas", funcion: "region", condiciones: "finde" \}/);
   // Solo España y sin tipo forzado; NZ y los tipos a mano siguen con el post.
   assert.match(post, /if \[ "\$MERCADO" != "es" \] \|\| \[ -n "\$TIPO_PIEZA" \]; then exit 0; fi/);
   // El respaldo de una hora después no repite el reel (caso real: dos reels
@@ -532,4 +532,33 @@ test("reel de Galicia (2026-11-22): especies y meses de especies.json, como la p
   assert.equal(p.tarjetas[0].val, `${x.ahora.length} especies`);
   assert.equal(p.tarjetas[1].val, `${x.total} especies`);
   assert.match(readFileSync(".github/workflows/robot-reel-instagram.yml", "utf8"), /"\$TIPO_REEL" = "galicia" \]; then node reel-galicia\.mjs/);
+});
+
+test("serie región (2026-11-26): ¿qué se pesca en <región> este mes?, con datos de especies.json", async () => {
+  const R = await import("../scripts/marketing/reel-region.mjs");
+  const { REGIONES } = await import("../functions/mareas/_regiones.js");
+  // Las 8 regiones de /spots/region, cada una una vez.
+  assert.deepEqual([...R.ROTACION_REGIONES.map((r) => r.slug)].sort(), REGIONES.map((r) => r.slug).sort());
+  assert.equal(R.siguienteRegion(undefined).slug, "cantabria");
+  assert.equal(R.siguienteRegion("galicia").slug, "cantabria");
+  assert.equal(R.siguienteRegion("cantabria").slug, "mediterraneo");
+  const especies = JSON.parse(readFileSync("assets/datos/especies.json", "utf8"));
+  for (const r of R.ROTACION_REGIONES) {
+    const d = R.pecesDeRegion(especies, r.slug, 12);
+    assert.ok(d.spots > 0 && d.total > 0 && d.ahora.length > 0, r.slug);
+    const p = R.piezaRegion("2026-12-03", r, d);
+    assert.equal(p.gancho, `¿Qué se pesca en ${r.en} en diciembre?`);
+    assert.equal(p.tarjetas[2].val, `${d.spots} spots`);
+    const c = R.captionRegion("2026-12-03", r, d, "Vídeo: x");
+    assert.match(c, new RegExp(`costaviva\\.org/spots/region/${r.slug}`));
+    assert.ok(!/\(PT\)|undefined/.test(c + JSON.stringify(p)), r.slug);
+  }
+  // Galicia da lo mismo que el reel de Galicia de siempre.
+  const G = await import("../scripts/marketing/reel-galicia.mjs");
+  const g = G.pecesDeGalicia(especies, 11);
+  const rg = R.pecesDeRegion(especies, "galicia", 11);
+  assert.deepEqual([rg.total, rg.spots, rg.ahora], [g.total, g.spots, g.ahora]);
+  const reel = readFileSync(".github/workflows/robot-reel-instagram.yml", "utf8");
+  assert.match(reel, /"\$TIPO_REEL" = "region" \]; then node reel-region\.mjs/);
+  assert.match(reel, /rotacion-reels-region\.json/);
 });

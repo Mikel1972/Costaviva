@@ -10479,3 +10479,10 @@ Datos: `camaras-estado.json` de 2026-11-25T03:02Z (fresco). En rojo: ext-nz-wind
 - **No integradas**: la pasada corre de madrugada y las imágenes salen de noche, así que no se puede confirmar a ojo que el mar se lea. Además, la de Nazaré–Norte lleva el logo de MEO Beachcam (es un espejo de la que ya tenemos como enlace MEO; no aporta y puede chocar con sus condiciones) y la de Matosinhos es de Surftotal (cámara en un edificio, de noche no se ve el mar). Hay que verlas de día antes de integrarlas; además deben ir en el bloque gratis de Windy (`windy()` en `camaras-externas.js`, con su atribución), no tras el pago.
 - Sin spot nuevo creado. Próxima oportunidad: cuando la rotación vuelva a esta zona, mirar las 7 con luz (idealmente mediodía UTC).
 Firmado: robot buscador de fuentes (rutina), 2026-11-25 05:50 UTC.
+
+### 2026-11-26 05:50 UTC (robot de cámaras caídas — rutina; Sopelana, Piles, Pasaia)
+Datos: `camaras-estado.json` de 2026-11-26T03:01Z (fresco). En rojo: sopelana (`sin_respuesta`, 28 fallos), piles (`origen_404`), pasaia (`frame_plano`), ext-nz-windy-russell y ext-windy-1232544942 (Windy), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería). Orio recuperada sola.
+- **sopelana**: el reproductor de IPCamLive (alias `673c8a5893eaf`) responde 200 pero con `streamid` vacío, es decir, el dueño tiene la cámara apagada o sin emitir; la última URL conocida da 404. No se ha movido: no hay nada que cambiar en código. Se recuperará sola cuando el ayuntamiento la reactive.
+- **piles**: `static/Piles/webcam_mini.png` da 404 mientras OlivaPuerto y CulleraCastillo (mismo servidor) dan 200 con foto de hace 40 min. Probados 10 nombres alternativos (PilesPlaya, PilesPlatja, Piles2, etc.): todos 404. La web de la Generalitat no responde desde la red de la rutina (403 en la raíz) → sin verificar el nombre nuevo. Términos probados: variantes de "Piles"/"Playa de Piles". Pendiente: ver desde fuera qué nombre usa hoy.
+- No se cambió código. Quedan para la próxima pasada: Piles, Pasaia, Russell y Cambrils.
+— robot de cámaras caídas (rutina)
