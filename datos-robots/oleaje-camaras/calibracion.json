@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-26T11:26:52.258Z",
- "lineasHistorial": 13395,
+ "fecha": "2026-11-26T11:37:51.651Z",
+ "lineasHistorial": 13404,
  "etiquetas": 1415,
  "etiquetasClaude": 270,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.842,
+   "a": 2.8421,
    "p": 0.5,
-   "n": 1061,
+   "n": 1062,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.9829,
+   "a": 1.9827,
    "p": 0.5,
-   "n": 164,
+   "n": 165,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7543,
+   "a": 2.7495,
    "p": 0.5,
-   "n": 207,
+   "n": 208,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,12 +263,12 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.099
+   "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.6873,
+   "a": 2.6869,
    "p": 0.5,
-   "n": 554,
+   "n": 555,
    "nEtiquetas": 127,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -523,7 +523,7 @@
    "motivo": "239 etiquetas",
    "ruido": {
     "ruido": 0.539,
-    "pares": 730
+    "pares": 731
    }
   },
   "getaria": {
@@ -625,10 +625,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 49,
+   "n": 50,
    "suficiente": false,
-   "lineas": 0.038,
-   "cerca": 0.043
+   "lineas": 0.033,
+   "cerca": 0.049
   },
   "sopelana": {
    "n": 32,
