@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-26T11:07:43.066Z",
- "lineasHistorial": 13384,
+ "fecha": "2026-11-26T11:26:52.258Z",
+ "lineasHistorial": 13395,
  "etiquetas": 1415,
  "etiquetasClaude": 270,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.8407,
+   "a": 2.842,
    "p": 0.5,
-   "n": 1060,
+   "n": 1061,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -129,9 +129,9 @@
    "correlacion": 0.124
   },
   "deba/rompiente": {
-   "a": 3.0987,
+   "a": 3.0969,
    "p": 0.5,
-   "n": 361,
+   "n": 362,
    "nEtiquetas": 74,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -206,9 +206,9 @@
    "correlacion": -0.011
   },
   "sopelana/principal": {
-   "a": 2.7258,
+   "a": 2.7211,
    "p": 0.5,
-   "n": 223,
+   "n": 224,
    "nEtiquetas": 35,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -228,7 +228,7 @@
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.285
+   "correlacion": 0.284
   },
   "berria/principal": {
    "a": 74.2857,
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7615,
+   "a": 2.7543,
    "p": 0.5,
-   "n": 206,
+   "n": 207,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,7 +263,7 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.1
+   "correlacion": 0.099
   },
   "berria/dinamico": {
    "a": 2.6873,
@@ -523,7 +523,7 @@
    "motivo": "239 etiquetas",
    "ruido": {
     "ruido": 0.539,
-    "pares": 729
+    "pares": 730
    }
   },
   "getaria": {
@@ -594,8 +594,8 @@
    "sustituye": true,
    "motivo": "53 etiquetas",
    "ruido": {
-    "ruido": 0.553,
-    "pares": 84
+    "ruido": 0.585,
+    "pares": 85
    }
   },
   "nz-napier": {
@@ -637,10 +637,10 @@
    "cerca": 0.15
   },
   "castrourdiales": {
-   "n": 12,
+   "n": 13,
    "suficiente": false,
-   "lineas": 0.151,
-   "cerca": 0.687
+   "lineas": 0.149,
+   "cerca": 0.584
   },
   "hondarribia": {
    "n": 15,
@@ -685,10 +685,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 18,
+   "n": 19,
    "suficiente": false,
-   "lineas": -0.032,
-   "cerca": -0.561
+   "lineas": 0.003,
+   "cerca": -0.543
   },
   "donostia": {
    "n": 1,
