@@ -212,3 +212,35 @@ export function zonaOleaje(spot, celdaLat, celdaLon) {
     celdaModelo: km === null ? null : { lat: Number(celdaLat), lon: Number(celdaLon), distanciaKm: +km.toFixed(1) },
   };
 }
+
+// ---------------------------------------------------------------------------
+// MAR ABIERTO QUE SE ENSEÑA en spots cuya celda del modelo cae más fuera que
+// la celda con la que se calibró el ×1,38 de Gipuzkoa (2026-11-26, Mikel:
+// mar grande del 25/11). Hondarribia: su celda (43.458, -1.792) está a
+// ~9 km mar adentro, frente a Hendaia, más expuesta que la de Donostia/Pasaia
+// (fila 43.375). El 25/11 a las 18 h enseñaba 5,3–5,6 m de mar abierto con
+// Donostia y Pasaia en 3,9–4,2 y la boya Pasaia II en 2,8 m.
+// Medido en oleaje_camara_lecturas (437 horas con las dos cámaras, hasta el
+// 2026-11-26): celda de Hondarribia / celda de Donostia, mediana 1,333,
+// media 1,31 (rango 0,97-1,65). Factor = 1/1,333 = 0,75.
+// SOLO cambia el número de "mar abierto" que se enseña: se aplica al final,
+// después de las cámaras y de la regla de vecinos, que siguen trabajando con
+// el valor de su propia celda (con el que aprendieron sus coeficientes). La
+// ola en la orilla (`altura`) no se toca.
+export const AJUSTE_MAR_ABIERTO_MOSTRADO = {
+  hondarribia: { factor: 0.75, referencia: "celda de Donostia/Pasaia", n: 437, mediana: 1.333 },
+};
+
+const escalarRango = (r, f) => (Array.isArray(r) ? r.map((x) => (Number.isFinite(Number(x)) ? +(Number(x) * f).toFixed(1) : x)) : r);
+
+export function ajustarMarAbiertoMostrado(spots, tabla = AJUSTE_MAR_ABIERTO_MOSTRADO) {
+  return (spots || []).map((s) => {
+    const a = s && tabla[s.slug];
+    if (!a || !Array.isArray(s.bloques)) return s;
+    return {
+      ...s,
+      bloques: s.bloques.map((b) => (b && Array.isArray(b.alturaMarAbierto) ? { ...b, alturaMarAbierto: escalarRango(b.alturaMarAbierto, a.factor) } : b)),
+      zonaOleaje: s.zonaOleaje ? { ...s.zonaOleaje, ajusteMarAbierto: { factor: a.factor, referencia: a.referencia } } : s.zonaOleaje,
+    };
+  });
+}

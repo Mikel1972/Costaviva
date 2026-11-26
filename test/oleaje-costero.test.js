@@ -189,3 +189,20 @@ test("margen de la ola: como mucho 0,3 m alrededor del centro (Mikel, 2026-11-20
   assert.deepEqual(s.altura, [2.4, 2.7]);
   assert.deepEqual(s.bloques[0].altura, [0.9, 1.2]);
 });
+
+test("mar abierto enseñado: Hondarribia ×0,75 (celda más expuesta), orilla intacta, el resto igual", async () => {
+  const { ajustarMarAbiertoMostrado, AJUSTE_MAR_ABIERTO_MOSTRADO } = await import("../functions/_lib/oleaje-costero.js");
+  assert.equal(AJUSTE_MAR_ABIERTO_MOSTRADO.hondarribia.factor, 0.75);
+  const spots = [
+    { slug: "hondarribia", zonaOleaje: { tipo: "abrigada" }, bloques: [{ altura: [0.4, 0.5], alturaMarAbierto: [5.3, 5.6] }] },
+    { slug: "donostia", bloques: [{ altura: [0.7, 0.8], alturaMarAbierto: [3.9, 4.2] }] },
+  ];
+  const [h, d] = ajustarMarAbiertoMostrado(spots);
+  assert.deepEqual(h.bloques[0].alturaMarAbierto, [4, 4.2]);
+  assert.deepEqual(h.bloques[0].altura, [0.4, 0.5]);
+  assert.equal(h.zonaOleaje.ajusteMarAbierto.factor, 0.75);
+  assert.equal(d, spots[1]);
+  // Se aplica al final de /prevision (después de cámaras y vecinos).
+  const src = readFileSync("functions/prevision.js", "utf8");
+  assert.match(src, /ajustarMarAbiertoMostrado\(acotarMargenesSpots\(revisados\.spots\)\)/);
+});
