@@ -16916,7 +16916,16 @@
      "verificado": false,
      "nota": "Freza prolongada (Coromandel, Kawhia–Manukau, MPI) sin meses concretos citables: sin meses."
     },
-    "por_region": {}
+    "por_region": {
+          "nz_auckland_kermadec": {
+            "meses": [12, 1, 2, 3, 4],
+            "fuentes": ["fnz_plenary_2025"],
+            "verificado": false,
+            "nota": "De diciembre a abril frente a la costa noreste (MPI, Plenary, capítulo JDO: «spawning occurring between December and April off the northeast coast»).",
+            "nota_en": "December to April off the north-east coast (MPI, Plenary, JDO chapter).",
+            "nota_pt": "De dezembro a abril ao largo da costa nordeste (MPI, Plenary, capítulo JDO)."
+          }
+        }
    },
    "temperatura_agua": {
     "rango": null,
