@@ -70,6 +70,13 @@
       "titulo": "Botón a la app arriba, junto al dato de hoy, en fichas de spot (es/pt/en) y mareas NZ; se miden clic, alta empezada y alta enviada",
       "pr": [],
       "paginas": ["^/spots/", "^/pt/spots/", "^/en/spots/", "^/en/tides/"]
+    },
+    {
+      "id": "nz-profundidad-camaras",
+      "fecha": "2026-11-26",
+      "titulo": "Fichas de spot NZ (en/es/pt): profundidad GEBCO, cámaras cercanas (enlace) y botón arriba; páginas de zona: especies que empiezan o terminan temporada",
+      "pr": [],
+      "paginas": ["^/en/spots/", "^/spots/nz-", "^/pt/spots/nz-", "^/spots/region/", "^/pt/spots/region/", "^/en/spots/region/", "^/mareas/nz-", "^/pt/mareas/nz-"]
     }
   ]
 }

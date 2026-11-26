@@ -32,13 +32,15 @@ export const previsionNZ = (context) => pedirConLimite(new URL("/prevision?regio
 const delSpot = (prev, spot) => prev?.spots?.find((s) => s.slug === spot.slug && !s.error) || null;
 
 export async function datosSpotNZ(context, spot) {
-  const [especiesDatos, prev, reservas] = await Promise.all([
+  const [especiesDatos, prev, reservas, profundidad] = await Promise.all([
     cargarEspeciesNZ(context),
     previsionNZ(context),
     leerPrivado(context, "/datos/nz/reservas-marinas-doc.geojson"),
+    // Profundidad GEBCO (2026-11-26, extra-nz.js).
+    cargarJson(context, "/assets/datos/profundidad-spots.json").catch(() => null),
   ]);
   const spotPrev = delSpot(prev, spot);
-  return { especiesDatos, spotPrev, reservas: reservasCercanas(spot, reservas), mes: mesNZ(), completa: Boolean(spotPrev) };
+  return { especiesDatos, spotPrev, reservas: reservasCercanas(spot, reservas), profundidad, mes: mesNZ(), completa: Boolean(spotPrev) };
 }
 
 export async function datosMareaNZ(context, spot, ahora = Date.now()) {
