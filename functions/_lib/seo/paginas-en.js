@@ -22,6 +22,7 @@
 import { preguntasSpotsRegion, preguntasMareasRegion, faqHtml, faqLd } from "./faq-region.js";
 import { rutaIdioma } from "./idiomas.js";
 import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg, ctaArriba } from "./base.js";
+import { bloqueProfundidadNZ, bloqueCamarasNZ, bloqueCambiosTemporadaNZ } from "./extra-nz.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { PUEBLOS_NZ } from "../nz/pueblos-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
@@ -215,7 +216,7 @@ ${lista.map((e) => `<tr${e.ahora && e.meses.length < 12 ? ' class="ahora"' : ""}
 const kmTexto = (km) => String(km < 10 ? Math.round(km * 10) / 10 : Math.round(km));
 
 export function paginaSpotNZ(spot, todos, d) {
-  const { especiesDatos, spotPrev, reservas, mes } = d;
+  const { especiesDatos, spotPrev, reservas, profundidad, mes } = d;
   const zona = zonaDeSpotNZ(spot);
   const porModalidad = especiesDeSpotNZ(especiesDatos, spot, mes);
   const intro = introSpotNZ(spot, porModalidad, mes);
@@ -241,6 +242,8 @@ ${bloqueReservas(reservas)}
 <section aria-labelledby="t-especies"><h2 id="t-especies">What you can catch at ${esc(spot.nombre)}</h2>
 <p class="nota">Species of the MPI ${esc(AREAS_MPI[spot.region]?.nombre || "")} area and their season. Highlighted: in season in ${esc(mesLargoEn(mes))}.</p>
 ${tablaEspeciesEn(porModalidad)}</section>
+${bloqueProfundidadNZ(profundidad, spot.slug, "en")}
+${bloqueCamarasNZ(spot.slug, "en")}
 ${bloqueNormativa(spot.region)}
 ${ctaEn(`Fish smarter at ${spot.nombre}`)}
 <section aria-labelledby="t-cerca"><h2 id="t-cerca">Nearby spots</h2>
@@ -296,6 +299,7 @@ export function paginaZonaSpotsNZ(zona, todos, especiesDatos, mes) {
 ${listaSpotsEn(del, "/en/spots")}
 <section aria-labelledby="t-temp"><h2 id="t-temp">In season in ${esc(mesLargoEn(mes))}</h2>
 <ul class="chips">${deTemporada.map((e) => `<li><a href="/en/species/${esc(e.slug)}">${esc(e.nombre)}</a></li>`).join("")}</ul></section>
+${bloqueCambiosTemporadaNZ({ especies: especiesNZ(especiesDatos), areas, mes, mesTexto: mesLargoEn(mes), idioma: "en", enlace: (e) => ({ href: `/en/species/${slugEspecie(e.id)}`, nombre: nombreEn(e) }) })}
 ${[...areas].map((a) => bloqueNormativa(a)).slice(0, 1).join("")}
 ${faqHtml(preguntas, "en")}
 ${ctaEn()}

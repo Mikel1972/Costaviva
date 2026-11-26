@@ -12,7 +12,8 @@
 // que exige su licencia) y nada interno. Los nombres propios (zonas, áreas de
 // MPI, puertos) se quedan como en Nueva Zelanda.
 import { preguntasSpotsRegion, preguntasMareasRegion, faqHtml, faqLd } from "./faq-region.js";
-import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, ctaPt, imagenOg } from "./base.js";
+import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, ctaPt, ctaArriba, imagenOg } from "./base.js";
+import { bloqueProfundidadNZ, bloqueCamarasNZ, bloqueCambiosTemporadaNZ } from "./extra-nz.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
 import { ATRIBUCION_LINZ, AVISO_LINZ } from "../nz/mareas-linz.js";
@@ -256,7 +257,7 @@ ${ls.map((e) => `<tr${e.ahora && e.meses.length < 12 ? ' class="ahora"' : ""}><t
   }
 
   function paginaSpot(spot, todos, d) {
-    const { especiesDatos, spotPrev, reservas, mes } = d;
+    const { especiesDatos, spotPrev, reservas, profundidad, mes } = d;
     const S = T.spot;
     const zona = zonaT(zonaDeSpotNZ(spot));
     const porModalidad = especiesDeSpot(especiesDatos, spot, mes);
@@ -280,10 +281,13 @@ ${ls.map((e) => `<tr${e.ahora && e.meses.length < 12 ? ' class="ahora"' : ""}><t
 <h1>${esc(S.h1(spot.nombre))}</h1>
 <p class="intro">${esc(intro)}</p>
 ${condicionesHoy(spotPrev, spot)}
+${ctaArriba(idioma, "spot")}
 ${bloqueReservas(reservas)}
 <section aria-labelledby="t-especies"><h2 id="t-especies">${esc(S.queSePesca(spot.nombre))}</h2>
 <p class="nota">${esc(S.notaEsp(area || "", mesLargo(mes)))}</p>
 ${tablaEspecies(porModalidad)}</section>
+${bloqueProfundidadNZ(profundidad, spot.slug, idioma)}
+${bloqueCamarasNZ(spot.slug, idioma)}
 ${bloqueNormativa(spot.region)}
 ${T.cta(S.cta(spot.nombre))}
 <section aria-labelledby="t-cerca"><h2 id="t-cerca">${S.cercanos}</h2>
@@ -314,6 +318,7 @@ ${zona ? `<p><a href="${esc(rZonaSpots(zona.slug))}">${esc(S.todos(zona.nombre))
 ${listaSpots(del, rSpot)}
 <section aria-labelledby="t-temp"><h2 id="t-temp">${esc(Z.temporada(mesLargo(mes)))}</h2>
 <ul class="chips">${deTemporada.map((e) => `<li><a href="${esc(rEspecie(e.slug))}">${esc(e.nombre)}</a></li>`).join("")}</ul></section>
+${bloqueCambiosTemporadaNZ({ especies: especiesNZ(especiesDatos), areas, mes, mesTexto: mesLargo(mes), idioma, enlace: (e) => ({ href: rEspecie(slugEspecie(e.id)), nombre: nombreEsp(e) }) })}
 ${[...areas].map((a) => bloqueNormativa(a)).slice(0, 1).join("")}
 ${faqHtml(preguntas, idioma)}
 ${T.cta()}
@@ -352,6 +357,7 @@ ${m ? `<section class="tarjeta hoy" aria-labelledby="t-ahora"><h2 id="t-ahora">$
 <div class="datos"><div class="dato"><span class="dato-etq">${M.ahoraEtq}</span><span class="dato-val">${esc(String(m.altura))} m ${m.tendencia === "subiendo" ? T.marea.sube : m.tendencia === "bajando" ? T.marea.baja : ""}</span></div>
 ${pleamar ? `<div class="dato"><span class="dato-etq">${M.sigPl}</span><span class="dato-val">${esc(textoEvento(pleamar))}</span></div>` : ""}
 ${bajamar ? `<div class="dato"><span class="dato-etq">${M.sigBj}</span><span class="dato-val">${esc(textoEvento(bajamar))}</span></div>` : ""}</div></section>` : ""}
+${ctaArriba(idioma, "marea")}
 <section aria-labelledby="t-tabla"><h2 id="t-tabla">${M.tabla}</h2>
 ${tabla}
 ${notaLinz(m?.puerto || (spot.puerto_linz ? { ...spot.puerto_linz, metodo: spot.puerto_linz.tabla ? "tabla" : "secundario" } : null))}</section>
