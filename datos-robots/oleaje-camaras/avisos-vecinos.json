@@ -1,31 +1,7 @@
 {
- "actualizado": "2026-11-26T09:39:54.763Z",
+ "actualizado": "2026-11-26T10:10:11.643Z",
  "dias": 7,
  "repetidos": [
-  {
-   "clave": "mundaka",
-   "alto": 3,
-   "bajo": 0,
-   "spots": [
-    "mundaka"
-   ]
-  },
-  {
-   "clave": "orio",
-   "alto": 5,
-   "bajo": 4,
-   "spots": [
-    "orio"
-   ]
-  },
-  {
-   "clave": "hondarribia",
-   "alto": 5,
-   "bajo": 6,
-   "spots": [
-    "hondarribia"
-   ]
-  },
   {
    "clave": "sopelana",
    "alto": 3,
@@ -40,6 +16,22 @@
    "bajo": 0,
    "spots": [
     "bakio"
+   ]
+  },
+  {
+   "clave": "orio",
+   "alto": 4,
+   "bajo": 3,
+   "spots": [
+    "orio"
+   ]
+  },
+  {
+   "clave": "hondarribia",
+   "alto": 4,
+   "bajo": 6,
+   "spots": [
+    "hondarribia"
    ]
   }
  ],
