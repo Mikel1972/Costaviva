@@ -1428,6 +1428,15 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   caída es experimental y SOLO con la app abierta y la pantalla visible;
   nada de "te salva la vida" ni segundo plano. El test lo comprueba.
 
+- **Reels de pregunta curiosa (2026-11-26, Mikel: «lo de las preguntas es lo
+  que mejor funciona» → «sí, cámbialo»)**. Alcance real a 48 h: normas-lubina
+  146, calamar 134, galicia 126; los 13 reels de peces de un spot, media 75.
+  Semana de España: martes normas (`reel-normas.mjs`), **jueves «¿Qué se pesca
+  en <región> en <mes>?»** (`reel-region.mjs`, antes peces; rota por las 8
+  regiones de `/spots/region` en `rotacion-reels-region.json`, solo datos de
+  `especies.json`, mismo cálculo que la página de la región), viernes finde y
+  sábado peces. `SERIE` en `robot-marketing-instagram.yml`. Revisar con las
+  métricas a las 3 semanas (hasta el 17/12): si no se mantiene, volver a peces.
 - **Reel de peces (2026-10-18, pedido de Mikel)**: `scripts/marketing/reel-peces.mjs`
   + `plantillas/reel-peces.html`. Vídeo de peces de Pexels (`clips/stock/pexels-peces-arrecife`,
   lo eligió Mikel; licencia en su `.licencia.json`) de fondo los 13 s y encima datos
