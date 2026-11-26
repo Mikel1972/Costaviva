@@ -107,6 +107,12 @@
   label.checkbox.legal[hidden], .nota-legal[hidden] { display: none; }
   .plan.confirmar { border: 2px solid var(--acento); }
   .nota-prueba-gratis { font-weight: 600; color: var(--tinta); }
+  /* País de residencia (2026-11-25): obligatorio antes de pagar; decide el precio. */
+  .residencia { border: 1px solid var(--linea); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .residencia label { display: block; font-weight: 700; font-size: 13px; margin: 0 0 6px; }
+  .residencia select { width: 100%; padding: 9px 10px; border: 1px solid var(--linea); border-radius: 7px; font-size: 14px; color: var(--tinta); background: var(--superficie-2); font-family: var(--f-texto); }
+  .residencia select:invalid { border-color: var(--acento); }
+  .residencia .nota-residencia { font-size: 12px; color: var(--tinta-2); margin: 8px 0 0; line-height: 1.4; }
   .confirmando { text-align: center; padding: 20px 0; font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
@@ -169,6 +175,17 @@
        detectado; el precio final lo confirma el pago de Stripe. -->
   <div id="bloquePaywall" style="display:none;">
     <p class="nota-legal nota-prueba-gratis" data-i18n="prec.prueba_antes">Prueba 14 días gratis antes de pagar: cada cuenta nueva tiene 14 días de Premium sin tarjeta.</p>
+    <!-- País de residencia (2026-11-25, aprobado por Mikel): obligatorio antes
+         de pagar con tarjeta o Bizum. Sale relleno con el país de la conexión
+         (/precios-zona: pais_ip); al cambiarlo, los precios son los de su
+         zona (/precios-zona?pais=XX). Bizum solo con España. -->
+    <div class="residencia" id="bloqueResidencia">
+      <label for="paisResidencia" data-i18n="prec.pais_residencia">País de residencia</label>
+      <select id="paisResidencia" required autocomplete="country">
+        <option value="" data-i18n="prec.elige_pais">Elige tu país</option>
+      </select>
+      <p class="nota-residencia" data-i18n="prec.nota_residencia">El precio depende de tu país de residencia (impuestos y moneda locales).</p>
+    </div>
     <div class="plan plan-gratis">
       <p class="precio"><span data-i18n="prec.gratis">Gratis</span> <span class="badge-actual" id="badgeGratis" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
       <p class="detalle" data-i18n="prec.gratis_incluye">Mapa, mareas y condiciones básicas (ola, viento, temperatura del agua, nubes, lluvia y presión) en todas las regiones, y la actividad pesquera comercial de Global Fishing Watch. Sin anuncios.</p>
@@ -286,6 +303,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { enlaceAmigo, enlaceWhatsapp, mensajeParaCompartir, textoResumen, REGLAS } from "/assets/js/invitar-amigo.js";
 import { VERSION as VERSION_ACEPTACION, textoAceptacion, textoSiCerramos, idiomaAceptacion } from "/assets/js/consentimiento.js";
+import { opcionesPaises, paisResidenciaValido, motivoBizumResidencia } from "/assets/js/pais-residencia.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -321,6 +339,8 @@ async function iniciarCheckout(ambito, plan, metodo = "tarjeta") {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
     body: JSON.stringify({
       ambito, plan, idioma: I18n.idioma(),
+      // País de residencia declarado: el servidor lo exige y cobra por él.
+      pais_residencia: paisResidencia(),
       ...(metodo === "bizum" ? { metodo: "bizum" } : {}),
       // Aceptación expresa de la casilla: el servidor la exige y la guarda.
       aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: checkLegal.checked },
@@ -405,6 +425,14 @@ function pagoAbierto() {
   return planElegido?.metodo === "bizum" ? cobroAbierto && bizumAbierto : cobroAbierto;
 }
 function elegirPlan(ambito, plan, metodo = "tarjeta") {
+  // Sin país de residencia no se puede pagar: se pide primero.
+  if (!paisResidencia()) {
+    mostrarMensaje(I18n.t("prec.falta_pais"), "error");
+    selectPais.focus();
+    selectPais.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  mensajeEstadoEl.innerHTML = "";
   planElegido = { ambito, plan, metodo };
   const conBizum = metodo === "bizum";
   checkLegal.checked = false;
@@ -428,7 +456,7 @@ document.getElementById("bloquePaywall").addEventListener("click", (e) => {
   if (b) elegirPlan(b.dataset.ambito, b.dataset.plan, b.dataset.metodo === "bizum" ? "bizum" : "tarjeta");
 });
 btnPagar.addEventListener("click", () => {
-  if (!pagoAbierto() || !planElegido || !checkLegal.checked) return;
+  if (!pagoAbierto() || !planElegido || !checkLegal.checked || !paisResidencia()) return;
   btnPagar.disabled = true;
   iniciarCheckout(planElegido.ambito, planElegido.plan, planElegido.metodo);
 });
@@ -547,9 +575,10 @@ async function comprobarEstado() {
   }
 }
 
-async function cargarPrecios() {
+// Con país: la tabla de la zona de ese país; sin él, la de la conexión.
+async function cargarPrecios(pais = null) {
   try {
-    const r = await fetch("/precios-zona");
+    const r = await fetch(pais ? `/precios-zona?pais=${encodeURIComponent(pais)}` : "/precios-zona");
     return r.ok ? await r.json() : null;
   } catch (e) {
     return null;
@@ -569,7 +598,8 @@ async function plazasFundador() {
 function pintarPrecios(p, plazas) {
   preciosZona = p;
   cobroAbierto = p?.cobro_activo === true;
-  bizumAbierto = cobroAbierto && p?.bizum_activo === true;
+  // Bizum: solo con residencia en España (el servidor lo exige igual).
+  bizumAbierto = cobroAbierto && p?.bizum_activo === true && motivoBizumResidencia(paisResidencia()) === null;
   for (const b of document.querySelectorAll(".btn-bizum")) b.hidden = !bizumAbierto;
   if (!p) {
     mostrarMensaje(I18n.t("prec.sin_precios"), "error");
@@ -594,6 +624,40 @@ function pintarPrecios(p, plazas) {
   document.getElementById("mundialMensual").textContent = `${dinero(m.mensual, p.moneda)} ${I18n.t("prec.por_mes")}`;
   document.getElementById("mundialFundador").textContent = `${dinero(m.fundador_anual, p.moneda)} ${I18n.t("prec.por_ano")} · ${I18n.t("prec.fundador")}`;
 }
+
+// ---- País de residencia (2026-11-25) ----
+const selectPais = document.getElementById("paisResidencia");
+let plazasCache = null;
+let soloBizum = false;
+let peticionPrecios = 0;
+function paisResidencia() {
+  return paisResidenciaValido(selectPais.value);
+}
+// Lista de países en el idioma de la página (Intl.DisplayNames) y el país
+// de la conexión ya elegido, si se sabe.
+function rellenarPaises(paisInicial) {
+  const vacia = selectPais.querySelector('option[value=""]');
+  selectPais.replaceChildren(vacia, ...opcionesPaises(I18n.idioma()).map(({ codigo, nombre }) => {
+    const o = document.createElement("option");
+    o.value = codigo;
+    o.textContent = nombre;
+    return o;
+  }));
+  selectPais.value = paisResidenciaValido(paisInicial || "") || "";
+}
+selectPais.addEventListener("change", async () => {
+  // Plan elegido con otro país: se vuelve a elegir con los precios nuevos.
+  planElegido = null;
+  confirmarPago.hidden = true;
+  mensajeEstadoEl.innerHTML = "";
+  const pais = paisResidencia();
+  const n = ++peticionPrecios;
+  const p = await cargarPrecios(pais);
+  if (n !== peticionPrecios) return; // llegó otra elección después
+  pintarPrecios(p, plazasCache);
+  if (soloBizum) for (const b of document.querySelectorAll(".btn-comprar:not(.btn-bizum)")) b.hidden = true;
+  registrarEvento("elegir_pais_residencia", { zona: p?.zona || null });
+});
 
 async function esperarConfirmacion() {
   bloqueConfirmando.style.display = "block";
@@ -664,6 +728,9 @@ async function iniciar() {
   }
   if (!suscrito) {
     bloquePaywall.style.display = "block";
+    plazasCache = plazas;
+    soloBizum = conBizum;
+    rellenarPaises(precios?.pais_ip || precios?.pais);
     pintarPrecios(precios, plazas);
     // Con el año de Bizum en marcha solo se ofrece renovarlo con Bizum (una
     // suscripción con tarjeta empezaría hoy y solaparía el año pagado).

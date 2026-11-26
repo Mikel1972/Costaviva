@@ -101,7 +101,8 @@ test("aceptación: casilla sin marcar y botón de pago desactivado sin ella", ()
   assert.match(html, /<button type="button" id="btnPagar" disabled/);
   // pagoAbierto(): COBRO_ACTIVO y, con Bizum, también BIZUM_ACTIVO (2026-11-25).
   assert.match(html, /btnPagar\.disabled = !pagoAbierto\(\) \|\| !checkLegal\.checked \|\| !planElegido/);
-  assert.match(html, /if \(!pagoAbierto\(\) \|\| !planElegido \|\| !checkLegal\.checked\) return;/);
+  // Y, desde el 2026-11-25, con país de residencia elegido.
+  assert.match(html, /if \(!pagoAbierto\(\) \|\| !planElegido \|\| !checkLegal\.checked \|\| !paisResidencia\(\)\) return;/);
   assert.match(html, /return planElegido\?\.metodo === "bizum" \? cobroAbierto && bizumAbierto : cobroAbierto;/);
   assert.match(html, /textoAceptacion\(plan, IDIOMA_ACEPTACION, metodo\)/);
   assert.match(html, /data-i18n="prec.prueba_antes"/);

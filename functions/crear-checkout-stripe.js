@@ -4,11 +4,15 @@
 //
 // Precios por zonas y ámbitos (2026-10-11, ver CLAUDE.md "Cobro"): el
 // cliente solo manda { ambito: "regional"|"mundial", plan: "mensual"|"anual"|
-// "fundador_anual" } y aquí se decide el precio, nunca el price id crudo. La
-// zona sale del país de la petición (Cloudflare, request.cf.country); el
-// checkout pide la dirección de facturación, que manda para el IVA, y el
-// webhook la guarda y avisa en el log si su zona no coincide. Por
-// compatibilidad se aceptan aún "monthly"/"annual" (= regional).
+// "fundador_anual", pais_residencia: "ES" } y aquí se decide el precio, nunca
+// el price id crudo. Desde el 2026-11-25 (CLAUDE.md "País de residencia
+// obligatorio antes de pagar") la zona sale del PAÍS DE RESIDENCIA que
+// declara la persona (ISO-2, obligatorio: 400 "falta_pais_residencia"), no
+// del país de la conexión (request.cf.country), que se sigue guardando como
+// pais_ip. Los dos y la zona van en los metadatos del checkout. El checkout
+// pide además la dirección de facturación y el webhook avisa en el log si su
+// zona no coincide. Por compatibilidad se aceptan aún "monthly"/"annual"
+// (= regional).
 //
 // Sin trial de Stripe (decisión de Mikel, 2026-10-11, tras ver una factura
 // de 0,00 €): suscribirse termina la prueba gratis de la app y se cobra en
@@ -29,12 +33,14 @@
 // admite Bizum en suscripciones) por el importe del anual de la zona UE/EEE,
 // que el webhook convierte en 12 meses de Premium. Interruptor BIZUM_ACTIVO
 // ("true"; por defecto apagado: 403 "bizum_no_activo" sin tocar Stripe).
+// Solo para residentes en España (403 "bizum_solo_residentes_espana").
 
 import { motivoCodigoBf, MARCA_BF } from "./_lib/black-friday.js";
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
 import { zonaDePais, precioParaZona, leerPlan, cobroActivo } from "./_lib/precios.js";
 import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
 import { bizumActivo, precioBizum, tieneSuscripcionTarjeta } from "./_lib/bizum.js";
+import { leerPaisResidencia, motivoBizumResidencia } from "./_lib/pais-residencia.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 import STRIPE_IDS from "./_lib/stripe-ids.json";
 
@@ -215,6 +221,19 @@ export async function onRequestPost(context) {
   }
   const idiomaAcept = IDIOMAS_ACEPTACION.includes(aceptacion.idioma) ? aceptacion.idioma : idioma;
 
+  // País de residencia declarado (obligatorio): decide la zona y el precio.
+  const residencia = leerPaisResidencia(body);
+  if (residencia.error) {
+    const TXT_RES = {
+      es: { falta_pais_residencia: "Elige tu país de residencia antes de pagar.", pais_residencia_invalido: "El país de residencia no es válido." },
+      en: { falta_pais_residencia: "Please choose your country of residence before paying.", pais_residencia_invalido: "The country of residence isn't valid." },
+    };
+    return new Response(JSON.stringify({ error: TXT_RES[idioma][residencia.error], codigo: residencia.error }), {
+      status: 400, headers: { "content-type": "application/json" },
+    });
+  }
+  const paisResidencia = residencia.pais;
+
   // Pagar 1 año con Bizum: va por su propio camino (pago único).
   if (body?.metodo === "bizum") {
     if (!bizumActivo(env)) {
@@ -223,7 +242,7 @@ export async function onRequestPost(context) {
         codigo: "bizum_no_activo",
       }), { status: 403, headers: { "content-type": "application/json" } });
     }
-    return checkoutBizum({ request, stripeKey, env, token, body, pedido, idioma, idiomaAcept });
+    return checkoutBizum({ request, stripeKey, env, token, body, pedido, idioma, idiomaAcept, paisResidencia });
   }
 
   try {
@@ -231,10 +250,10 @@ export async function onRequestPost(context) {
     const clienteExistente = await clienteStripeExistente(token, usuario.id);
     const origen = new URL(request.url).origin;
 
-    // Zona por el país de la petición (Cloudflare). La facturación la
-    // confirma el propio checkout (dirección obligatoria).
+    // Zona por el país de residencia declarado. El de la conexión
+    // (Cloudflare) solo se guarda, como una prueba más para el IVA.
     const paisIp = String(request.cf?.country || request.headers.get("CF-IPCountry") || "").toUpperCase();
-    const zona = zonaDePais(CONFIG_PRECIOS, paisIp);
+    const zona = zonaDePais(CONFIG_PRECIOS, paisResidencia);
     const precio = precioParaZona(CONFIG_PRECIOS, zona.id, pedido.ambito, pedido.plan);
     const esFundador = pedido.plan === "fundador_anual";
     if (esFundador) {
@@ -285,14 +304,14 @@ export async function onRequestPost(context) {
     }
     if (env.STRIPE_TAX_AUTOMATICO === "1") params.append("automatic_tax[enabled]", "true");
     const datosPlan = {
-      zona: zona.id, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: pedido.plan,
+      zona: zona.id, pais_residencia: paisResidencia, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: pedido.plan,
       region_contenido: regionContenido, fundador: String(esFundador), lookup_key: precio.lookup_key,
       aceptacion_version: VERSION_ACEPTACION, aceptacion_idioma: idiomaAcept,
       aceptacion_fecha: new Date().toISOString(), idioma,
     };
     await guardarAceptacion(token, usuario.id, {
       version: VERSION_ACEPTACION, idioma: idiomaAcept, plan: pedido.plan, ambito: pedido.ambito,
-      zona: zona.id, fecha: datosPlan.aceptacion_fecha,
+      zona: zona.id, pais_residencia: paisResidencia, fecha: datosPlan.aceptacion_fecha,
     });
     if (conBf) datosPlan.black_friday = MARCA_BF;
     for (const [k, v] of Object.entries(datosPlan)) {
@@ -435,17 +454,21 @@ async function filaSuscripcion(token, userId) {
 }
 
 const TXT_BIZUM = {
-  es: { ya_suscrito_tarjeta: "Ya tienes Premium con tarjeta. Puedes gestionarlo desde Mi suscripción.", bizum_sin_codigo: "Los códigos de descuento se usan con el pago con tarjeta.", bizum_solo_anual: "Con Bizum se paga el plan anual.", bizum_solo_espana: "El pago con Bizum está disponible en España.", bizum_importe: MENSAJE_GENERICO, plan_invalido: "Plan no válido." },
-  en: { ya_suscrito_tarjeta: "You already have Premium by card. You can manage it from My subscription.", bizum_sin_codigo: "Discount codes work with card payments.", bizum_solo_anual: "Bizum is for the annual plan.", bizum_solo_espana: "Bizum payments are available in Spain.", bizum_importe: "We couldn't open the payment right now. Please try again in a few minutes.", plan_invalido: "Invalid plan." },
+  es: { ya_suscrito_tarjeta: "Ya tienes Premium con tarjeta. Puedes gestionarlo desde Mi suscripción.", bizum_sin_codigo: "Los códigos de descuento se usan con el pago con tarjeta.", bizum_solo_anual: "Con Bizum se paga el plan anual.", bizum_solo_espana: "El pago con Bizum está disponible en España.", bizum_solo_residentes_espana: "El pago con Bizum es para residentes en España. Puedes pagar con tarjeta.", bizum_importe: MENSAJE_GENERICO, plan_invalido: "Plan no válido." },
+  en: { ya_suscrito_tarjeta: "You already have Premium by card. You can manage it from My subscription.", bizum_sin_codigo: "Discount codes work with card payments.", bizum_solo_anual: "Bizum is for the annual plan.", bizum_solo_espana: "Bizum payments are available in Spain.", bizum_solo_residentes_espana: "Bizum is for residents of Spain. You can pay by card.", bizum_importe: "We couldn't open the payment right now. Please try again in a few minutes.", plan_invalido: "Invalid plan." },
 };
 
-async function checkoutBizum({ request, stripeKey, env, token, body, pedido, idioma, idiomaAcept }) {
+async function checkoutBizum({ request, stripeKey, env, token, body, pedido, idioma, idiomaAcept, paisResidencia }) {
   const T = TXT_BIZUM[idioma] || TXT_BIZUM.es;
   const responder = (codigo, status) => new Response(JSON.stringify({ error: T[codigo], codigo }), { status, headers: { "content-type": "application/json" } });
   try {
     if (body?.codigo_bf !== undefined && String(body.codigo_bf).trim() !== "") return responder("bizum_sin_codigo", 400);
+    // Bizum solo para residentes en España (por la residencia declarada,
+    // no por la conexión, que solo se guarda).
+    const motivoRes = motivoBizumResidencia(paisResidencia);
+    if (motivoRes) return responder(motivoRes, 403);
     const paisIp = String(request.cf?.country || request.headers.get("CF-IPCountry") || "").toUpperCase();
-    const precio = precioBizum(CONFIG_PRECIOS, paisIp, pedido.ambito, pedido.plan);
+    const precio = precioBizum(CONFIG_PRECIOS, paisResidencia, pedido.ambito, pedido.plan);
     if (precio.error) return responder(precio.error, precio.error === "bizum_solo_espana" ? 403 : 400);
 
     const usuario = await usuarioDesdeToken(token);
@@ -475,7 +498,7 @@ async function checkoutBizum({ request, stripeKey, env, token, body, pedido, idi
     if (env.STRIPE_TAX_AUTOMATICO === "1") params.append("automatic_tax[enabled]", "true");
     const datos = {
       supabase_user_id: usuario.id, metodo: "bizum", periodo: "anual",
-      zona: precio.zona, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: "anual",
+      zona: precio.zona, pais_residencia: paisResidencia, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: "anual",
       region_contenido: precio.region_contenido, fundador: "false", lookup_key: precio.lookup_key,
       aceptacion_version: VERSION_ACEPTACION, aceptacion_idioma: idiomaAcept,
       aceptacion_fecha: new Date().toISOString(), idioma,
@@ -486,7 +509,7 @@ async function checkoutBizum({ request, stripeKey, env, token, body, pedido, idi
     }
     await guardarAceptacion(token, usuario.id, {
       version: VERSION_ACEPTACION, idioma: idiomaAcept, plan: "anual", ambito: pedido.ambito,
-      zona: precio.zona, fecha: datos.aceptacion_fecha, metodo: "bizum",
+      zona: precio.zona, pais_residencia: paisResidencia, fecha: datos.aceptacion_fecha, metodo: "bizum",
     });
     params.append("client_reference_id", usuario.id);
     params.append("success_url", `${origen}/suscripcion.html?exito=1`);
