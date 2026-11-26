@@ -164,6 +164,15 @@ export function conOrigenEnCta(respuesta, visita, Rewriter) {
 // navigator.webdriver). El script manda solo la ruta y el document.referrer
 // a /contar-visita, que los pasa por EXACTAMENTE la misma decisión de
 // siempre (visitaAContar): mismas listas cerradas, nada de la persona.
+// ¿Lleva el script del contador? Toda página contada (GET, 200, HTML), la
+// cuente o no el servidor (al navegar dentro de la web no la cuenta). Sirve
+// para los pasos del embudo (2026-11-26).
+export function conContador(request, respuesta) {
+  if (request.method !== "GET" || !respuesta || respuesta.status !== 200) return false;
+  if (!(respuesta.headers.get("content-type") || "").includes("text/html")) return false;
+  return !!paginaContada(new URL(request.url).pathname);
+}
+
 export const SCRIPT_VISITA = '<script src="/assets/js/visita.js" defer></script>';
 
 export function conScriptVisita(respuesta, Rewriter) {
@@ -178,6 +187,7 @@ export function conScriptVisita(respuesta, Rewriter) {
 export function visitaDeBaliza(cuerpo, request) {
   const url = new URL(request.url);
   if ((request.headers.get("origin") || "") !== url.origin) return null;
+  if (cuerpo?.paso !== undefined) return pasoDeBaliza(cuerpo, request, url);
   const ruta = String(cuerpo?.ruta || "");
   if (!ruta.startsWith("/") || ruta.startsWith("//") || ruta.length > 600) return null;
   const referer = String(cuerpo?.referer || "").slice(0, 600);
@@ -186,4 +196,38 @@ export function visitaDeBaliza(cuerpo, request) {
   let pedida;
   try { pedida = new Request(new URL(ruta, url.origin), { headers: cabeceras }); } catch { return null; }
   return visitaAContar(pedida, { status: 200, headers: new Headers({ "content-type": "text/html" }) });
+}
+
+// ---------------------------------------------------------------------------
+// Pasos del embudo (2026-11-26, Mikel: «haz todo»): del 21 al 26/11 hubo ~45
+// visitas desde buscadores, 9 llegaron al alta y 0 se dieron de alta, sin
+// saber dónde se pierden. Tres pasos, contados igual que las visitas (mismas
+// listas cerradas, sin nada de la persona):
+//   paso_cta      clic en «Empieza gratis» de una página pública; campaña =
+//                 tipo de página (spots, mareas, en_spots...); fuente = de
+//                 dónde llegó a esa página.
+//   paso_alta     empieza a escribir el email en el alta (login.html).
+//   paso_alta_ok  envía el alta (le llega el email de confirmación).
+// Necesitan la migración 20261126230000_visitas_pasos.sql; sin ella, la
+// función los ignora sin error.
+export const PASOS = { cta: "paso_cta", alta: "paso_alta", alta_ok: "paso_alta_ok" };
+
+function pasoDeBaliza(cuerpo, request, url) {
+  const pagina = PASOS[cuerpo.paso];
+  if (!pagina) return null;
+  const ua = request.headers.get("user-agent") || "";
+  if (!ua || NO_PERSONA.test(ua)) return null;
+  if (esVisitaInterna(request.headers.get("cookie") || "")) return null;
+  const ruta = String(cuerpo?.ruta || "");
+  if (!ruta.startsWith("/") || ruta.startsWith("//") || ruta.length > 600) return null;
+  let r;
+  try { r = new URL(ruta, url.origin); } catch { return null; }
+  const q = r.searchParams;
+  let fuente = /^[A-HJ-NP-Z2-9]{8}$/.test(String(q.get("ref") || "").toUpperCase()) ? "referido" : fuenteDeUtm(q.get("utm_source"));
+  if (!fuente) {
+    fuente = fuenteDeReferer(String(cuerpo?.referer || "").slice(0, 600), url.hostname);
+    if (fuente === "interna") fuente = "directo";
+  }
+  const campana = cuerpo.paso === "cta" ? paginaContada(r.pathname) : campanaValida(q.get("utm_campaign"));
+  return { p_pagina: pagina, p_fuente: fuente, p_campana: campana || null };
 }

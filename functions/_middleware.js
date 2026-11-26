@@ -24,7 +24,7 @@
 import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
-import { visitaAContar, conOrigenEnCta, conScriptVisita } from "./_lib/visitas.js";
+import { visitaAContar, conContador, conOrigenEnCta, conScriptVisita } from "./_lib/visitas.js";
 import { ORIGENES_IFRAME_NZ } from "../assets/js/camaras-nz.js";
 import { ORIGEN_IFRAME_WINDY } from "../assets/js/camaras-externas.js";
 import { conClaveLinz } from "./_lib/linz-basemaps.js";
@@ -52,7 +52,11 @@ export async function onRequest(context) {
     // al cargarse en un navegador (functions/contar-visita.js), para que no
     // cuenten los robots que se hacen pasar por navegadores.
     const visita = visitaAContar(request, original);
-    if (visita) original = conScriptVisita(conOrigenEnCta(original, visita, HTMLRewriter), HTMLRewriter);
+    if (visita) original = conOrigenEnCta(original, visita, HTMLRewriter);
+    // Desde el 2026-11-26 el script va en toda página contada, también al
+    // navegar dentro de la web: el servidor sigue sin contar esa visita,
+    // pero así se miden los pasos del embudo (clic en la llamada, alta).
+    if (visita || conContador(request, original)) original = conScriptVisita(original, HTMLRewriter);
   } catch { /* el contador nunca rompe la página */ }
   // Clave de LINZ Basemaps (satélite en NZ) desde la variable de Cloudflare
   // Pages, nunca desde el repo (_lib/linz-basemaps.js). Si falla, sin clave.

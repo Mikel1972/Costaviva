@@ -63,6 +63,13 @@
       "titulo": "Cinta del Black Friday 2x1 en las páginas públicas, /empieza y la app (27-30/11, se apaga sola)",
       "pr": [],
       "paginas": [".*"]
+    },
+    {
+      "id": "cta-arriba-y-embudo",
+      "fecha": "2026-11-26",
+      "titulo": "Botón a la app arriba, junto al dato de hoy, en fichas de spot (es/pt/en) y mareas NZ; se miden clic, alta empezada y alta enviada",
+      "pr": [],
+      "paginas": ["^/spots/", "^/pt/spots/", "^/en/spots/", "^/en/tides/"]
     }
   ]
 }

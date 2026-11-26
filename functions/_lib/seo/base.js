@@ -148,6 +148,18 @@ export function ctaPt(titulo = "Experimente a Costaviva 14 dias grátis") {
 </section>`;
 }
 
+// Llamada corta, arriba, junto al dato de hoy (2026-11-26, embudo): la de
+// abajo queda tras la tabla de especies y casi nadie llega. Mismo destino.
+const TEXTO_CTA_ARRIBA = {
+  es: { spot: "Mira el índice de pesca de hoy en este spot · gratis 14 días →", marea: "Mira a qué hora se pesca mejor hoy con esta marea · gratis 14 días →" },
+  en: { spot: "See today's fishing score for this spot · free for 14 days →", marea: "See the best time to fish today with this tide · free for 14 days →" },
+  pt: { spot: "Veja o índice de pesca de hoje neste pesqueiro · grátis 14 dias →", marea: "Veja a melhor hora para pescar hoje com esta maré · grátis 14 dias →" },
+};
+export function ctaArriba(idioma = "es", tipo = "spot") {
+  const t = (TEXTO_CTA_ARRIBA[idioma] || TEXTO_CTA_ARRIBA.es)[tipo] || TEXTO_CTA_ARRIBA.es.spot;
+  return `<p class="cta-arriba"><a class="cta-boton" href="/login?alta=1">${esc(t)}</a></p>`;
+}
+
 // Llamada a la app: siempre a /login?alta=1 (mismo destino que /mareas).
 export function cta(titulo = "Prueba Costaviva 14 días gratis") {
   return `<section class="cta" aria-label="Prueba Costaviva">

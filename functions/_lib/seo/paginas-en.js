@@ -21,7 +21,7 @@
 
 import { preguntasSpotsRegion, preguntasMareasRegion, faqHtml, faqLd } from "./faq-region.js";
 import { rutaIdioma } from "./idiomas.js";
-import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg } from "./base.js";
+import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg, ctaArriba } from "./base.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { PUEBLOS_NZ } from "../nz/pueblos-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
@@ -236,6 +236,7 @@ export function paginaSpotNZ(spot, todos, d) {
 <h1>Fishing at ${esc(spot.nombre)}</h1>
 <p class="intro">${esc(intro)}</p>
 ${condicionesHoy(spotPrev, spot)}
+${ctaArriba("en", "spot")}
 ${bloqueReservas(reservas)}
 <section aria-labelledby="t-especies"><h2 id="t-especies">What you can catch at ${esc(spot.nombre)}</h2>
 <p class="nota">Species of the MPI ${esc(AREAS_MPI[spot.region]?.nombre || "")} area and their season. Highlighted: in season in ${esc(mesLargoEn(mes))}.</p>
@@ -359,6 +360,7 @@ ${m ? `<section class="tarjeta hoy" aria-labelledby="t-ahora"><h2 id="t-ahora">T
 <div class="datos"><div class="dato"><span class="dato-etq">Now</span><span class="dato-val">${esc(String(m.altura))} m ${m.tendencia === "subiendo" ? "▲ rising" : m.tendencia === "bajando" ? "▼ falling" : ""}</span></div>
 ${pleamar ? `<div class="dato"><span class="dato-etq">Next high tide</span><span class="dato-val">${esc(textoEvento(pleamar))}</span></div>` : ""}
 ${bajamar ? `<div class="dato"><span class="dato-etq">Next low tide</span><span class="dato-val">${esc(textoEvento(bajamar))}</span></div>` : ""}</div></section>` : ""}
+${ctaArriba("en", "marea")}
 <section aria-labelledby="t-tabla"><h2 id="t-tabla">High and low tides today and tomorrow</h2>
 ${tabla}
 ${notaMareaLinz(m?.puerto || (spot.puerto_linz ? { ...spot.puerto_linz, metodo: spot.puerto_linz.tabla ? "tabla" : "secundario" } : null))}</section>

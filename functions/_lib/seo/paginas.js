@@ -8,7 +8,7 @@
 // las condiciones de hoy, con enlace a /mareas/<spot> para la tabla de
 // mareas. Cada una con su canonical.
 
-import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, imagenOg, imagenOgRegion } from "./base.js";
+import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, ctaArriba, imagenOg, imagenOgRegion } from "./base.js";
 import {
   especiesDeSpot, fondoDeSpot, profundidadDeSpot, camarasPublicasDeSpot, rioDeSpot, spotsCercanos, introSpot,
   nombreCortoSpot, regionDeSlug, REGIONES_MAREAS, fichaEspecie, introEspecie, slugEspecie, mesLargo,
@@ -114,6 +114,7 @@ export function paginaSpot(spot, todos, d) {
 <h1>Pesca en ${esc(nombre)}</h1>
 <p class="intro">${esc(intro)}</p>
 ${bloqueCondiciones(cond, indice, spot)}
+${ctaArriba("es", "spot")}
 <section aria-labelledby="t-especies"><h2 id="t-especies">Qué se pesca en ${esc(nombre)}</h2>
 <p class="nota">Especies de ${esc(NOMBRE_REGION_ESPECIES[especies.region] || "la zona")} con su temporada y en qué modalidad se pescan. Resaltadas, las de ${esc(mesLargo(mes))}.</p>
 ${tablaEspeciesSpot(especies.porModalidad)}</section>
