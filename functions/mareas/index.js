@@ -7,6 +7,7 @@
 // Portugal"). Sin datos en vivo aquí a propósito -- solo el listado y
 // enlaces, los datos reales viven en la página de cada spot.
 
+import { cintaBfHtml, CSS_CINTA_BF } from "../_lib/black-friday.js";
 import { REGIONES } from "./_regiones.js";
 import { enlacesHreflang } from "../_lib/seo/idiomas.js";
 import { ZONAS_NZ } from "../_lib/nz/zonas-nz.js";
@@ -81,9 +82,10 @@ ${enlacesHreflang("/mareas", "https://costaviva.org", ["es", "en", "pt"])}
   h2 { font-family: Georgia, serif; font-size: 20px; margin: 40px 0 12px; }
   .regiones { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 8px; }
   .regiones li a { display: block; background: ${NAVY}; color: ${BLANCO}; border-radius: 10px; padding: 12px 16px; text-decoration: none; font-size: 14px; font-weight: bold; }
-</style>
+${CSS_CINTA_BF}</style>
 </head>
 <body>
+${cintaBfHtml("es")}
   <div class="envoltorio">
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>

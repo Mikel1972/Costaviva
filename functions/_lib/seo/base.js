@@ -11,6 +11,7 @@
 // robot de SEO y no hay que romperle el terreno.
 
 import { CSS_PUBLICO } from "./estilos.js";
+import { cintaBfHtml, CSS_CINTA_BF } from "../black-friday.js";
 import { IDIOMAS_SEO, rutaIdioma, enlacesHreflang } from "./idiomas.js";
 
 export const DOMINIO = "https://costaviva.org";
@@ -205,6 +206,9 @@ export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo =
   const cfg = IDIOMAS_SEO[idioma] || IDIOMAS_SEO.es;
   const url = `${DOMINIO}${rutaIdioma(ruta, idioma)}`;
   const hreflang = noindex ? "" : enlacesHreflang(ruta, DOMINIO, alternos);
+  // Cinta del Black Friday (solo en sus fechas). No en las noindex: la 404
+  // se copia en /404.html y no puede depender del día.
+  const cinta = noindex ? "" : cintaBfHtml(idioma);
   return `<!doctype html>
 <html lang="${cfg.lang}">
 <head>
@@ -233,11 +237,11 @@ ${hreflang ? `${hreflang}\n` : ""}<meta property="og:type" content="${ogTipo}">
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
 ${FUENTES_PRECARGA.map((f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin>`).join("\n")}
-<style>${CSS_PUBLICO}</style>
+<style>${CSS_PUBLICO}</style>${cinta ? `\n<style>${CSS_CINTA_BF}</style>` : ""}
 ${ld.map(jsonLd).join("\n")}
 </head>
 <body class="publica">
-${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : idioma === "pt" ? CABECERA_PIE_PT(cuerpo) : `<header class="cabecera-publica">
+${cinta}${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : idioma === "pt" ? CABECERA_PIE_PT(cuerpo) : `<header class="cabecera-publica">
   <a class="enlace-marca" href="/" aria-label="Costaviva, inicio">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secciones">
     <a href="/">🗺️ Mapa</a><a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a><a href="/aprende">Aprende</a>

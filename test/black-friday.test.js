@@ -53,3 +53,28 @@ test("el servidor comprueba el código antes de cobrar y el webhook solo marca l
   assert.match(regalo, /codigo: "email_propio"/);
   assert.match(readFileSync(new URL("../functions/_lib/rutas-publicas.js", import.meta.url), "utf8"), /"\/regalo-black-friday"/);
 });
+
+test("cinta del Black Friday: solo del 27 al 30/11 (hora de España), en la app solo a quien no paga", async () => {
+  const P = await import("../assets/js/plan.js");
+  const { cintaBfHtml } = await import("../functions/_lib/black-friday.js");
+  const antes = new Date("2026-11-26T22:59:00Z"), dentro = new Date("2026-11-28T10:00:00Z"), ultimo = new Date("2026-11-30T20:00:00Z"), despues = new Date("2026-11-30T23:00:00Z");
+  assert.equal(P.ventanaBf(antes), null);
+  assert.deepEqual(P.ventanaBf(dentro), { ultimoDia: false });
+  assert.deepEqual(P.ventanaBf(ultimo), { ultimoDia: true });
+  assert.equal(P.ventanaBf(despues), null);
+  assert.equal(P.mostrarCintaBf({ premium: false }, dentro), true);
+  assert.equal(P.mostrarCintaBf({ premium: true, en_prueba: true }, dentro), true);
+  assert.equal(P.mostrarCintaBf({ premium: true, en_prueba: false }, dentro), false);
+  assert.equal(P.mostrarCintaBf(null, dentro), false);
+  assert.equal(P.mostrarCintaBf({ premium: false }, despues), false);
+  assert.equal(cintaBfHtml("es", antes), "");
+  assert.match(cintaBfHtml("es", dentro), /hasta el lunes 30/);
+  assert.match(cintaBfHtml("es", ultimo), /último día/);
+  assert.match(cintaBfHtml("en", dentro), /2-for-1/);
+  assert.match(cintaBfHtml("pt", dentro), /\/empieza\?utm_source=web/);
+  assert.equal(cintaBfHtml("es", despues), "");
+  // Las fechas del cliente son las mismas que las del servidor.
+  const { BF_DESDE, BF_HASTA } = await import("../functions/_lib/black-friday.js");
+  assert.equal(P.BF_DESDE_MS, BF_DESDE.getTime());
+  assert.equal(P.BF_HASTA_MS, BF_HASTA.getTime());
+});

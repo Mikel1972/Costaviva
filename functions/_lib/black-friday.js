@@ -48,3 +48,18 @@ export function invitacionRegalo(email) {
     caduca_en: new Date(REGALO_HASTA.getTime() - 1000).toISOString(), nota: MARCA_BF,
   };
 }
+
+// Cinta de las páginas públicas (2026-11-26): solo dentro de las fechas.
+// Lleva a /empieza (alta), donde también sale la oferta.
+const TEXTO_CINTA = {
+  es: { txt: "🖤 Black Friday 2x1: paga el plan anual y regala otro año de Premium a un amigo", hasta: "hasta el lunes 30", ultimo: "¡último día!", ir: "Ver oferta →" },
+  en: { txt: "🖤 Black Friday 2-for-1: pay the annual plan and give a friend a free year of Premium", hasta: "until Monday 30th", ultimo: "last day!", ir: "See the offer →" },
+  pt: { txt: "🖤 Black Friday 2x1: pague o plano anual e ofereça mais um ano de Premium a um amigo", hasta: "até segunda-feira, dia 30", ultimo: "último dia!", ir: "Ver oferta →" },
+};
+export const CSS_CINTA_BF = ".cinta-bf{display:block;margin:0;padding:9px 14px;background:#0B1E3F;color:#fff;text-align:center;font:700 14px/1.4 system-ui,sans-serif;text-decoration:none;border-bottom:3px solid #E8467C}.cinta-bf b{color:#FFC24B;white-space:nowrap}";
+export function cintaBfHtml(idioma = "es", ahora = new Date()) {
+  if (!enVentanaBf(ahora)) return "";
+  const t = TEXTO_CINTA[idioma] || TEXTO_CINTA.es;
+  const ultimo = ahora >= new Date(BF_HASTA.getTime() - 24 * 3600e3);
+  return `<a class="cinta-bf" href="/empieza?utm_source=web&utm_medium=cinta&utm_campaign=black-friday-2026">${t.txt} · ${ultimo ? t.ultimo : t.hasta} <b>${t.ir}</b></a>`;
+}

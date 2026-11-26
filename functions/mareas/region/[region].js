@@ -6,6 +6,7 @@
 // ella misma para búsquedas de ámbito regional ("mareas País Vasco",
 // "previsión marina Galicia").
 
+import { cintaBfHtml, CSS_CINTA_BF } from "../../_lib/black-friday.js";
 import { REGIONES, tituloMareasRegion, nombreConPueblos } from "../_regiones.js";
 import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
 import { tituloBuscador, BEACON_CF } from "../../_lib/seo/base.js";
@@ -134,9 +135,10 @@ ${faqJson ? `<script type="application/ld+json">${faqJson}</script>` : ""}
   .tarjeta p { margin: 0 0 8px; line-height: 1.5; }
   .lista + .cta { margin-top: 24px; }
   .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -24px 0 32px; }
-</style>
+${CSS_CINTA_BF}</style>
 </head>
 <body>
+${cintaBfHtml("es")}
   <div class="envoltorio">
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>
