@@ -153,3 +153,25 @@ test("marea con las alturas de la tabla del puerto, no las del nivel medio (Mike
   assert.equal(ajustarMareaATabla(s, null).ajustada, false);
   assert.equal(ajustarMareaATabla(s, null).serie, s);
 });
+
+test("7 días (Premium): 24 h seguidas y luego cada 3 h; sin pleamar en columnas de 3 h; días con nombre", async () => {
+  const HP = await import("../assets/js/hoja-prevision.js");
+  const horas = [];
+  const t0 = Date.parse("2026-11-26T00:00:00Z");
+  for (let k = 0; k < 9 * 24; k++) {
+    const iso = new Date(t0 + k * 3600e3).toISOString().slice(0, 16);
+    horas.push({ hora: iso, ola: 1, viento: 10, nivelMar: Math.sin(k / 2), luz: "dia" });
+  }
+  const s = HP.serieSemana(horas, "2026-11-26T10:20");
+  assert.equal(s[0].hora, "2026-11-26T10:00");
+  assert.equal(s[24].hora, "2026-11-27T10:00");
+  // Después de las 24 primeras, solo horas múltiplo de 3.
+  assert.ok(s.slice(25).every((h) => Number(h.hora.slice(11, 13)) % 3 === 0));
+  assert.equal(s.at(-1).hora, "2026-12-03T09:00");
+  const hitos = HP.hitosMarea(s);
+  assert.ok(hitos.slice(26).every((x) => x === null));
+  const html = HP.htmlTabla(s, [], {});
+  assert.match(html, /hp-nuevo-dia/);
+  // La vista de 24 h sigue igual.
+  assert.equal(HP.serieDesdeAhora(horas, "2026-11-26T10:20").length, 25);
+});

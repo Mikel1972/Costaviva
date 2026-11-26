@@ -162,6 +162,25 @@ Sin código postal en el alta, la app propone la zona al entrar:
   política de UPDATE de la propia fila ya existía). Sin políticas nuevas.
 - Pruebas: `test/base-ip.test.js` y la de navegador «el mapa propone la zona
   por IP».
+- **Interior y cambio de zona (2026-11-26, caso real: el móvil de Mikel
+  salía en Madrid, como casi todas las conexiones móviles de España, y
+  pulsó «Sí»):** si la zona aproximada está a más de `BASE_MAX_KM_SPOT`
+  (40 km) de cualquier spot, no se propone: sale «¿Dónde sueles pescar?
+  Elige tu zona en el mapa» sin «Sí». Y en el menú 👤, «📍 Que el mapa
+  empiece aquí» guarda el centro de la vista como base (`base_origen`
+  'mapa'). Prueba de navegador «con la IP en Madrid».
+
+## Hoja de previsión del spot: 24 h gratis, 7 días Premium (2026-11-19 y 2026-11-26)
+
+`assets/js/hoja-prevision.js` + «📋 Previsión hora a hora» en la ficha.
+Selector «Próximas 24 h | 📅 7 días»: los 7 días son Premium (sin Premium,
+«🔒 7 días · Premium» lleva a /suscripcion). En 7 días (`serieSemana`), las
+24 primeras horas una a una y después una columna cada 3 h (00, 03…), con
+el día encima («vie 28») y una raya al cambiar de día; la pleamar/bajamar
+solo se marca con columnas horarias. Los datos de 8 días se piden solo al
+abrir los 7 días (`datosHorariosSpot(s, { dias: 8 })`, caché aparte). El
+resumen «¿mejora o empeora?» es siempre de las próximas 24 h. Pruebas:
+`test/hoja-prevision.test.js` (en tests.yml desde el 2026-11-26).
 ## Alta: ventajas arriba y solo el email (2026-11-25, Mikel: «revisa la pantalla de login y mejórala»)
 
 Del 21 al 25/11 llegaron visitas al alta y nadie lo intentó (ni un intento
