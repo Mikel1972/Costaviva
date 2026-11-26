@@ -3,7 +3,7 @@
 // cociente histórico orilla A / orilla B entre cámaras cercanas, por tamaño
 // de mar. Lo usa la regla de vecinos (coherencia-vecinos.js). No editar a mano.
 export default {
- "generado": "2026-11-21T10:39:30.004Z",
+ "generado": "2026-11-26T21:07:23.255Z",
  "radioKm": 40,
  "nMin": 8,
  "pares": {
@@ -19,55 +19,77 @@ export default {
     "log": 0,
     "mad": 0,
     "n": 8
+   },
+   "medio": {
+    "log": -0.458,
+    "mad": 0.458,
+    "n": 8
+   }
+  },
+  "bakio|sopelana": {
+   "medio": {
+    "log": 0,
+    "mad": 0.347,
+    "n": 12
    }
   },
   "berria|castrourdiales": {
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 59
+    "n": 64
    },
    "grande": {
-    "log": 0.693,
-    "mad": 0.693,
-    "n": 13
+    "log": 0.805,
+    "mad": 0.805,
+    "n": 16
    },
    "medio": {
     "log": 0.916,
     "mad": 0,
-    "n": 9
+    "n": 16
    }
   },
   "berria|sopelana": {
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 11
+    "n": 17
    },
    "grande": {
     "log": 0,
-    "mad": 0.693,
-    "n": 13
+    "mad": 0.347,
+    "n": 14
    },
    "medio": {
     "log": 0,
     "mad": 0.916,
-    "n": 27
+    "n": 42
    }
   },
   "castrourdiales|sopelana": {
    "pequeno": {
     "log": -0.693,
     "mad": 0.223,
-    "n": 19
+    "n": 22
    },
    "grande": {
     "log": -0.916,
     "mad": 0.458,
     "n": 14
+   },
+   "medio": {
+    "log": -0.916,
+    "mad": 0,
+    "n": 8
    }
   },
   "deba|donostia": {
+   "pequeno": {
+    "log": 0,
+    "mad": 0,
+    "n": 9
+   },
    "grande": {
     "log": 0,
     "mad": 0,
@@ -92,24 +114,24 @@ export default {
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 43
+    "n": 46
    },
    "medio": {
     "log": 0,
     "mad": 0,
-    "n": 22
+    "n": 47
    },
    "grande": {
     "log": 0,
     "mad": 0.693,
-    "n": 24
+    "n": 28
    }
   },
   "deba|zumaia": {
    "medio": {
     "log": 0,
     "mad": 0.916,
-    "n": 15
+    "n": 17
    },
    "grande": {
     "log": 0,
@@ -121,7 +143,7 @@ export default {
    "medio": {
     "log": 0,
     "mad": 0,
-    "n": 15
+    "n": 16
    },
    "pequeno": {
     "log": 0,
@@ -138,14 +160,14 @@ export default {
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 14
+    "n": 15
    }
   },
   "getaria|hondarribia": {
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 17
+    "n": 20
    }
   },
   "getaria|orio": {
@@ -159,12 +181,12 @@ export default {
    "medio": {
     "log": -0.916,
     "mad": 0,
-    "n": 9
+    "n": 10
    },
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 17
+    "n": 20
    }
   },
   "hondarribia|orio": {
@@ -188,17 +210,17 @@ export default {
    "medio": {
     "log": -0.916,
     "mad": 0,
-    "n": 114
+    "n": 161
    },
    "grande": {
     "log": -0.916,
     "mad": 0,
-    "n": 59
+    "n": 89
    },
    "pequeno": {
     "log": 0,
     "mad": 0,
-    "n": 136
+    "n": 159
    }
   },
   "hondarribia|zumaia": {
@@ -210,7 +232,7 @@ export default {
    "grande": {
     "log": -0.916,
     "mad": 0,
-    "n": 27
+    "n": 36
    }
   },
   "orio|zarautz": {
@@ -224,12 +246,12 @@ export default {
    "medio": {
     "log": 0,
     "mad": 0,
-    "n": 24
+    "n": 29
    },
    "grande": {
     "log": 0,
     "mad": 0,
-    "n": 22
+    "n": 24
    }
   }
  }
