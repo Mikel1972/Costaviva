@@ -1111,6 +1111,10 @@
   .hp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .hp-chip { border: 0; background: var(--mar-2); color: var(--blanco); font: 800 13px var(--f-texto); padding: 7px 11px; border-radius: 999px; cursor: pointer; }
   .hp-chip[aria-pressed="true"] { background: var(--degradado-fuerte); }
+  .hp-vista-b { border: 1px solid var(--mar-2); background: transparent; color: var(--blanco); font: 800 13px var(--f-texto); padding: 6px 11px; border-radius: 999px; cursor: pointer; }
+  .hp-vista-b[aria-pressed="true"] { background: var(--mar-2); }
+  .hp-vista-premium { font: 800 13px var(--f-texto); color: var(--sobre-acento); background: var(--degradado-fuerte); border-radius: 999px; padding: 7px 12px; text-decoration: none; }
+  .hp-tabla th.hp-nuevo-dia, .hp-tabla td.hp-nuevo-dia { border-left: 2px solid var(--mar-2); }
   .hp-pez { display: flex; align-items: center; gap: 8px; font: 800 13px var(--f-texto); }
   .hp-pez select { flex: 1; min-width: 0; font: 700 14px var(--f-texto); color: var(--mar); background: var(--blanco); border: 0; border-radius: 999px; padding: 7px 12px; }
   .hp-cuerpo { flex: 1; overflow-y: auto; padding: 14px max(14px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 12px; }
@@ -1339,6 +1343,8 @@
         <button type="button" id="btnGuia" data-i18n="comun.menu.guia">📖 Cómo funciona</button>
         <a class="menu-enlace" href="/spots" data-i18n="comun.menu.guias">🧭 Spots, especies y mareas por zona</a>
         <a class="menu-enlace" href="/aprende" data-i18n="comun.menu.aprende">📚 Aprende a pescar</a>
+        <!-- 2026-11-26 (Mikel): cambiar dónde se abre el mapa (perfiles.base_*). -->
+        <button type="button" id="btnFijarInicio" data-i18n="comun.menu.fijar_inicio">📍 Que el mapa empiece aquí</button>
         <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
         <div data-i18n-selector></div>
@@ -3111,15 +3117,31 @@ async function proponerBase() {
   } catch (e) { u = null; }
   if (!u || !Number.isFinite(u.lat) || !Number.isFinite(u.lon)) return;
   if (!Object.keys(REGIONES_DATOS).some((id) => enCajaRegion(id, u.lat, u.lon))) return;
+  // Zona de interior (2026-11-26, caso real: el móvil de Mikel salía en
+  // Madrid, como casi todas las conexiones móviles de España): a más de
+  // BASE_MAX_KM_SPOT de cualquier spot no se propone; se pide elegirla.
+  if (!baseCercaDeLaCosta(u.lat, u.lon)) { mostrarPropuestaBase(null, null); return; }
   const lugar = u.ciudad || u.region || u.pais || "";
   mostrarPropuestaBase(lugar, u);
+}
+const BASE_MAX_KM_SPOT = 40;
+function baseCercaDeLaCosta(lat, lon) {
+  const r = Math.PI / 180;
+  return SPOTS.some((s) => {
+    const a = Math.sin(((s.lat - lat) * r) / 2) ** 2 + Math.cos(lat * r) * Math.cos(s.lat * r) * Math.sin(((s.lon - lon) * r) / 2) ** 2;
+    return 2 * 6371 * Math.asin(Math.sqrt(a)) <= BASE_MAX_KM_SPOT;
+  });
 }
 function mostrarPropuestaBase(lugar, u) {
   const caja = document.getElementById("propuestaBase");
   if (!caja) return;
-  caja.querySelector(".propuesta-base-texto").textContent = lugar
+  caja.querySelector(".propuesta-base-texto").textContent = !u
+    ? I18n.t("mapa.base.pregunta_elegir")
+    : lugar
     ? I18n.t("mapa.base.pregunta", { lugar })
     : I18n.t("mapa.base.pregunta_sin_lugar");
+  // Sin ubicación aproximada válida (interior): solo «Elegir en el mapa» y «Ahora no».
+  caja.querySelector("#baseSi").hidden = !u;
   caja.hidden = false;
   const cerrar = () => { caja.hidden = true; };
   caja.querySelector("#baseSi").onclick = async () => {
@@ -3139,6 +3161,11 @@ function mostrarPropuestaBase(lugar, u) {
     try { window.localStorage.setItem(CLAVE_BASE_NO, String(Date.now())); } catch (e) { /* nada */ }
   };
 }
+// Menú 👤 → «📍 Que el mapa empiece aquí»: el centro de la vista actual.
+document.getElementById("btnFijarInicio").addEventListener("click", async () => {
+  const c = map.getCenter();
+  if (await guardarBase(+c.lat.toFixed(4), +(((c.lng + 540) % 360) - 180).toFixed(4), null, "mapa")) avisoCapa(I18n.t("mapa.base.inicio_guardado"));
+});
 async function guardarBase(lat, lon, nombre, origen) {
   try {
     const { error } = await window.supabaseCliente
@@ -6248,8 +6275,11 @@ function aplicarOrillaPrestada(s) {
 // mar abierto?
 const olaEnOrillaSpot = (s) => !!(s.zonaOleaje?.orilla || s.zonaOleaje?.parametros || orillaPrestada(s));
 
-async function datosHorariosSpot(s) {
-  const c = vaCacheHoras.get(s.slug);
+// dias: días de previsión que se piden (2 = hoy y mañana; la hoja de 7 días
+// de Premium pide 8 solo al abrirla). Cada número de días tiene su caché.
+async function datosHorariosSpot(s, { dias = 2 } = {}) {
+  const claveCache = dias === 2 ? s.slug : `${s.slug}|${dias}`;
+  const c = vaCacheHoras.get(claveCache);
   // Spots abrigados: misma estimación "en la playa" que /prevision
   // (parámetros en s.zonaOleaje, que manda el backend).
   const abrigo = s.zonaOleaje?.parametros || null;
@@ -6277,11 +6307,11 @@ async function datosHorariosSpot(s) {
       if (!d || d.error || !d.hourly?.time?.length) throw new Error(d?.reason || "sin datos");
       return d;
     };
-    const marinoBasico = `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height_msl`;
+    const marinoBasico = `${coord}&past_days=1&forecast_days=${dias}&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height_msl`;
     const [rMar, rTiempo] = await Promise.allSettled([
-      pedirOk("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_peak_period,sea_surface_temperature,sea_level_height_msl`)
+      pedirOk("marine", `${coord}&past_days=1&forecast_days=${dias}&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_peak_period,sea_surface_temperature,sea_level_height_msl`)
         .catch((e) => { console.warn("Mar con mar de fondo no disponible; sin él:", e.message); return pedirOk("marine", marinoBasico); }),
-      pedirOk("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
+      pedirOk("forecast", `${coord}&past_days=5&forecast_days=${dias}&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
     if (rMar.status === "rejected") console.warn("Datos de mar no disponibles:", rMar.reason?.message);
     if (rTiempo.status === "rejected") console.warn("Datos de tiempo no disponibles:", rTiempo.reason?.message);
@@ -6375,8 +6405,8 @@ async function datosHorariosSpot(s) {
     horas.correccionBoya = corrBoya ? { ...corrBoya, horaLocal: horaBoya.slice(11, 16) } : null;
     return horas;
   })();
-  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, orilla: !!orilla, cam: claveCam, boyas: claveBoyas });
-  promesa.catch(() => { if (vaCacheHoras.get(s.slug)?.horas === promesa) vaCacheHoras.delete(s.slug); });
+  vaCacheHoras.set(claveCache, { t: Date.now(), horas: promesa, abrigo: !!abrigo, orilla: !!orilla, cam: claveCam, boyas: claveBoyas });
+  promesa.catch(() => { if (vaCacheHoras.get(claveCache)?.horas === promesa) vaCacheHoras.delete(claveCache); });
   return promesa;
 }
 
@@ -6629,15 +6659,26 @@ async function pintarVentanaActividad(s) {
 // ---------------------------------------------------------------------------
 // Hoja de previsión del spot (2026-11-19, assets/js/hoja-prevision.js):
 // próximas 24 h por horas, gratis. Mismos datos que la ventana de actividad.
-const hpEstado = { s: null, modalidad: "costa", especieId: "", todos: false, resultados: {}, serie: [] };
+// dias: 1 = próximas 24 h (gratis); 7 = la semana (Premium, 2026-11-26).
+const hpEstado = { s: null, modalidad: "costa", especieId: "", todos: false, resultados: {}, serie: [], dias: 1 };
+const hpSinPremium = () => document.getElementById("panel").classList.contains("sin-premium");
 async function abrirHojaPrevision(s) {
   hpEstado.s = s;
   hpEstado.modalidad = vaEstado.modalidad || "costa";
   hpEstado.especieId = "";
+  hpEstado.dias = 1;
   document.getElementById("hpNombre").textContent = s.nombre;
   document.getElementById("hojaPrevision").hidden = false;
   document.body.style.overflow = "hidden";
   await calcularHojaPrevision();
+}
+// Selector «Próximas 24 h | 7 días» (sin Premium, el de 7 días con candado).
+function pintarVistaHoja() {
+  const sin = hpSinPremium();
+  document.querySelectorAll(".hp-vista-b").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.hpDias) === hpEstado.dias)));
+  document.getElementById("hpSemana").hidden = sin;
+  document.getElementById("hpSemanaPremium").hidden = !sin;
+  document.getElementById("hpSubtitulo").textContent = I18n.t(hpEstado.dias === 7 ? "hoja.subtitulo_7" : "hoja.subtitulo");
 }
 function cerrarHojaPrevision() {
   document.getElementById("hojaPrevision").hidden = true;
@@ -6645,7 +6686,10 @@ function cerrarHojaPrevision() {
 }
 async function calcularHojaPrevision() {
   const s = hpEstado.s, modalidad = hpEstado.modalidad;
+  if (hpSinPremium()) hpEstado.dias = 1;
+  const dias = hpEstado.dias;
   document.querySelectorAll(".hp-chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.hpMod === modalidad)));
+  pintarVistaHoja();
   document.getElementById("hpResumen").innerHTML = `<li>${escVA(I18n.t("comun.cargando"))}</li>`;
   document.getElementById("hpTabla").innerHTML = "";
   if (!window.VentanaActividad || !window.HojaPrevision) {
@@ -6655,9 +6699,9 @@ async function calcularHojaPrevision() {
   const VA = window.VentanaActividad;
   try {
     const datos = await cargarEspeciesDatos();
-    const horas = await datosHorariosSpot(s);
+    const horas = await datosHorariosSpot(s, { dias: dias === 7 ? 8 : 2 });
     await frentesIndice(modalidad);
-    if (hpEstado.s !== s || hpEstado.modalidad !== modalidad) return;
+    if (hpEstado.s !== s || hpEstado.modalidad !== modalidad || hpEstado.dias !== dias) return;
     const region = VA.regionPorCoordenadas(s.lat, s.lon);
     const ctx = contextoIndiceSpot(s, datos, modalidad, 0);
     const mes = Number(horaActualISO(zonaSpot(s)).slice(5, 7));
@@ -6667,7 +6711,9 @@ async function calcularHojaPrevision() {
     for (const e of candidatas) {
       try { hpEstado.resultados[e.id] = VA.calcularVentana(e, datos.reglas_por_defecto, horas, ctx); } catch (err) { /* sin nota para esa especie */ }
     }
-    hpEstado.serie = window.HojaPrevision.serieDesdeAhora(horas, horaActualISO(zonaSpot(s)));
+    hpEstado.serie = dias === 7
+      ? window.HojaPrevision.serieSemana(horas, horaActualISO(zonaSpot(s)))
+      : window.HojaPrevision.serieDesdeAhora(horas, horaActualISO(zonaSpot(s)));
     hpEstado.corrBoya = horas.correccionBoya || null;
     // La luz de cada hora sale del cálculo de la ventana (alba, día, ocaso, noche).
     const algun = Object.values(hpEstado.resultados)[0] || [];
@@ -6695,7 +6741,9 @@ function pintarHojaPrevision() {
   document.getElementById("hpPez").hidden = bloqueada;
   document.getElementById("hpPezPremium").hidden = !bloqueada;
   const notas = bloqueada ? [] : HP.notasPorHora(hpEstado.serie, hpEstado.resultados, hpEstado.especieId || null);
-  document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie, notas)
+  // El resumen «¿mejora o empeora?» es siempre de las próximas 24 h.
+  const n24 = HP.HORAS_HOJA + 1;
+  document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie.slice(0, n24), notas.slice(0, n24))
     .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre, { enOrilla: olaEnOrillaSpot(hpEstado.s) }))}</li>`).join("")
     + (bloqueada ? `<li class="igual"><a href="/suscripcion">${escVA(I18n.t("hoja.mejor_premium"))}</a></li>` : "")
     // Corrección desde la boya: se dice siempre que se aplica.
@@ -6725,6 +6773,12 @@ function engancharHojaPrevision() {
     calcularHojaPrevision();
   }));
   document.getElementById("hpPez").addEventListener("change", (e) => { hpEstado.especieId = e.target.value; pintarHojaPrevision(); });
+  document.querySelectorAll(".hp-vista-b").forEach((b) => b.addEventListener("click", () => {
+    const d = Number(b.dataset.hpDias);
+    if (hpEstado.dias === d) return;
+    hpEstado.dias = d;
+    calcularHojaPrevision();
+  }));
   document.getElementById("hpTodos").addEventListener("click", () => { hpEstado.todos = !hpEstado.todos; pintarHojaPrevision(); });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", engancharHojaPrevision);
@@ -7677,12 +7731,18 @@ function comprobarAvisoRayos() {
   <div class="hp-cab">
     <div class="hp-fila">
       <button type="button" class="hp-volver" id="hpCerrar" aria-label="Cerrar" data-i18n-aria-label="hoja.cerrar">←</button>
-      <h2 class="hp-titulo" id="hpTitulo"><span id="hpNombre"></span><small data-i18n="hoja.subtitulo">Previsión detallada · próximas 24 h</small></h2>
+      <h2 class="hp-titulo" id="hpTitulo"><span id="hpNombre"></span><small id="hpSubtitulo" data-i18n="hoja.subtitulo">Previsión detallada · próximas 24 h</small></h2>
     </div>
     <div class="hp-chips" role="group" aria-label="Modalidad" data-i18n-aria-label="hoja.modalidad">
       <button type="button" class="hp-chip" data-hp-mod="costa" data-i18n="hoja.mod.costa">🪨 Costa</button>
       <button type="button" class="hp-chip" data-hp-mod="embarcacion" data-i18n="hoja.mod.embarcacion">🚤 Embarcación</button>
       <button type="button" class="hp-chip" data-hp-mod="submarina" data-i18n="hoja.mod.submarina">🤿 Submarina</button>
+    </div>
+    <!-- 24 h gratis; 7 días Premium (2026-11-26). -->
+    <div class="hp-chips hp-vista" role="group" aria-label="Días" data-i18n-aria-label="hoja.vista">
+      <button type="button" class="hp-vista-b" data-hp-dias="1" data-i18n="hoja.vista_24">Próximas 24 h</button>
+      <button type="button" class="hp-vista-b" data-hp-dias="7" id="hpSemana" data-i18n="hoja.vista_7">📅 7 días</button>
+      <a class="hp-vista-premium" id="hpSemanaPremium" href="/suscripcion" hidden data-i18n="hoja.vista_7_premium">🔒 7 días · Premium</a>
     </div>
     <label class="hp-pez" for="hpPez"><span data-i18n="hoja.pez">🐟 Pez</span> <select id="hpPez"></select><a class="hp-pez-premium" id="hpPezPremium" href="/suscripcion" hidden data-i18n="hoja.pez_premium">🔒 Elegir el pez · Premium</a></label>
   </div>
@@ -7697,7 +7757,7 @@ function comprobarAvisoRayos() {
     </div>
     <div class="hp-tabla-env"><table class="hp-tabla" id="hpTabla"></table></div>
     <p class="hp-leyenda"><span class="hp-n1" data-i18n="hoja.tono.1">Bueno</span><span class="hp-n2" data-i18n="hoja.tono.2">Normal</span><span class="hp-n3" data-i18n="hoja.tono.3">Malo</span><span class="hp-n4" data-i18n="hoja.tono.4">Muy malo</span></p>
-    <p class="hp-pie" id="hpPie" data-i18n="hoja.pie">Desliza a la derecha para ver las 24 horas. La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía. «Medido»: lo que miden ahora la cámara del spot, la boya y la estación de AEMET más cercanas (de las últimas 3 h), para comparar con la previsión.</p>
+    <p class="hp-pie" id="hpPie" data-i18n="hoja.pie">Desliza a la derecha para ver todas las horas (en 7 días, desde pasado mañana, una columna cada 3 horas). La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía. «Medido»: lo que miden ahora la cámara del spot, la boya y la estación de AEMET más cercanas (de las últimas 3 h), para comparar con la previsión.</p>
   </div>
 </div>
 </body>

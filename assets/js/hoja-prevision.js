@@ -4,7 +4,8 @@
 // siguientes horas para saber si va a empeorar o mejorar [...] una hoja que
 // se abriera aparte con todos los datos en columna y, al final, la
 // estimación del spot". Decidido con él sobre la maqueta (2026-11-19):
-//   - las próximas 24 h, gratis; los 7 días, Premium (fase siguiente);
+//   - las próximas 24 h, gratis; los 7 días, Premium (2026-11-26: las 24
+//     primeras horas una a una y después una columna cada 3 h, serieSemana);
 //   - horas en columnas que se deslizan, datos en filas y la nota del spot
 //     en la última fila; el pez se elige (por defecto, el mejor de cada hora);
 //   - por defecto solo lo esencial; "Ver todos los datos" abre el resto;
@@ -17,6 +18,9 @@ import { marDeFondo } from "./mar-de-fondo.js";
 import { t, I18n } from "./i18n-modulo.js";
 
 export const HORAS_HOJA = 24;
+// Vista de 7 días (Premium, 2026-11-26): las primeras 24 h hora a hora y
+// después una columna cada PASO_SEMANA horas (00, 03, 06...), hasta DIAS_SEMANA.
+export const DIAS_SEMANA = 7, PASO_SEMANA = 3;
 // Cambios que cuentan como "mejora" o "empeora" en el resumen.
 export const UMBRAL_OLA_M = 0.2, UMBRAL_OLA_REL = 0.15, UMBRAL_VIENTO_KMH = 8;
 
@@ -29,6 +33,22 @@ export function serieDesdeAhora(horas, ahoraISO, n = HORAS_HOJA) {
   const i = (horas || []).findIndex((h) => h.hora.slice(0, 13) >= h0);
   return i < 0 ? [] : horas.slice(i, i + n + 1);
 }
+
+// 7 días: las primeras `primeras` horas seguidas y después solo las horas
+// múltiplo de `paso`, hasta `dias` días desde ahora.
+export function serieSemana(horas, ahoraISO, { primeras = HORAS_HOJA, paso = PASO_SEMANA, dias = DIAS_SEMANA } = {}) {
+  const h0 = ahoraISO.slice(0, 13);
+  const i = (horas || []).findIndex((h) => h.hora.slice(0, 13) >= h0);
+  if (i < 0) return [];
+  const limite = Date.parse(`${h0}:00:00Z`) + dias * 24 * 3600e3;
+  return horas.slice(i).filter((h, k) => {
+    if (Date.parse(`${h.hora.slice(0, 13)}:00:00Z`) > limite) return false;
+    return k <= primeras || Number(h.hora.slice(11, 13)) % paso === 0;
+  });
+}
+
+// Horas entre dos columnas seguidas (1 en la vista de 24 h).
+const pasoHoras = (a, b) => (a && b ? (Date.parse(`${b.hora.slice(0, 13)}:00:00Z`) - Date.parse(`${a.hora.slice(0, 13)}:00:00Z`)) / 3600e3 : null);
 
 // «Ahora mismo, medido» (2026-11-19, fase 2 de la hoja): lo que miden de
 // verdad, ahora, la cámara del spot, la boya y la estación de AEMET más
@@ -128,6 +148,8 @@ export function ajustarMareaATabla(serie, marea) {
 
 export function hitosMarea(serie) {
   return serie.map((h, i) => {
+    // Con columnas cada 3 h la pleamar real cae entre medias: no se marca.
+    if (pasoHoras(serie[i - 1], h) !== 1 || pasoHoras(h, serie[i + 1]) !== 1) return null;
     const a = serie[i - 1]?.nivelMar, b = serie[i + 1]?.nivelMar, x = h.nivelMar;
     if (!fin(a) || !fin(b) || !fin(x)) return null;
     if (x > a && x >= b) return "pleamar";
@@ -255,9 +277,17 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
     const sube = d > 0;
     return `<span class="hp-fl ${(sube ? "sube" : "baja") === malo ? "peor" : "mejor"}">${sube ? "↗" : "↘"}</span>`;
   };
+  const dia0 = Date.parse(`${serie[0]?.hora.slice(0, 10)}T00:00:00Z`);
+  const nombreDia = (h) => {
+    const n = Math.round((Date.parse(`${h.hora.slice(0, 10)}T00:00:00Z`) - dia0) / 864e5);
+    if (n === 0) return t("comun.hoy");
+    if (n === 1) return t("comun.manana");
+    // Pasado mañana en adelante (vista de 7 días): «vie 28».
+    return new Intl.DateTimeFormat(I18n.locale(), { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${h.hora.slice(0, 10)}T12:00:00Z`));
+  };
   const cab = serie.map((h, i) => {
-    const otroDia = h.hora.slice(0, 10) !== serie[0].hora.slice(0, 10);
-    return `<th scope="col" class="${i === 0 ? "hp-ahora" : ""}">${i === 0 ? esc(t("hoja.ahora")) : `${hh(h.hora)}h`}<span class="hp-dia">${esc(i === 0 ? t("hoja.modelo") : otroDia ? t("comun.manana") : t("comun.hoy"))}</span></th>`;
+    const nuevoDia = i > 0 && h.hora.slice(0, 10) !== serie[i - 1].hora.slice(0, 10);
+    return `<th scope="col" class="${i === 0 ? "hp-ahora" : ""}${nuevoDia ? " hp-nuevo-dia" : ""}">${i === 0 ? esc(t("hoja.ahora")) : `${hh(h.hora)}h`}<span class="hp-dia">${esc(i === 0 ? t("hoja.modelo") : nombreDia(h))}</span></th>`;
   }).join("");
   // Columna «Medido» (antes de la de ahora): cada fila dice qué mide y de
   // dónde sale; sin medida, «—».
@@ -266,7 +296,7 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
   const deBoya = (v) => (md?.boya && v !== null && v !== undefined && v !== "" ? `${v}${fuente("⚓", md.boya.nombre, md.boya.hora)}` : "—");
   const deEstacion = (v) => (md?.estacion && v !== null && v !== undefined && v !== "" ? `${v}${fuente("🌬️", md.estacion.nombre, md.estacion.hora)}` : "—");
   const fila = (titulo, celda, extra = false, cls = "", celdaMedida = () => "—") =>
-    `<tr class="${extra ? "hp-extra" : ""} ${cls}"${extra && !todos ? " hidden" : ""}><th scope="row">${titulo}</th>${md ? `<td class="hp-medido">${celdaMedida()}</td>` : ""}${serie.map((h, i) => `<td class="${i === 0 ? "hp-ahora" : ""}${h.luz === "noche" ? " hp-noche" : ""}">${celda(h, i)}</td>`).join("")}</tr>`;
+    `<tr class="${extra ? "hp-extra" : ""} ${cls}"${extra && !todos ? " hidden" : ""}><th scope="row">${titulo}</th>${md ? `<td class="hp-medido">${celdaMedida()}</td>` : ""}${serie.map((h, i) => `<td class="${i === 0 ? "hp-ahora" : ""}${h.luz === "noche" ? " hp-noche" : ""}${i > 0 && h.hora.slice(0, 10) !== serie[i - 1].hora.slice(0, 10) ? " hp-nuevo-dia" : ""}">${celda(h, i)}</td>`).join("")}</tr>`;
   const filas = [
     fila(esc(t(enOrilla ? "hoja.f.ola" : "hoja.f.ola_abierto")), (h, i) => (fin(h.ola) ? `${conTono(enOrilla ? "ola" : "marAbierto", h.ola, m1(h.ola))} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—"), false, "",
       () => (md?.ola ? `${conTono("ola", md.ola.valor, `~${m1(md.ola.valor)}`)}${fuente("📷", md.ola.nombre, md.ola.hora)}` : "—")),

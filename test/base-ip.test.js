@@ -40,3 +40,15 @@ test("index.html: la base manda sobre el código postal y se pregunta sin ningun
     for (const l of ["es", "en", "pt"]) assert.ok(leer(`assets/i18n/${l}.js`).includes(`"${k}"`), `${k} en ${l}`);
   }
 });
+
+test("base: zonas de interior no se proponen (Madrid); menú «Que el mapa empiece aquí» (2026-11-26)", () => {
+  const html = leer("index.html");
+  assert.match(html, /if \(!baseCercaDeLaCosta\(u\.lat, u\.lon\)\) \{ mostrarPropuestaBase\(null, null\); return; \}/);
+  assert.match(html, /const BASE_MAX_KM_SPOT = 40;/);
+  assert.match(html, /caja\.querySelector\("#baseSi"\)\.hidden = !u;/);
+  assert.match(html, /id="btnFijarInicio"/);
+  assert.match(html, /getElementById\("btnFijarInicio"\)\.addEventListener\("click", async \(\) => \{\s*const c = map\.getCenter\(\);/);
+  for (const k of ["comun.menu.fijar_inicio", "mapa.base.pregunta_elegir", "mapa.base.inicio_guardado"]) {
+    for (const l of ["es", "en", "pt"]) assert.ok(leer(`assets/i18n/${l}.js`).includes(`"${k}"`), `${k} en ${l}`);
+  }
+});
