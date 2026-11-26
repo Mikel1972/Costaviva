@@ -6077,6 +6077,14 @@ El botón **Rayos** pinta dos capas sobre el propio mapa (la imagen nacional de 
 
 ## Invitaciones con descuento (2026-10-08, aprobado por Mikel)
 
+**Sin sesión de admin (2026-11-26, Mikel: «hazlo tú» / «envía tú»):** Claude
+crea la fila en `public.invitaciones` por SQL (código de `generarCodigo()`,
+`validarNuevaInvitacion` para los datos, `creada_por` = id de Mikel; enseñar
+el SQL y esperar su sí) y manda el email con el workflow manual
+`enviar-invitacion.yml` (input `invitacion_id`; `scripts/avisos/enviar-invitacion.mjs`):
+el mismo email y remitente que admin.html, solo si sigue «enviada», y marca
+`email_enviado_en` tras el 2xx de Resend. Nunca desde el Gmail personal.
+
 `admin.html` → "Invitar / dar descuento": email, descuento 0-100 %, duración
 (1/3/6/12 meses, para siempre o hasta una fecha), caducidad (30 días por
 defecto) y nota interna. Lista con estado y acciones reenviar/anular.

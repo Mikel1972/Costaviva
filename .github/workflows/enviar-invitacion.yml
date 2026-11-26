@@ -1,0 +1,43 @@
+name: Enviar invitación (email)
+
+# Manda (o reenvía) el email de UNA invitación ya creada en
+# public.invitaciones: el mismo email que sale desde admin.html → «Invitar /
+# dar descuento», con el remitente de la app (2026-11-26, Mikel: «envía
+# tú»). Sirve cuando la invitación se ha creado por SQL y no hay sesión de
+# admin. Sin IA. Repo público: el log no lleva el email.
+# Script: scripts/avisos/enviar-invitacion.mjs. Necesita los secrets
+# SUPABASE_SERVICE_ROLE_KEY y RESEND_API_KEY (los mismos que aviso-condiciones.yml).
+
+on:
+  workflow_dispatch:
+    inputs:
+      invitacion_id:
+        description: "id (uuid) de la invitación en public.invitaciones"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: enviar-invitacion
+  cancel-in-progress: false
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Enviar
+        env:
+          INVITACION_ID: ${{ github.event.inputs.invitacion_id }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          set -o pipefail
+          node scripts/avisos/enviar-invitacion.mjs "$INVITACION_ID" | tee /tmp/salida.txt
+          { echo "### Enviar invitación"; echo '```'; cat /tmp/salida.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
