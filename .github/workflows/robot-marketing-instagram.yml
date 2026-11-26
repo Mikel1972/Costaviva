@@ -125,8 +125,10 @@ jobs:
             let estado = {};
             try { estado = JSON.parse(readFileSync("scripts/marketing/calendario-estado.json", "utf8")); } catch {}
             // Serie de cada día (2026-11-19, Mikel): martes normas, jueves
-            // peces, viernes "dónde pescar este finde".
-            const SERIE = { especie: "normas", funcion: "peces", condiciones: "finde" };
+            // peces, viernes "dónde pescar este finde". Desde el 2026-11-26
+            // (Mikel, métricas: las preguntas curiosas llegan a ~135 cuentas
+            // y peces a ~75) el jueves es "¿qué se pesca en <región>?".
+            const SERIE = { especie: "normas", funcion: "region", condiciones: "finde" };
             const h = huecoDe(f, "post", "es");
             if (h) console.log(estado?.generadas?.[`${f}-reel`] ? "HECHO" : `${f} ${SERIE[h.tipo] || "peces"}`);
           ')
