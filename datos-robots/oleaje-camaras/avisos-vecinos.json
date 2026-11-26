@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-26T09:09:53.481Z",
+ "actualizado": "2026-11-26T09:39:54.763Z",
  "dias": 7,
  "repetidos": [
   {
@@ -21,14 +21,22 @@
   {
    "clave": "hondarribia",
    "alto": 5,
-   "bajo": 4,
+   "bajo": 6,
    "spots": [
     "hondarribia"
    ]
   },
   {
+   "clave": "sopelana",
+   "alto": 3,
+   "bajo": 0,
+   "spots": [
+    "sopelana"
+   ]
+  },
+  {
    "clave": "bakio",
-   "alto": 6,
+   "alto": 7,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -2006,6 +2014,42 @@
    "antes": 1.3,
    "referencia": 1.2,
    "visto": "2026-11-26T09:09:53.481Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-27T09:00",
+   "antes": 0.7,
+   "referencia": 0.6,
+   "visto": "2026-11-26T09:39:54.763Z"
+  },
+  {
+   "slug": "sopelana",
+   "camara": "sopelana",
+   "tipo": "alto",
+   "horaISO": "2026-11-26T12:00",
+   "antes": 1.3,
+   "referencia": 1.1,
+   "visto": "2026-11-26T09:39:54.763Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-26T18:00",
+   "antes": 0.2,
+   "referencia": null,
+   "visto": "2026-11-26T09:39:54.763Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-27T09:00",
+   "antes": 0.1,
+   "referencia": null,
+   "visto": "2026-11-26T09:39:54.763Z"
   }
  ]
 }
