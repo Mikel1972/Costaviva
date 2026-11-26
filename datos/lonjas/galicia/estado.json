@@ -1,13 +1,37 @@
 {
  "nota": "Qué años del histórico están completos. Lo escribe scripts/lonjas/historico-galicia.mjs.",
  "anos": {
-  "2007": {
-   "hasta": "2007-10-26",
+  "2004": {
+   "hasta": "2004-01-03",
    "fallidos": [],
    "completo": false,
-   "filas": 46247,
-   "kg": 47916116,
-   "dias_con_ventas": 257
+   "filas": 195,
+   "kg": 71880,
+   "dias_con_ventas": 2
+  },
+  "2005": {
+   "hasta": "2005-12-31",
+   "fallidos": [],
+   "completo": true,
+   "filas": 57221,
+   "kg": 55353296,
+   "dias_con_ventas": 312
+  },
+  "2006": {
+   "hasta": "2006-12-31",
+   "fallidos": [],
+   "completo": true,
+   "filas": 56245,
+   "kg": 55022287,
+   "dias_con_ventas": 311
+  },
+  "2007": {
+   "hasta": "2007-12-31",
+   "fallidos": [],
+   "completo": true,
+   "filas": 56050,
+   "kg": 55931904,
+   "dias_con_ventas": 311
   },
   "2008": {
    "hasta": "2008-12-31",
@@ -154,13 +178,13 @@
    "dias_con_ventas": 317
   },
   "2026": {
-   "hasta": "2026-11-22",
+   "hasta": "2026-11-23",
    "fallidos": [],
    "completo": false,
-   "filas": 49043,
-   "kg": 33383669,
-   "dias_con_ventas": 286
+   "filas": 49280,
+   "kg": 33447185,
+   "dias_con_ventas": 287
   }
  },
- "actualizado": "2026-11-25T13:02:56.300Z"
+ "actualizado": "2026-11-26T03:58:01.615Z"
 }
