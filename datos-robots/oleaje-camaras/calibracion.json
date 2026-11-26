@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-26T13:07:47.519Z",
- "lineasHistorial": 13434,
+ "fecha": "2026-11-26T13:37:51.222Z",
+ "lineasHistorial": 13445,
  "etiquetas": 1415,
  "etiquetasClaude": 270,
  "calibracion": {
@@ -25,21 +25,21 @@
    "correlacion": -0.081
   },
   "hondarribia/bocana": {
-   "a": 3.2806,
+   "a": 3.2616,
    "p": 0.5,
-   "n": 47,
+   "n": 48,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-12T16"
    ],
-   "dias": 29,
+   "dias": 30,
    "hMin": 0.05,
    "hMax": 1.05,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.08
+   "correlacion": -0.071
   },
   "donostia/principal": {
    "a": 3.5319,
@@ -56,9 +56,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.8409,
+   "a": 2.8402,
    "p": 0.5,
-   "n": 1065,
+   "n": 1066,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -206,9 +206,9 @@
    "correlacion": -0.011
   },
   "sopelana/principal": {
-   "a": 2.7159,
+   "a": 2.7109,
    "p": 0.5,
-   "n": 225,
+   "n": 226,
    "nEtiquetas": 35,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -228,7 +228,7 @@
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.283
+   "correlacion": 0.282
   },
   "berria/principal": {
    "a": 74.2857,
@@ -498,8 +498,8 @@
    "sustituye": true,
    "motivo": "91 etiquetas",
    "ruido": {
-    "ruido": 0.605,
-    "pares": 153
+    "ruido": 0.616,
+    "pares": 154
    }
   },
   "donostia": {
@@ -523,7 +523,7 @@
    "motivo": "239 etiquetas",
    "ruido": {
     "ruido": 0.538,
-    "pares": 734
+    "pares": 735
    }
   },
   "getaria": {
@@ -643,10 +643,10 @@
    "cerca": 0.584
   },
   "hondarribia": {
-   "n": 16,
+   "n": 17,
    "suficiente": false,
-   "lineas": -0.167,
-   "cerca": 0.273
+   "lineas": -0.188,
+   "cerca": 0.249
   },
   "zarautz": {
    "n": 13,
@@ -685,10 +685,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 19,
+   "n": 20,
    "suficiente": false,
-   "lineas": 0.003,
-   "cerca": -0.543
+   "lineas": 0.032,
+   "cerca": -0.438
   },
   "donostia": {
    "n": 1,
