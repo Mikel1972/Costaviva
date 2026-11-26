@@ -42,3 +42,20 @@ export function avisoFinPrueba(estado, ahora = new Date()) {
   if (horas <= 72) return { tipo: "tres_dias", fin };
   return null;
 }
+
+// Black Friday 2x1 (2026-11-26, Mikel: «sí» a la cinta): del viernes
+// 27/11/2026 00:00 al lunes 30/11 23:59 hora de España (las mismas fechas que
+// functions/_lib/black-friday.js, que es quien acepta o no el código).
+export const BF_DESDE_MS = Date.UTC(2026, 10, 26, 23, 0, 0); // 27/11 00:00 en Madrid (UTC+1)
+export const BF_HASTA_MS = Date.UTC(2026, 10, 30, 23, 0, 0); // 01/12 00:00 en Madrid
+export function ventanaBf(ahora = new Date()) {
+  const t = ahora.getTime();
+  if (!(t >= BF_DESDE_MS && t < BF_HASTA_MS)) return null;
+  return { ultimoDia: t >= BF_HASTA_MS - 24 * 3600e3 };
+}
+// ¿Se le enseña la cinta? A quien no paga: plan gratis o aún en la prueba.
+export function mostrarCintaBf(estado, ahora = new Date()) {
+  if (!ventanaBf(ahora)) return false;
+  if (!estado) return false; // sin estado no se sabe: mejor no molestar a quien paga
+  return !(estado.premium ?? estado.con_acceso) || !!estado.en_prueba;
+}

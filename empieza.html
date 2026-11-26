@@ -38,12 +38,16 @@
   .letra a { color: var(--blanco); }
   .ya { margin-top: 22px; text-align: center; font-size: 15px; }
   .ya a { color: var(--blanco); font-weight: 700; }
+  .bf { background: #0B1E3F; color: #fff; border-left: 4px solid #E8467C; border-radius: 12px; padding: 10px 14px; font-size: 15px; line-height: 1.45; }
+  .bf b { color: #FFC24B; }
 </style>
 </head>
 <body>
 <main>
   <div class="marca">Costaviva</div>
   <p><a href="/">← Volver a Costaviva</a></p>
+  <!-- Black Friday 2x1 (2026-11-26): se enseña solo del 27 al 30/11 (ventanaBf de assets/js/plan.js). -->
+  <p class="bf" id="cintaBf" hidden>🖤 <b>Black Friday 2x1</b>, <span id="cintaBfHasta">hasta el lunes 30</span>: crea tu cuenta gratis y, si te pasas al plan anual con el código <b>BLACKFRIDAY</b>, regalas otro año de Premium a un amigo.</p>
   <h1>¿Merece la pena ir hoy a pescar?</h1>
   <p class="entrada">Mira el índice de pesca, la ola, el viento y la marea de tu spot, hora a hora, antes de cargar el coche.</p>
 
@@ -65,6 +69,12 @@
 // se recuerdan en este navegador hasta que se crea la cuenta. Ver
 // assets/js/origen.js y privacidad.html. Sin cookies ni terceros.
 import { capturarOrigen, normalizarRef } from "/assets/js/origen.js";
+import { ventanaBf } from "/assets/js/plan.js";
+const bf = ventanaBf();
+if (bf) {
+  document.getElementById("cintaBf").hidden = false;
+  if (bf.ultimoDia) document.getElementById("cintaBfHasta").textContent = "¡último día!";
+}
 capturarOrigen();
 const ref = normalizarRef(new URLSearchParams(location.search).get("ref"));
 if (ref) {

@@ -1173,6 +1173,7 @@
   .premium-aviso a { color: var(--acento); font-weight: 600; }
   .aviso-prueba { position: relative; z-index: 1200; display: flex; align-items: center; gap: 10px; padding: 8px 12px; font-family: var(--f-texto); font-size: 12.5px; line-height: 1.4; background: var(--aviso-fondo); color: var(--aviso-texto); border-bottom: 1px solid var(--aviso-borde); }
   .aviso-prueba[hidden] { display: none; }
+  .aviso-bf { background: var(--mar); color: var(--blanco); border-bottom: 3px solid var(--magenta); }
   .aviso-prueba a { color: inherit; font-weight: 700; white-space: nowrap; }
   .aviso-prueba button::before { content: "×"; }
   .aviso-prueba button { margin-left: auto; background: none; border: none; color: inherit; font-size: 16px; cursor: pointer; padding: 0 4px; }
@@ -1326,6 +1327,12 @@
 </script>
 
 
+<!-- Black Friday 2x1 (2026-11-26): solo a quien no paga, del 27 al 30/11 (Plan.mostrarCintaBf). -->
+<div id="avisoBf" class="aviso-prueba aviso-bf" role="status" hidden>
+  <span id="avisoBfTexto"></span>
+  <a href="/suscripcion" data-i18n="plan.bf_ver">Ver oferta</a>
+  <button type="button" data-accion="cerrarAvisoBf" aria-label="Cerrar" data-i18n-aria-label="comun.cerrar"></button>
+</div>
 <div id="avisoPrueba" class="aviso-prueba" role="status" hidden>
   <span id="avisoPruebaTexto"></span>
   <a href="/suscripcion" data-i18n="plan.ver_planes">Ver planes</a>
@@ -4179,10 +4186,29 @@ function cerrarAvisoPrueba() {
 document.getElementById("avisoPrueba").addEventListener("click", (e) => {
   if (e.target.closest('[data-accion="cerrarAvisoPrueba"]')) cerrarAvisoPrueba();
 });
+// Cinta del Black Friday: cerrada, no vuelve hasta el día siguiente.
+const CLAVE_AVISO_BF = "costaviva.avisoBf";
+function pintarAvisoBf() {
+  const el = document.getElementById("avisoBf");
+  const P = window.Plan;
+  if (!P?.mostrarCintaBf || !P.mostrarCintaBf(window.estadoPlan || null)) { el.hidden = true; return; }
+  const hoy = new Date().toISOString().slice(0, 10);
+  let cerrado = null;
+  try { cerrado = localStorage.getItem(CLAVE_AVISO_BF); } catch (e) { cerrado = null; }
+  if (cerrado === hoy) { el.hidden = true; return; }
+  document.getElementById("avisoBfTexto").textContent = I18n.t(P.ventanaBf().ultimoDia ? "plan.bf_ultimo" : "plan.bf_texto");
+  el.hidden = false;
+}
+document.getElementById("avisoBf").addEventListener("click", (e) => {
+  if (!e.target.closest('[data-accion="cerrarAvisoBf"]')) return;
+  try { localStorage.setItem(CLAVE_AVISO_BF, new Date().toISOString().slice(0, 10)); } catch (err) { /* solo comodidad */ }
+  document.getElementById("avisoBf").hidden = true;
+});
 // Cuando llega el plan (o el módulo de regiones): se vuelve a mirar la ficha
 // abierta y las capas encendidas.
 function plan_alLlegar() {
   pintarAvisoPrueba();
+  pintarAvisoBf();
   if (spotAbiertoActual && document.getElementById("panel").classList.contains("visible")) aplicarPlanPanel(spotAbiertoActual);
   if (avisoPremiumEn(regionDeCentro()) && capasMar.activas.length) {
     for (const n of [...capasMar.activas]) alternarCapaMar(n);

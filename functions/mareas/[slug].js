@@ -18,6 +18,7 @@
 // (gratis, sin cuenta) y ofrece un CTA claro hacia /login para ver el
 // mapa completo, las webcams en directo, el diario de pesca, etc.
 
+import { cintaBfHtml, CSS_CINTA_BF } from "../_lib/black-friday.js";
 import { regionDeSlug, nombreConPueblos, PUEBLOS_ALIAS } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { mareaNZRespuesta } from "../_lib/seo/rutas-nz.js";
@@ -227,9 +228,10 @@ ${region ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", [
   th { font-size: 12px; color: ${GRIS}; letter-spacing: 0.5px; }
   tr:last-child td { border-bottom: none; }
   .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -8px 0 24px; }
-</style>
+${CSS_CINTA_BF}</style>
 </head>
 <body>
+${cintaBfHtml("es")}
   <div class="envoltorio">
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>
