@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-26T08:38:13.835Z",
- "lineasHistorial": 13330,
+ "fecha": "2026-11-26T09:07:52.799Z",
+ "lineasHistorial": 13342,
  "etiquetas": 1415,
  "etiquetasClaude": 270,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1762,
+   "a": 1.178,
    "p": 0.5,
-   "n": 374,
+   "n": 375,
    "nEtiquetas": 86,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -17,12 +17,12 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 46,
+   "dias": 47,
    "hMin": 0.03,
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.08
+   "correlacion": -0.081
   },
   "hondarribia/bocana": {
    "a": 3.2806,
@@ -56,9 +56,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.8392,
+   "a": 2.8397,
    "p": 0.5,
-   "n": 1056,
+   "n": 1057,
    "nEtiquetas": 225,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -87,7 +87,7 @@
     "2026-11-04T16",
     "2026-11-05T16"
    ],
-   "dias": 49,
+   "dias": 50,
    "hMin": 0.15,
    "hMax": 6.97,
    "errorRel": 1,
@@ -129,9 +129,9 @@
    "correlacion": 0.124
   },
   "deba/rompiente": {
-   "a": 3.1008,
+   "a": 3.0987,
    "p": 0.5,
-   "n": 360,
+   "n": 361,
    "nEtiquetas": 74,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -146,7 +146,7 @@
     "2026-11-01T16",
     "2026-11-04T16"
    ],
-   "dias": 46,
+   "dias": 47,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.9785,
+   "a": 1.982,
    "p": 0.5,
-   "n": 159,
+   "n": 160,
    "nEtiquetas": 25,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -198,17 +198,17 @@
     "2026-11-05T14",
     "2026-11-07T14"
    ],
-   "dias": 45,
+   "dias": 46,
    "hMin": 0.27,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.012
+   "correlacion": -0.013
   },
   "sopelana/principal": {
-   "a": 2.742,
+   "a": 2.737,
    "p": 0.5,
-   "n": 220,
+   "n": 221,
    "nEtiquetas": 35,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -223,12 +223,12 @@
     "2026-10-31T14",
     "2026-11-01T14"
    ],
-   "dias": 34,
+   "dias": 35,
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.289
+   "correlacion": 0.288
   },
   "berria/principal": {
    "a": 74.2857,
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7805,
+   "a": 2.7739,
    "p": 0.5,
-   "n": 202,
+   "n": 203,
    "nEtiquetas": 53,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -258,12 +258,12 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 37,
+   "dias": 38,
    "hMin": 0.28,
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.103
+   "correlacion": 0.101
   },
   "berria/dinamico": {
    "a": 2.685,
@@ -498,8 +498,8 @@
    "sustituye": true,
    "motivo": "91 etiquetas",
    "ruido": {
-    "ruido": 0.598,
-    "pares": 152
+    "ruido": 0.605,
+    "pares": 153
    }
   },
   "donostia": {
@@ -523,7 +523,7 @@
    "motivo": "239 etiquetas",
    "ruido": {
     "ruido": 0.538,
-    "pares": 726
+    "pares": 727
    }
   },
   "getaria": {
@@ -568,10 +568,10 @@
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "estable (±25 % entre lecturas cercanas)",
+   "motivo": "estable (±29 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.249,
-    "pares": 32
+    "ruido": 0.291,
+    "pares": 33
    }
   },
   "sopelana": {
@@ -594,8 +594,8 @@
    "sustituye": true,
    "motivo": "53 etiquetas",
    "ruido": {
-    "ruido": 0.521,
-    "pares": 81
+    "ruido": 0.553,
+    "pares": 82
    }
   },
   "nz-napier": {
@@ -631,22 +631,22 @@
    "cerca": 0.038
   },
   "sopelana": {
-   "n": 29,
+   "n": 30,
    "suficiente": false,
-   "lineas": -0.167,
-   "cerca": 0.059
+   "lineas": -0.192,
+   "cerca": 0.101
   },
   "castrourdiales": {
-   "n": 8,
+   "n": 9,
    "suficiente": false,
-   "lineas": 0.479,
-   "cerca": 0.539
+   "lineas": 0.402,
+   "cerca": 0.588
   },
   "hondarribia": {
-   "n": 14,
+   "n": 15,
    "suficiente": false,
-   "lineas": -0.225,
-   "cerca": 0.255
+   "lineas": -0.17,
+   "cerca": 0.295
   },
   "zarautz": {
    "n": 13,
@@ -685,10 +685,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 14,
+   "n": 15,
    "suficiente": false,
-   "lineas": -0.07,
-   "cerca": -0.634
+   "lineas": -0.079,
+   "cerca": -0.622
   },
   "donostia": {
    "n": 1,
