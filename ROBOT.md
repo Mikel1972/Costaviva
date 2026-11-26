@@ -10486,3 +10486,8 @@ Datos: `camaras-estado.json` de 2026-11-26T03:01Z (fresco). En rojo: sopelana (`
 - **piles**: `static/Piles/webcam_mini.png` da 404 mientras OlivaPuerto y CulleraCastillo (mismo servidor) dan 200 con foto de hace 40 min. Probados 10 nombres alternativos (PilesPlaya, PilesPlatja, Piles2, etc.): todos 404. La web de la Generalitat no responde desde la red de la rutina (403 en la raíz) → sin verificar el nombre nuevo. Términos probados: variantes de "Piles"/"Playa de Piles". Pendiente: ver desde fuera qué nombre usa hoy.
 - No se cambió código. Quedan para la próxima pasada: Piles, Pasaia, Russell y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-26 05:55 UTC — robot buscador de fuentes (rutina): jueves, fichas de especies (sustrato)
+- Sin cambios en `especies.json`. Candidatas a `sustrato` (sin él: mero, rape, gallo, rémol, pintarroja, chopa...). Búsqueda de fondo de mero y rape: lo encontrado es FishBase (CC BY-NC, prohibida), la ficha del museo de la UGR (licencia sin comprobar) y un PDF de MITECO/OAPN sobre Cabrera (mero en arrecifes rocosos; no abierto/verificado como CC BY en esta pasada) y fichas de la Junta de Andalucía (sin licencia comprobada). No se añade `sustrato` sin fuente con licencia verificada.
+- Pendiente próxima pasada: comprobar licencia del PDF de OAPN (`oapn_inv_art0818`) para mero → `["roca"]`, y buscar fuente IEO/ICES CC BY para rape y gallo (arena/fango).
+Firmado: robot buscador de fuentes (rutina), 2026-11-26 05:55 UTC.
