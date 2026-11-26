@@ -1,11 +1,166 @@
 {
- "generado": "2026-11-26T20:37:32.154Z",
+ "generado": "2026-11-26T21:07:25.427Z",
  "tolerancia": 0.3,
  "resumen": {
-  "examenes": 149,
-  "suspensos": 7
+  "examenes": 417,
+  "suspensos": 22
  },
- "suspensos24h": [],
+ "suspensos24h": [
+  {
+   "fecha": "2026-11-26T20:52:11.740834+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:54:00.5204+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:54:48.462696+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:54:58.658047+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:55:08.521943+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:55:27.879666+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:55:39.82638+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:55:46.770791+00:00",
+   "camara": "sopelana",
+   "spot": "sopelana",
+   "banda": "<0.5",
+   "mostrado": [
+    0.9,
+    1.1
+   ],
+   "fuente": "modelo",
+   "error": 0.5,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:55:53.365157+00:00",
+   "camara": "zarautz",
+   "spot": "zarautz",
+   "banda": "1-2",
+   "mostrado": [
+    0.5,
+    0.7
+   ],
+   "fuente": "modelo",
+   "error": 0.4,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T20:59:46.534589+00:00",
+   "camara": "zarautz",
+   "spot": "zarautz",
+   "banda": "1-2",
+   "mostrado": [
+    0.5,
+    0.7
+   ],
+   "fuente": "modelo",
+   "error": 0.4,
+   "suspenso": true,
+   "por": "foto"
+  },
+  {
+   "fecha": "2026-11-26T21:00:37.126998+00:00",
+   "camara": "zarautz",
+   "spot": "zarautz",
+   "banda": "1-2",
+   "mostrado": [
+    0.5,
+    0.7
+   ],
+   "fuente": "modelo",
+   "error": 0.4,
+   "suspenso": true,
+   "por": "foto"
+  }
+ ],
  "suspendidas": [],
  "camaras": {
   "nz-riverton": {
@@ -118,107 +273,107 @@
   },
   "hondarribia": {
    "spot": "hondarribia",
-   "examenes": 35,
+   "examenes": 140,
    "suspensos": 0,
-   "errorMedio": 0.02,
+   "errorMedio": 0.01,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:10:03.959213+00:00",
+     "fecha": "2026-11-26T21:02:31.014393+00:00",
      "banda": "<0.5",
      "mostrado": [
-      0.4,
+      0.3,
       0.4
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:09.958587+00:00",
+     "fecha": "2026-11-26T21:02:32.460986+00:00",
      "banda": "<0.5",
      "mostrado": [
-      0.4,
+      0.3,
       0.4
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:13.339704+00:00",
-     "banda": "0.5-1",
+     "fecha": "2026-11-26T21:02:33.39917+00:00",
+     "banda": "<0.5",
      "mostrado": [
-      0.4,
+      0.3,
       0.4
      ],
-     "error": 0.1
+     "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:16.542965+00:00",
-     "banda": "0.5-1",
+     "fecha": "2026-11-26T21:02:34.474318+00:00",
+     "banda": "<0.5",
      "mostrado": [
-      0.4,
+      0.3,
       0.4
      ],
-     "error": 0.1
+     "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:19.889944+00:00",
-     "banda": "0.5-1",
+     "fecha": "2026-11-26T21:02:35.666643+00:00",
+     "banda": "<0.5",
      "mostrado": [
-      0.4,
+      0.3,
       0.4
      ],
-     "error": 0.1
+     "error": 0
     }
    ]
   },
   "zarautz": {
    "spot": "zarautz",
-   "examenes": 37,
-   "suspensos": 7,
-   "errorMedio": 0.09,
+   "examenes": 107,
+   "suspensos": 10,
+   "errorMedio": 0.05,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:10:14.942267+00:00",
+     "fecha": "2026-11-26T21:01:22.167055+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.9,
-      1.1
+      0.5,
+      0.7
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:18.380417+00:00",
+     "fecha": "2026-11-26T21:01:25.24804+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.9,
-      1.1
+      0.5,
+      0.7
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:21.762741+00:00",
-     "banda": "<0.5",
-     "mostrado": [
-      0.9,
-      1.1
-     ],
-     "error": 0.5
-    },
-    {
-     "fecha": "2026-11-21T10:10:23.578897+00:00",
+     "fecha": "2026-11-26T21:01:27.84441+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.9,
-      1.1
+      0.5,
+      0.7
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:10:24.776188+00:00",
+     "fecha": "2026-11-26T21:01:30.601119+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.9,
-      1.1
+      0.5,
+      0.7
+     ],
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-26T21:01:33.422495+00:00",
+     "banda": "0.5-1",
+     "mostrado": [
+      0.5,
+      0.7
      ],
      "error": 0
     }
@@ -226,53 +381,53 @@
   },
   "sopelana": {
    "spot": "sopelana",
-   "examenes": 10,
-   "suspensos": 0,
-   "errorMedio": 0,
+   "examenes": 33,
+   "suspensos": 8,
+   "errorMedio": 0.12,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:05:52.04553+00:00",
+     "fecha": "2026-11-26T20:56:11.971225+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.6,
-      0.7
+      0.9,
+      1.1
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:06:08.250741+00:00",
+     "fecha": "2026-11-26T20:56:21.219376+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.6,
-      0.7
+      0.9,
+      1.1
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:06:23.726792+00:00",
+     "fecha": "2026-11-26T20:56:33.243479+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.6,
-      0.7
+      0.9,
+      1.1
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:06:42.557685+00:00",
+     "fecha": "2026-11-26T20:56:42.189035+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.6,
-      0.7
+      0.9,
+      1.1
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:06:56.016368+00:00",
+     "fecha": "2026-11-26T20:56:48.815141+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.6,
-      0.7
+      0.9,
+      1.1
      ],
      "error": 0
     }
@@ -280,55 +435,55 @@
   },
   "deba": {
    "spot": "deba",
-   "examenes": 25,
+   "examenes": 57,
    "suspensos": 0,
    "errorMedio": 0.03,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:09:09.826467+00:00",
-     "banda": "<0.5",
+     "fecha": "2026-11-26T20:57:19.961543+00:00",
+     "banda": "0.5-1",
      "mostrado": [
-      0.4,
-      0.5
+      0.5,
+      0.6
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:16.089637+00:00",
-     "banda": "<0.5",
+     "fecha": "2026-11-26T20:57:25.628333+00:00",
+     "banda": "0.5-1",
      "mostrado": [
-      0.4,
-      0.5
+      0.5,
+      0.6
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:21.971662+00:00",
+     "fecha": "2026-11-26T20:57:30.939379+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.4,
-      0.5
+      0.5,
+      0.6
      ],
-     "error": 0.05
+     "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:28.40446+00:00",
+     "fecha": "2026-11-26T20:57:36.717525+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.4,
-      0.5
+      0.5,
+      0.6
      ],
-     "error": 0.05
+     "error": 0
     },
     {
-     "fecha": "2026-11-21T10:09:34.521309+00:00",
+     "fecha": "2026-11-26T20:57:42.955141+00:00",
      "banda": "0.5-1",
      "mostrado": [
-      0.4,
-      0.5
+      0.5,
+      0.6
      ],
-     "error": 0.05
+     "error": 0
     }
    ]
   },
@@ -352,29 +507,11 @@
   },
   "zumaia": {
    "spot": "zumaia",
-   "examenes": 15,
+   "examenes": 17,
    "suspensos": 0,
    "errorMedio": 0.02,
    "racha": 0,
    "ultimos": [
-    {
-     "fecha": "2026-11-21T10:07:12.295609+00:00",
-     "banda": "0.5-1",
-     "mostrado": [
-      0.6,
-      0.7
-     ],
-     "error": 0
-    },
-    {
-     "fecha": "2026-11-21T10:07:31.323757+00:00",
-     "banda": "0.5-1",
-     "mostrado": [
-      0.6,
-      0.7
-     ],
-     "error": 0
-    },
     {
      "fecha": "2026-11-21T10:07:48.122764+00:00",
      "banda": "0.5-1",
@@ -401,95 +538,140 @@
       0.7
      ],
      "error": 0
+    },
+    {
+     "fecha": "2026-11-26T20:52:20.356912+00:00",
+     "banda": "0.5-1",
+     "mostrado": [
+      0.6,
+      0.7
+     ],
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-26T20:52:50.909148+00:00",
+     "banda": "0.5-1",
+     "mostrado": [
+      0.6,
+      0.7
+     ],
+     "error": 0
     }
    ]
   },
   "bakio": {
    "spot": "bakio",
-   "examenes": 2,
-   "suspensos": 0,
-   "errorMedio": 0.2,
+   "examenes": 16,
+   "suspensos": 2,
+   "errorMedio": 0.25,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:04:02.079103+00:00",
-     "banda": "1-2",
+     "fecha": "2026-11-26T20:54:16.532982+00:00",
+     "banda": "0.5-1",
      "mostrado": [
       0.7,
       0.9
      ],
-     "error": 0.2
+     "error": 0
     },
     {
-     "fecha": "2026-11-21T10:04:32.528944+00:00",
-     "banda": "1-2",
+     "fecha": "2026-11-26T20:54:36.752279+00:00",
+     "banda": "0.5-1",
      "mostrado": [
       0.7,
       0.9
      ],
-     "error": 0.2
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-26T20:54:49.969197+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.7,
+      0.9
+     ],
+     "error": 0.3
+    },
+    {
+     "fecha": "2026-11-26T20:55:00.291746+00:00",
+     "banda": "0.5-1",
+     "mostrado": [
+      0.7,
+      0.9
+     ],
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-26T20:55:21.603954+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.7,
+      0.9
+     ],
+     "error": 0.3
     }
    ]
   },
   "castrourdiales": {
    "spot": "castrourdiales",
-   "examenes": 5,
-   "suspensos": 0,
-   "errorMedio": 0.04,
+   "examenes": 20,
+   "suspensos": 2,
+   "errorMedio": 0.09,
    "racha": 0,
    "ultimos": [
     {
-     "fecha": "2026-11-21T10:04:08.669946+00:00",
+     "fecha": "2026-11-26T20:54:34.041318+00:00",
      "banda": "0.5-1",
      "mostrado": [
       0.5,
-      0.7
+      0.6
      ],
      "error": 0
     },
     {
-     "fecha": "2026-11-21T10:04:34.462018+00:00",
+     "fecha": "2026-11-26T20:54:47.128947+00:00",
      "banda": "<0.5",
      "mostrado": [
       0.5,
-      0.7
+      0.6
      ],
-     "error": 0.1
+     "error": 0.05
     },
     {
-     "fecha": "2026-11-21T10:04:58.509545+00:00",
+     "fecha": "2026-11-26T20:54:57.604722+00:00",
      "banda": "<0.5",
      "mostrado": [
       0.5,
-      0.7
+      0.6
      ],
-     "error": 0.1
+     "error": 0.05
     },
     {
-     "fecha": "2026-11-21T10:05:22.566135+00:00",
-     "banda": "0.5-1",
+     "fecha": "2026-11-26T20:55:06.94701+00:00",
+     "banda": "<0.5",
      "mostrado": [
       0.5,
-      0.7
+      0.6
      ],
-     "error": 0
+     "error": 0.05
     },
     {
-     "fecha": "2026-11-21T10:05:40.675096+00:00",
-     "banda": "0.5-1",
+     "fecha": "2026-11-26T20:55:18.772714+00:00",
+     "banda": "<0.5",
      "mostrado": [
       0.5,
-      0.7
+      0.6
      ],
-     "error": 0
+     "error": 0.05
     }
    ]
   },
   "donostia": {
    "spot": "donostia",
-   "examenes": 2,
+   "examenes": 3,
    "suspensos": 0,
-   "errorMedio": 0.05,
+   "errorMedio": 0.03,
    "racha": 0,
    "ultimos": [
     {
@@ -507,6 +689,87 @@
      "mostrado": [
       0.4,
       0.5
+     ],
+     "error": 0.05
+    },
+    {
+     "fecha": "2026-11-26T20:53:14.451719+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.4,
+      0.4
+     ],
+     "error": 0
+    }
+   ]
+  },
+  "getaria": {
+   "spot": "getaria",
+   "examenes": 4,
+   "suspensos": 0,
+   "errorMedio": 0.05,
+   "racha": 0,
+   "ultimos": [
+    {
+     "fecha": "2026-11-26T20:52:18.256093+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
+     ],
+     "error": 0.05
+    },
+    {
+     "fecha": "2026-11-26T20:52:48.6945+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
+     ],
+     "error": 0.05
+    },
+    {
+     "fecha": "2026-11-26T20:53:13.248643+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
+     ],
+     "error": 0.05
+    },
+    {
+     "fecha": "2026-11-26T20:53:28.976261+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
+     ],
+     "error": 0.05
+    }
+   ]
+  },
+  "mutriku": {
+   "spot": "mutriku",
+   "examenes": 2,
+   "suspensos": 0,
+   "errorMedio": 0.05,
+   "racha": 0,
+   "ultimos": [
+    {
+     "fecha": "2026-11-26T20:52:30.843961+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
+     ],
+     "error": 0.05
+    },
+    {
+     "fecha": "2026-11-26T20:52:54.701834+00:00",
+     "banda": "<0.5",
+     "mostrado": [
+      0.5,
+      0.6
      ],
      "error": 0.05
     }
