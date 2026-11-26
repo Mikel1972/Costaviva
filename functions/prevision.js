@@ -16,7 +16,7 @@
 import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes.js";
 import { agruparPorZona, horaLocalISO, paramZona, zonaDeSpot, ZONA_POR_DEFECTO } from "../assets/js/regiones.js";
 // Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
-import { oleajeCostero, zonaOleaje, rangoAltura, acotarMargenesSpots } from "./_lib/oleaje-costero.js";
+import { oleajeCostero, zonaOleaje, rangoAltura, acotarMargenesSpots, ajustarMarAbiertoMostrado } from "./_lib/oleaje-costero.js";
 import { revisarVecinos } from "./_lib/coherencia-vecinos.js";
 import RELACIONES_VECINOS from "./_lib/relaciones-vecinos-datos.js";
 // Regla de vecinos: la relación histórica entre cámaras (la aprende el robot
@@ -1531,7 +1531,9 @@ export async function calcularPrevisionEs(env = {}, { conAemet = true } = {}) {
   // por encima de los de al lado; si pasa, se recorta y queda en
   // avisosVecinos, que apunta el robot de las cámaras.
   const revisados = revisarVecinos(aplicarReferenciasCamara(aplicarCamarasASpots(resultadosModelo, lecturasOleaje.lecturas), lecturasOleaje.medidas), OPCIONES_VECINOS);
-  const resultados = acotarMargenesSpots(revisados.spots);
+  // Mar abierto enseñado en celdas más expuestas que la calibrada (Hondarribia,
+  // oleaje-costero.js): al final, sin tocar la orilla ni lo de arriba.
+  const resultados = ajustarMarAbiertoMostrado(acotarMargenesSpots(revisados.spots));
   const avisosVecinos = revisados.avisos;
 
   // Fuentes de los datos de los spots, para que la página muestre su

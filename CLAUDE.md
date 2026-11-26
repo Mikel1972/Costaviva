@@ -1774,6 +1774,14 @@ números de ese día (11:57 hora de Madrid):
   Pasaia (43.375) con la que se calibró el ×1,38: ese día 2,98×1,38 = 4,1 m
   frente a 3,6 m de la boya (+14 %). Un solo dato: no se ha tocado el factor.
 
+**Mar abierto enseñado en Hondarribia (2026-11-26, mar grande del 25/11):**
+enseñaba 5,3–5,6 m con Donostia/Pasaia en 3,9–4,2 y la boya Pasaia II en
+2,8 m. Su celda es más exterior que la calibrada: en 437 horas de
+`oleaje_camara_lecturas`, celda de Hondarribia / celda de Donostia = 1,333
+de mediana. `AJUSTE_MAR_ABIERTO_MOSTRADO` (×0,75) se aplica al final de
+`/prevision` (`ajustarMarAbiertoMostrado`), después de cámaras y vecinos:
+solo cambia el número de mar abierto que se enseña, nunca la orilla.
+
 **Qué se cambió (`functions/_lib/oleaje-costero.js`, tests en
 `test/oleaje-costero.test.js`):**
 - `/prevision` devuelve en cada bloque `alturaMarAbierto` (lo del modelo, con
