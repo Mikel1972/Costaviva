@@ -1,10 +1,10 @@
 {
- "actualizado": "2026-11-27T09:10:04.140Z",
+ "actualizado": "2026-11-27T09:39:56.193Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "bakio",
-   "alto": 4,
+   "alto": 3,
    "bajo": 0,
    "spots": [
     "bakio"
@@ -12,18 +12,10 @@
   },
   {
    "clave": "sopelana",
-   "alto": 2,
+   "alto": 1,
    "bajo": 3,
    "spots": [
     "sopelana"
-   ]
-  },
-  {
-   "clave": "hondarribia",
-   "alto": 0,
-   "bajo": 5,
-   "spots": [
-    "hondarribia"
    ]
   },
   {
@@ -35,8 +27,16 @@
    ]
   },
   {
+   "clave": "hondarribia",
+   "alto": 0,
+   "bajo": 3,
+   "spots": [
+    "hondarribia"
+   ]
+  },
+  {
    "clave": "mundaka",
-   "alto": 6,
+   "alto": 7,
    "bajo": 0,
    "spots": [
     "mundaka"
@@ -44,7 +44,7 @@
   },
   {
    "clave": "orio",
-   "alto": 3,
+   "alto": 4,
    "bajo": 0,
    "spots": [
     "orio"
@@ -52,42 +52,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "mundaka",
-   "camara": "mundaka",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T09:00",
-   "antes": 1.1,
-   "referencia": 0.9,
-   "visto": "2026-11-20T09:12:00.568Z"
-  },
-  {
-   "slug": "hondarribia",
-   "camara": "hondarribia",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T09:00",
-   "antes": 0.5,
-   "referencia": 0.4,
-   "visto": "2026-11-20T09:12:00.568Z"
-  },
-  {
-   "slug": "zumaia",
-   "camara": "zumaia",
-   "tipo": "alto",
-   "horaISO": "2026-11-20T12:00",
-   "antes": 3,
-   "referencia": 2.8,
-   "visto": "2026-11-20T09:39:52.726Z"
-  },
-  {
-   "slug": "hondarribia",
-   "camara": "hondarribia",
-   "tipo": "bajo",
-   "horaISO": "2026-11-20T12:00",
-   "antes": 0.4,
-   "referencia": null,
-   "visto": "2026-11-20T09:39:52.726Z"
-  },
   {
    "slug": "bakio",
    "camara": "bakio",
@@ -1923,6 +1887,24 @@
    "antes": 0.3,
    "referencia": null,
    "visto": "2026-11-27T09:10:04.140Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-28T09:00",
+   "antes": 1.4,
+   "referencia": 1,
+   "visto": "2026-11-27T09:39:56.193Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-28T09:00",
+   "antes": 0.7,
+   "referencia": 0.6,
+   "visto": "2026-11-27T09:39:56.193Z"
   }
  ]
 }
