@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-27T11:37:55.595Z",
- "lineasHistorial": 13652,
+ "fecha": "2026-11-27T12:07:52.290Z",
+ "lineasHistorial": 13662,
  "etiquetas": 1746,
  "etiquetasClaude": 305,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2284,
+   "a": 1.2278,
    "p": 0.5,
-   "n": 394,
+   "n": 395,
    "nEtiquetas": 99,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -643,10 +643,10 @@
    "cerca": 0.039
   },
   "sopelana": {
-   "n": 37,
+   "n": 38,
    "suficiente": false,
-   "lineas": -0.158,
-   "cerca": 0.042
+   "lineas": -0.177,
+   "cerca": 0.043
   },
   "castrourdiales": {
    "n": 13,

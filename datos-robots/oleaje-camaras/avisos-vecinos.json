@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T11:40:09.227Z",
+ "actualizado": "2026-11-27T12:09:55.398Z",
  "dias": 7,
  "repetidos": [
   {
@@ -21,7 +21,7 @@
   {
    "clave": "hondarribia",
    "alto": 0,
-   "bajo": 3,
+   "bajo": 4,
    "spots": [
     "hondarribia"
    ]
@@ -44,15 +44,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "bakio",
-   "camara": "bakio",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T12:00",
-   "antes": 0.9,
-   "referencia": 0.8,
-   "visto": "2026-11-20T12:09:30.083Z"
-  },
   {
    "slug": "bakio",
    "camara": "bakio",
@@ -1843,6 +1834,15 @@
    "antes": 0.7,
    "referencia": 0.6,
    "visto": "2026-11-27T09:39:56.193Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-27T21:00",
+   "antes": 0.2,
+   "referencia": null,
+   "visto": "2026-11-27T12:09:55.398Z"
   }
  ]
 }
