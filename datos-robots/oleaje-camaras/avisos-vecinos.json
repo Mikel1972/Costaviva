@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T10:09:48.633Z",
+ "actualizado": "2026-11-27T10:39:42.944Z",
  "dias": 7,
  "repetidos": [
   {
@@ -52,42 +52,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "bakio",
-   "camara": "bakio",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T06:00",
-   "antes": 1.1,
-   "referencia": 1,
-   "visto": "2026-11-20T10:10:08.460Z"
-  },
-  {
-   "slug": "bakio",
-   "camara": "bakio",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T09:00",
-   "antes": 1,
-   "referencia": 0.9,
-   "visto": "2026-11-20T10:10:08.460Z"
-  },
-  {
-   "slug": "sopelana",
-   "camara": "sopelana",
-   "tipo": "alto",
-   "horaISO": "2026-11-20T21:00",
-   "antes": 1.3,
-   "referencia": 1.2,
-   "visto": "2026-11-20T10:10:08.460Z"
-  },
-  {
-   "slug": "orio",
-   "camara": "orio",
-   "tipo": "bajo",
-   "horaISO": "2026-11-21T00:00",
-   "antes": 0.9,
-   "referencia": null,
-   "visto": "2026-11-20T10:10:08.460Z"
-  },
   {
    "slug": "sopelana",
    "camara": "sopelana",

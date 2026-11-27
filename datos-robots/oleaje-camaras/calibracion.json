@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-27T10:07:49.118Z",
- "lineasHistorial": 13614,
+ "fecha": "2026-11-27T10:37:46.284Z",
+ "lineasHistorial": 13623,
  "etiquetas": 1746,
  "etiquetasClaude": 305,
  "calibracion": {
@@ -211,9 +211,9 @@
    "correlacion": -0.048
   },
   "sopelana/principal": {
-   "a": 2.2775,
+   "a": 2.2753,
    "p": 0.5,
-   "n": 250,
+   "n": 251,
    "nEtiquetas": 57,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -229,12 +229,12 @@
     "2026-11-01T14",
     "2026-11-25T12"
    ],
-   "dias": 35,
+   "dias": 36,
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.181
+   "correlacion": 0.182
   },
   "berria/principal": {
    "a": 74.2857,
