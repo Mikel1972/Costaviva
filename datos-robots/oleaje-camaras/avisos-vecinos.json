@@ -1,10 +1,10 @@
 {
- "actualizado": "2026-11-27T15:09:49.854Z",
+ "actualizado": "2026-11-27T15:39:42.435Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "mundaka",
-   "alto": 8,
+   "alto": 9,
    "bajo": 0,
    "spots": [
     "mundaka"
@@ -28,15 +28,15 @@
   },
   {
    "clave": "zumaia",
-   "alto": 0,
-   "bajo": 3,
+   "alto": 1,
+   "bajo": 4,
    "spots": [
     "zumaia"
    ]
   },
   {
    "clave": "orio",
-   "alto": 5,
+   "alto": 6,
    "bajo": 0,
    "spots": [
     "orio"
@@ -44,24 +44,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "bakio",
-   "camara": "bakio",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T15:00",
-   "antes": 1,
-   "referencia": 0.9,
-   "visto": "2026-11-20T15:10:02.698Z"
-  },
-  {
-   "slug": "zumaia",
-   "camara": "zumaia",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T15:00",
-   "antes": 0.9,
-   "referencia": 0.8,
-   "visto": "2026-11-20T15:10:02.698Z"
-  },
   {
    "slug": "bakio",
    "camara": "bakio",
@@ -1870,6 +1852,42 @@
    "antes": 0.4,
    "referencia": null,
    "visto": "2026-11-27T14:55:41.902Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-28T15:00",
+   "antes": 1.3,
+   "referencia": 0.9,
+   "visto": "2026-11-27T15:39:42.435Z"
+  },
+  {
+   "slug": "zumaia",
+   "camara": "zumaia",
+   "tipo": "alto",
+   "horaISO": "2026-11-27T18:00",
+   "antes": 0.8,
+   "referencia": 0.7,
+   "visto": "2026-11-27T15:39:42.435Z"
+  },
+  {
+   "slug": "zumaia",
+   "camara": "zumaia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-28T15:00",
+   "antes": 0.4,
+   "referencia": null,
+   "visto": "2026-11-27T15:39:42.435Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-28T15:00",
+   "antes": 0.7,
+   "referencia": 0.6,
+   "visto": "2026-11-27T15:39:42.435Z"
   }
  ]
 }
