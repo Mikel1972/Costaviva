@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T06:37:27.471Z",
+ "actualizado": "2026-11-27T07:07:23.965Z",
  "dias": 7,
  "repetidos": [
   {
@@ -52,24 +52,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "mundaka",
-   "camara": "mundaka",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T06:00",
-   "antes": 1.2,
-   "referencia": 1,
-   "visto": "2026-11-20T06:37:28.098Z"
-  },
-  {
-   "slug": "hondarribia",
-   "camara": "hondarribia",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T06:00",
-   "antes": 0.6,
-   "referencia": 0.5,
-   "visto": "2026-11-20T06:37:28.098Z"
-  },
   {
    "slug": "sopelana",
    "camara": "sopelana",
