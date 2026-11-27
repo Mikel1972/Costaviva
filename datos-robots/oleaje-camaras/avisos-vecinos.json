@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T07:07:23.965Z",
+ "actualizado": "2026-11-27T08:41:00.716Z",
  "dias": 7,
  "repetidos": [
   {
@@ -52,42 +52,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "sopelana",
-   "camara": "sopelana",
-   "tipo": "alto",
-   "horaISO": "2026-11-20T09:00",
-   "antes": 4.1,
-   "referencia": 1.7,
-   "visto": "2026-11-20T08:10:51.692Z"
-  },
-  {
-   "slug": "sopelana",
-   "camara": "sopelana",
-   "tipo": "alto",
-   "horaISO": "2026-11-20T12:00",
-   "antes": 1.8,
-   "referencia": 1.4,
-   "visto": "2026-11-20T08:10:51.692Z"
-  },
-  {
-   "slug": "sopelana",
-   "camara": "sopelana",
-   "tipo": "alto",
-   "horaISO": "2026-11-20T15:00",
-   "antes": 1.7,
-   "referencia": 1.4,
-   "visto": "2026-11-20T08:10:51.692Z"
-  },
-  {
-   "slug": "sopelana",
-   "camara": "sopelana",
-   "tipo": "alto",
-   "horaISO": "2026-11-20T18:00",
-   "antes": 1.4,
-   "referencia": 1.3,
-   "visto": "2026-11-20T08:10:51.692Z"
-  },
   {
    "slug": "mundaka",
    "camara": "mundaka",

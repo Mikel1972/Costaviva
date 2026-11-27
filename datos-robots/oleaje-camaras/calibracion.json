@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-27T07:07:19.317Z",
- "lineasHistorial": 13573,
+ "fecha": "2026-11-27T08:38:34.557Z",
+ "lineasHistorial": 13584,
  "etiquetas": 1746,
  "etiquetasClaude": 305,
  "calibracion": {
@@ -401,9 +401,9 @@
    "correlacion": 0.521
   },
   "nz-riverton/principal": {
-   "a": 6.0995,
+   "a": 6.094,
    "p": 0.5,
-   "n": 1277,
+   "n": 1278,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 86,
    "franjasClaude": [
@@ -637,10 +637,10 @@
  },
  "fondoVsEspuma": {
   "deba": {
-   "n": 51,
+   "n": 52,
    "suficiente": false,
-   "lineas": 0.04,
-   "cerca": 0.049
+   "lineas": 0.037,
+   "cerca": 0.039
   },
   "sopelana": {
    "n": 35,
@@ -697,10 +697,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 20,
+   "n": 21,
    "suficiente": false,
-   "lineas": 0.032,
-   "cerca": -0.438
+   "lineas": 0.093,
+   "cerca": -0.32
   },
   "donostia": {
    "n": 1,
