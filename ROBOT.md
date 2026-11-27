@@ -10486,3 +10486,12 @@ Datos: `camaras-estado.json` de 2026-11-26T03:01Z (fresco). En rojo: sopelana (`
 - **piles**: `static/Piles/webcam_mini.png` da 404 mientras OlivaPuerto y CulleraCastillo (mismo servidor) dan 200 con foto de hace 40 min. Probados 10 nombres alternativos (PilesPlaya, PilesPlatja, Piles2, etc.): todos 404. La web de la Generalitat no responde desde la red de la rutina (403 en la raíz) → sin verificar el nombre nuevo. Términos probados: variantes de "Piles"/"Playa de Piles". Pendiente: ver desde fuera qué nombre usa hoy.
 - No se cambió código. Quedan para la próxima pasada: Piles, Pasaia, Russell y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-27 05:50 UTC (robot de cámaras caídas — rutina; Orio, Sopelana, Rincón de la Victoria)
+Datos: `camaras-estado.json` de 2026-11-27T03:01Z (fresco). En rojo: orio (`sin_respuesta`, 21 fallos), sopelana (`sin_respuesta`, 79), ext-yt-rincon-victoria (`youtube_sin_directo`), ext-nz-windy-russell y ext-windy-1232544942 (Windy), y pasaia, bakio y mundaka con `frame_congelado` a las 03:00 UTC (de noche; no es avería). Piles recuperada sola.
+- **orio**: `GIP_orio_169.stream` y `GIP_mutriku_169.stream` dan 404 y `GIP_zarautz_169.stream` del mismo servidor da 200 (lista de variantes `_720` y sin sufijo: 404). Es la misma intermitencia de los días 23-25 (Orio volvió sola). Sin nombre nuevo; no se toca código.
+- **sopelana**: IPCamLive `getcamerastreamstate` del alias `673c8a5893eaf` dice `streamavailable: 0`, `streamid: null`: el dueño no emite. No está movida; vuelve sola cuando la reactiven. Sin cambios.
+- **Rincón de la Victoria (YouTube)**: el vídeo `Ib0xbFBU9Wg` sigue existiendo (oEmbed 200) pero el estado dice que ya no hay directo; no pude confirmar desde aquí (YouTube no devolvió datos de la página). Es solo enlace; sin cambios. Pendiente: buscar otro directo para Málaga o retirarla.
+- Russell y Cambrils (Windy): sin cambios, sin alternativa de otro dueño encontrada.
+- No se cambió código. Quedan para la próxima pasada: Rincón de la Victoria (buscar otro directo), Russell, Cambrils.
+— robot de cámaras caídas (rutina)
