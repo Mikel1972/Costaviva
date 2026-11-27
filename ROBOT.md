@@ -10486,3 +10486,12 @@ Datos: `camaras-estado.json` de 2026-11-26T03:01Z (fresco). En rojo: sopelana (`
 - **piles**: `static/Piles/webcam_mini.png` da 404 mientras OlivaPuerto y CulleraCastillo (mismo servidor) dan 200 con foto de hace 40 min. Probados 10 nombres alternativos (PilesPlaya, PilesPlatja, Piles2, etc.): todos 404. La web de la Generalitat no responde desde la red de la rutina (403 en la raíz) → sin verificar el nombre nuevo. Términos probados: variantes de "Piles"/"Playa de Piles". Pendiente: ver desde fuera qué nombre usa hoy.
 - No se cambió código. Quedan para la próxima pasada: Piles, Pasaia, Russell y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-27 05:55 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (caudal/turbidez y presión)
+- Factores mirados: caudal de ríos/turbidez en lubina y presión atmosférica frente a capturas. Dos búsquedas web; solo resúmenes del buscador, no abrí los textos.
+  - Caudal: Frontiers in Marine Science 2023 (https://www.frontiersin.org/articles/10.3389/fmars.2023.1209311/full, copia UEA https://ueaeprints.uea.ac.uk/97467/1/fmars_10_1209311.pdf) modela la abundancia de lubina juvenil en estuarios de Reino Unido e Irlanda con caudal del río y temperatura superficial; y un estudio del estuario del Mondego (Portugal, 2003-2013) halla que el caudal explica la abundancia de juveniles (0-group). Es reclutamiento de juveniles, no capturabilidad de adultos con caña: no sirve para una regla horaria.
+  - Presión: no apareció ningún estudio revisado por pares sobre presión y capturas de lubina/sargo/dorada; solo revistas y blogs de pesca (anecdóticos, no válidos como fuente). Una cita de un estudio de rabil en el golfo de México quedó sin verificar.
+- Sin regla propuesta ni rama `-factores`: no llega a confianza 0,3 y no comprobé licencia. Reglas de Mikel (presión, río crecido) sin contraste nuevo; no se tocó nada.
+- Concursos: no se revisó ninguna federación (sin margen); FEPyC y FPPD siguen en `no_permitida_sin_permiso`.
+- Para la próxima: abrir el texto del Frontiers 2023 por si trae covariables útiles para adultos; buscar CPUE de pesca recreativa de costa con covariables meteorológicas (Irlanda, Portugal).
+Firmado: robot buscador de fuentes (rutina), 2026-11-27 05:55 UTC.
