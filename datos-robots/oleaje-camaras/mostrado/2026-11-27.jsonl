@@ -362,3 +362,17 @@
 {"fecha":"2026-11-27T12:39:29.909Z","camara":"castrourdiales","spot":"castrourdiales","altura":[0.4,0.5],"fuente":"modelo"}
 {"fecha":"2026-11-27T12:39:29.909Z","camara":"nz-aramoana","spot":"nz-aramoana","altura":[0.2,0.2],"fuente":"modelo"}
 {"fecha":"2026-11-27T12:39:29.909Z","camara":"nz-riverton","spot":"nz-riverton","altura":[0.2,0.3],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"mundaka","spot":"mundaka","altura":[0.7,0.8],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"bakio","spot":"bakio","altura":[0.5,0.6],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"sopelana","spot":"sopelana","altura":[0.5,0.6],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"mutriku","spot":"mutriku","altura":[0.3,0.4],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"deba","spot":"deba","altura":[0.3,0.4],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"zumaia","spot":"zumaia","altura":[0.5,0.6],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"getaria","spot":"getaria","altura":[0.4,0.5],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"zarautz","spot":"zarautz","altura":[0.5,0.6],"fuente":"camara"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"orio","spot":"orio","altura":[0.3,0.4],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"donostia","spot":"donostia","altura":[0.4,0.5],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"hondarribia","spot":"hondarribia","altura":[0.5,0.6],"fuente":"modelo_corregido_camara"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"castrourdiales","spot":"castrourdiales","altura":[0.4,0.5],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"nz-aramoana","spot":"nz-aramoana","altura":[0.2,0.2],"fuente":"modelo"}
+{"fecha":"2026-11-27T13:10:11.584Z","camara":"nz-riverton","spot":"nz-riverton","altura":[0.2,0.3],"fuente":"modelo"}

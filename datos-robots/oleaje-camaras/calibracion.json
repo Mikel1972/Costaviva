@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-27T12:37:41.110Z",
- "lineasHistorial": 13671,
+ "fecha": "2026-11-27T13:07:57.373Z",
+ "lineasHistorial": 13682,
  "etiquetas": 1746,
  "etiquetasClaude": 305,
  "calibracion": {
@@ -58,9 +58,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.6745,
+   "a": 2.6736,
    "p": 0.5,
-   "n": 1143,
+   "n": 1144,
    "nEtiquetas": 288,
    "nEtiquetasClaude": 34,
    "franjasClaude": [
@@ -535,7 +535,7 @@
    "motivo": "307 etiquetas",
    "ruido": {
     "ruido": 0.538,
-    "pares": 741
+    "pares": 742
    }
   },
   "getaria": {
@@ -697,10 +697,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 22,
+   "n": 23,
    "suficiente": false,
-   "lineas": 0.133,
-   "cerca": -0.21
+   "lineas": 0.107,
+   "cerca": -0.194
   },
   "donostia": {
    "n": 1,
