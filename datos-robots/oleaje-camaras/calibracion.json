@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-27T00:37:20.983Z",
- "lineasHistorial": 13536,
- "etiquetas": 1744,
- "etiquetasClaude": 303,
+ "fecha": "2026-11-27T01:07:19.789Z",
+ "lineasHistorial": 13539,
+ "etiquetas": 1746,
+ "etiquetasClaude": 305,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.2286,
@@ -401,11 +401,11 @@
    "correlacion": 0.521
   },
   "nz-riverton/principal": {
-   "a": 6.2051,
+   "a": 6.1603,
    "p": 0.5,
-   "n": 1262,
+   "n": 1265,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 84,
+   "nEtiquetasClaude": 86,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -460,7 +460,8 @@
     "2026-11-24T00",
     "2026-11-24T22",
     "2026-11-25T00",
-    "2026-11-26T00"
+    "2026-11-26T00",
+    "2026-11-27T00"
    ],
    "dias": 48,
    "hMin": 0.23,
@@ -630,7 +631,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 1069
+    "pares": 1070
    }
   }
  },
@@ -678,7 +679,7 @@
    "cerca": 0.205
   },
   "nz-riverton": {
-   "n": 199,
+   "n": 200,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -718,29 +719,29 @@
   "global": {
    "24-48": {
     "factor": 0.806,
-    "n": 405,
-    "peso": 403.6,
+    "n": 407,
+    "peso": 405.6,
     "mae": 0.27,
     "maeCorregido": 0.24
    },
    "6-24": {
     "factor": 0.758,
-    "n": 535,
-    "peso": 534.3,
+    "n": 536,
+    "peso": 535.3,
     "mae": 0.28,
     "maeCorregido": 0.23
    },
    "0-6": {
-    "factor": 1.023,
-    "n": 13,
-    "peso": 13,
+    "factor": 1.01,
+    "n": 14,
+    "peso": 14,
     "mae": 0.06,
     "maeCorregido": 0.06
    },
    "48-72": {
     "factor": 0.793,
-    "n": 338,
-    "peso": 338,
+    "n": 339,
+    "peso": 339,
     "mae": 0.3,
     "maeCorregido": 0.26
    }
@@ -955,32 +956,32 @@
    },
    "nz-riverton": {
     "0-6": {
-     "factor": 0.996,
-     "n": 10,
-     "peso": 10,
+     "factor": 0.982,
+     "n": 11,
+     "peso": 11,
      "mae": 0.06,
      "maeCorregido": 0.06
     },
     "6-24": {
-     "factor": 0.994,
-     "n": 7,
-     "peso": 7,
-     "mae": 0.05,
-     "maeCorregido": 0.05
+     "factor": 0.981,
+     "n": 8,
+     "peso": 8,
+     "mae": 0.06,
+     "maeCorregido": 0.06
     },
     "24-48": {
-     "factor": 0.999,
-     "n": 16,
-     "peso": 16,
+     "factor": 0.981,
+     "n": 18,
+     "peso": 18,
      "mae": 0.06,
      "maeCorregido": 0.06
     },
     "48-72": {
-     "factor": 0.998,
-     "n": 6,
-     "peso": 6,
-     "mae": 0.03,
-     "maeCorregido": 0.03
+     "factor": 0.982,
+     "n": 7,
+     "peso": 7,
+     "mae": 0.04,
+     "maeCorregido": 0.04
     }
    },
    "castrourdiales": {

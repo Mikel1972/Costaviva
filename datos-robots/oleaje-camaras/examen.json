@@ -1,8 +1,8 @@
 {
- "generado": "2026-11-27T00:37:29.279Z",
+ "generado": "2026-11-27T01:07:40.531Z",
  "tolerancia": 0.3,
  "resumen": {
-  "examenes": 417,
+  "examenes": 421,
   "suspensos": 22
  },
  "suspensos24h": [
@@ -165,29 +165,11 @@
  "camaras": {
   "nz-riverton": {
    "spot": "nz-riverton",
-   "examenes": 11,
+   "examenes": 13,
    "suspensos": 0,
-   "errorMedio": 0.05,
+   "errorMedio": 0.07,
    "racha": 0,
    "ultimos": [
-    {
-     "fecha": "2026-11-23T00:02:13.000Z",
-     "banda": "<0.5",
-     "mostrado": [
-      0.5,
-      0.6
-     ],
-     "error": 0.05
-    },
-    {
-     "fecha": "2026-11-23T00:32:13.000Z",
-     "banda": "<0.5",
-     "mostrado": [
-      0.5,
-      0.6
-     ],
-     "error": 0.05
-    },
     {
      "fecha": "2026-11-23T23:32:12.000Z",
      "banda": "<0.5",
@@ -214,34 +196,34 @@
       0.7
      ],
      "error": 0.15
+    },
+    {
+     "fecha": "2026-11-27T00:02:13.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.6,
+      0.7
+     ],
+     "error": 0.15
+    },
+    {
+     "fecha": "2026-11-27T00:32:13.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.6,
+      0.7
+     ],
+     "error": 0.15
     }
    ]
   },
   "nz-aramoana": {
    "spot": "nz-aramoana",
-   "examenes": 6,
+   "examenes": 8,
    "suspensos": 0,
    "errorMedio": 0.01,
    "racha": 0,
    "ultimos": [
-    {
-     "fecha": "2026-11-21T00:40:05.000Z",
-     "banda": "<0.5",
-     "mostrado": [
-      0.3,
-      0.4
-     ],
-     "error": 0
-    },
-    {
-     "fecha": "2026-11-23T00:40:04.000Z",
-     "banda": "<0.5",
-     "mostrado": [
-      0.3,
-      0.3
-     ],
-     "error": 0
-    },
     {
      "fecha": "2026-11-25T00:40:07.000Z",
      "banda": "<0.5",
@@ -268,6 +250,24 @@
       0.6
      ],
      "error": 0.05
+    },
+    {
+     "fecha": "2026-11-27T00:05:04.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.2,
+      0.2
+     ],
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-27T00:40:08.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.2,
+      0.2
+     ],
+     "error": 0
     }
    ]
   },
