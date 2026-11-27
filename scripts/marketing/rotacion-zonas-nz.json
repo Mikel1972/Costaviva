@@ -9,11 +9,12 @@
     "taranaki",
     "wellington",
     "nelson-marlborough",
-    "canterbury"
+    "canterbury",
+    "otago"
   ],
   "ciclo": 1,
-  "ultimaZona": "canterbury",
-  "ultimaRegion": "nz_kaikoura",
-  "ultimoSpot": "nz-motunau-beach",
-  "fecha": "2026-11-20T05:30:34.032Z"
+  "ultimaZona": "otago",
+  "ultimaRegion": "nz_south_east",
+  "ultimoSpot": "nz-moeraki",
+  "fecha": "2026-11-27T05:20:55.686Z"
 }
