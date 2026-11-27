@@ -1,21 +1,21 @@
 {
- "actualizado": "2026-11-27T08:41:00.716Z",
+ "actualizado": "2026-11-27T09:10:04.140Z",
  "dias": 7,
  "repetidos": [
   {
-   "clave": "sopelana",
-   "alto": 3,
-   "bajo": 3,
-   "spots": [
-    "sopelana"
-   ]
-  },
-  {
    "clave": "bakio",
-   "alto": 3,
+   "alto": 4,
    "bajo": 0,
    "spots": [
     "bakio"
+   ]
+  },
+  {
+   "clave": "sopelana",
+   "alto": 2,
+   "bajo": 3,
+   "spots": [
+    "sopelana"
    ]
   },
   {
@@ -1905,6 +1905,24 @@
    "antes": 0.7,
    "referencia": 0.4,
    "visto": "2026-11-27T06:37:27.471Z"
+  },
+  {
+   "slug": "bakio",
+   "camara": "bakio",
+   "tipo": "alto",
+   "horaISO": "2026-11-27T12:00",
+   "antes": 0.7,
+   "referencia": 0.6,
+   "visto": "2026-11-27T09:10:04.140Z"
+  },
+  {
+   "slug": "donostia",
+   "camara": "donostia",
+   "tipo": "bajo",
+   "horaISO": "2026-11-27T12:00",
+   "antes": 0.3,
+   "referencia": null,
+   "visto": "2026-11-27T09:10:04.140Z"
   }
  ]
 }

@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-27T08:38:34.557Z",
- "lineasHistorial": 13584,
+ "fecha": "2026-11-27T09:07:55.650Z",
+ "lineasHistorial": 13595,
  "etiquetas": 1746,
  "etiquetasClaude": 305,
  "calibracion": {
@@ -58,9 +58,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.6774,
+   "a": 2.6771,
    "p": 0.5,
-   "n": 1138,
+   "n": 1139,
    "nEtiquetas": 288,
    "nEtiquetasClaude": 34,
    "franjasClaude": [
@@ -91,7 +91,7 @@
     "2026-11-25T12",
     "2026-11-25T14"
    ],
-   "dias": 50,
+   "dias": 51,
    "hMin": 0.15,
    "hMax": 6.97,
    "errorRel": 1,
@@ -133,9 +133,9 @@
    "correlacion": 0.124
   },
   "deba/rompiente": {
-   "a": 2.7082,
+   "a": 2.7083,
    "p": 0.5,
-   "n": 391,
+   "n": 392,
    "nEtiquetas": 102,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -150,7 +150,7 @@
     "2026-11-01T16",
     "2026-11-04T16"
    ],
-   "dias": 47,
+   "dias": 48,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -183,9 +183,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.7495,
+   "a": 1.747,
    "p": 0.5,
-   "n": 180,
+   "n": 181,
    "nEtiquetas": 37,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -203,12 +203,12 @@
     "2026-11-07T14",
     "2026-11-25T12"
    ],
-   "dias": 46,
+   "dias": 47,
    "hMin": 0.27,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.047
+   "correlacion": -0.048
   },
   "sopelana/principal": {
    "a": 2.2775,
@@ -535,7 +535,7 @@
    "motivo": "307 etiquetas",
    "ruido": {
     "ruido": 0.538,
-    "pares": 738
+    "pares": 739
    }
   },
   "getaria": {
@@ -580,10 +580,10 @@
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "estable (±30 % entre lecturas cercanas)",
+   "motivo": "37 etiquetas",
    "ruido": {
-    "ruido": 0.297,
-    "pares": 36
+    "ruido": 0.303,
+    "pares": 37
    }
   },
   "sopelana": {
@@ -697,10 +697,10 @@
    "cerca": null
   },
   "bakio": {
-   "n": 21,
+   "n": 22,
    "suficiente": false,
-   "lineas": 0.093,
-   "cerca": -0.32
+   "lineas": 0.133,
+   "cerca": -0.21
   },
   "donostia": {
    "n": 1,
