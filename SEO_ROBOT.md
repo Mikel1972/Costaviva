@@ -77,3 +77,11 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - KPIs: país en foco España; paso más en rojo, altas (visita → alta). Evaluación de cambios anteriores: sin cambios evaluables todavía. Cambios nuevos: ninguno (con visitas cerca del objetivo y altas a cero, el problema no parece de texto; ver propuesta). Propuesta para Mikel: costaviva-kpis-bajo-suelo (medir clics al botón de prueba gratis por página antes de tocar textos).
 - PARTE A y B: ninguna; sin datos que lo justifiquen. PARTE D (DeepL): día 24, no aplica.
 - Esperado próxima pasada: PR fusionada; 40 o más indexadas; primer s1 de /spots (cambio del 20-nov).
+
+## 2026-11-27 06:3x UTC (viernes)
+- Aviso: SEO_ESTADO.md es del 2026-11-25 16:35 UTC (no de hoy). Indexadas 103 de 300 inspeccionadas (34 %; el límite de cuota es de 300 URLs, no comparable con las 500 de la entrada anterior); 197 sin rastrear nunca. Google, 28 días: 30 clics y 2940 impresiones (CTR 1,0 %, posición 24,9); últimos 7 días: 18 clics y 2017 impresiones frente a 2 y 641 los 7 anteriores (sube fuerte).
+- País priorizado: España (pais_foco, el más lejos de su objetivo; PT y NZ también en rojo).
+- PARTE C: ningún cambio de página esta pasada. Los huecos mejor puntuados de España caen en páginas tocadas hace pocos días y aún en medición: /especies/calamar y /especies/lubina (cambio 23-oct, sin veredicto), /especies (24-nov) y las páginas de región (FAQ y títulos del 23-nov); volver a tocarlas impediría medir. /mareas/denia (titular, pos. 10,0) depende de la plantilla de spots, retocada recientemente. Técnicas (spinning, surfcasting en PT): sin datos reales con fuente en la app.
+- Veredictos: 12-oct, 23-oct, 20-nov y 24-nov siguen "pendiente" en comun; nada que revertir.
+- PARTE A y B: ninguna; sin datos que lo justifiquen. PARTE D (DeepL): día 27, no aplica; KPIs solo martes.
+- Esperado próxima pasada: primeros s1/s2 de /spots (20-nov) y /especies (24-nov); 103 o más indexadas; si los veredictos salen, actuar sobre región (Cádiz, Galicia, Canarias).
