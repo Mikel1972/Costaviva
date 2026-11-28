@@ -274,3 +274,15 @@ test("botón a la app arriba en las fichas, en el idioma de la página", async (
   assert.match(ctaArriba("pt"), /pesqueiro/);
   for (const f of ["paginas.js", "paginas-pt.js", "paginas-en.js"]) assert.match(leer(`functions/_lib/seo/${f}`), /ctaArriba\("(es|pt|en)"/);
 });
+
+test("alta: cursor en el email, CAPTCHA solo si hace falta y botón claro (2026-11-28)", () => {
+  const h = leer("login.html");
+  assert.match(h, /appearance: "interaction-only"/);
+  assert.match(h, /emailRegistro"\)\.focus\(/);
+  assert.match(h, /data-i18n="login\.empezar_prueba"/);
+  assert.match(h, /data-i18n="login\.nota_email"/);
+  for (const l of ["es", "en", "pt"]) {
+    const t = leer(`assets/i18n/${l}.js`);
+    for (const k of ["login.empezar_prueba", "login.nota_email", "login.placeholder_email"]) assert.ok(t.includes(`"${k}"`), `${l} ${k}`);
+  }
+});
