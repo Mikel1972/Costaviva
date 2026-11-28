@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-28T00:37:20.879Z",
- "lineasHistorial": 13783,
- "etiquetas": 1748,
- "etiquetasClaude": 307,
+ "fecha": "2026-11-28T01:07:23.966Z",
+ "lineasHistorial": 13786,
+ "etiquetas": 1750,
+ "etiquetasClaude": 309,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.2278,
@@ -401,11 +401,11 @@
    "correlacion": 0.521
   },
   "nz-riverton/principal": {
-   "a": 6.0292,
+   "a": 6.0159,
    "p": 0.5,
-   "n": 1293,
+   "n": 1295,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 87,
+   "nEtiquetasClaude": 88,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -462,9 +462,10 @@
     "2026-11-25T00",
     "2026-11-26T00",
     "2026-11-27T00",
-    "2026-11-27T22"
+    "2026-11-27T22",
+    "2026-11-28T00"
    ],
-   "dias": 48,
+   "dias": 49,
    "hMin": 0.23,
    "hMax": 4.42,
    "errorRel": 1,
@@ -632,7 +633,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 1094
+    "pares": 1095
    }
   }
  },
@@ -680,7 +681,7 @@
    "cerca": 0.205
   },
   "nz-riverton": {
-   "n": 227,
+   "n": 228,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -719,11 +720,11 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.807,
-    "n": 409,
-    "peso": 407.6,
+    "factor": 0.808,
+    "n": 411,
+    "peso": 409.6,
     "mae": 0.27,
-    "maeCorregido": 0.24
+    "maeCorregido": 0.23
    },
    "6-24": {
     "factor": 0.759,
@@ -733,16 +734,16 @@
     "maeCorregido": 0.23
    },
    "0-6": {
-    "factor": 1.01,
-    "n": 14,
-    "peso": 14,
-    "mae": 0.06,
-    "maeCorregido": 0.06
+    "factor": 1.014,
+    "n": 16,
+    "peso": 16,
+    "mae": 0.07,
+    "maeCorregido": 0.07
    },
    "48-72": {
-    "factor": 0.793,
-    "n": 339,
-    "peso": 339,
+    "factor": 0.794,
+    "n": 341,
+    "peso": 341,
     "mae": 0.3,
     "maeCorregido": 0.26
    }
@@ -927,9 +928,9 @@
    },
    "nz-aramoana": {
     "24-48": {
-     "factor": 1.057,
-     "n": 5,
-     "peso": 5,
+     "factor": 1.081,
+     "n": 6,
+     "peso": 6,
      "mae": 0.09,
      "maeCorregido": 0.09
     },
@@ -941,26 +942,26 @@
      "maeCorregido": 0.09
     },
     "48-72": {
-     "factor": 1.049,
-     "n": 3,
-     "peso": 3,
-     "mae": 0.05,
-     "maeCorregido": 0.05
+     "factor": 1.072,
+     "n": 4,
+     "peso": 4,
+     "mae": 0.06,
+     "maeCorregido": 0.06
     },
     "0-6": {
-     "factor": 1.049,
-     "n": 3,
-     "peso": 3,
-     "mae": 0.05,
-     "maeCorregido": 0.05
+     "factor": 1.076,
+     "n": 4,
+     "peso": 4,
+     "mae": 0.06,
+     "maeCorregido": 0.06
     }
    },
    "nz-riverton": {
     "0-6": {
-     "factor": 0.982,
-     "n": 11,
-     "peso": 11,
-     "mae": 0.06,
+     "factor": 0.97,
+     "n": 12,
+     "peso": 12,
+     "mae": 0.07,
      "maeCorregido": 0.06
     },
     "6-24": {
@@ -971,18 +972,18 @@
      "maeCorregido": 0.05
     },
     "24-48": {
-     "factor": 0.972,
-     "n": 19,
-     "peso": 19,
+     "factor": 0.966,
+     "n": 20,
+     "peso": 20,
      "mae": 0.07,
      "maeCorregido": 0.06
     },
     "48-72": {
-     "factor": 0.982,
-     "n": 7,
-     "peso": 7,
-     "mae": 0.04,
-     "maeCorregido": 0.04
+     "factor": 0.967,
+     "n": 8,
+     "peso": 8,
+     "mae": 0.05,
+     "maeCorregido": 0.05
     }
    },
    "castrourdiales": {

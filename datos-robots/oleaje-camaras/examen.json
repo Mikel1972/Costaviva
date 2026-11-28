@@ -1,8 +1,8 @@
 {
- "generado": "2026-11-28T00:38:04.164Z",
+ "generado": "2026-11-28T01:07:32.535Z",
  "tolerancia": 0.3,
  "resumen": {
-  "examenes": 422,
+  "examenes": 423,
   "suspensos": 22
  },
  "suspensos24h": [],
@@ -64,20 +64,11 @@
   },
   "nz-aramoana": {
    "spot": "nz-aramoana",
-   "examenes": 9,
+   "examenes": 10,
    "suspensos": 0,
    "errorMedio": 0.01,
    "racha": 0,
    "ultimos": [
-    {
-     "fecha": "2026-11-25T01:10:05.000Z",
-     "banda": "<0.5",
-     "mostrado": [
-      0.2,
-      0.2
-     ],
-     "error": 0
-    },
     {
      "fecha": "2026-11-26T00:05:04.000Z",
      "banda": "<0.5",
@@ -107,6 +98,15 @@
     },
     {
      "fecha": "2026-11-28T00:05:05.000Z",
+     "banda": "<0.5",
+     "mostrado": [
+      0.2,
+      0.2
+     ],
+     "error": 0
+    },
+    {
+     "fecha": "2026-11-28T00:35:05.000Z",
      "banda": "<0.5",
      "mostrado": [
       0.2,

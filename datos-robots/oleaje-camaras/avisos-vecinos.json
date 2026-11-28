@@ -1,37 +1,29 @@
 {
- "actualizado": "2026-11-28T00:37:26.527Z",
+ "actualizado": "2026-11-28T01:07:30.601Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "mundaka",
-   "alto": 9,
+   "alto": 8,
    "bajo": 0,
    "spots": [
     "mundaka"
    ]
   },
   {
-   "clave": "zumaia",
-   "alto": 1,
-   "bajo": 7,
-   "spots": [
-    "zumaia"
-   ]
-  },
-  {
    "clave": "orio",
-   "alto": 9,
+   "alto": 8,
    "bajo": 0,
    "spots": [
     "orio"
    ]
   },
   {
-   "clave": "hondarribia",
+   "clave": "zumaia",
    "alto": 1,
-   "bajo": 2,
+   "bajo": 6,
    "spots": [
-    "hondarribia"
+    "zumaia"
    ]
   }
  ],
