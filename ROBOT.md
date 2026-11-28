@@ -10486,3 +10486,11 @@ Datos: `camaras-estado.json` de 2026-11-26T03:01Z (fresco). En rojo: sopelana (`
 - **piles**: `static/Piles/webcam_mini.png` da 404 mientras OlivaPuerto y CulleraCastillo (mismo servidor) dan 200 con foto de hace 40 min. Probados 10 nombres alternativos (PilesPlaya, PilesPlatja, Piles2, etc.): todos 404. La web de la Generalitat no responde desde la red de la rutina (403 en la raíz) → sin verificar el nombre nuevo. Términos probados: variantes de "Piles"/"Playa de Piles". Pendiente: ver desde fuera qué nombre usa hoy.
 - No se cambió código. Quedan para la próxima pasada: Piles, Pasaia, Russell y Cambrils.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-28 05:45 UTC (robot de cámaras caídas — rutina; Sopelana, Orio, Pasaia)
+Datos: `camaras-estado.json` de 2026-11-28T03:02Z (fresco). En rojo: ext-nz-windy-russell (`windy_no_existe`), sopelana, ext-yt-rincon-victoria (`youtube_sin_directo`), pasaia (`frame_plano`), orio, ext-windy-1232544942 (`windy_inactiva`); cangas, bakio y mundaka `frame_congelado` a las 03:00 UTC (de noche, no es avería).
+- **sopelana**: IPCamLive alias `673c8a5893eaf` sigue con `streamid` vacío (cámara apagada por el dueño, no movida). Nada que cambiar.
+- **orio**: `GIP_orio_169.stream/playlist.m3u8` da 404 mientras hondarribia, zurriola, zarautz, deba y saturraran dan 200. Probados 8 nombres alternativos (GIP_orio, _16_9, orioplaya, oria, _43, _hd...): todos 404. Parece retirada por la Diputación (como mutrikukaia en oct); sin alternativa local encontrada. Términos: variantes "GIP_orio*". Pendiente: buscar otra cámara de Orio/Aia.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200 pero `Last-Modified` 2026-11-27 18:04 GMT y la imagen es negra (noche, solo dos luces): la fuente no se actualiza desde ayer tarde; no hay URL movida. Revisar de día.
+- No se cambió código. Para la próxima: Orio (alternativa), Pasaia (de día), Russell y Rincón de la Victoria (Windy/YouTube).
+— robot de cámaras caídas (rutina)
