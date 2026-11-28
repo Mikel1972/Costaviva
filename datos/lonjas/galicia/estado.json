@@ -194,13 +194,13 @@
    "dias_con_ventas": 317
   },
   "2026": {
-   "hasta": "2026-11-24",
+   "hasta": "2026-11-25",
    "fallidos": [],
    "completo": false,
-   "filas": 49519,
-   "kg": 33536140,
-   "dias_con_ventas": 288
+   "filas": 49738,
+   "kg": 33609004,
+   "dias_con_ventas": 289
   }
  },
- "actualizado": "2026-11-27T11:23:25.002Z"
+ "actualizado": "2026-11-28T02:41:24.220Z"
 }
