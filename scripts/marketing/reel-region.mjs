@@ -24,7 +24,10 @@ import { regionEspeciesDeSpot } from "../../functions/_lib/seo/datos.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const RUTA_ROTACION_REGION = join(__dirname, "rotacion-reels-region.json");
-export const CLIP_REGION = "coverr-pescador-costa-rocosa.mp4";
+// Sin persona identificable (2026-11-28): con el de antes
+// (coverr-pescador-costa-rocosa, persona_identificable: true) el veto nunca
+// lo publicaba solo (veto.mjs). Mismo tipo de costa rocosa, pescador de espaldas.
+export const CLIP_REGION = "coverr-pescador-rocas-oleaje.mp4";
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
 // Orden de la serie (Galicia, la última: ya tuvo su reel el 22/11). `en` es

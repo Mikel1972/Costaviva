@@ -584,3 +584,9 @@ test("reel de región el lunes 30/11: mira a diciembre y lleva el último día d
   assert.match(R.captionRegion("2026-11-30", r, d, "Vídeo: x"), /último día/);
   assert.doesNotMatch(R.captionRegion("2026-12-03", r, d, "Vídeo: x"), /BLACKFRIDAY/);
 });
+
+test("el clip de la serie región no tiene personas identificables (si no, el veto no lo publica)", async () => {
+  const R = await import("../scripts/marketing/reel-region.mjs");
+  const ficha = JSON.parse(readFileSync(`scripts/marketing/clips/stock/${R.CLIP_REGION.replace(/\.mp4$/, "")}.licencia.json`, "utf8"));
+  assert.equal(ficha.persona_identificable, false);
+});
