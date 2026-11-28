@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-28T10:15:39.672Z",
+ "actualizado": "2026-11-28T10:39:44.712Z",
  "dias": 7,
  "repetidos": [
   {
@@ -36,15 +36,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "zumaia",
-   "camara": "zumaia",
-   "tipo": "bajo",
-   "horaISO": "2026-11-21T12:00",
-   "antes": 0.6,
-   "referencia": null,
-   "visto": "2026-11-21T10:39:37.139Z"
-  },
   {
    "slug": "zumaia",
    "camara": "zumaia",
