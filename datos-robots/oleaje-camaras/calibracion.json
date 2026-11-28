@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-28T09:37:48.487Z",
- "lineasHistorial": 13852,
+ "fecha": "2026-11-28T10:07:54.871Z",
+ "lineasHistorial": 13862,
  "etiquetas": 1750,
  "etiquetasClaude": 309,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2278,
+   "a": 1.2303,
    "p": 0.5,
-   "n": 395,
+   "n": 396,
    "nEtiquetas": 99,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -19,12 +19,12 @@
     "2026-11-26T08",
     "2026-11-26T14"
    ],
-   "dias": 48,
+   "dias": 49,
    "hMin": 0.03,
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.088
+   "correlacion": -0.09
   },
   "hondarribia/bocana": {
    "a": 2.9247,
@@ -58,9 +58,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.6723,
+   "a": 2.674,
    "p": 0.5,
-   "n": 1152,
+   "n": 1153,
    "nEtiquetas": 288,
    "nEtiquetasClaude": 34,
    "franjasClaude": [
@@ -251,9 +251,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.4849,
+   "a": 2.4812,
    "p": 0.5,
-   "n": 220,
+   "n": 221,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -273,9 +273,9 @@
    "correlacion": 0.014
   },
   "berria/dinamico": {
-   "a": 2.7016,
+   "a": 2.7006,
    "p": 0.5,
-   "n": 602,
+   "n": 603,
    "nEtiquetas": 159,
    "nEtiquetasClaude": 24,
    "franjasClaude": [
@@ -293,7 +293,7 @@
     "2026-11-25T12",
     "2026-11-25T14"
    ],
-   "dias": 50,
+   "dias": 51,
    "hMin": 0.27,
    "hMax": 4.73,
    "errorRel": 1,
@@ -512,8 +512,8 @@
    "sustituye": true,
    "motivo": "108 etiquetas",
    "ruido": {
-    "ruido": 0.605,
-    "pares": 155
+    "ruido": 0.598,
+    "pares": 156
    }
   },
   "donostia": {
@@ -537,7 +537,7 @@
    "motivo": "307 etiquetas",
    "ruido": {
     "ruido": 0.538,
-    "pares": 749
+    "pares": 750
    }
   },
   "getaria": {
@@ -600,8 +600,8 @@
    "sustituye": true,
    "motivo": "159 etiquetas",
    "ruido": {
-    "ruido": 0.84,
-    "pares": 244
+    "ruido": 0.852,
+    "pares": 245
    }
   },
   "castrourdiales": {
@@ -645,10 +645,10 @@
    "cerca": 0.039
   },
   "sopelana": {
-   "n": 39,
+   "n": 40,
    "suficiente": false,
-   "lineas": -0.205,
-   "cerca": -0.001
+   "lineas": -0.16,
+   "cerca": -0.044
   },
   "castrourdiales": {
    "n": 16,
