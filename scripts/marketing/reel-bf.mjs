@@ -13,14 +13,16 @@ import { campanaDe } from "./campana-temporal.mjs";
 
 export function piezaBf(fecha) {
   const durante = fecha >= "2026-11-27";
+  // Lunes 30 (2026-11-28, Mikel: «Reel. Ok.»): reel del último día.
+  const ultimo = fecha === "2026-11-30";
   return {
-    spot: durante ? "Black Friday<br>hasta el lunes 30" : "Black Friday<br>27-30 nov",
+    spot: ultimo ? "Black Friday<br>último día: hoy" : durante ? "Black Friday<br>hasta el lunes 30" : "Black Friday<br>27-30 nov",
     gancho: "2x1: un año para ti y otro para tu compañero de pesca",
     cinta: campanaDe(fecha)?.cinta || "BLACK FRIDAY 2x1",
     tarjetas: [
       { etq: "Tú", val: "1 año de Premium", sub: "Plan anual · 34,99 € (IVA incluido)" },
       { etq: "Tu compañero de pesca", val: "1 año gratis", sub: "Sin tarjeta · se apunta hasta el 31/12" },
-      { etq: "Código", val: "BLACKFRIDAY", sub: "Solo del viernes 27 al lunes 30 de noviembre" },
+      { etq: "Código", val: "BLACKFRIDAY", sub: ultimo ? "Último día: hoy lunes 30 hasta las 23:59" : "Solo del viernes 27 al lunes 30 de noviembre" },
     ],
     lema: "Mareas, olas, normas y el índice de pesca de tu zona. <em>Para los dos.</em>",
     cta: "Código BLACKFRIDAY",
@@ -40,13 +42,13 @@ async function main() {
   const rutaRelativa = `assets/marketing/reels/${fecha}-black-friday.mp4`;
   await montarVideo({ datos, clip, rutaRelativa });
   const caption = [
-    "🖤 BLACK FRIDAY 2x1 en Costaviva 🎣",
+    fecha === "2026-11-30" ? "⏰ ÚLTIMO DÍA del BLACK FRIDAY 2x1 en Costaviva 🎣 (hoy hasta las 23:59)" : "🖤 BLACK FRIDAY 2x1 en Costaviva 🎣",
     "",
     "Paga el plan anual con el código BLACKFRIDAY y regala otro año de Premium a tu compañero de pesca.",
     "",
     "✅ Tú: 1 año de Premium por 34,99 € (IVA incluido).",
     "🎁 Tu compañero: 1 año gratis, sin tarjeta. Tiene hasta el 31 de diciembre para apuntarse y su año empieza ese día.",
-    "📅 Solo del viernes 27 al lunes 30 de noviembre.",
+    fecha === "2026-11-30" ? "📅 Solo hoy, lunes 30 de noviembre, hasta las 23:59." : "📅 Solo del viernes 27 al lunes 30 de noviembre.",
     "",
     "Cómo: entra en Costaviva → Mi suscripción → plan anual → escribe BLACKFRIDAY → paga → regala el año con el email de tu compañero.",
     "",

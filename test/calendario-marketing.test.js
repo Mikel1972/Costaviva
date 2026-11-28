@@ -562,3 +562,11 @@ test("serie región (2026-11-26): ¿qué se pesca en <región> este mes?, con da
   assert.match(reel, /"\$TIPO_REEL" = "region" \]; then node reel-region\.mjs/);
   assert.match(reel, /rotacion-reels-region\.json/);
 });
+
+test("reel del Black Friday: el lunes 30 dice que es el último día", async () => {
+  const { piezaBf } = await import("../scripts/marketing/reel-bf.mjs");
+  const p = piezaBf("2026-11-30");
+  assert.match(p.spot, /último día/);
+  assert.match(p.tarjetas[2].sub, /hoy lunes 30 hasta las 23:59/);
+  assert.match(piezaBf("2026-11-28").spot, /hasta el lunes 30/);
+});
