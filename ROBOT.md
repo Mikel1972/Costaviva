@@ -10494,3 +10494,9 @@ Datos: `camaras-estado.json` de 2026-11-28T03:02Z (fresco). En rojo: ext-nz-wind
 - **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200 pero `Last-Modified` 2026-11-27 18:04 GMT y la imagen es negra (noche, solo dos luces): la fuente no se actualiza desde ayer tarde; no hay URL movida. Revisar de día.
 - No se cambió código. Para la próxima: Orio (alternativa), Pasaia (de día), Russell y Rincón de la Victoria (Windy/YouTube).
 — robot de cámaras caídas (rutina)
+
+### 2026-11-28 05:55 UTC — robot buscador de fuentes (rutina): sábado, cámaras, zona Portugal — sur
+- Sin cambios en código. Los 11 spots de la zona (cascais, costadacaparica, troia, sines, milfontes, sagres, lagos, faro, etc.) ya tienen al menos una cámara de enlace (MEO Beachcam, Skyline en Lagos, YouTube en Caparica); ninguno está sin cámara.
+- portugalwebcams.pt: la página de Lisboa responde 200 pero no lista enlaces de cámaras en el HTML (se carga con JavaScript) y la de Algarve da 404 con la URL probada; no se pudo sacar ningún ID de Windy nuevo de esta zona.
+- La pasada corre a las 05:55 UTC, de noche en Portugal: aunque hubiera candidatas, no se puede comprobar a ojo que se lea el mar. Sin spot nuevo creado. Pendiente: las 7 candidatas de Windy de Portugal centro/norte (entrada del 2026-11-25) siguen necesitando verse de día.
+Firmado: robot buscador de fuentes (rutina), 2026-11-28 05:55 UTC.
