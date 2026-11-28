@@ -1,21 +1,13 @@
 {
- "actualizado": "2026-11-28T03:37:23.888Z",
+ "actualizado": "2026-11-28T04:07:27.578Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "mundaka",
-   "alto": 9,
+   "alto": 8,
    "bajo": 0,
    "spots": [
     "mundaka"
-   ]
-  },
-  {
-   "clave": "orio",
-   "alto": 9,
-   "bajo": 0,
-   "spots": [
-    "orio"
    ]
   },
   {
@@ -24,6 +16,14 @@
    "bajo": 6,
    "spots": [
     "zumaia"
+   ]
+  },
+  {
+   "clave": "orio",
+   "alto": 8,
+   "bajo": 0,
+   "spots": [
+    "orio"
    ]
   },
   {
