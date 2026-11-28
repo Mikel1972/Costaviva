@@ -570,3 +570,17 @@ test("reel del Black Friday: el lunes 30 dice que es el último día", async () 
   assert.match(p.tarjetas[2].sub, /hoy lunes 30 hasta las 23:59/);
   assert.match(piezaBf("2026-11-28").spot, /hasta el lunes 30/);
 });
+
+test("reel de región el lunes 30/11: mira a diciembre y lleva el último día del 2x1", async () => {
+  const R = await import("../scripts/marketing/reel-region.mjs");
+  assert.equal(R.mesDelReel("2026-11-30"), 12);
+  assert.equal(R.mesDelReel("2026-12-31"), 1);
+  assert.equal(R.mesDelReel("2026-12-03"), 12);
+  const especies = JSON.parse(readFileSync("assets/datos/especies.json", "utf8"));
+  const r = R.ROTACION_REGIONES[0];
+  const d = R.pecesDeRegion(especies, r.slug, 12);
+  assert.match(R.piezaRegion("2026-11-30", r, d).gancho, /en diciembre\?$/);
+  assert.match(R.piezaRegion("2026-11-30", r, d).cinta, /BLACKFRIDAY/);
+  assert.match(R.captionRegion("2026-11-30", r, d, "Vídeo: x"), /último día/);
+  assert.doesNotMatch(R.captionRegion("2026-12-03", r, d, "Vídeo: x"), /BLACKFRIDAY/);
+});

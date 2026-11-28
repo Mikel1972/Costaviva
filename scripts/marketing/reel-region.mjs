@@ -45,6 +45,14 @@ export function siguienteRegion(ultima) {
   return ROTACION_REGIONES[(i + 1) % ROTACION_REGIONES.length];
 }
 
+// Mes del reel: el de la fecha, salvo en los 3 últimos días del mes (28-31),
+// que ya mira al que empieza (2026-11-28, Mikel: el lunes 30, «¿qué se pesca
+// en diciembre?»).
+export function mesDelReel(fecha) {
+  const m = Number(fecha.slice(5, 7));
+  return Number(fecha.slice(8, 10)) >= 28 ? (m % 12) + 1 : m;
+}
+
 const nombreCorto = (n) => String(n).replace(/\s*\(.*\)\s*$/, "");
 
 // { total, spots, nombresSpots, ahora, deEstaEpoca, todoElAno }
@@ -66,7 +74,7 @@ export function pecesDeRegion(especiesDatos, slug, mes, spots = SPOTS) {
 }
 
 export function piezaRegion(fecha, region, datos) {
-  const mes = MESES[Number(fecha.slice(5, 7)) - 1];
+  const mes = MESES[mesDelReel(fecha) - 1];
   const muestra = (datos.deEstaEpoca.length ? datos.deEstaEpoca : datos.ahora).slice(0, 5).join(", ");
   return {
     spot: `Peces de ${region.en}`,
@@ -82,7 +90,7 @@ export function piezaRegion(fecha, region, datos) {
 }
 
 export function captionRegion(fecha, region, datos, credito) {
-  const mes = MESES[Number(fecha.slice(5, 7)) - 1];
+  const mes = MESES[mesDelReel(fecha) - 1];
   const resto = datos.ahora.filter((n) => !datos.deEstaEpoca.includes(n)).slice(0, 8);
   return [
     `🐟 ¿Qué se pesca en ${region.en} en ${mes}?`,
@@ -92,6 +100,7 @@ export function captionRegion(fecha, region, datos, credito) {
     "",
     `En total, ${datos.total} especies en nuestros ${datos.spots} spots de ${region.en}; ${datos.todoElAno} de ellas, todo el año.`,
     "",
+    ...(campanaDe(fecha)?.texto ? [campanaDe(fecha).texto, ""] : []),
     `👇 ${region.pregunta}`,
     `📖 Todos sus peces, mes a mes, y sus spots: costaviva.org/spots/region/${region.slug}`,
     `🔗 Pruébala 14 días gratis: ${MARCA_ENLACE}`,
@@ -113,7 +122,7 @@ async function main() {
   const forzada = ROTACION_REGIONES.find((r) => r.slug === (arg("region") || process.env.REGION_REEL));
   const region = forzada || siguienteRegion(rot.ultima);
   const especiesDatos = JSON.parse(readFileSync(new URL("../../assets/datos/especies.json", import.meta.url), "utf8"));
-  const datos = pecesDeRegion(especiesDatos, region.slug, Number(fecha.slice(5, 7)));
+  const datos = pecesDeRegion(especiesDatos, region.slug, mesDelReel(fecha));
   const clip = elegirClip(process.env.CLIP_REEL || CLIP_REGION);
   const pieza = { ...piezaRegion(fecha, region, datos), credito: clip.credito };
   const rutaRelativa = `assets/marketing/reels/${fecha}-region-${region.slug}.mp4`;
