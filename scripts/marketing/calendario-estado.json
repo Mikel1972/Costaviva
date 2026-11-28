@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-29-post": {
-      "tipo": "funcion-alarma",
-      "campana": "20261029-funcion-alarma",
-      "en": "2026-10-28T17:30:38.738Z"
-    },
     "2026-10-30-post-nz": {
       "tipo": "condiciones-nz",
       "campana": "20261030-condiciones-nz-whakatane",
@@ -199,6 +194,11 @@
       "tipo": "reel-condiciones",
       "campana": "20261128-reel-condiciones-nz-moeraki",
       "en": "2026-11-27T05:21:52.166Z"
+    },
+    "2026-11-30-reel-bf": {
+      "tipo": "reel-black-friday",
+      "campana": "20261130-reel-black-friday",
+      "en": "2026-11-28T08:11:17.602Z"
     }
   },
   "ultimaFuncion": "alarma"
