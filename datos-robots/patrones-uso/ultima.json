@@ -1,34 +1,34 @@
 {
- "generado_en": "2026-11-21T03:10:28.296Z",
+ "generado_en": "2026-11-28T03:51:49.542Z",
  "nota": "Solo agregados. Un valor aparece si lo usan al menos 2 usuarios distintos; el resto va en \"otros\". Sin cuentas de prueba.",
  "perfiles": {
-  "total": 13,
-  "aprobados": 13,
-  "altas_7d": 0,
+  "total": 14,
+  "aprobados": 14,
+  "altas_7d": 1,
   "altas_28d": 4
  },
  "usuarios_activos": {
-  "7d": 3,
-  "28d": 7
+  "7d": 5,
+  "28d": 9
  },
  "abandono": {
   "perfiles_con_mas_de_7_dias": 13,
   "nunca_activos": 3,
-  "sin_actividad_en_7_dias": 7,
-  "activos_en_7_dias": 3
+  "sin_actividad_en_7_dias": 6,
+  "activos_en_7_dias": 4
  },
  "eventos_uso": {
   "7d": {
-   "filas": 67,
-   "usuarios": 3
+   "filas": 33,
+   "usuarios": 5
   },
   "28d": {
-   "filas": 278,
-   "usuarios": 7
+   "filas": 292,
+   "usuarios": 9
   },
   "total": {
-   "filas": 909,
-   "usuarios": 10
+   "filas": 942,
+   "usuarios": 11
   },
   "primero": "2026-09-17T17:29:34.481857+00:00",
   "por_tipo": {
@@ -103,8 +103,8 @@
    },
    "crear_salida": {
     "7d": {
-     "filas": 1,
-     "usuarios": 1
+     "filas": 0,
+     "usuarios": 0
     },
     "28d": {
      "filas": 7,
@@ -325,24 +325,24 @@
    },
    "ver_capa_boyas": {
     "7d": {
-     "filas": 1,
+     "filas": 2,
      "usuarios": 1
     },
     "28d": {
      "filas": 8,
-     "usuarios": 4
+     "usuarios": 3
     },
     "total": {
-     "filas": 27,
+     "filas": 29,
      "usuarios": 6
     },
     "primero": "2026-09-17T17:58:05.339+00:00",
-    "ultimo": "2026-11-19T03:23:24.203828+00:00"
+    "ultimo": "2026-11-27T13:02:12.119906+00:00"
    },
    "ver_capa_clorofila": {
     "7d": {
-     "filas": 1,
-     "usuarios": 1
+     "filas": 0,
+     "usuarios": 0
     },
     "28d": {
      "filas": 8,
@@ -377,7 +377,7 @@
      "usuarios": 0
     },
     "28d": {
-     "filas": 6,
+     "filas": 5,
      "usuarios": 4
     },
     "total": {
@@ -389,8 +389,8 @@
    },
    "ver_capa_frentes": {
     "7d": {
-     "filas": 1,
-     "usuarios": 1
+     "filas": 0,
+     "usuarios": 0
     },
     "28d": {
      "filas": 10,
@@ -421,19 +421,19 @@
    },
    "ver_capa_radar_lluvia": {
     "7d": {
-     "filas": 0,
-     "usuarios": 0
+     "filas": 1,
+     "usuarios": 1
     },
     "28d": {
      "filas": 8,
      "usuarios": 3
     },
     "total": {
-     "filas": 22,
+     "filas": 23,
      "usuarios": 4
     },
     "primero": "2026-09-17T17:58:01.387596+00:00",
-    "ultimo": "2026-11-14T01:11:22.450767+00:00"
+    "ultimo": "2026-11-25T18:58:11.828833+00:00"
    },
    "ver_capa_rayos": {
     "7d": {
@@ -441,7 +441,7 @@
      "usuarios": 0
     },
     "28d": {
-     "filas": 3,
+     "filas": 2,
      "usuarios": 2
     },
     "total": {
@@ -458,14 +458,14 @@
     },
     "28d": {
      "filas": 9,
-     "usuarios": 5
+     "usuarios": 4
     },
     "total": {
-     "filas": 27,
+     "filas": 28,
      "usuarios": 6
     },
     "primero": "2026-09-18T09:05:41.084389+00:00",
-    "ultimo": "2026-11-20T10:50:58.693977+00:00"
+    "ultimo": "2026-11-25T20:05:11.237743+00:00"
    },
    "ver_capa_satelite": {
     "7d": {
@@ -501,8 +501,8 @@
    },
    "ver_capa_temperatura_agua": {
     "7d": {
-     "filas": 2,
-     "usuarios": 1
+     "filas": 0,
+     "usuarios": 0
     },
     "28d": {
      "filas": 5,
@@ -521,8 +521,8 @@
      "usuarios": 0
     },
     "28d": {
-     "filas": 10,
-     "usuarios": 3
+     "filas": 9,
+     "usuarios": 2
     },
     "total": {
      "filas": 52,
@@ -533,19 +533,19 @@
    },
    "ver_mapa": {
     "7d": {
-     "filas": 60,
-     "usuarios": 3
+     "filas": 29,
+     "usuarios": 5
     },
     "28d": {
-     "filas": 153,
-     "usuarios": 7
+     "filas": 176,
+     "usuarios": 9
     },
     "total": {
-     "filas": 449,
-     "usuarios": 10
+     "filas": 478,
+     "usuarios": 11
     },
     "primero": "2026-09-17T17:29:34.481857+00:00",
-    "ultimo": "2026-11-20T20:23:14.964864+00:00"
+    "ultimo": "2026-11-27T17:57:52.521562+00:00"
    },
    "ver_suscripcion": {
     "7d": {
@@ -553,8 +553,8 @@
      "usuarios": 0
     },
     "28d": {
-     "filas": 10,
-     "usuarios": 3
+     "filas": 4,
+     "usuarios": 2
     },
     "total": {
      "filas": 36,
@@ -581,8 +581,6 @@
    }
   },
   "por_dia_28d": {
-   "2026-10-24": 18,
-   "2026-10-25": 1,
    "2026-10-31": 1,
    "2026-11-01": 1,
    "2026-11-02": 5,
@@ -599,7 +597,13 @@
    "2026-11-15": 5,
    "2026-11-16": 9,
    "2026-11-19": 20,
-   "2026-11-20": 32
+   "2026-11-20": 32,
+   "2026-11-21": 5,
+   "2026-11-22": 2,
+   "2026-11-23": 2,
+   "2026-11-25": 8,
+   "2026-11-26": 9,
+   "2026-11-27": 7
   }
  },
  "capturas": {
@@ -631,8 +635,8 @@
  },
  "salidas_pesca": {
   "7d": {
-   "filas": 1,
-   "usuarios": 1
+   "filas": 0,
+   "usuarios": 0
   },
   "28d": {
    "filas": 7,
