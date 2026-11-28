@@ -10500,3 +10500,23 @@ Datos: `camaras-estado.json` de 2026-11-28T03:02Z (fresco). En rojo: ext-nz-wind
 - portugalwebcams.pt: la página de Lisboa responde 200 pero no lista enlaces de cámaras en el HTML (se carga con JavaScript) y la de Algarve da 404 con la URL probada; no se pudo sacar ningún ID de Windy nuevo de esta zona.
 - La pasada corre a las 05:55 UTC, de noche en Portugal: aunque hubiera candidatas, no se puede comprobar a ojo que se lea el mar. Sin spot nuevo creado. Pendiente: las 7 candidatas de Windy de Portugal centro/norte (entrada del 2026-11-25) siguen necesitando verse de día.
 Firmado: robot buscador de fuentes (rutina), 2026-11-28 05:55 UTC.
+
+### 2026-11-28 UTC — robot de patrones de uso (rutina)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado el 2026-11-28 03:51 UTC (fresco, `errores` vacío). Perfiles: 14 (1 alta en 7 días, 4 en 28). Usuarios activos: 5 en 7 días y 9 en 28 (el 14-nov eran 7 y 7). De 13 perfiles con más de 7 días, 3 nunca hicieron nada y 6 llevan 7 días sin actividad (el 14-nov eran 3 y 3). `eventos_uso`: 33 filas/5 usuarios en 7 días (142 el 14-nov); 292 filas/9 usuarios en 28 días; 942 filas desde 2026-09-17. **Muestra muy pequeña: son indicios, no patrones.**
+
+**Qué se usa (7 días):** `ver_mapa` 5 de 5 usuarios (29 filas); capas: boyas 1, radar de lluvia 1, ríos 1; todo lo demás 0. Diario (`crear_salida`/`crear_captura`): 0 en 7 días; en 28 días 2 usuarios (7 salidas, 6 capturas), la última el 15-nov. Pago: `ver_suscripcion` 0 en 7 días (2 usuarios en 28), `iniciar_checkout` 0 (1 usuario en 28, todo el 5-nov). Por día, los picos de 28 días son 5-nov (36), 8-9-nov (64 y 49) y 19-20-nov (20 y 32): coinciden con sesiones de unos pocos usuarios, no con crecimiento.
+
+**Propuestas (todas con sí/no de Mikel; no he tocado nada):**
+1. **Retención, no funciones:** los activos bajan de 7 a 5 en una semana y los perfiles de más de 7 días sin actividad se duplican (3 → 6 de 13). En 7 días solo 1 usuario toca alguna capa y ninguno el diario: la gente abre el mapa y poco más. Antes de rediseñar nada, mirar qué recibe una cuenta al ir enfriándose (aviso de fin de prueba/plan gratis) y si hay algo que la traiga de vuelta (p. ej. un aviso de mar bueno en su zona, ya propuesto en otras entradas).
+2. **Diario parado:** 0 usos en 7 días y solo los mismos 2 usuarios en todo el histórico (13 salidas, 11 capturas). No quitar, pero tampoco invertir más en él hasta saber si es falta de visibilidad: opción barata, enlace al diario desde la ficha del spot.
+3. **Capas de mar con 28 días de datos:** frentes, clorofila, ríos, boyas y sustrato las probó cada una 3-4 usuarios en 28 días, pero solo 1 usuario en los últimos 7. Es un uso de curiosidad puntual (picos del 8-9 y 19-20 nov) más que de hábito. Sin propuesta de quitar; solo anotar que "probar" ≠ "volver".
+4. **Embudo de pago:** 0 pasos nuevos en 7 días. Con 1 alta nueva no hay conclusión; seguir observando.
+
+**Sin propuesta de quitar:** SOS y WhatsApp (1 uso cada uno en total; función de seguridad). `ver_capa_batimetria` (0 en 28 días, sustituida por isóbatas/sustrato), `ver_capa_satelite` (1 uso en 28 días: ojo, el satélite va encendido por defecto, así que el evento solo registra el cambio, no el uso real).
+
+**Puntos ciegos (comprobado con grep de `registrarEvento`):** existen en el código y nunca han aparecido en el JSON: `elegir_pais_residencia`, `contactos_agenda`, `compartir_enlace_amigo`, `sos_whatsapp_grupo` (o no se han usado, o `agregar.mjs` no los recoge: confirmar que el JSON lista todos los tipos). Siguen sin evento: cambio de modalidad costa/embarcación/submarina, flota AIS, coordenadas al tocar el mapa, ventana de actividad/índice de pesca y Aprende. Propuesta (no aplicada) de instrumentación: `cambiar_modalidad`, `ver_capa_flota`, `ver_ventana_actividad`.
+
+**No me dio tiempo/dato:** detalle por spot (casi todo en "otros" por la regla de 2 usuarios); causa del descenso de activos.
+
+Firmado: robot de patrones de uso (rutina).
