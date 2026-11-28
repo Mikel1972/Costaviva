@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-28T09:07:45.322Z",
- "lineasHistorial": 13842,
+ "fecha": "2026-11-28T09:37:48.487Z",
+ "lineasHistorial": 13852,
  "etiquetas": 1750,
  "etiquetasClaude": 309,
  "calibracion": {
@@ -58,9 +58,9 @@
    "correlacion": 0.109
   },
   "zarautz/dinamico": {
-   "a": 2.6704,
+   "a": 2.6723,
    "p": 0.5,
-   "n": 1151,
+   "n": 1152,
    "nEtiquetas": 288,
    "nEtiquetasClaude": 34,
    "franjasClaude": [
@@ -91,12 +91,12 @@
     "2026-11-25T12",
     "2026-11-25T14"
    ],
-   "dias": 51,
+   "dias": 52,
    "hMin": 0.15,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.169
+   "correlacion": 0.168
   },
   "zumaia/c": {
    "a": 1.7479,
@@ -211,9 +211,9 @@
    "correlacion": -0.047
   },
   "sopelana/principal": {
-   "a": 2.2795,
+   "a": 2.2793,
    "p": 0.5,
-   "n": 254,
+   "n": 255,
    "nEtiquetas": 57,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -229,7 +229,7 @@
     "2026-11-01T14",
     "2026-11-25T12"
    ],
-   "dias": 36,
+   "dias": 37,
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 1,
@@ -251,9 +251,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.4881,
+   "a": 2.4849,
    "p": 0.5,
-   "n": 219,
+   "n": 220,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -270,7 +270,7 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.015
+   "correlacion": 0.014
   },
   "berria/dinamico": {
    "a": 2.7016,
@@ -537,7 +537,7 @@
    "motivo": "307 etiquetas",
    "ruido": {
     "ruido": 0.538,
-    "pares": 748
+    "pares": 749
    }
   },
   "getaria": {
@@ -608,8 +608,8 @@
    "sustituye": true,
    "motivo": "62 etiquetas",
    "ruido": {
-    "ruido": 0.587,
-    "pares": 86
+    "ruido": 0.585,
+    "pares": 87
    }
   },
   "nz-napier": {
@@ -651,10 +651,10 @@
    "cerca": -0.001
   },
   "castrourdiales": {
-   "n": 15,
+   "n": 16,
    "suficiente": false,
-   "lineas": 0.1,
-   "cerca": 0.505
+   "lineas": 0.087,
+   "cerca": 0.551
   },
   "hondarribia": {
    "n": 20,
