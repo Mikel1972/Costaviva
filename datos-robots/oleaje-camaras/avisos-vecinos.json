@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-28T11:09:52.582Z",
+ "actualizado": "2026-11-28T11:39:48.708Z",
  "dias": 7,
  "repetidos": [
   {
@@ -36,33 +36,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "zumaia",
-   "camara": "zumaia",
-   "tipo": "alto",
-   "horaISO": "2026-11-22T03:00",
-   "antes": 0.6,
-   "referencia": 0.5,
-   "visto": "2026-11-21T11:09:55.651Z"
-  },
-  {
-   "slug": "orio",
-   "camara": "orio",
-   "tipo": "alto",
-   "horaISO": "2026-11-22T06:00",
-   "antes": 0.6,
-   "referencia": 0.4,
-   "visto": "2026-11-21T11:09:55.651Z"
-  },
-  {
-   "slug": "hondarribia",
-   "camara": "hondarribia",
-   "tipo": "bajo",
-   "horaISO": "2026-11-22T00:00",
-   "antes": 0.1,
-   "referencia": null,
-   "visto": "2026-11-21T11:09:55.651Z"
-  },
   {
    "slug": "bakio",
    "camara": "bakio",
