@@ -244,6 +244,7 @@
   .hoja-cuerpo strong { color: var(--tinta); }
   .hoja-cuerpo a { color: var(--acento); }
   .hoja-intro { color: var(--tinta-3); font-size: 12px; }
+  .nota-email { margin: 6px 0 0; font-size: 12.5px; color: var(--tinta-3); }
   .hoja-pie { border-top: 1px solid var(--linea); padding-top: 10px; margin-top: 8px; }
   .hoja-pie label.checkbox {
     display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px;
@@ -345,7 +346,11 @@
   <div id="avisoInvitacion" class="mensaje"></div>
   <form id="formRegistroDatos">
     <label for="emailRegistro" data-i18n="login.correo">Correo electrónico</label>
-    <input type="email" id="emailRegistro" required autocomplete="email" />
+    <input type="email" id="emailRegistro" required autocomplete="email" inputmode="email" placeholder="tu@email.com" data-i18n-placeholder="login.placeholder_email" />
+    <!-- 2026-11-28 (Mikel: «mejora la pantalla de login para que rellenen el
+         email»): el primer clic medido en «Empieza gratis» llegó aquí y se fue
+         sin escribir. Se quita el miedo a lo que viene después. -->
+    <p class="nota-email" data-i18n="login.nota_email">Sin contraseña ni tarjeta ahora: te llega un enlace y entras.</p>
     <!-- Sin código postal desde el 2026-11-25 (Mikel: solo servía para centrar
          el mapa, y obligatorio con 5 cifras dejaba fuera a quien no es de
          España, NZ o Portugal). Ahora el alta pide solo el email; la zona se
@@ -353,7 +358,7 @@
 
     <div id="turnstileRegistro" style="margin-top:8px;"></div>
 
-    <button type="submit" id="btnContinuarRegistro" data-i18n="login.continuar">Continuar</button>
+    <button type="submit" id="btnContinuarRegistro" data-i18n="login.empezar_prueba">Empezar mis 14 días gratis</button>
     <button type="button" class="secundario" id="btnYaTengoCuenta" data-i18n="login.ya_tengo_cuenta">Ya tengo cuenta</button>
   </form>
 </div>
@@ -575,7 +580,7 @@ async function asegurarWidgetLogin() {
 }
 async function asegurarWidgetRegistro() {
   await turnstileListo();
-  if (widgetRegistro === null) widgetRegistro = window.turnstile.render("#turnstileRegistro", { sitekey: TURNSTILE_SITE_KEY });
+  if (widgetRegistro === null) widgetRegistro = window.turnstile.render("#turnstileRegistro", { sitekey: TURNSTILE_SITE_KEY, appearance: "interaction-only" });
 }
 function leerTokenTurnstile(widgetId) {
   if (widgetId === null || !window.turnstile) return "";
@@ -596,6 +601,8 @@ document.getElementById("btnIrARegistro").addEventListener("click", () => {
 if (new URLSearchParams(window.location.search).get("alta") === "1") {
   mostrarPantalla(cajaRegistroDatos);
   asegurarWidgetRegistro();
+  // Vino a darse de alta: el cursor ya en el email (2026-11-28).
+  try { document.getElementById("emailRegistro").focus({ preventScroll: true }); } catch (e) { /* nada */ }
 }
 document.getElementById("btnYaTengoCuenta").addEventListener("click", () => {
   mostrarPantalla(cajaLogin);
@@ -853,7 +860,13 @@ async function enviarAlta() {
     abrirHoja();
     return;
   }
-  const captchaToken = leerTokenTurnstile(widgetRegistro);
+  // Con appearance "interaction-only" el CAPTCHA no se ve salvo que haga
+  // falta; si se pulsa muy rápido, se esperan unos segundos a su token.
+  let captchaToken = leerTokenTurnstile(widgetRegistro);
+  for (let i = 0; !captchaToken && i < 16; i++) {
+    await new Promise((r) => setTimeout(r, 250));
+    captchaToken = leerTokenTurnstile(widgetRegistro);
+  }
   if (!captchaToken) {
     mostrarMensajeRegistro(I18n.t("login.completa_captcha"), "error");
     btnContinuarRegistro.disabled = false;
