@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-28T12:39:28.798Z",
+ "actualizado": "2026-11-28T13:09:26.002Z",
  "dias": 7,
  "repetidos": [
   {
@@ -36,24 +36,6 @@
   }
  ],
  "avisos": [
-  {
-   "slug": "bakio",
-   "camara": "bakio",
-   "tipo": "alto",
-   "horaISO": "2026-11-22T12:00",
-   "antes": 1.3,
-   "referencia": 1.1,
-   "visto": "2026-11-21T12:40:06.038Z"
-  },
-  {
-   "slug": "orio",
-   "camara": "orio",
-   "tipo": "alto",
-   "horaISO": "2026-11-21T15:00",
-   "antes": 0.5,
-   "referencia": 0.4,
-   "visto": "2026-11-21T12:40:06.038Z"
-  },
   {
    "slug": "bakio",
    "camara": "bakio",
