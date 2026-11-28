@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-28T00:07:18.975Z",
- "lineasHistorial": 13780,
- "etiquetas": 1746,
- "etiquetasClaude": 305,
+ "fecha": "2026-11-28T00:37:20.879Z",
+ "lineasHistorial": 13783,
+ "etiquetas": 1748,
+ "etiquetasClaude": 307,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.2278,
@@ -401,11 +401,11 @@
    "correlacion": 0.521
   },
   "nz-riverton/principal": {
-   "a": 6.0425,
+   "a": 6.0292,
    "p": 0.5,
-   "n": 1291,
+   "n": 1293,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 86,
+   "nEtiquetasClaude": 87,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -461,7 +461,8 @@
     "2026-11-24T22",
     "2026-11-25T00",
     "2026-11-26T00",
-    "2026-11-27T00"
+    "2026-11-27T00",
+    "2026-11-27T22"
    ],
    "dias": 48,
    "hMin": 0.23,
@@ -679,7 +680,7 @@
    "cerca": 0.205
   },
   "nz-riverton": {
-   "n": 226,
+   "n": 227,
    "suficiente": true,
    "lineas": null,
    "cerca": null
@@ -718,16 +719,16 @@
  "previstoVsReal": {
   "global": {
    "24-48": {
-    "factor": 0.806,
-    "n": 407,
-    "peso": 405.6,
+    "factor": 0.807,
+    "n": 409,
+    "peso": 407.6,
     "mae": 0.27,
     "maeCorregido": 0.24
    },
    "6-24": {
-    "factor": 0.758,
-    "n": 536,
-    "peso": 535.3,
+    "factor": 0.759,
+    "n": 538,
+    "peso": 537.3,
     "mae": 0.28,
     "maeCorregido": 0.23
    },
@@ -926,18 +927,18 @@
    },
    "nz-aramoana": {
     "24-48": {
-     "factor": 1.031,
-     "n": 4,
-     "peso": 4,
-     "mae": 0.08,
+     "factor": 1.057,
+     "n": 5,
+     "peso": 5,
+     "mae": 0.09,
      "maeCorregido": 0.09
     },
     "6-24": {
-     "factor": 0.981,
-     "n": 1,
-     "peso": 1,
-     "mae": 0.07,
-     "maeCorregido": 0.06
+     "factor": 1.016,
+     "n": 2,
+     "peso": 2,
+     "mae": 0.08,
+     "maeCorregido": 0.09
     },
     "48-72": {
      "factor": 1.049,
@@ -963,17 +964,17 @@
      "maeCorregido": 0.06
     },
     "6-24": {
-     "factor": 0.981,
-     "n": 8,
-     "peso": 8,
+     "factor": 0.973,
+     "n": 9,
+     "peso": 9,
      "mae": 0.06,
-     "maeCorregido": 0.06
+     "maeCorregido": 0.05
     },
     "24-48": {
-     "factor": 0.981,
-     "n": 18,
-     "peso": 18,
-     "mae": 0.06,
+     "factor": 0.972,
+     "n": 19,
+     "peso": 19,
+     "mae": 0.07,
      "maeCorregido": 0.06
     },
     "48-72": {
