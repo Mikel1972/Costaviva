@@ -1,6 +1,6 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (sesgo-plazo.mjs). No editar a mano.
 export default {
- "generado": "2026-11-26T21:07:23.294Z",
+ "generado": "2026-11-28T01:07:29.084Z",
  "k": 10,
  "nMin": 20,
  "camaras": {
@@ -183,62 +183,62 @@ export default {
   },
   "nz-aramoana": {
    "24-48": {
-    "factor": 1.031,
-    "n": 4,
-    "peso": 4,
-    "mae": 0.08,
+    "factor": 1.081,
+    "n": 6,
+    "peso": 6,
+    "mae": 0.09,
     "maeCorregido": 0.09
    },
    "6-24": {
-    "factor": 0.981,
-    "n": 1,
-    "peso": 1,
-    "mae": 0.07,
-    "maeCorregido": 0.06
+    "factor": 1.016,
+    "n": 2,
+    "peso": 2,
+    "mae": 0.08,
+    "maeCorregido": 0.09
    },
    "48-72": {
-    "factor": 1.049,
-    "n": 3,
-    "peso": 3,
-    "mae": 0.05,
-    "maeCorregido": 0.05
+    "factor": 1.072,
+    "n": 4,
+    "peso": 4,
+    "mae": 0.06,
+    "maeCorregido": 0.06
    },
    "0-6": {
-    "factor": 1.049,
-    "n": 3,
-    "peso": 3,
-    "mae": 0.05,
-    "maeCorregido": 0.05
+    "factor": 1.076,
+    "n": 4,
+    "peso": 4,
+    "mae": 0.06,
+    "maeCorregido": 0.06
    }
   },
   "nz-riverton": {
    "0-6": {
-    "factor": 0.996,
-    "n": 10,
-    "peso": 10,
-    "mae": 0.06,
+    "factor": 0.97,
+    "n": 12,
+    "peso": 12,
+    "mae": 0.07,
     "maeCorregido": 0.06
    },
    "6-24": {
-    "factor": 0.994,
-    "n": 7,
-    "peso": 7,
-    "mae": 0.05,
+    "factor": 0.973,
+    "n": 9,
+    "peso": 9,
+    "mae": 0.06,
     "maeCorregido": 0.05
    },
    "24-48": {
-    "factor": 0.999,
-    "n": 16,
-    "peso": 16,
-    "mae": 0.06,
+    "factor": 0.966,
+    "n": 20,
+    "peso": 20,
+    "mae": 0.07,
     "maeCorregido": 0.06
    },
    "48-72": {
-    "factor": 0.998,
-    "n": 6,
-    "peso": 6,
-    "mae": 0.03,
-    "maeCorregido": 0.03
+    "factor": 0.967,
+    "n": 8,
+    "peso": 8,
+    "mae": 0.05,
+    "maeCorregido": 0.05
    }
   },
   "castrourdiales": {
@@ -336,30 +336,30 @@ export default {
  },
  "global": {
   "24-48": {
-   "factor": 0.806,
-   "n": 405,
-   "peso": 403.6,
+   "factor": 0.808,
+   "n": 411,
+   "peso": 409.6,
    "mae": 0.27,
-   "maeCorregido": 0.24
+   "maeCorregido": 0.23
   },
   "6-24": {
-   "factor": 0.758,
-   "n": 535,
-   "peso": 534.3,
+   "factor": 0.759,
+   "n": 538,
+   "peso": 537.3,
    "mae": 0.28,
    "maeCorregido": 0.23
   },
   "0-6": {
-   "factor": 1.023,
-   "n": 13,
-   "peso": 13,
-   "mae": 0.06,
-   "maeCorregido": 0.06
+   "factor": 1.014,
+   "n": 16,
+   "peso": 16,
+   "mae": 0.07,
+   "maeCorregido": 0.07
   },
   "48-72": {
-   "factor": 0.793,
-   "n": 338,
-   "peso": 338,
+   "factor": 0.794,
+   "n": 341,
+   "peso": 341,
    "mae": 0.3,
    "maeCorregido": 0.26
   }

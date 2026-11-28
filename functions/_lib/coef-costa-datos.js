@@ -1,11 +1,11 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-26T21:07:23.248Z",
- "n": 1691,
+ "generado": "2026-11-28T01:07:29.041Z",
+ "n": 1697,
  "k": 8,
  "global": {
-  "coef": 0.272,
-  "n": 1691
+  "coef": 0.273,
+  "n": 1697
  },
  "camaras": {
   "zarautz": {
@@ -356,7 +356,7 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.265,
+     "coef": 0.266,
      "n": 9,
      "periodos": {
       "largo": {
@@ -368,7 +368,7 @@ export default {
    }
   },
   "mundaka": {
-   "coef": 0.466,
+   "coef": 0.467,
    "n": 20,
    "tamanos": {
     "pequeno": {
@@ -404,7 +404,7 @@ export default {
      "n": 1,
      "periodos": {
       "corto": {
-       "coef": 0.36,
+       "coef": 0.361,
        "n": 1
       }
      }
@@ -518,7 +518,7 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.316,
+     "coef": 0.315,
      "n": 14,
      "periodos": {
       "corto": {
@@ -532,15 +532,15 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.316,
+     "coef": 0.315,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.332,
+       "coef": 0.331,
        "n": 2
       },
       "largo": {
-       "coef": 0.324,
+       "coef": 0.323,
        "n": 1
       }
      }
@@ -592,31 +592,31 @@ export default {
    }
   },
   "nz-aramoana": {
-   "coef": 0.285,
-   "n": 16,
+   "coef": 0.296,
+   "n": 18,
    "tamanos": {
     "pequeno": {
-     "coef": 0.322,
-     "n": 14,
+     "coef": 0.336,
+     "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.32,
-       "n": 14
+       "coef": 0.335,
+       "n": 16
       }
      }
     },
     "medio": {
-     "coef": 0.199,
+     "coef": 0.203,
      "n": 2,
      "periodos": {
       "corto": {
-       "coef": 0.189,
+       "coef": 0.192,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.182,
+     "coef": 0.187,
      "n": 0,
      "periodos": {}
     }
@@ -649,19 +649,19 @@ export default {
    }
   },
   "nz-riverton": {
-   "coef": 0.187,
-   "n": 83,
+   "coef": 0.188,
+   "n": 87,
    "tamanos": {
     "pequeno": {
-     "coef": 0.277,
-     "n": 27,
+     "coef": 0.27,
+     "n": 31,
      "periodos": {
       "corto": {
-       "coef": 0.283,
-       "n": 24
+       "coef": 0.274,
+       "n": 28
       },
       "largo": {
-       "coef": 0.276,
+       "coef": 0.271,
        "n": 3
       }
      }
@@ -689,7 +689,7 @@ export default {
        "n": 3
       },
       "largo": {
-       "coef": 0.103,
+       "coef": 0.102,
        "n": 3
       }
      }
@@ -700,11 +700,11 @@ export default {
  "efectoTamano": {
   "pequeno": 1.386,
   "medio": 0.889,
-  "grande": 0.766
+  "grande": 0.767
  },
  "globalTamanos": {
-  "pequeno": 0.44,
+  "pequeno": 0.441,
   "medio": 0.254,
-  "grande": 0.205
+  "grande": 0.206
  }
 };
