@@ -1,10 +1,10 @@
 {
- "actualizado": "2026-11-28T03:07:26.432Z",
+ "actualizado": "2026-11-28T03:37:23.888Z",
  "dias": 7,
  "repetidos": [
   {
    "clave": "mundaka",
-   "alto": 8,
+   "alto": 9,
    "bajo": 0,
    "spots": [
     "mundaka"
@@ -12,7 +12,7 @@
   },
   {
    "clave": "orio",
-   "alto": 8,
+   "alto": 9,
    "bajo": 0,
    "spots": [
     "orio"
@@ -24,6 +24,14 @@
    "bajo": 6,
    "spots": [
     "zumaia"
+   ]
+  },
+  {
+   "clave": "hondarribia",
+   "alto": 2,
+   "bajo": 1,
+   "spots": [
+    "hondarribia"
    ]
   }
  ],
@@ -1944,6 +1952,33 @@
    "antes": 0.5,
    "referencia": 0.4,
    "visto": "2026-11-28T00:37:26.527Z"
+  },
+  {
+   "slug": "mundaka",
+   "camara": "mundaka",
+   "tipo": "alto",
+   "horaISO": "2026-11-29T03:00",
+   "antes": 1.2,
+   "referencia": 0.8,
+   "visto": "2026-11-28T03:37:23.888Z"
+  },
+  {
+   "slug": "orio",
+   "camara": "orio",
+   "tipo": "alto",
+   "horaISO": "2026-11-29T03:00",
+   "antes": 0.6,
+   "referencia": 0.4,
+   "visto": "2026-11-28T03:37:23.888Z"
+  },
+  {
+   "slug": "hondarribia",
+   "camara": "hondarribia",
+   "tipo": "alto",
+   "horaISO": "2026-11-28T09:00",
+   "antes": 0.6,
+   "referencia": 0.5,
+   "visto": "2026-11-28T03:37:23.888Z"
   }
  ]
 }
